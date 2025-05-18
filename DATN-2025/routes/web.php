@@ -17,12 +17,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\ShowproductController;
 
-        // Login
-        Route::get('login', [AuthenticationController::class, 'showLoginForm'])->name('login');
-        Route::post('post-login', [AuthenticationController::class, 'postLogin'])->name('postLogin');
-        Route::get('logout', [AuthenticationController::class, 'logout'])->name('logout');
-        Route::get('register', [AuthenticationController::class, 'showRegisterForm'])->name('register');
-        Route::post('post-register', [AuthenticationController::class, 'postRegister'])->name('postRegister');
+       
         // Show ctsp
         Route::get('/product/{id}', [ShowproductController::class, 'showctsp'])->name('client.product.detail');
         Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('cart.add');
