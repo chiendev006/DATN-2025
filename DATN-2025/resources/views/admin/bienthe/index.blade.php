@@ -16,7 +16,6 @@
           <th class="checkbox-cell"><input type="checkbox"></th>
           <th>Sản phẩm</th>
           <th>Ảnh</th>
-          <!-- Bỏ cột Size và Topping -->
           <th>Ảnh chính?</th>
           <th>Hành động</th>
         </tr>
@@ -27,8 +26,7 @@
           <td class="checkbox-cell"><input type="checkbox"></td>
           <td>{{ $item->sanpham->name ?? 'Không rõ' }}</td>
           <td><img src="{{ asset('storage/' . $item->image_url) }}" width="100px" alt="Ảnh sản phẩm"></td>
-          <!-- Bỏ hiển thị size và topping -->
-          <td>{{ $item->is_primary ? '✔️' : '' }}</td>
+          <td>{{ $item->is_primary ?  : '' }}</td>
           <td class="actions-cell">
             <a href="{{ route('product-images.edit', ['id' => $item->id]) }}" class="button small blue">
               <span class="icon"><i class="mdi mdi-pencil"></i></span>

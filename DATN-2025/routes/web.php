@@ -69,6 +69,17 @@ use App\Http\Controllers\ShowproductController;
         Route::get('/delete/{id}', [DanhmucController::class, 'delete'])->name('danhmuc.delete');
         });
 
+        // Quản lý ảnh theo sản phẩm
+        Route::prefix('admin/sanpham')->name('sanpham.')->group(function () {
+        Route::get('{id}/images', [SanphamController::class, 'listImages'])->name('images');
+        Route::get('{id}/images/create', [SanphamController::class, 'createImage'])->name('images.create');
+        Route::post('{id}/images', [SanphamController::class, 'storeImage'])->name('images.store');
+        Route::get('images/{image}/edit', [SanphamController::class, 'editImage'])->name('images.edit');
+        Route::put('images/{image}', [SanphamController::class, 'updateImage'])->name('images.update');
+        Route::delete('images/{image}', [SanphamController::class, 'deleteImage'])->name('images.delete');
+        });
+
+
         // Sản phẩm
         Route::prefix('sanpham')->group(function () {
         Route::get('/', [SanphamController::class, 'index'])->name('sanpham.index');

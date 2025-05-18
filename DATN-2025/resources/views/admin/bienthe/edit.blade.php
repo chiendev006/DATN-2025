@@ -26,10 +26,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Bỏ phần Size -->
-        <!-- Bỏ phần Topping -->
-
         <div class="field">
           <label class="label">Ảnh sản phẩm</label>
           <div class="control">

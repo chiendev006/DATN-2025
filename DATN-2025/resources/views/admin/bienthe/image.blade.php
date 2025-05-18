@@ -23,10 +23,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Bỏ hẳn phần Size -->
-        <!-- Bỏ hẳn phần Topping -->
-
         <div class="field">
           <label class="label">Ảnh sản phẩm</label>
           <div class="field-body">
