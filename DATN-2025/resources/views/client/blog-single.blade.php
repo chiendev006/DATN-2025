@@ -137,8 +137,6 @@
                   </div>
                 </li>
               </ul>
-              <!-- END comment-list -->
-
               <div class="comment-form-wrap pt-5">
                 <h3 class="mb-5">Leave a comment</h3>
                 <form action="#">
@@ -167,7 +165,7 @@
               </div>
             </div>
 
-          </div> <!-- .col-md-8 -->
+          </div>
           <div class="col-md-4 sidebar ftco-animate">
             <div class="sidebar-box">
               <form action="#" class="search-form">
@@ -250,5 +248,5 @@
 
         </div>
       </div>
-    </section> <!-- .section -->
+    </section>
 @endsectioinn

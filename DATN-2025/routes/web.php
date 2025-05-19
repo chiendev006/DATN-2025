@@ -20,9 +20,15 @@ use App\Http\Controllers\ShowproductController;
        
         // Show ctsp
         Route::get('/product/{id}', [ShowproductController::class, 'showctsp'])->name('client.product.detail');
-        Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('cart.add');
 
 
+        // cart 
+        Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
+        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+        Route::post('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
+        Route::get('/cart/remove/{key}', [CartController::class, 'removeItem'])->name('cart.remove');
+
+        
 
 
         // Trang chủ Client
@@ -30,7 +36,6 @@ use App\Http\Controllers\ShowproductController;
         Route::get('/', [Controller::class, 'danhmuc'])->name('danhmuc1.index');
         Route::get('/menu', [Controller::class, 'show'])->name('client.menu');
         Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp'); 
-        Route::post('/add-to-cart/{id}', [Controller::class, 'addToCart'])->name('cart.add');
 
         // Search
         Route::get('/search', [Controller::class, 'search'])->name('search');
@@ -122,10 +127,7 @@ use App\Http\Controllers\ShowproductController;
         Route::get('/edit/{id}', [SizeController::class, 'edit'])->name('size.edit');
         Route::post('/update/{id}', [SizeController::class, 'update'])->name('size.update');
         Route::get('/delete/{id}', [SizeController::class, 'delete'])->name('size.delete');
-         });
-
-   
-        
+        });     
 });
  
 

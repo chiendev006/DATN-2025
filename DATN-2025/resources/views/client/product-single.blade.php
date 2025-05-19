@@ -43,11 +43,13 @@
 
       <div class="col-lg-6 product-details pl-md-5 ftco-animate">
         <h3>{{ $sanpham->name }}</h3>
-        <p class="price"><span>{{ number_format($sanpham->price) }} VND</span></p>
+        <p class="price">
+          <span id="display-price" data-base="{{ $sanpham->price }}">{{ number_format($sanpham->price) }} VND</span>
+        </p>
         <p>{{ $sanpham->mota }}</p>
 
         <!-- FORM THÊM GIỎ HÀNG -->
-        <form action="#" method="POST">
+       <form action="{{ route('cart.add', $sanpham->id) }}" method="POST">
           @csrf
           <div class="form-group">
             <label for="size"><strong>Chọn size:</strong></label><br>
@@ -56,7 +58,7 @@
             @endphp
             @foreach($sizes as $size)
               <label class="mr-3">
-                <input type="radio" name="size_id" value="{{ $size->id }}" required>
+                <input type="radio" name="size_id" value="{{ $size->id }}" class="size-option" data-price="{{ $size->price }}" required>
                 {{ $size->name }} (+{{ number_format($size->price) }} VND)
               </label><br>
             @endforeach
@@ -69,7 +71,7 @@
             @endphp
             @foreach($toppings as $topping)
               <label class="mr-3">
-                <input type="checkbox" name="topping_ids[]" value="{{ $topping->id }}">
+                <input type="checkbox" name="topping_ids[]" value="{{ $topping->id }}" class="topping-option" data-price="{{ $topping->price }}">
                 {{ $topping->name }} (+{{ number_format($topping->price) }} VND)
               </label>
             @endforeach
@@ -101,7 +103,28 @@
     if (isNaN(qty)) qty = 1;
     qty = Math.max(1, qty + delta);
     input.value = qty;
+    updatePrice();
   }
-</script>
 
+  function updatePrice() {
+    const basePrice = parseInt(document.getElementById('display-price').dataset.base);
+    const qty = parseInt(document.getElementById('quantity').value);
+    let extra = 0;
+
+    document.querySelectorAll('.size-option:checked').forEach(el => {
+      extra += parseInt(el.dataset.price);
+    });
+    document.querySelectorAll('.topping-option:checked').forEach(el => {
+      extra += parseInt(el.dataset.price);
+    });
+
+    const finalPrice = (basePrice + extra) * qty;
+    document.getElementById('display-price').textContent = finalPrice.toLocaleString('vi-VN') + ' VND';
+  }
+
+  document.querySelectorAll('.size-option, .topping-option').forEach(el => {
+    el.addEventListener('change', updatePrice);
+  });
+</script>
 @endsection
+
