@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="{{ url('asset') }}/css/flaticon.css">
     <link rel="stylesheet" href="{{ url('asset') }}/css/icomoon.css">
     <link rel="stylesheet" href="{{ url('asset') }}/css/style.css">
-  
+
 
   </head>
   <body>
@@ -54,7 +54,7 @@
               </div>
             </li>
 	          <li class="nav-item"><a href="/contact/create" class="nav-link">Contact</a></li>
-	          <li class="nav-item cart"><a href="{{ route('cart.index') }}" class="nav-link"><span class="icon icon-shopping_cart"></span><span class="bag d-flex justify-content-center align-items-center"><small>1</small></span></a></li>
+	          <li class="nav-item cart"><a href="cart.html" class="nav-link"><span class="icon icon-shopping_cart"></span><span class="bag d-flex justify-content-center align-items-center"><small>1</small></span></a></li>
             <li class="nav-item">
              <form class="search-bar" action="{{ route('search') }}" method="GET">
                 <input class="search-input" required name="search" type="search" autocomplete="off" placeholder="Search products...">
@@ -67,9 +67,9 @@
 	      </div>
 		  </div>
 	  </nav>
-  
+
       @yield('main')
-  
+
       <footer class="ftco-footer ftco-section img">
     	<div class="overlay"></div>
       <div class="container">
