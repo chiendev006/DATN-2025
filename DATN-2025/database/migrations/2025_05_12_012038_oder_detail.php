@@ -14,7 +14,7 @@ return new class extends Migration
        Schema::create('order_detail', function (Blueprint $table) {
         $table->id();
         $table->foreignId('order_id')->constrained('order');
-        $table->foreignId('product_id')->constrained('products');
+        $table->foreignId('product_id')->constrained('sanphams');
         $table->string('product_name');
         $table->decimal('product_price', 10, 2);
         $table->integer('quantity');

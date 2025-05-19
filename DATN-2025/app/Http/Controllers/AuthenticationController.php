@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+
+class AuthenticationController extends Controller
+{
+    public function login()
+    {
+        return view('client.login');
+    }
+    public function postLogin(Request $request)
+    {
+        $data = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6'
+        ], [
+            'email.required' => 'Email khong duoc de trong',
+            'password.required' => 'Mat khau khong duoc de trong',
+            'password.min' => 'Mat khau phai it nhat 6 ki tu',
+        ]);
+        if (Auth::attempt($data)) {
+            return redirect()->intended('/');
+        }else{
+            return redirect()->back()->with([
+                'message' => 'Email hoac mat khau khong chinh xac'
+            ]);
+        }
+    }
+    public function logout()
+    {
+        Auth::logout();
+        return redirect('/');
+    }
+    public function register()
+    {
+        return view('client.register');
+    }
+    public function postRegister(Request $request)
+    {
+        $hasEmail = User::whereEmail($request->email)->exists();
+        if ($hasEmail) {
+            return redirect()->back()->with([
+                'message' => 'Email da ton tai'
+            ]);
+        }else{
+            $data = $request->validate([
+                'name' => 'required',
+                'email' => 'required|email|unique:users',
+                'password' => 'required|min:6'
+            ], [
+                'name.required' => 'Ten tai khoan khong duoc de trong',
+                'email.required' => 'Email khong duoc de trong',
+                'password.required' => 'Mat khau khong duoc de trong',
+                'password.min' => 'Mat khau phai it nhat 6 ki tu',
+            ]);
+        }
+        $data['password'] = Hash::make($data['password']);
+        User::create($data);
+        return redirect()->route('login')->with([
+            'message' => 'Dang ki thanh cong'
+        ]);
+    }
+    public function forgotPassword()
+    {
+        return view('client.forgot-pass');
+    }
+}

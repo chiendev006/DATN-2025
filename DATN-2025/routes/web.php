@@ -17,11 +17,17 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\ShowproductController;
 
-       
+
+        Route::get('login', [AuthenticationController::class, 'login'])->name('login');
+        Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
+        Route::get('register', [AuthenticationController::class, 'register'])->name('register');
+        Route::post('register', [AuthenticationController::class, 'postRegister'])->name('post-register');
+        Route::get('logout', [AuthenticationController::class, 'logout'])->name('logout');
+        Route::get('forgot-password', [AuthenticationController::class, 'forgotPassword'])->name('forgot-password');
+
         // Show ctsp
         Route::get('/product/{id}', [ShowproductController::class, 'showctsp'])->name('client.product.detail');
         Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('cart.add');
-
 
 
 
@@ -29,7 +35,7 @@ use App\Http\Controllers\ShowproductController;
         Route::get('/', [Controller::class, 'index']);
         Route::get('/', [Controller::class, 'danhmuc'])->name('danhmuc1.index');
         Route::get('/menu', [Controller::class, 'show'])->name('client.menu');
-        Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp'); 
+        Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp');
         Route::post('/add-to-cart/{id}', [Controller::class, 'addToCart'])->name('cart.add');
 
         // Search
@@ -94,7 +100,7 @@ use App\Http\Controllers\ShowproductController;
         Route::put('/{id}', [ProductImageController::class, 'update'])->name('product-images.update');
         Route::delete('/{id}', [ProductImageController::class, 'destroy'])->name('product-images.delete');
         });
- 
+
 
 
         // Quản lý liên hệ từ Admin
@@ -103,7 +109,7 @@ use App\Http\Controllers\ShowproductController;
         Route::get('/delete/{id}', [ContactAdminController::class, 'delete'])->name('contact.delete');
         });
 
-        // Topping 
+        // Topping
         Route::prefix('topping')->group(function () {
         Route::get('/', [ToppingController::class, 'index'])->name('topping.index');
         Route::get('/create', [ToppingController::class, 'create'])->name('topping.create');
@@ -113,7 +119,7 @@ use App\Http\Controllers\ShowproductController;
         Route::get('/delete/{id}', [ToppingController::class, 'delete'])->name('topping.delete');
         });
 
-    
+
         // Size
         Route::prefix('size')->group(function () {
         Route::get('/', [SizeController::class, 'index'])->name('size.index');
@@ -124,9 +130,9 @@ use App\Http\Controllers\ShowproductController;
         Route::get('/delete/{id}', [SizeController::class, 'delete'])->name('size.delete');
          });
 
-   
-        
+
+
 });
- 
+
 
 
