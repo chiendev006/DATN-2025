@@ -15,69 +15,71 @@ class CartController extends Controller
 {
 public function addToCart(Request $request, $id)
 {
-    $product = sanpham::findOrFail($id);
-    $qty = $request->qty ?? 1;
-    $size = Size::find($request->size_id);
-    $topping_ids = $request->topping_ids ?? [];
-    $topping_ids_sorted = collect($topping_ids)->sort()->values()->toArray(); 
-    $topping_key = implode(',', $topping_ids_sorted); 
-    $toppings = Topping::whereIn('id', $topping_ids_sorted)->get();
+    $sanpham = Sanpham::findOrFail($id);
 
-    $unitPrice = $product->price + ($size->price ?? 0);
-    foreach ($toppings as $topping) {
-        $unitPrice += $topping->price;
-    }
-    $totalPrice = $unitPrice * $qty;
+    // Lấy size
+    $sizeId = $request->input('size_id');
+    $size = Size::find($sizeId);
+
+    // Lấy topping (có thể là mảng giá hoặc id, tùy bạn truyền lên)
+    $toppingIds = $request->input('topping_ids', []);
+    $toppings = Topping::whereIn('id', (array)$toppingIds)->get();
+
+    $qty = max(1, (int)$request->input('qty', 1));
+
+    // Tính giá
+    $basePrice = $size ? $size->price : $sanpham->price;
+    $toppingPrice = $toppings->sum('price');
+    $totalPrice = ($basePrice + $toppingPrice) * $qty;
 
     if (Auth::check()) {
-        $user = Auth::user();
-        $cart = Cart::firstOrCreate(['user_id' => $user->id]);
-
-        $existing = Cartdetail::where('cart_id', $cart->id)
-            ->where('product_id', $product->id)
-            ->where('size_id', $size?->id)
-            ->where('topping_id', $topping_key)
+        // Đã đăng nhập: lưu vào DB
+        $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
+        // Kiểm tra sản phẩm đã có trong cart chưa (cùng size, topping)
+        $item = Cartdetail::where('cart_id', $cart->id)
+            ->where('product_id', $sanpham->id)
             ->first();
 
-        if ($existing) {
-            $existing->quantity += $qty;
-            $existing->save();
+        if ($item) {
+            $item->quantity += $qty;
+            $item->price = $totalPrice;
+            $item->save();
         } else {
-            Cartdetail::create([
+            $item = new Cartdetail([
                 'cart_id' => $cart->id,
-                'product_id' => $product->id,
+                'product_id' => $sanpham->id,
+
                 'quantity' => $qty,
-                'size_id' => $size?->id,
-                'topping_id' => $topping_key,
             ]);
+            $item->save();
         }
-
-        return redirect()->route('cart.index')->with('success', 'Đã thêm vào giỏ hàng (database)');
-    }
-
-    $itemKey = $product->id . '-' . ($size->id ?? 0) . '-' . str_replace(',', '-', $topping_key);
-    $cart = session()->get('cart', []);
-
-    if (isset($cart[$itemKey])) {
-        $cart[$itemKey]['quantity'] += $qty;
-        $cart[$itemKey]['price'] = $cart[$itemKey]['unit_price'] * $cart[$itemKey]['quantity'];
     } else {
-        $cart[$itemKey] = [
-            'product_id' => $product->id,
-            'name' => $product->name,
-            'image' => $product->image,
-            'size_id' => $size?->id,
-            'size_name' => $size?->name,
-            'topping_ids' => $topping_ids_sorted,
-            'toppings' => $toppings->map(fn($t) => ['name' => $t->name, 'price' => $t->price])->toArray(),
-            'quantity' => $qty,
-            'unit_price' => $unitPrice, 
-            'price' => $totalPrice,
-        ];
+        // Chưa đăng nhập: lưu vào session
+        $cart = session('cart', []);
+        // Tạo key duy nhất cho sản phẩm theo id-size-topping
+        $key = $sanpham->id . '-' . $sizeId . '-' . implode(',', (array)$toppingIds);
+
+        if (isset($cart[$key])) {
+            $cart[$key]['quantity'] += $qty;
+            $cart[$key]['price'] = ($basePrice + $toppingPrice) * $cart[$key]['quantity'];
+        } else {
+            $cart[$key] = [
+                'sanpham_id' => $sanpham->id,
+                'name' => $sanpham->name,
+                'size_id' => $sizeId,
+                'size_name' => $size ? $size->size : null, // Sửa dòng này
+                'topping_ids' => $toppingIds,
+                'topping_names' => $toppings->pluck('name')->toArray(),
+                'quantity' => $qty,
+                'unit_price' => $basePrice + $toppingPrice,
+                'price' => $totalPrice,
+                'image' => $sanpham->image,
+            ];
+        }
+        session(['cart' => $cart]);
     }
 
-    session(['cart' => $cart]);
-    return redirect()->route('cart.index')->with('success', 'Đã thêm vào giỏ hàng (session)');
+    return redirect()->route('cart.index')->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
 }
 
     public function index(){

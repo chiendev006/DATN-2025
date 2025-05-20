@@ -17,30 +17,37 @@ class Product_attributesController extends Controller
     }
     public function store(Request $request) {
         $request->validate([
-            'name' => 'required|string',
-            'price' => 'required|numeric',
+            'sizes.*.name' => 'required|string',
+            'sizes.*.price' => 'required|numeric',
         ]);
 
-        // Lấy dữ liệu sản phẩm từ session
-        $sanphamData = session('sanpham_data');
-        if (!$sanphamData) {
-            return redirect()->route('sanpham.create')->with('error', 'Thiếu dữ liệu sản phẩm!');
+        if (session('sanpham_data')) {
+            // Từ create sản phẩm
+            $sanphamData = session('sanpham_data');
+            $sanpham = \App\Models\sanpham::create($sanphamData);
+
+            foreach ($request->sizes as $size) {
+                Size::create([
+                    'product_id' => $sanpham->id,
+                    'size' => $size['name'],
+                    'price' => $size['price'],
+                ]);
+            }
+            session()->forget('sanpham_data');
+             return redirect()->route('sanpham.index')->with('success', 'Thêm sản phẩm và size thành công!');
+        } else {
+            // Từ edit sản phẩm
+                foreach ($request->sizes as $size) {
+                Size::create([
+                    'product_id' => session('sanpham_id'),
+                    'size' => $size['name'],
+                    'price' => $size['price'],
+                ]);
+                return redirect()->route('sanpham.edit', ['id' => session('sanpham_id'), ])->with('success', 'Thêm sản phẩm và size thành công!');
+
+            }
+
         }
-
-        // Lưu sản phẩm trước, lấy id
-        $sanpham = \App\Models\sanpham::create($sanphamData);
-
-        // Lưu size với id_product là id sản phẩm vừa thêm
-        Size::create([
-            'product_id' => $sanpham->id,
-            'size' => $request->name,
-            'price' => $request->price,
-        ]);
-
-        // Xóa session
-        session()->forget('sanpham_data');
-
-        return redirect()->route('sanpham.index')->with('success', 'Thêm sản phẩm và size thành công!');
     }
 
      public function edit($id) {
@@ -61,7 +68,11 @@ class Product_attributesController extends Controller
         return redirect()->route('size.index')->with('success', 'Sửa thành công!');
     }
     public function delete($id) {
-        Size::destroy($id);
-        return redirect()->route('size.index')->with('success', 'Xóa thành công!');
+        \App\Models\Size::destroy($id);
+        if (request()->ajax()) {
+            return response()->json(['success' => true]);
+        }
+        return redirect()->route('sanpham.edit')->with('success', 'Xóa thành công!');
     }
+
 }

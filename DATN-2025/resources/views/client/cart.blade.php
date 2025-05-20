@@ -22,6 +22,7 @@
                   <th>Chi tiết</th>
                   <th>Đơn giá</th>
                   <th>Số lượng</th>
+                  <th>Topping</th>
                   <th>Thành tiền</th>
                 </tr>
               </thead>
@@ -40,21 +41,22 @@
                   <td><img src="{{ asset('storage/uploads/' . $product->image) }}" width="80"></td>
                   <td>
                     <strong>{{ $product->name }}</strong><br>
-                    Size: {{ $size->name ?? 'Không rõ' }}<br>
-                    @if($toppings->count())
-                      Topping:
-                      <ul class="list-unstyled mb-0">
-                        @foreach($toppings as $top)
-                          <li>{{ $top->name }} (+{{ number_format($top->price) }} VND)</li>
-                        @endforeach
-                      </ul>
-                    @endif
+                    Size: {{ $size->size ?? 'Không rõ' }}<br>
                   </td>
                   <td>{{ number_format($unitPrice) }} VND</td>
                   <td>
                     <div class="input-group">
                       <input type="number" name="quantities[{{ $item->id }}]" value="{{ $item->quantity }}" class="form-control text-center" min="1" onchange="this.form.submit()">
                     </div>
+                  </td>
+                  <td>
+                    @if($toppings->count())
+                      <ul class="list-unstyled mb-0">
+                        @foreach($toppings as $top)
+                          <li>{{ $top->name }} (+{{ number_format($top->price) }} VND)</li>
+                        @endforeach
+                      </ul>
+                    @endif
                   </td>
                   <td>{{ number_format($total) }} VND</td>
                 </tr>
@@ -67,20 +69,19 @@
                   <td>
                     <strong>{{ $item['name'] }}</strong><br>
                     Size: {{ $item['size_name'] ?? 'Không rõ' }}<br>
-                    @if(count($item['toppings']))
-                      Topping:
-                      <ul class="list-unstyled mb-0">
-                        @foreach($item['toppings'] as $top)
-                          <li>{{ $top['name'] }} (+{{ number_format($top['price']) }} VND)</li>
-                        @endforeach
-                      </ul>
-                    @endif
                   </td>
                   <td>{{ number_format($item['unit_price']) }} VND</td>
                   <td>
                     <div class="input-group">
                      <input type="number" name="quantities[{{ $key }}]" value="{{ $item['quantity'] }}" class="form-control text-center" min="1" onchange="this.form.submit()">
                     </div>
+                  </td>
+                  <td>
+                    @if(!empty($item['topping_names']))
+                        {{ implode(', ', $item['topping_names']) }}
+                    @else
+                        Không có
+                    @endif
                   </td>
                   <td>{{ number_format($item['price']) }} VND</td>
                 </tr>

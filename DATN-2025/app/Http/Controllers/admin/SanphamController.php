@@ -6,6 +6,8 @@ use App\Models\sanpham;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Danhmuc;
+use App\Models\ProductImage;
+use App\Models\Size;
 use Illuminate\Support\Facades\Storage;
 
 use Laravel\Sanctum\Sanctum;
@@ -67,7 +69,10 @@ class SanphamController extends Controller
     {
         $sanpham = sanpham::find($id);
         $danhmuc = Danhmuc::all();
-        return view('admin.sanpham.edit', compact('danhmuc', 'sanpham'));
+        session(['sanpham_id' => $sanpham->id]);
+        $product_img= ProductImage::where('product_id', $id)->get();
+        $size = Size::where('product_id', $id)->get();
+        return view('admin.sanpham.edit', compact('danhmuc', 'sanpham','size','product_img'));
     }
 
     /**

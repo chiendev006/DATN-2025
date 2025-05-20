@@ -34,7 +34,7 @@ use App\Http\Controllers\ResetPasswordController;
         Route::get('/product/{id}', [ShowproductController::class, 'showctsp'])->name('client.product.detail');
 
 
-        // cart 
+        // cart
         Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
         Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
         Route::post('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
@@ -47,7 +47,7 @@ use App\Http\Controllers\ResetPasswordController;
         Route::get('/', [Controller::class, 'index']);
         Route::get('/', [Controller::class, 'danhmuc'])->name('danhmuc1.index');
         Route::get('/menu', [Controller::class, 'show'])->name('client.menu');
-        Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp'); 
+        Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp');
 
         // Search
         Route::get('/search', [Controller::class, 'search'])->name('search');
@@ -102,7 +102,7 @@ use App\Http\Controllers\ResetPasswordController;
         Route::get('/delete/{id}', [SanphamController::class, 'delete'])->name('sanpham.delete');
         });
 
-        // Ảnh sản phẩm (biến thể)
+        // Ảnh sản phẩm
         Route::prefix('product-images')->group(function () {
         Route::get('/index', [ProductImageController::class, 'index'])->name('product-images.index');
         Route::get('/create', [ProductImageController::class, 'create'])->name('product-images.create');
@@ -141,8 +141,8 @@ use App\Http\Controllers\ResetPasswordController;
         Route::get('/delete/{id}', [Product_attributesController::class, 'delete'])->name('size.delete');
          });
 
-   
-        
+
+
 });
 
 

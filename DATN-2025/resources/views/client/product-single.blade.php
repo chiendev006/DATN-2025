@@ -72,7 +72,8 @@
               <label class="mr-3">
                 <input
                   type="checkbox"
-                  value="{{ $topping->price }}"
+                  name="topping_ids[]"  {{-- Thêm dòng này --}}
+                  value="{{ $topping->id }}" {{-- Sửa lại value là id --}}
                   class="topping-option"
                   data-price="{{ $topping->price }}"
                   {{ (is_array(old('topping_ids')) && in_array($topping->id, old('topping_ids'))) ? 'checked' : '' }}>
@@ -168,24 +169,30 @@
   }
 
   function updatePrice() {
-    const basePrice = parseInt(document.getElementById('display-price').dataset.base);
-    const qty = parseInt(document.getElementById('quantity').value);
-    let extra = 0;
-
-    document.querySelectorAll('.size-option:checked').forEach(el => {
-      extra += parseInt(el.dataset.price);
-    });
-    document.querySelectorAll('.topping-option:checked').forEach(el => {
-      extra += parseInt(el.dataset.price);
-    });
-
-    const finalPrice = (basePrice + extra) * qty;
-    document.getElementById('display-price').textContent = finalPrice.toLocaleString('vi-VN') + ' VND';
+  // Lấy giá size được chọn
+  let basePrice = 0;
+  const sizeChecked = document.querySelector('.size-option:checked');
+  if (sizeChecked) {
+    basePrice = parseInt(sizeChecked.dataset.price);
   }
+  const qty = parseInt(document.getElementById('quantity').value);
+  let extra = 0;
 
-  document.querySelectorAll('.size-option, .topping-option').forEach(el => {
-    el.addEventListener('change', updatePrice);
+  document.querySelectorAll('.topping-option:checked').forEach(el => {
+    extra += parseInt(el.dataset.price);
   });
+
+  const finalPrice = (basePrice + extra) * qty;
+  document.getElementById('display-price').textContent = finalPrice.toLocaleString('vi-VN') + ' VND';
+  document.getElementById('display-price').dataset.base = basePrice; // Cập nhật lại data-base nếu cần
+}
+
+document.querySelectorAll('.size-option, .topping-option').forEach(el => {
+  el.addEventListener('change', updatePrice);
+});
+
+// Gọi updatePrice lần đầu để cập nhật giá khi load trang
+updatePrice();
 </script>
 @endsection
 

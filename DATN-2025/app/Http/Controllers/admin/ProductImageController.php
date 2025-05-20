@@ -11,60 +11,32 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductImageController extends Controller
 {
-    public function index()
-    {
-        $product_images = ProductImage::with('sanpham')->paginate(5);
-        return view('admin.bienthe.index', compact('product_images'));
-    }
+
 
     public function create()
     {
         $sanpham = sanpham::all();
-        return view('admin.bienthe.image', compact('sanpham'));
+        return view('admin.product_img.image', compact('sanpham'));
     }
 
     public function store(Request $request)
     {
-        $path = $request->file('image')->store('uploads', 'public');
-
-        ProductImage::create([
-            'product_id' => $request->product_id,
-            'image_url' => $path,
-            'is_primary' => $request->has('is_primary'),
-        ]);
-
+        if ($request->hasFile('image')) {
+            foreach ($request->file('image') as $file) {
+                $fileName = uniqid() . $file->getClientOriginalName();
+                $file->storeAs('public/uploads/', $fileName);
+                ProductImage::create([
+                    "product_id" => session('sanpham_id'),
+                    'image_url' => $fileName,
+                ]);
+            }
+        }
         return redirect()->route('product-images.index')->with('success', 'Thêm ảnh thành công!');
     }
 
-    public function edit($id)
-    {
-        $productImage = ProductImage::findOrFail($id);
-        $sanpham = sanpham::all();
 
-        return view('admin.bienthe.edit', compact('productImage', 'sanpham'));
-    }
 
-    public function update(Request $request, $id)
-    {
-        $productImage = ProductImage::findOrFail($id);
 
-        $data = [
-            'product_id' => $request->product_id,
-            'is_primary' => $request->has('is_primary'),
-        ];
-
-        if ($request->hasFile('image')) {
-            if ($productImage->image_url && Storage::disk('public')->exists($productImage->image_url)) {
-                Storage::disk('public')->delete($productImage->image_url);
-            }
-            $path = $request->file('image')->store('uploads', 'public');
-            $data['image_url'] = $path;
-        }
-
-        $productImage->update($data);
-
-        return redirect()->route('product-images.index')->with('success', 'Cập nhật ảnh thành công!');
-    }
 
     public function destroy($id)
     {
@@ -76,6 +48,6 @@ class ProductImageController extends Controller
 
         $productImage->delete();
 
-        return redirect()->route('product-images.index')->with('success', 'Xóa ảnh thành công!');
+                return redirect()->route('sanpham.edit', ['id' => session('sanpham_id'), ])->with('success', 'Thêm sản phẩm và size thành công!');
     }
 }

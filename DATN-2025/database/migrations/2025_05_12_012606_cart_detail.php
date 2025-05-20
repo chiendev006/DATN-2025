@@ -15,9 +15,11 @@ return new class extends Migration
         $table->id();
         $table->foreignId('cart_id')->constrained('cart');
         $table->foreignId('product_id')->constrained('sanphams');
+        $table->foreignId('product_attibutes')->constrained('product_attibutes')->onDelete('cascade');
         $table->integer('quantity');
+        $table->decimal('price', 10, 2);
         $table->foreignId('topping_id')->constrained('topping')->onDelete('cascade');
-        $table->foreignId('size_id')->constrained('size')->onDelete('cascade');
+
         $table->timestamps();
 });
 
