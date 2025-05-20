@@ -43,7 +43,6 @@ use App\Http\Controllers\ShowproductController;
         Route::get('/', [Controller::class, 'danhmuc'])->name('danhmuc1.index');
         Route::get('/menu', [Controller::class, 'show'])->name('client.menu');
         Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp'); 
-        Route::post('/add-to-cart/{id}', [Controller::class, 'addToCart'])->name('cart.add');
 
         // Search
         Route::get('/search', [Controller::class, 'search'])->name('search');

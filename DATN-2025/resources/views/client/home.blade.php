@@ -277,7 +277,7 @@
         	@foreach ($sanpham as $item)
         	<div class="col-md-3">
         		<div class="menu-entry">
-						<a href=""><img src="{{ url("/storage/uploads/$item->image") }}"   alt=""></a>
+						<a href="{{ route('client.product.detail', ['id' => $item->id]) }}"><img src="{{ url("/storage/uploads/$item->image") }}"   alt=""></a>
     					<div class="text text-center pt-4">
     						<h3><a href="#">{{ $item->name }}</a></h3>
     						<p>{{ $item->mota }}</p>
@@ -355,7 +355,7 @@
 							@foreach($danhmuc->sanphams->take(3) as $sp)
 								<div class="col-md-4 text-center mb-4">
 									<div class="menu-wrap">
-										<a href=""><img src="{{ url("/storage/uploads/$sp->image") }}"   alt=""></a>
+										<a href="{{ route('client.product.detail', ['id' => $sp->id]) }}"><img src="{{ url("/storage/uploads/$sp->image") }}"   alt=""></a>
 										<div class="text">
 											<h3><a href="#">{{ $sp->name }}</a></h3>
 											<p>{{ $sp->mota }}</p>

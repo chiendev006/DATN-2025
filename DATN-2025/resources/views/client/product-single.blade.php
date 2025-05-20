@@ -48,8 +48,7 @@
         </p>
         <p>{{ $sanpham->mota }}</p>
 
-        <!-- FORM THÊM GIỎ HÀNG -->
-       <form action="{{ route('cart.add', $sanpham->id) }}" method="POST">
+         <form action="{{ route('cart.add', $sanpham->id) }}" method="POST">
           @csrf
           <div class="form-group">
             <label for="size"><strong>Chọn size:</strong></label><br>
@@ -69,9 +68,15 @@
             @php
               $toppings = $sanpham->attributes->pluck('topping')->unique('id')->filter();
             @endphp
-            @foreach($toppings as $topping)
+           @foreach($toppings as $topping)
               <label class="mr-3">
-                <input type="checkbox" name="topping_ids[]" value="{{ $topping->id }}" class="topping-option" data-price="{{ $topping->price }}">
+                <input
+                  type="checkbox"
+                  name="topping_ids[]"
+                  value="{{ $topping->id }}"
+                  class="topping-option"
+                  data-price="{{ $topping->price }}"
+                  {{ (is_array(old('topping_ids')) && in_array($topping->id, old('topping_ids'))) ? 'checked' : '' }}>
                 {{ $topping->name }} (+{{ number_format($topping->price) }} VND)
               </label>
             @endforeach
@@ -96,6 +101,63 @@
     </div>
   </div>
 </section>
+<section class="ftco-section">
+    	<div class="container">
+    		<div class="row justify-content-center mb-5 pb-3">
+          <div class="col-md-7 heading-section ftco-animate text-center">
+          	<span class="subheading">Discover</span>
+            <h2 class="mb-4">Related products</h2>
+            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+          </div>
+        </div>
+        <div class="row">
+        	<div class="col-md-3">
+        		<div class="menu-entry">
+    					<a href="#" class="img" style="background-image: url(images/menu-1.jpg);"></a>
+    					<div class="text text-center pt-4">
+    						<h3><a href="#">Coffee Capuccino</a></h3>
+    						<p>A small river named Duden flows by their place and supplies</p>
+    						<p class="price"><span>$5.90</span></p>
+    						<p><a href="#" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
+    					</div>
+    				</div>
+        	</div>
+        	<div class="col-md-3">
+        		<div class="menu-entry">
+    					<a href="#" class="img" style="background-image: url(images/menu-2.jpg);"></a>
+    					<div class="text text-center pt-4">
+    						<h3><a href="#">Coffee Capuccino</a></h3>
+    						<p>A small river named Duden flows by their place and supplies</p>
+    						<p class="price"><span>$5.90</span></p>
+    						<p><a href="#" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
+    					</div>
+    				</div>
+        	</div>
+        	<div class="col-md-3">
+        		<div class="menu-entry">
+    					<a href="#" class="img" style="background-image: url(images/menu-3.jpg);"></a>
+    					<div class="text text-center pt-4">
+    						<h3><a href="#">Coffee Capuccino</a></h3>
+    						<p>A small river named Duden flows by their place and supplies</p>
+    						<p class="price"><span>$5.90</span></p>
+    						<p><a href="#" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
+    					</div>
+    				</div>
+        	</div>
+        	<div class="col-md-3">
+        		<div class="menu-entry">
+    					<a href="#" class="img" style="background-image: url(images/menu-4.jpg);"></a>
+    					<div class="text text-center pt-4">
+    						<h3><a href="#">Coffee Capuccino</a></h3>
+    						<p>A small river named Duden flows by their place and supplies</p>
+    						<p class="price"><span>$5.90</span></p>
+    						<p><a href="#" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
+    					</div>
+    				</div>
+        	</div>
+        </div>
+    	</div>
+    </section>
 <script>
   function changeQty(delta) {
     const input = document.getElementById('quantity');
