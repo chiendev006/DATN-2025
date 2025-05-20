@@ -11,7 +11,6 @@ return new class extends Migration
     Schema::create('sanphams', function (Blueprint $table) {
         $table->id();
         $table->string('name');
-        $table->decimal('price', 10, 2);
         $table->string('image')->nullable();
         $table->text('mota');
         $table->foreignId('id_danhmuc')
