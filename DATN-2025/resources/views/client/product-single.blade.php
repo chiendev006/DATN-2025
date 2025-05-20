@@ -53,12 +53,12 @@
           <div class="form-group">
             <label for="size"><strong>Chọn size:</strong></label><br>
             @php
-              $sizes = $sanpham->attributes->pluck('size')->unique('id')->filter();
+              $sizes = $sanpham->attributes;
             @endphp
             @foreach($sizes as $size)
               <label class="mr-3">
                 <input type="radio" name="size_id" value="{{ $size->id }}" class="size-option" data-price="{{ $size->price }}" required>
-                {{ $size->name }} (+{{ number_format($size->price) }} VND)
+                {{ $size->size }} {{ number_format($size->price) }} VND
               </label><br>
             @endforeach
           </div>
@@ -68,12 +68,11 @@
             @php
               $toppings = $sanpham->attributes->pluck('topping')->unique('id')->filter();
             @endphp
-           @foreach($toppings as $topping)
+           @foreach($topping as $topping)
               <label class="mr-3">
                 <input
                   type="checkbox"
-                  name="topping_ids[]"
-                  value="{{ $topping->id }}"
+                  value="{{ $topping->price }}"
                   class="topping-option"
                   data-price="{{ $topping->price }}"
                   {{ (is_array(old('topping_ids')) && in_array($topping->id, old('topping_ids'))) ? 'checked' : '' }}>
