@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 
 class AuthenticationController extends Controller
 {
@@ -68,5 +69,26 @@ class AuthenticationController extends Controller
     public function forgotPassword()
     {
         return view('client.forgot-pass');
+    }
+    public function sendResetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ], [
+            'email.required' => 'Email khong duoc de trong',
+            'email.email' => 'Email khong dung dinh dang',
+            'email.exists' => 'Email khong co trong he thong'
+        ]);
+        $status = Password::sendResetLink($request->only('email'));
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return redirect()->back()->with([
+                'message' => 'Check email đi bạn hẹ hẹ hẹ'
+            ]);
+        } else {
+            return redirect()->back()->withErrors([
+                'email' => 'Gửi link reset thất bại rồi bạn ơi'
+            ]);
+        }
     }
 }

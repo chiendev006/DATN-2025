@@ -16,6 +16,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\ShowproductController;
+use App\Http\Controllers\ResetPasswordController;
 
 
         Route::get('login', [AuthenticationController::class, 'login'])->name('login');
@@ -24,6 +25,9 @@ use App\Http\Controllers\ShowproductController;
         Route::post('register', [AuthenticationController::class, 'postRegister'])->name('post-register');
         Route::get('logout', [AuthenticationController::class, 'logout'])->name('logout');
         Route::get('forgot-password', [AuthenticationController::class, 'forgotPassword'])->name('forgot-password');
+        Route::post('forgot-password/send', [AuthenticationController::class, 'sendResetPassword'])->name('send.reset');
+        Route::get('reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+        Route::post('reset-password', [ResetPasswordController::class, 'resetPassword'])->name('password.update');
 
         // Show ctsp
         Route::get('/product/{id}', [ShowproductController::class, 'showctsp'])->name('client.product.detail');
