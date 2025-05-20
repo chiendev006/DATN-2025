@@ -15,7 +15,6 @@ return new class extends Migration
         $table->id();
         $table->foreignId('product_id')->constrained('sanphams');
         $table->string('image_url',255);
-        $table->boolean('is_primary');
         $table->timestamps();
     });
     }
