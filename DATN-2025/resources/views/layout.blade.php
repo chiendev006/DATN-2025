@@ -44,7 +44,24 @@
 	          <li class="nav-item"><a href="/services" class="nav-link">Services</a></li>
 	          <li class="nav-item"><a href="/blog" class="nav-link">Blog</a></li>
 	          <li class="nav-item"><a href="/about" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="/contact/create" class="nav-link">Contact</a></li>
+	          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="room.html" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Shop</a>
+              <div class="dropdown-menu" aria-labelledby="dropdown04">
+              	<a class="dropdown-item" href="shop.html">Shop</a>
+                <a class="dropdown-item" href="product-single.html">Single Product</a>
+                <a class="dropdown-item" href="room.html">Cart</a>
+                <a class="dropdown-item" href="checkout.html">Checkout</a>
+              </div>
+            </li>
+	          <li class="nav-item"><a href="/contact/create" class="nav-link">Contact</a></li>
+	          <li class="nav-item cart">
+              <a href="{{ route('cart.index') }}" class="nav-link">
+                <span class="icon icon-shopping_cart"></span>
+                <span class="bag d-flex justify-content-center align-items-center">
+                  <small>{{ $cartCount ?? 0 }}</small>
+                </span>
+              </a>
+            </li>
                 @auth
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -57,7 +74,6 @@
                 @else
                     <li class="nav-item"><a href="{{ route('login') }}" class="nav-link">Login</a></li>
                 @endauth
-	          <li class="nav-item cart"><a href="cart.html" class="nav-link"><span class="icon icon-shopping_cart"></span><span class="bag d-flex justify-content-center align-items-center"><small>1</small></span></a></li>
             <li class="nav-item">
              <form class="search-bar" action="{{ route('search') }}" method="GET">
                 <input class="search-input" required name="search" type="search" autocomplete="off" placeholder="Search products...">

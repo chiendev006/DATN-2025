@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Size;
 use Illuminate\Http\Request;
 
-class SizeController extends Controller
+class Product_attributesController extends Controller
 {
         public function index() {
         $size = Size::paginate(5);
@@ -20,13 +20,27 @@ class SizeController extends Controller
             'name' => 'required|string',
             'price' => 'required|numeric',
         ]);
-        $name = $request->name;
-        $price = $request->price;
-        Size::insert([
-            'name' => $name,
-            'price' => $price,
+
+        // Lấy dữ liệu sản phẩm từ session
+        $sanphamData = session('sanpham_data');
+        if (!$sanphamData) {
+            return redirect()->route('sanpham.create')->with('error', 'Thiếu dữ liệu sản phẩm!');
+        }
+
+        // Lưu sản phẩm trước, lấy id
+        $sanpham = \App\Models\sanpham::create($sanphamData);
+
+        // Lưu size với id_product là id sản phẩm vừa thêm
+        Size::create([
+            'product_id' => $sanpham->id,
+            'size' => $request->name,
+            'price' => $request->price,
         ]);
-        return redirect()->route('size.index')->with('success', 'Thêm thành công!');
+
+        // Xóa session
+        session()->forget('sanpham_data');
+
+        return redirect()->route('sanpham.index')->with('success', 'Thêm sản phẩm và size thành công!');
     }
 
      public function edit($id) {

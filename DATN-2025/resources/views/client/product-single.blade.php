@@ -43,21 +43,22 @@
 
       <div class="col-lg-6 product-details pl-md-5 ftco-animate">
         <h3>{{ $sanpham->name }}</h3>
-        <p class="price"><span>{{ number_format($sanpham->price) }} VND</span></p>
+        <p class="price">
+          <span id="display-price" data-base="{{ $sanpham->price }}">{{ number_format($sanpham->price) }} VND</span>
+        </p>
         <p>{{ $sanpham->mota }}</p>
 
-        <!-- FORM THÊM GIỎ HÀNG -->
-        <form action="#" method="POST">
+         <form action="{{ route('cart.add', $sanpham->id) }}" method="POST">
           @csrf
           <div class="form-group">
             <label for="size"><strong>Chọn size:</strong></label><br>
             @php
-              $sizes = $sanpham->attributes->pluck('size')->unique('id')->filter();
+              $sizes = $sanpham->attributes;
             @endphp
             @foreach($sizes as $size)
               <label class="mr-3">
-                <input type="radio" name="size_id" value="{{ $size->id }}" required>
-                {{ $size->name }} (+{{ number_format($size->price) }} VND)
+                <input type="radio" name="size_id" value="{{ $size->id }}" class="size-option" data-price="{{ $size->price }}" required>
+                {{ $size->size }} {{ number_format($size->price) }} VND
               </label><br>
             @endforeach
           </div>
@@ -67,9 +68,14 @@
             @php
               $toppings = $sanpham->attributes->pluck('topping')->unique('id')->filter();
             @endphp
-            @foreach($toppings as $topping)
+           @foreach($topping as $topping)
               <label class="mr-3">
-                <input type="checkbox" name="topping_ids[]" value="{{ $topping->id }}">
+                <input
+                  type="checkbox"
+                  value="{{ $topping->price }}"
+                  class="topping-option"
+                  data-price="{{ $topping->price }}"
+                  {{ (is_array(old('topping_ids')) && in_array($topping->id, old('topping_ids'))) ? 'checked' : '' }}>
                 {{ $topping->name }} (+{{ number_format($topping->price) }} VND)
               </label>
             @endforeach
@@ -94,6 +100,63 @@
     </div>
   </div>
 </section>
+<section class="ftco-section">
+    	<div class="container">
+    		<div class="row justify-content-center mb-5 pb-3">
+          <div class="col-md-7 heading-section ftco-animate text-center">
+          	<span class="subheading">Discover</span>
+            <h2 class="mb-4">Related products</h2>
+            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+          </div>
+        </div>
+        <div class="row">
+        	<div class="col-md-3">
+        		<div class="menu-entry">
+    					<a href="#" class="img" style="background-image: url(images/menu-1.jpg);"></a>
+    					<div class="text text-center pt-4">
+    						<h3><a href="#">Coffee Capuccino</a></h3>
+    						<p>A small river named Duden flows by their place and supplies</p>
+    						<p class="price"><span>$5.90</span></p>
+    						<p><a href="#" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
+    					</div>
+    				</div>
+        	</div>
+        	<div class="col-md-3">
+        		<div class="menu-entry">
+    					<a href="#" class="img" style="background-image: url(images/menu-2.jpg);"></a>
+    					<div class="text text-center pt-4">
+    						<h3><a href="#">Coffee Capuccino</a></h3>
+    						<p>A small river named Duden flows by their place and supplies</p>
+    						<p class="price"><span>$5.90</span></p>
+    						<p><a href="#" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
+    					</div>
+    				</div>
+        	</div>
+        	<div class="col-md-3">
+        		<div class="menu-entry">
+    					<a href="#" class="img" style="background-image: url(images/menu-3.jpg);"></a>
+    					<div class="text text-center pt-4">
+    						<h3><a href="#">Coffee Capuccino</a></h3>
+    						<p>A small river named Duden flows by their place and supplies</p>
+    						<p class="price"><span>$5.90</span></p>
+    						<p><a href="#" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
+    					</div>
+    				</div>
+        	</div>
+        	<div class="col-md-3">
+        		<div class="menu-entry">
+    					<a href="#" class="img" style="background-image: url(images/menu-4.jpg);"></a>
+    					<div class="text text-center pt-4">
+    						<h3><a href="#">Coffee Capuccino</a></h3>
+    						<p>A small river named Duden flows by their place and supplies</p>
+    						<p class="price"><span>$5.90</span></p>
+    						<p><a href="#" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
+    					</div>
+    				</div>
+        	</div>
+        </div>
+    	</div>
+    </section>
 <script>
   function changeQty(delta) {
     const input = document.getElementById('quantity');
@@ -101,7 +164,28 @@
     if (isNaN(qty)) qty = 1;
     qty = Math.max(1, qty + delta);
     input.value = qty;
+    updatePrice();
   }
-</script>
 
+  function updatePrice() {
+    const basePrice = parseInt(document.getElementById('display-price').dataset.base);
+    const qty = parseInt(document.getElementById('quantity').value);
+    let extra = 0;
+
+    document.querySelectorAll('.size-option:checked').forEach(el => {
+      extra += parseInt(el.dataset.price);
+    });
+    document.querySelectorAll('.topping-option:checked').forEach(el => {
+      extra += parseInt(el.dataset.price);
+    });
+
+    const finalPrice = (basePrice + extra) * qty;
+    document.getElementById('display-price').textContent = finalPrice.toLocaleString('vi-VN') + ' VND';
+  }
+
+  document.querySelectorAll('.size-option, .topping-option').forEach(el => {
+    el.addEventListener('change', updatePrice);
+  });
+</script>
 @endsection
+

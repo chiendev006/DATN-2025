@@ -11,6 +11,12 @@ class sanpham extends Model
     use HasFactory;
     use SoftDeletes;
      protected $table = 'sanphams';
+     protected $fillable = [
+    'name',
+    'image',
+    'mota',
+    'id_danhmuc',
+];
     public function danhmuc()
 {
     return $this->belongsTo(Danhmuc::class, 'id_danhmuc');
@@ -18,11 +24,12 @@ class sanpham extends Model
 
 public function attributes()
 {
-    return $this->hasMany(\App\Models\Product_attrlbutes::class, 'product_id');
+    return $this->hasMany(\App\Models\Size::class, 'product_id');
 }
 
 public function product_images()
-    {
-        return $this->hasMany(ProductImage::class, 'product_id');
-    }
+{
+    return $this->hasMany(ProductImage::class, 'product_id');
 }
+}
+

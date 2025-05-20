@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\admin\Product_attributesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ContactController;
@@ -31,7 +32,14 @@ use App\Http\Controllers\ResetPasswordController;
 
         // Show ctsp
         Route::get('/product/{id}', [ShowproductController::class, 'showctsp'])->name('client.product.detail');
-        Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('cart.add');
+
+
+        // cart 
+        Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
+        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+        Route::post('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
+        Route::get('/cart/remove/{key}', [CartController::class, 'removeItem'])->name('cart.remove');
+
 
 
 
@@ -39,8 +47,7 @@ use App\Http\Controllers\ResetPasswordController;
         Route::get('/', [Controller::class, 'index']);
         Route::get('/', [Controller::class, 'danhmuc'])->name('danhmuc1.index');
         Route::get('/menu', [Controller::class, 'show'])->name('client.menu');
-        Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp');
-        Route::post('/add-to-cart/{id}', [Controller::class, 'addToCart'])->name('cart.add');
+        Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp'); 
 
         // Search
         Route::get('/search', [Controller::class, 'search'])->name('search');
@@ -126,16 +133,16 @@ use App\Http\Controllers\ResetPasswordController;
 
         // Size
         Route::prefix('size')->group(function () {
-        Route::get('/', [SizeController::class, 'index'])->name('size.index');
-        Route::get('/create', [SizeController::class, 'create'])->name('size.create');
-        Route::post('/store', [SizeController::class, 'store'])->name('size.store');
-        Route::get('/edit/{id}', [SizeController::class, 'edit'])->name('size.edit');
-        Route::post('/update/{id}', [SizeController::class, 'update'])->name('size.update');
-        Route::get('/delete/{id}', [SizeController::class, 'delete'])->name('size.delete');
+        Route::get('/', [Product_attributesController::class, 'index'])->name('size.index');
+        Route::get('/create', [Product_attributesController::class, 'create'])->name('size.add');
+        Route::post('/store', [Product_attributesController::class, 'store'])->name('size.store');
+        Route::get('/edit/{id}', [Product_attributesController::class, 'edit'])->name('size.edit');
+        Route::post('/update/{id}', [Product_attributesController::class, 'update'])->name('size.update');
+        Route::get('/delete/{id}', [Product_attributesController::class, 'delete'])->name('size.delete');
          });
 
-
-
+   
+        
 });
 
 

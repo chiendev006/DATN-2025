@@ -35,7 +35,7 @@
             <th>Ảnh sản phẩm</th>
             <th>Mô tả</th>
             <th>Tên danh mục</th>
-            <th>Hành động</th>  
+            <th>Hành động</th>
           </tr>
           </thead>
           <tbody>
@@ -83,4 +83,5 @@
         </div>
       </div>
     </div>
+
 @include('footer')

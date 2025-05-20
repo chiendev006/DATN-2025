@@ -37,26 +37,27 @@ class SanphamController extends Controller
     public function store(Request $request){
         $request->validate([
             'name' => 'required|string',
-            'price' => 'required|numeric',
             'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             'mota' => 'required|string',
             'id_danhmuc'  => 'required|exists:danhmucs,id',
         ]);
-        $name = $request->name;
-        $price = $request->price;
+        // Lưu file ảnh tạm thời
         $image = $request->file('image');
-        $fileName = uniqid() .$image->getClientOriginalName();
-        $image->storeAs('public/uploads/',$fileName);
-        $mota = $request->mota;
-        $id_danhmuc = $request->id_danhmuc;
-        sanpham::insert([
-            'name' => $name,
-            'price' => $price,
+        $fileName = uniqid() . $image->getClientOriginalName();
+        $image->storeAs('public/uploads/', $fileName);
+
+        // Lưu dữ liệu vào session hoặc truyền qua route
+        $data = [
+            'name' => $request->name,
             'image' => $fileName,
-            'mota' => $mota,
-            'id_danhmuc' => $id_danhmuc,
-        ]);
-        return redirect()->route('sanpham.index')->with('success', 'Thêm thành công!');
+            'mota' => $request->mota,
+            'id_danhmuc' => $request->id_danhmuc,
+        ];
+        // Có thể dùng session hoặc truyền qua route, ví dụ dùng session:
+        session(['sanpham_data' => $data]);
+
+        // Chuyển sang route nhập size
+        return redirect()->route('size.add');
     }
 
     /**
