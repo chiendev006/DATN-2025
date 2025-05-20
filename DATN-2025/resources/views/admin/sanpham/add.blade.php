@@ -15,7 +15,6 @@
                 <div class="control">
                 <div class="select">
                     <select name="id_danhmuc">
-                    <option value="">Chọn danh mục</option>
                     @foreach($danhmuc as $dm)
                         <option value="{{ $dm->id }}">{{ $dm->name }}</option>
                     @endforeach
@@ -40,19 +39,7 @@
               </div>
           </div>
           <hr>
-           <div class="field">
-            <label class="label">Giá sản phẩm</label>
-            <div class="field-body">
-              <div class="field">
-                <div class="control icons-left">
-                  <input class="input" type="text" name="price" placeholder="Giá">
-                  <span class="icon left"><i class="mdi mdi-account"></i></span>
-                  @error('price')
-                    <p style="color: red;">Bạn chưa nhập giá sản phẩm !!!</p>
-                  @enderror
-                </div>
-              </div>
-          </div>
+
           <hr>
            <div class="field">
             <label class="label">Ảnh sản phẩm</label>
@@ -95,6 +82,7 @@
                 <a href="/admin/danhmuc/create">Reset</a>
               </button>
         </div> -->
+
       </div>
     </div>
   </section>

@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_attributes', function (Blueprint $table) {
+        Schema::create('SizeController', function (Blueprint $table) {
         $table->id();
         $table->foreignId('product_id')->constrained('sanphams');
-        $table->foreignId('size_id')->constrained('size')->onDelete('cascade');
+        $table->string('size')->nullable();
+        $table->decimal('price', 10, 2)->default(0);
         $table->foreignId('topping_id')->constrained('topping')->onDelete('cascade');
         $table->timestamps();
     });
