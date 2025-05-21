@@ -18,6 +18,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\ShowproductController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\admin\AuthController;
 
 
         Route::get('login', [AuthenticationController::class, 'login'])->name('login');
@@ -66,8 +67,13 @@ use App\Http\Controllers\ResetPasswordController;
         // Services
         Route::get('/services',[ServicesController::class, 'index'])->name('services.index');
 
+        // Admin
+        Route::get('admin/login', [AuthController::class, 'login'])->name('admin.login');
+        Route::post('admin/login', [AuthController::class, 'postLogin'])->name('admin.post-login');
+        Route::get('admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
+
         // Group Admin Route
-        Route::prefix('admin')->group(function () {
+        Route::prefix('admin')->middleware('checkAdmin')->group(function () {
         // Trang chủ Admin
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
 

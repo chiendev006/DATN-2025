@@ -84,7 +84,7 @@
             <span>Messages</span>
           </a>
           <hr class="navbar-divider">
-          <a class="navbar-item">
+          <a class="navbar-item" href="">
             <span class="icon"><i class="mdi mdi-logout"></i></span>
             <span>Log Out</span>
           </a>
@@ -95,7 +95,7 @@
           <div class="user-avatar">
             <img src="https://avatars.dicebear.com/v2/initials/john-doe.svg" alt="John Doe" class="rounded-full">
           </div>
-          <div class="is-user-name"><span>John Doe</span></div>
+          <div class="is-user-name"><span>{{ Auth::guard('admin')->user()->name }}</span></div>
           <span class="icon"><i class="mdi mdi-chevron-down"></i></span>
         </a>
         <div class="navbar-dropdown">x
@@ -189,9 +189,9 @@
         </a>
       </li>
       <li>
-        <a href="login.html">
+        <a href="{{ route('admin.logout') }}">
           <span class="icon"><i class="mdi mdi-lock"></i></span>
-          <span class="menu-item-label">Login</span>
+          <span class="menu-item-label">Logout</span>
         </a>
       </li>
       <li>

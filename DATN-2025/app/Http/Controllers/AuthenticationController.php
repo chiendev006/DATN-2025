@@ -24,7 +24,7 @@ class AuthenticationController extends Controller
             'password.required' => 'Mat khau khong duoc de trong',
             'password.min' => 'Mat khau phai it nhat 6 ki tu',
         ]);
-        if (Auth::attempt($data)) {
+        if (Auth::guard('web')->attempt($data)) {
             return redirect()->intended('/');
         }else{
             return redirect()->back()->with([
