@@ -12,15 +12,6 @@
     </button>
             </di>
   <div class="card has-table">
-      <header class="card-header">
-        <p class="card-header-title">
-          <span class="icon"><i class="mdi mdi-account-multiple"></i></span>
-          Clients
-        </p>
-        <a href="/admin/danhmuc" class="card-header-icon">
-          <span class="icon"><i class="mdi mdi-reload"></i></span>
-        </a>
-      </header>
       <div class="card-content">
          @if (session('success'))
 				<div style="color: green; background-color: #e6ffe6; padding: 10px; margin-bottom: 10px;">
@@ -37,7 +28,6 @@
               </label>
             </th>
             <th class="image-cell"></th>
-            <th>Id Danh mục</th>
             <th>Tên Danh mục</th>
             <th>Hành động</th>
           </tr>
@@ -53,7 +43,6 @@
             </td>
             <td class="image-cell">
             </td>
-            <td data-label="Name">{{ $item['id'] }}</td>
             <td data-label="Company">{{ $item['name'] }}</td>
             <td class="actions-cell">
                 <a href="{{ route('danhmuc.edit', ['id' => $item->id]) }}" class="button small blue">

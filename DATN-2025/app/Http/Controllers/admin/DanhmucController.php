@@ -56,6 +56,7 @@ class DanhmucController extends Controller
     public function edit($id)
     {
         $danhmuc = Danhmuc::find($id);
+        $danhmuc->has_topping = $danhmuc->role;
         return view('admin.danhmuc.edit',['danhmuc'=>$danhmuc]);
     }
     /**
@@ -68,7 +69,8 @@ class DanhmucController extends Controller
         ]);
         $name = $request->name;
         Danhmuc::where('id', $id)->update([
-            'name' => $name
+            'name' => $name,
+            "role"=>$request->has_topping
         ]);
         return redirect()->route('danhmuc.index')->with('success', 'Sửa thành công!');
     }
