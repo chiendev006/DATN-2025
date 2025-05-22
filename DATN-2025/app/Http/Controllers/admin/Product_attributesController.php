@@ -35,7 +35,6 @@ class Product_attributesController extends Controller
                 ]);
             }
 
-        // Lấy mảng id topping từ session
         $topping_ids = session('product_topping_ids', []);
         foreach ($topping_ids as $topping_id) {
             $topping = Topping::find($topping_id);
@@ -47,8 +46,9 @@ class Product_attributesController extends Controller
                 ]);
             }
         }
+        session(['sanpham_id' => $sanpham->id]);
         session()->forget('sanpham_data');
-             return redirect()->route('sanpham.index')->with('success', 'Thêm sản phẩm và size thành công!');
+             return redirect()->route('product-images.create')->with('success', 'Thêm sản phẩm và size thành công!');
         } else {
             // Từ edit sản phẩm
                 foreach ($request->sizes as $size) {
@@ -98,6 +98,8 @@ class Product_attributesController extends Controller
     }
     return response()->json(['success' => false]);
 }
+
+
 
 
 

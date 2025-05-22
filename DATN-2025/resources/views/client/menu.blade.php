@@ -131,12 +131,12 @@
 		<div class="col-md-12 nav-link-wrap mb-5">
 			<div class="nav ftco-animate nav-pills justify-content-center" id="v-pills-tab" role="tablist" aria-orientation="vertical">
 				@foreach($danhmucs as $index => $danhmuc)
-					<a class="nav-link {{ $index == 0 ? 'active' : '' }}" 
-					id="v-pills-{{ $danhmuc->id }}-tab" 
-					data-toggle="pill" 
-					href="#v-pills-{{ $danhmuc->id }}" 
-					role="tab" 
-					aria-controls="v-pills-{{ $danhmuc->id }}" 
+					<a class="nav-link {{ $index == 0 ? 'active' : '' }}"
+					id="v-pills-{{ $danhmuc->id }}-tab"
+					data-toggle="pill"
+					href="#v-pills-{{ $danhmuc->id }}"
+					role="tab"
+					aria-controls="v-pills-{{ $danhmuc->id }}"
 					aria-selected="{{ $index == 0 ? 'true' : 'false' }}">
 						{{ $danhmuc->name }}
 					</a>
@@ -146,11 +146,11 @@
 			<div class="col-md-12 d-flex align-items-center">
 				<div class="tab-content ftco-animate" id="v-pills-tabContent">
 					@foreach($danhmucs as $index => $danhmuc)
-						<div class="tab-pane fade {{ $index == 0 ? 'show active' : '' }}" 
-							id="v-pills-{{ $danhmuc->id }}" 
-							role="tabpanel" 
+						<div class="tab-pane fade {{ $index == 0 ? 'show active' : '' }}"
+							id="v-pills-{{ $danhmuc->id }}"
+							role="tabpanel"
 							aria-labelledby="v-pills-{{ $danhmuc->id }}-tab">
-							
+
 							<div class="row">
 								@foreach($danhmuc->sanphams as $sanpham)
 									<div class="col-md-4 text-center">
@@ -161,7 +161,7 @@
 											<div class="text">
 												<h3><a href="#">{{ $sanpham->name }}</a></h3>
 												<p>{{ $sanpham->mota }}</p>
-												<p class="price"><span>{{ number_format($sanpham->price) }} VND</span></p>
+												<p class="price"><span>{{ number_format($sanpham->min_price) }} VND</span></p>
 												<p><a href="" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
 											</div>
 										</div>

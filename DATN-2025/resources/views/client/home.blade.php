@@ -281,10 +281,14 @@
     					<div class="text text-center pt-4">
     						<h3><a href="#">{{ $item->name }}</a></h3>
     						<p>{{ $item->mota }}</p>
-    						<p class="price"><span>{{ number_format($item->price) }} VND</span></p>
+    						<p class="price">
+                <span>
+                    {{ isset($item->min_price) ? number_format($item->min_price) : 'Liên hệ' }} VND
+                </span>
+            </p>
     						<p><a href="#" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
     					</div>
-    				</div>	
+    				</div>
         	</div>
 			@endforeach
         </div>
@@ -333,44 +337,6 @@
             <h2 class="mb-4">Our Products</h2>
             <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
           </div>
-        </div>
-			<div class="nav nav-pills justify-content-center mb-4" id="v-pills-tab" role="tablist">
-				@foreach($danhmucs as $index => $danhmuc)
-					<a class="nav-link {{ $index === 0 ? 'active' : '' }}"
-					id="tab-{{ $danhmuc->id }}"
-					data-toggle="pill"
-					href="#content-{{ $danhmuc->id }}"
-					role="tab">
-						{{ $danhmuc->name }}
-					</a>
-				@endforeach
-			</div>
-
-			<div class="tab-content" id="v-pills-tabContent">
-				@foreach($danhmucs as $index => $danhmuc)
-					<div class="tab-pane fade {{ $index === 0 ? 'show active' : '' }}"
-						id="content-{{ $danhmuc->id }}"
-						role="tabpanel">
-						<div class="row">
-							@foreach($danhmuc->sanphams->take(3) as $sp)
-								<div class="col-md-4 text-center mb-4">
-									<div class="menu-wrap">
-										<a href="{{ route('client.product.detail', ['id' => $sp->id]) }}"><img src="{{ url("/storage/uploads/$sp->image") }}"   alt=""></a>
-										<div class="text">
-											<h3><a href="#">{{ $sp->name }}</a></h3>
-											<p>{{ $sp->mota }}</p>
-											<p class="price"><span>{{ number_format($sp->price) }} VND</span></p>
-											<p><a href="#" class="btn btn-primary btn-outline-primary">Thêm vào giỏ</a></p>
-										</div>
-									</div>
-								</div>
-							@endforeach
-						</div>
-					</div>
-				@endforeach
-			</div>
-
-    	</div>
     </section>
 
     <section class="ftco-section img" id="ftco-testimony" style="background-image: url('{{ asset('asset/images/bg_1.jpg') }}');"  data-stellar-background-ratio="0.5">
@@ -393,7 +359,7 @@
 	              </blockquote>
 	              <div class="author d-flex mt-4">
 	                <div class="image mr-3 align-self-center">
-	                  <img src="url('{{ asset('asset/images/person.jpg') }}')" alt=""> 
+	                  <img src="url('{{ asset('asset/images/person.jpg') }}')" alt="">
 	                </div>
 	                <div class="name align-self-center">Louise Kelly <span class="position">Illustrator Designer</span></div>
 	              </div>

@@ -1,4 +1,11 @@
 @include('header')
+<section class="is-hero-bar">
+  <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+    <h1 class="title">
+      Sản phẩm
+    </h1>
+  </div>
+</section>
 <style>
   /* Style for the div by default */
   .product-info {
@@ -146,6 +153,10 @@
           <span class="icon"><i class="mdi mdi-ballot"></i></span>
           Sửa sản phẩm
         </p>
+        <a href="{{ route('sanpham.index') }}" class="btn-primary" style="min-width:110px;padding:6px 12px;font-size:15px;margin-right:12px;margin-top:8px;height:36px;display:flex;align-items:center;">
+            <span class="icon" style="margin-right:6px;"><i class="mdi mdi-arrow-left"></i></span>
+            List sản phẩm
+        </a>
       </header>
       <div class="card-content">
         <div class="form-flex">
@@ -278,7 +289,10 @@
                     <div class="product-gallery control icons-left">
                         @if(isset($product_img) && count($product_img) > 0)
                             @foreach ($product_img as $i )
-                                <img src="{{ asset('storage/uploads/' . $i->image_url) }}" width="120px" style="margin:5px;" alt="Ảnh sản phẩm">
+                                <img src="{{ asset('storage/uploads/' . $i->image_url) }}" width="120px" style="margin:5px;"
+                                     alt="Ảnh sản phẩm"
+                                     class="product-gallery-img"
+                                     data-id="{{ $i->id }}">
                             @endforeach
                         @else
                             <div style="color: #888; font-style: italic;">Sản phẩm này đang trống Ảnh về sản phẩm, hãy cập nhật thêm!</div>
@@ -339,6 +353,30 @@ document.addEventListener('DOMContentLoaded', function() {
                        location.reload();
                     } else {
                         alert('Xóa topping thất bại!');
+                    }
+                })
+                .catch(() => alert('Có lỗi xảy ra!'));
+            }
+        });
+    });
+
+    // Xóa ảnh sản phẩm
+    document.querySelectorAll('.product-gallery-img').forEach(function(img) {
+        img.addEventListener('click', function() {
+            if (confirm('Bạn có chắc muốn xóa ảnh này?')) {
+                const imgId = this.getAttribute('data-id');
+                fetch(`/admin/product_img/delete/${imgId}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                       location.reload();
+                    } else {
+                        alert('Xóa ảnh thất bại!');
                     }
                 })
                 .catch(() => alert('Có lỗi xảy ra!'));

@@ -45,7 +45,7 @@ use App\Http\Controllers\admin\AuthController;
 
 
         // Trang chủ Client
-        Route::get('/', [Controller::class, 'index']);
+        Route::get('/', [Controller::class, 'index'])->name('index');
         Route::get('/', [Controller::class, 'danhmuc'])->name('danhmuc1.index');
         Route::get('/menu', [Controller::class, 'show'])->name('client.menu');
         Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp');
@@ -149,6 +149,6 @@ use App\Http\Controllers\admin\AuthController;
 
 
 });
-
+        Route::get('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->name('product_img.delete');
         Route::get('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
         Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');

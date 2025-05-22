@@ -103,7 +103,6 @@ class SanphamController extends Controller
         $sanpham = sanpham::findOrFail($id);
         $request->validate([
         'name'=> 'required|string',
-        'price'=> 'required|numeric',
         'image'=> 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         'mota'=> 'required|string',
         'id_danhmuc'=> 'required|exists:danhmucs,id',
@@ -118,7 +117,6 @@ class SanphamController extends Controller
         $sanpham->image = $fileName;
         }
         $sanpham->name = $request->name;
-        $sanpham->price = $request->price;
         $sanpham->mota = $request->mota;
         $sanpham->id_danhmuc = $request->id_danhmuc;
         $sanpham->save();
@@ -129,11 +127,30 @@ class SanphamController extends Controller
      */
     public function delete($id){
     $sanpham = sanpham::findOrFail($id);
+
+    // Xóa ảnh đại diện sản phẩm
     if ($sanpham->image && Storage::exists('public/uploads/' . $sanpham->image)) {
         Storage::delete('public/uploads/' . $sanpham->image);
     }
-    $sanpham->delete();
-    return redirect()->route('sanpham.index')->with('success', 'Đã xóa sản phẩm!');
+
+    // Xóa tất cả size (product_attribute/Size)
+    \App\Models\Size::where('product_id', $sanpham->id)->delete();
+
+    // Xóa tất cả topping liên quan
+    \App\Models\Product_topping::where('product_id', $sanpham->id)->delete();
+
+    // Xóa tất cả ảnh gallery liên quan
+    $productImages = \App\Models\ProductImage::where('product_id', $sanpham->id)->get();
+    foreach ($productImages as $img) {
+        if ($img->image_url && Storage::exists('public/uploads/' . $img->image_url)) {
+            Storage::delete('public/uploads/' . $img->image_url);
+        }
+        $img->delete();
     }
 
+    // Xóa sản phẩm
+    $sanpham->delete();
+
+    return redirect()->route('sanpham.index')->with('success', 'Đã xóa sản phẩm!');
+}
 }
