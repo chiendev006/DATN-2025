@@ -149,3 +149,6 @@ use App\Http\Controllers\admin\AuthController;
 
 
 });
+
+        Route::get('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
+        Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
