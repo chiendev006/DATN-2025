@@ -1,4 +1,4 @@
-@include('header')
+@include('admin/header')
   <div class="control">
     <button type="submit" class="button green">
         <a href="{{ route('sanpham.create') }}">Thêm sản phẩm</a>
@@ -84,4 +84,4 @@
       </div>
     </div>
 
-@include('footer')
+@include('admin/footer')

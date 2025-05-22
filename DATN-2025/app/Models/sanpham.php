@@ -27,6 +27,11 @@ public function attributes()
     return $this->hasMany(\App\Models\Size::class, 'product_id');
 }
 
+public function topping()
+{
+    return $this->hasMany(\App\Models\Product_topping::class, 'product_id');
+}
+
 public function product_images()
 {
     return $this->hasMany(ProductImage::class, 'product_id');

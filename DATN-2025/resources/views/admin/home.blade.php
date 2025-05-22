@@ -1,4 +1,4 @@
-@include('header')
+@include('admin/header')
  <section class="section main-section">
     <div class="grid gap-6 grid-cols-1 md:grid-cols-3 mb-6">
       <div class="card">
@@ -384,4 +384,4 @@
       </div>
     </div>
   </section>
-  @include('footer')
+  @include('admin/footer')

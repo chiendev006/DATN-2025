@@ -67,7 +67,7 @@ use App\Http\Controllers\ResetPasswordController;
         Route::get('/services',[ServicesController::class, 'index'])->name('services.index');
 
         // Group Admin Route
-        Route::prefix('admin')->group(function () {
+Route::prefix('admin')->group(function () {
         // Trang chủ Admin
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
@@ -82,15 +82,6 @@ use App\Http\Controllers\ResetPasswordController;
         });
 
         // Quản lý ảnh theo sản phẩm
-        Route::prefix('admin/sanpham')->name('sanpham.')->group(function () {
-        Route::get('{id}/images', [SanphamController::class, 'listImages'])->name('images');
-        Route::get('{id}/images/create', [SanphamController::class, 'createImage'])->name('images.create');
-        Route::post('{id}/images', [SanphamController::class, 'storeImage'])->name('images.store');
-        Route::get('images/{image}/edit', [SanphamController::class, 'editImage'])->name('images.edit');
-        Route::put('images/{image}', [SanphamController::class, 'updateImage'])->name('images.update');
-        Route::delete('images/{image}', [SanphamController::class, 'deleteImage'])->name('images.delete');
-        });
-
 
         // Sản phẩm
         Route::prefix('sanpham')->group(function () {
@@ -109,7 +100,7 @@ use App\Http\Controllers\ResetPasswordController;
         Route::post('/', [ProductImageController::class, 'store'])->name('product-images.store');
         Route::get('/{id}/edit', [ProductImageController::class, 'edit'])->name('product-images.edit');
         Route::put('/{id}', [ProductImageController::class, 'update'])->name('product-images.update');
-        Route::delete('/{id}', [ProductImageController::class, 'destroy'])->name('product-images.delete');
+        Route::delete('delete/{id}', [ProductImageController::class, 'destroy'])->name('product-images.delete');
         });
 
 
@@ -143,7 +134,11 @@ use App\Http\Controllers\ResetPasswordController;
 
 
 
+
 });
+        Route::get('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
+        Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
+
 
 
 

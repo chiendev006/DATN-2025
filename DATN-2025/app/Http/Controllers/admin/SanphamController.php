@@ -6,8 +6,10 @@ use App\Models\sanpham;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Danhmuc;
+use App\Models\Product_topping;
 use App\Models\ProductImage;
 use App\Models\Size;
+use App\Models\Topping;
 use Illuminate\Support\Facades\Storage;
 
 use Laravel\Sanctum\Sanctum;
@@ -30,7 +32,8 @@ class SanphamController extends Controller
     public function create()
     {
         $danhmuc = Danhmuc::all();
-        return view('admin.sanpham.add', compact('danhmuc'));
+        $topping = Topping::all();
+        return view('admin.sanpham.add', compact('danhmuc','topping'));
     }
 
     /**
@@ -57,8 +60,8 @@ class SanphamController extends Controller
         ];
         // Có thể dùng session hoặc truyền qua route, ví dụ dùng session:
         session(['sanpham_data' => $data]);
+        session(['product_topping_ids' => $request->input('topping_ids', [])]);
 
-        // Chuyển sang route nhập size
         return redirect()->route('size.add');
     }
 
@@ -70,9 +73,23 @@ class SanphamController extends Controller
         $sanpham = sanpham::find($id);
         $danhmuc = Danhmuc::all();
         session(['sanpham_id' => $sanpham->id]);
-        $product_img= ProductImage::where('product_id', $id)->get();
+        $product_img = ProductImage::where('product_id', $id)->get();
         $size = Size::where('product_id', $id)->get();
-        return view('admin.sanpham.edit', compact('danhmuc', 'sanpham','size','product_img'));
+        $topping_list = Topping::all();
+        // Mặc định $topping_detail là mảng rỗng
+        $topping_detail = [];
+
+        // Kiểm tra role của danh mục
+        $danhmuc_sp = Danhmuc::find($sanpham['id_danhmuc']);
+        if ($danhmuc_sp && $danhmuc_sp->role == 1) {
+            $role=1;
+            $topping_detail = Product_topping::where('product_id', $sanpham['id'])->get();
+        }else{
+            $role=0;
+        }
+
+
+        return view('admin.sanpham.edit', compact('danhmuc', 'sanpham', 'size', 'product_img', 'topping_detail','topping_list','role'));
     }
 
     /**

@@ -1,4 +1,4 @@
-@include('header')
+@include('admin/header')
 <section class="section main-section">
     <div class="card mb-6">
         <header class="card-header">
@@ -150,4 +150,4 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-@include('footer')
+@include('admin/footer')

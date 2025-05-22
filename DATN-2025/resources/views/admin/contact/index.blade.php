@@ -1,4 +1,4 @@
-@include('header')
+@include('admin/header')
   <div class="control">
             </div>
   <div class="card has-table">
@@ -72,4 +72,4 @@
         </div>
       </div>
     </div>
-@include('footer')
+@include('admin/footer')
