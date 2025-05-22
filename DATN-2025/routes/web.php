@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AboutController;
-use App\Http\Controllers\admin\Product_attributesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ContactController;
@@ -17,25 +16,21 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\ShowproductController;
-use App\Http\Controllers\ResetPasswordController;
-use App\Http\Controllers\admin\AuthController;
 
 
+        Route::post('/product-images/delete/{id}', [SanphamController::class, 'destroy'])->name('product-images.delete');
         Route::get('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
         Route::get('register', [AuthenticationController::class, 'register'])->name('register');
         Route::post('register', [AuthenticationController::class, 'postRegister'])->name('post-register');
         Route::get('logout', [AuthenticationController::class, 'logout'])->name('logout');
         Route::get('forgot-password', [AuthenticationController::class, 'forgotPassword'])->name('forgot-password');
-        Route::post('forgot-password/send', [AuthenticationController::class, 'sendResetPassword'])->name('send.reset');
-        Route::get('reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-        Route::post('reset-password', [ResetPasswordController::class, 'resetPassword'])->name('password.update');
 
         // Show ctsp
         Route::get('/product/{id}', [ShowproductController::class, 'showctsp'])->name('client.product.detail');
 
 
-        // cart
+        // cart 
         Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
         Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
         Route::post('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
@@ -48,7 +43,7 @@ use App\Http\Controllers\admin\AuthController;
         Route::get('/', [Controller::class, 'index']);
         Route::get('/', [Controller::class, 'danhmuc'])->name('danhmuc1.index');
         Route::get('/menu', [Controller::class, 'show'])->name('client.menu');
-        Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp');
+        Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp'); 
 
         // Search
         Route::get('/search', [Controller::class, 'search'])->name('search');
@@ -67,13 +62,8 @@ use App\Http\Controllers\admin\AuthController;
         // Services
         Route::get('/services',[ServicesController::class, 'index'])->name('services.index');
 
-        // Admin
-        Route::get('admin/login', [AuthController::class, 'login'])->name('admin.login');
-        Route::post('admin/login', [AuthController::class, 'postLogin'])->name('admin.post-login');
-        Route::get('admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
-
         // Group Admin Route
-        Route::prefix('admin')->middleware('checkAdmin')->group(function () {
+        Route::prefix('admin')->group(function () {
         // Trang chủ Admin
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
@@ -104,11 +94,11 @@ use App\Http\Controllers\admin\AuthController;
         Route::get('/create', [SanphamController::class, 'create'])->name('sanpham.create');
         Route::post('/store', [SanphamController::class, 'store'])->name('sanpham.store');
         Route::get('/edit/{id}', [SanphamController::class, 'edit'])->name('sanpham.edit');
-        Route::post('/update/{id}', [SanphamController::class, 'update'])->name('sanpham.update');
+        Route::post('/admin/sanpham/update/{id}', [SanphamController::class, 'update'])->name('sanpham.update');
         Route::get('/delete/{id}', [SanphamController::class, 'delete'])->name('sanpham.delete');
         });
 
-        // Ảnh sản phẩm
+        // Ảnh sản phẩm (biến thể)
         Route::prefix('product-images')->group(function () {
         Route::get('/index', [ProductImageController::class, 'index'])->name('product-images.index');
         Route::get('/create', [ProductImageController::class, 'create'])->name('product-images.create');
@@ -139,17 +129,18 @@ use App\Http\Controllers\admin\AuthController;
 
         // Size
         Route::prefix('size')->group(function () {
-        Route::get('/', [Product_attributesController::class, 'index'])->name('size.index');
-        Route::get('/create', [Product_attributesController::class, 'create'])->name('size.add');
-        Route::post('/store', [Product_attributesController::class, 'store'])->name('size.store');
-        Route::get('/edit/{id}', [Product_attributesController::class, 'edit'])->name('size.edit');
-        Route::post('/update/{id}', [Product_attributesController::class, 'update'])->name('size.update');
-        Route::get('/delete/{id}', [Product_attributesController::class, 'delete'])->name('size.delete');
+        Route::get('/', [SizeController::class, 'index'])->name('size.index');
+        Route::get('/create', [SizeController::class, 'create'])->name('size.create');
+        Route::post('/store', [SizeController::class, 'store'])->name('size.store');
+        Route::get('/edit/{id}', [SizeController::class, 'edit'])->name('size.edit');
+        Route::post('/update/{id}', [SizeController::class, 'update'])->name('size.update');
+        Route::get('/delete/{id}', [SizeController::class, 'delete'])->name('size.delete');
          });
 
-
-
+   
+        
 });
-
+        Route::get('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
+        Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
 
 
