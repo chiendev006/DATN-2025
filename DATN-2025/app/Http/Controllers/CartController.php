@@ -64,16 +64,18 @@ public function addToCart(Request $request, $id)
             $cart[$key]['price'] = ($basePrice + $toppingPrice) * $cart[$key]['quantity'];
         } else {
             $cart[$key] = [
-                'sanpham_id' => $sanpham->id,
-                'name' => $sanpham->name,
-                'size_id' => $sizeId,
-                'size_name' => $size ? $size->size : null, // Sửa dòng này
-                'topping_ids' => $toppingIds,
+                'sanpham_id'    => $sanpham->id,
+                'name'          => $sanpham->name,
+                'size_id'       => $sizeId,
+                'size_name'     => $size ? $size->size : null,
+                'size_price'    => $size ? $size->price : 0, // <-- luôn có giá trị, mặc định 0 nếu không có size
+                'topping_ids'   => $toppingIds,
                 'topping_names' => $toppings->pluck('name')->toArray(),
-                'quantity' => $qty,
-                'unit_price' => $basePrice + $toppingPrice,
-                'price' => $totalPrice,
-                'image' => $sanpham->image,
+                'topping_price' => $toppings->pluck('price')->toArray(),
+                'quantity'      => $qty,
+                'unit_price'    => $basePrice + $toppingPrice,
+                'price'         => $totalPrice,
+                'image'         => $sanpham->image,
             ];
         }
         session(['cart' => $cart]);

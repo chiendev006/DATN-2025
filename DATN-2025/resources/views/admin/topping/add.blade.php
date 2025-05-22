@@ -1,12 +1,13 @@
 @include('header')
+<section class="is-hero-bar">
+  <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+    <h1 class="title">
+      Topping
+    </h1>
+  </div>
+</section>
  <section class="section main-section">
     <div class="card mb-6">
-      <header class="card-header">
-        <p class="card-header-title">
-          <span class="icon"><i class="mdi mdi-ballot"></i></span>
-          Thêm danh mục
-        </p>
-      </header>
       <div class="card-content">
         <form action="{{ route('topping.store') }}" method="post">
             @csrf

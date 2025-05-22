@@ -31,6 +31,9 @@ class ProductImageController extends Controller
                 ]);
             }
         }
+        if ($request->ajax()) {
+            return response()->json(['success' => true]);
+        }
                 return redirect()->route('sanpham.edit', ['id' => session('sanpham_id'), ])->with('success', 'Thêm sản phẩm và size thành công!');
     }
 
@@ -42,12 +45,15 @@ class ProductImageController extends Controller
     {
         $productImage = ProductImage::findOrFail($id);
 
-        if ($productImage->image_url && Storage::disk('public')->exists($productImage->image_url)) {
-            Storage::disk('public')->delete($productImage->image_url);
+        $filePath = 'uploads/' . $productImage->image_url;
+        if ($productImage->image_url && Storage::disk('public')->exists($filePath)) {
+            Storage::disk('public')->delete($filePath);
         }
 
         $productImage->delete();
-
-                return redirect()->route('sanpham.edit', ['id' => session('sanpham_id'), ])->with('success', 'Thêm sản phẩm và size thành công!');
+        if (request()->ajax()) {
+            return response()->json(['success' => true]);
+        }
+        return redirect()->route('sanpham.edit', ['id' => session('sanpham_id')])->with('success', 'Thêm sản phẩm và size thành công!');
     }
 }

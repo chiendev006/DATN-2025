@@ -1,7 +1,14 @@
 @include('header')
+<section class="is-hero-bar">
+  <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+    <h1 class="title">
+    Topping
+    </h1>
+  </div>
+</section>
   <div class="control">
     <button type="submit" class="button green">
-        <a href="{{ route('topping.create') }}">Thêm danh mục</a>
+        <a href="{{ route('topping.create') }}">Thêm topping</a>
     </button>
             </di>
   <div class="card has-table">

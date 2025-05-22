@@ -19,10 +19,11 @@
                 <tr class="text-center">
                   <th>Xóa</th>
                   <th>Ảnh</th>
-                  <th>Chi tiết</th>
+                  <th>Sản phẩm</th>
                   <th>Đơn giá</th>
+                   <th>Topping</th>
+                   <th>Đơn giá</th>
                   <th>Số lượng</th>
-                  <th>Topping</th>
                   <th>Thành tiền</th>
                 </tr>
               </thead>
@@ -70,18 +71,28 @@
                     <strong>{{ $item['name'] }}</strong><br>
                     Size: {{ $item['size_name'] ?? 'Không rõ' }}<br>
                   </td>
-                  <td>{{ number_format($item['unit_price']) }} VND</td>
+                  <td>{{ number_format($item['size_price'] ?? 0) }} VND</td>
+                   <td>
+                    @if(!empty($item['topping_names']))
+                        @foreach($item['topping_names'] as $i => $name)
+                            {{ $name }} <br>
+                        @endforeach
+                    @else
+                        Không có
+                    @endif
+                  </td> <td>
+                    @if(!empty($item['topping_names']))
+                        @foreach($item['topping_names'] as $i => $name)
+                           (+{{ number_format($item['topping_price'][$i] ?? 0) }} VND)<br>
+                        @endforeach
+                    @else
+                        Không có
+                    @endif
+                  </td>
                   <td>
                     <div class="input-group">
                      <input type="number" name="quantities[{{ $key }}]" value="{{ $item['quantity'] }}" class="form-control text-center" min="1" onchange="this.form.submit()">
                     </div>
-                  </td>
-                  <td>
-                    @if(!empty($item['topping_names']))
-                        {{ implode(', ', $item['topping_names']) }}
-                    @else
-                        Không có
-                    @endif
                   </td>
                   <td>{{ number_format($item['price']) }} VND</td>
                 </tr>

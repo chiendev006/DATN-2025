@@ -1,4 +1,11 @@
 @include('header')
+<section class="is-hero-bar">
+  <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+    <h1 class="title">
+      Sản phẩm
+    </h1>
+  </div>
+</section>
   <div class="control">
     <button type="submit" class="button green">
         <a href="{{ route('sanpham.create') }}">Thêm sản phẩm</a>
@@ -31,7 +38,6 @@
             </th>
             <th class="image-cell"></th>
             <th>Tên sản phẩm</th>
-            <th>Giá</th>
             <th>Ảnh sản phẩm</th>
             <th>Mô tả</th>
             <th>Tên danh mục</th>
@@ -50,7 +56,6 @@
             <td class="image-cell">
             </td>
             <td data-label="Company">{{ $item['name'] }}</td>
-            <td data-label="Company">{{ number_format($item['price']) }} VND</td>
             <td data-label="Company"><img src="{{ url("/storage/uploads/$item->image") }}"  width="100px" alt=""></td>
             <td data-label="Company">{{ $item['mota'] }}</td>
             <td data-label="Company">{{ $item->danhmuc->name ?? 'Không có danh mục' }}</td>
