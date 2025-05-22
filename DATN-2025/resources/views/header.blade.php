@@ -126,7 +126,7 @@
       </li> <li>
         <a href="/">
          <span class="icon"><i class="mdi mdi-logout"></i></span>
-          <span class="menu-item-label">Trang bán hầng</span>
+          <span class="menu-item-label">Trang bán hàng</span>
         </a>
       </li>
     </ul>
