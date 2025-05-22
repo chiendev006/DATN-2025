@@ -18,7 +18,7 @@ class Controller extends BaseController
     }
 public function  danhmuc()
 {
-    $danhmucs = Danhmuc::with('sanphams')->get(); 
+    $danhmucs = Danhmuc::with('sanphams')->get();
     $sanpham = sanpham::take(4)->get();
     return view('client.home', compact('danhmucs','sanpham'));
 }
@@ -29,7 +29,7 @@ public function show()
 }
 public function  showsp()
 {
-    $danhmucs = Danhmuc::with('sanphams')->get(); 
+    $danhmucs = Danhmuc::with('sanphams')->get();
     $sanpham = sanpham::take(4)->get();
     return view('client.menu', compact('danhmucs','sanpham'));
 }

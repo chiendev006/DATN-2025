@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('danhmucs', function (Blueprint $table) {
             $table->id();
             $table->string('name',255);
+            $table->boolean('role',['0' => 'Không','1' => 'Có',]);
             $table->softDeletes();
             $table->timestamps();
         });
@@ -21,7 +22,7 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     */ 
+     */
     public function down(): void
     {
         Schema::dropIfExists('danhmucs');

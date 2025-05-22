@@ -35,10 +35,12 @@ class DanhmucController extends Controller
     {
         $request->validate([
             'name' => 'required|string',
+            'has_topping' => 'required|boolean',
         ]);
         $name = $request->name;
         Danhmuc::insert([
             'name' => $name,
+            'role'=>$request->has_topping
         ]);
         return redirect()->route('danhmuc.index')->with('success', 'Thêm thành công!');
     }
@@ -46,7 +48,7 @@ class DanhmucController extends Controller
     /**
      * Display the specified resource.
      */
-    
+
 
     /**
      * Show the form for editing the specified resource.

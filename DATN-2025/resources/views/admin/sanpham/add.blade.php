@@ -14,11 +14,11 @@
                 <label class="label">Danh mục sản phẩm</label>
                 <div class="control">
                 <div class="select">
-                    <select name="id_danhmuc">
-                    @foreach($danhmuc as $dm)
-                        <option value="{{ $dm->id }}">{{ $dm->name }}</option>
-                    @endforeach
-                    </select>
+                    <select name="id_danhmuc" id="id_danhmuc">
+    @foreach($danhmuc as $dm)
+        <option value="{{ $dm->id }}" data-role="{{ $dm->role }}">{{ $dm->name }}</option>
+    @endforeach
+</select>
                 </div>
                 @error('id_danhmuc')
                      <p style="color: red;">Bạn chưa chọn danh mục sản phẩm !!!</p>
@@ -69,6 +69,17 @@
               </div>
           </div>
           <hr>
+          <div class="field" id="topping-field" style="display:none;">
+    <label class="label">Chọn topping</label>
+    <div class="control">
+        @foreach($topping as $tp)
+    <label style="margin-right:10px;">
+        <input type="checkbox" name="topping_ids[]" value="{{ $tp->id }}">
+        {{ $tp->name }}
+    </label>
+@endforeach
+    </div>
+</div>
           <div class="field grouped">
             <div class="control">
               <button type="submit" class="button green">
@@ -87,3 +98,25 @@
     </div>
   </section>
   @include('footer')
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const select = document.getElementById('id_danhmuc');
+    const toppingField = document.getElementById('topping-field');
+    function checkTopping() {
+        const selected = select.options[select.selectedIndex];
+        if (selected.getAttribute('data-role') == '1') {
+            toppingField.style.display = '';
+        } else {
+            toppingField.style.display = 'none';
+            toppingField.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+        }
+    }
+    select.addEventListener('change', checkTopping);
+    checkTopping(); // Gọi khi load trang
+});
+</script>
+<style>
+input[type="checkbox"] {
+    display: inline-block !important;
+}
+</style>
