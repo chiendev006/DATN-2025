@@ -15,7 +15,7 @@ return new class extends Migration
         $table->id();
         $table->foreignId('cart_id')->constrained('cart');
         $table->foreignId('product_id')->constrained('sanphams');
-        $table->foreignId('size_id')->constrained('product_attributess');
+        $table->foreignId('size_id')->constrained('product_attributes');
         $table->string('topping_id')->nullable();
         $table->foreign('topping_id')->references('id')->on('product_topping');
         $table->integer('quantity');
