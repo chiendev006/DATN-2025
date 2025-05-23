@@ -48,8 +48,10 @@ public function addToCart(Request $request, $id)
             $item = new Cartdetail([
                 'cart_id' => $cart->id,
                 'product_id' => $sanpham->id,
-
+                'product_attributes_id' => $sizeId, // truyền đúng tên cột trong DB
+                'product_topping_ids' => implode(',', (array)$toppingIds), // nếu có
                 'quantity' => $qty,
+                'price' => $totalPrice, // BẮT BUỘC phải có
             ]);
             $item->save();
         }
@@ -68,7 +70,7 @@ public function addToCart(Request $request, $id)
                 'name'          => $sanpham->name,
                 'size_id'       => $sizeId,
                 'size_name'     => $size ? $size->size : null,
-                'size_price'    => $size ? $size->price : 0, // <-- luôn có giá trị, mặc định 0 nếu không có size
+                'size_price'    => $size ? $size->price : 0,
                 'topping_ids'   => $toppingIds,
                 'topping_names' => $toppings->pluck('name')->toArray(),
                 'topping_price' => $toppings->pluck('price')->toArray(),

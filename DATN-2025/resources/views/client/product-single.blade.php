@@ -50,6 +50,8 @@
 
          <form action="{{ route('cart.add', $sanpham->id) }}" method="POST">
           @csrf
+          <input type="hidden" name="cart_id" value="{{ $cart->id ?? '' }}">
+          <input type="hidden" name="product_id" value="{{ $sanpham->id }}">
           <div class="form-group">
             <label for="size"><strong>Chọn size:</strong></label><br>
             @php

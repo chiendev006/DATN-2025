@@ -14,12 +14,23 @@
           @if(($isLoggedIn && isset($items) && count($items)) || (!$isLoggedIn && count($cart)))
           <form action="{{ route('cart.update') }}" method="POST">
             @csrf
+            @if($isLoggedIn)
+                @foreach($items as $item)
+                    <input type="hidden" name="cart_ids[{{ $item->id }}]" value="{{ $item->cart_id }}">
+                    <input type="hidden" name="product_ids[{{ $item->id }}]" value="{{ $item->product_id }}">
+                @endforeach
+            @else
+                @foreach($cart as $key => $item)
+                    <input type="hidden" name="product_ids[{{ $key }}]" value="{{ $item['sanpham_id'] }}">
+                @endforeach
+            @endif
             <table class="table">
               <thead class="thead-primary">
                 <tr class="text-center">
                   <th>Xóa</th>
                   <th>Ảnh</th>
-                  <th>Sản phẩm</th>
+                  <th>Sản phẩm</th> 
+                   <th>Size</th> 
                   <th>Đơn giá</th>
                    <th>Topping</th>
                    <th>Đơn giá</th>
@@ -40,10 +51,8 @@
                 <tr class="text-center">
                  <td><a href="{{ route('cart.remove', $item->id) }}" onclick="return confirm('Xóa sản phẩm?')">X</a></td>
                   <td><img src="{{ asset('storage/uploads/' . $product->image) }}" width="80"></td>
-                  <td>
-                    <strong>{{ $product->name }}</strong><br>
-                    Size: {{ $size->size ?? 'Không rõ' }}<br>
-                  </td>
+                  <td>{{ $product->name }}</td>
+                  <td>{{ $size->size ?? 'Không rõ' }}</td>
                   <td>{{ number_format($unitPrice) }} VND</td>
                   <td>
                     <div class="input-group">
@@ -67,12 +76,10 @@
                 <tr class="text-center">
                   <td><a href="{{ route('cart.remove', $key) }}" onclick="return confirm('Xóa sản phẩm?')">X</a></td>
                   <td><img src="{{ asset('storage/uploads/' . $item['image']) }}" width="80"></td>
-                  <td>
-                    <strong>{{ $item['name'] }}</strong><br>
-                    Size: {{ $item['size_name'] ?? 'Không rõ' }}<br>
-                  </td>
+                  <td>{{ $item['name'] }}</td>
+                  <td>{{ $item['size_name'] ?? 'Không rõ' }}</td>
                   <td>{{ number_format($item['size_price'] ?? 0) }} VND</td>
-                   <td>
+                  <td>
                     @if(!empty($item['topping_names']))
                         @foreach($item['topping_names'] as $i => $name)
                             {{ $name }} <br>
@@ -125,12 +132,3 @@
           <hr>
           <p class="d-flex justify-content-between font-weight-bold"><span>Tổng cộng</span><span>{{ number_format($subtotal) }} VND</span></p>
           <div class="text-center mt-3">
-            <a href="#" class="btn btn-primary">Thanh toán</a>
-          </div>
-        </div>
-      </div>
-    </div>
-    @endif
-  </div>
-</section>
-@endsection
