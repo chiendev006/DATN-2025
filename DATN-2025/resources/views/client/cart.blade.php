@@ -11,20 +11,21 @@
             $isLoggedIn = Auth::check();
           @endphp
 
-          @if(($isLoggedIn && isset($items) && count($items)) || (!$isLoggedIn && count($cart)))
+        @if(($isLoggedIn && isset($items) && count($items)) || (!$isLoggedIn && count($cart)))
           <form action="{{ route('cart.update') }}" method="POST">
             @csrf
             <table class="table">
               <thead class="thead-primary">
                 <tr class="text-center">
-                  <th>Xóa</th>
-                  <th>Ảnh</th>
-                  <th>Sản phẩm</th>
-                  <th>Đơn giá</th>
-                   <th>Topping</th>
-                   <th>Đơn giá</th>
-                  <th>Số lượng</th>
-                  <th>Thành tiền</th>
+                <th>Xóa</th>
+                <th>Ảnh</th>
+                <th>Sản phẩm</th>
+                <th>Size</th>
+                <th>Đơn giá</th>
+                <th>Topping</th>
+                <th>Đơn giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
                 </tr>
               </thead>
               <tbody>
@@ -42,22 +43,35 @@
                   <td><img src="{{ asset('storage/uploads/' . $product->image) }}" width="80"></td>
                   <td>
                     <strong>{{ $product->name }}</strong><br>
-                    Size: {{ $size->size ?? 'Không rõ' }}<br>
                   </td>
-                  <td>{{ number_format($unitPrice) }} VND</td>
+                  <td>{{ $size->size ?? 'Không rõ' }}</td>
+                  <td>{{ $size->price ?? 'Không rõ' }} VND</td>
+                 <td>
+                        @if($toppings->count())
+                            <ul class="list-unstyled mb-0">
+                                @foreach($toppings as $top)
+                                    <li>{{ $top->name }}</li>
+                                @endforeach
+                            </ul>
+                        @else
+                            Không có
+                        @endif
+                    </td>
+                    <td>
+                        @if($toppings->count())
+                            <ul class="list-unstyled mb-0">
+                                @foreach($toppings as $top)
+                                    <li>+{{ number_format($top->price) }} VND</li>
+                                @endforeach
+                            </ul>
+                        @else
+                            Không có
+                        @endif
+                    </td>
                   <td>
                     <div class="input-group">
                       <input type="number" name="quantities[{{ $item->id }}]" value="{{ $item->quantity }}" class="form-control text-center" min="1" onchange="this.form.submit()">
                     </div>
-                  </td>
-                  <td>
-                    @if($toppings->count())
-                      <ul class="list-unstyled mb-0">
-                        @foreach($toppings as $top)
-                          <li>{{ $top->name }} (+{{ number_format($top->price) }} VND)</li>
-                        @endforeach
-                      </ul>
-                    @endif
                   </td>
                   <td>{{ number_format($total) }} VND</td>
                 </tr>

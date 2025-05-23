@@ -15,19 +15,16 @@ return new class extends Migration
         $table->id();
         $table->foreignId('cart_id')->constrained('cart');
         $table->foreignId('product_id')->constrained('sanphams');
-        $table->foreignId('product_attibutes')->constrained('product_attibutes')->onDelete('cascade');
+        $table->foreignId('size_id')->constrained('product_attributess');
+        $table->string('topping_id')->nullable();
+        $table->foreign('topping_id')->references('id')->on('product_topping');
         $table->integer('quantity');
-        $table->decimal('price', 10, 2);
-        $table->foreignId('topping_id')->constrained('topping')->onDelete('cascade');
-
         $table->timestamps();
 });
 
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
         //
