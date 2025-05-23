@@ -10,7 +10,6 @@ class ShowproductController extends Controller
 {
     public function showctsp($id)
     {
-        // Eager load cả product_images và attributes (sizes)
         $sanpham = sanpham::with(['product_images', 'attributes'])->findOrFail($id);
         $topping = Topping::all();
 

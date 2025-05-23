@@ -50,7 +50,6 @@ public function  showsp()
     $danhmucs = Danhmuc::with('sanphams')->get();
     $sanpham = sanpham::take(4)->get();
 
-    // Gán giá nhỏ nhất cho từng sản phẩm
     foreach ($sanpham as $sp) {
         $minPrice = Size::where('product_id', $sp->id)->min('price');
         $sp->min_price = $minPrice;

@@ -8,6 +8,7 @@ use App\Models\Size;
 use App\Models\Topping;
 use App\Models\Cart;
 use App\Models\Cartdetail;
+use App\Models\Coupon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Session;
@@ -17,46 +18,59 @@ public function addToCart(Request $request, $id)
 {
     $sanpham = Sanpham::findOrFail($id);
 
-    // Lấy size
     $sizeId = $request->input('size_id');
     $size = Size::find($sizeId);
 
-    // Lấy topping (có thể là mảng giá hoặc id, tùy bạn truyền lên)
     $toppingIds = $request->input('topping_ids', []);
+    sort($toppingIds); // Sắp xếp để tạo key ổn định
+
     $toppings = Topping::whereIn('id', (array)$toppingIds)->get();
 
     $qty = max(1, (int)$request->input('qty', 1));
 
-    // Tính giá
     $basePrice = $size ? $size->price : $sanpham->price;
     $toppingPrice = $toppings->sum('price');
-    $totalPrice = ($basePrice + $toppingPrice) * $qty;
+    $unitPrice = $basePrice + $toppingPrice;
+    $totalPrice = $unitPrice * $qty;
+
+    // Tạo key định danh sp-size-topping
+    $key = $sanpham->id . '-' . $sizeId . '-' . implode(',', $toppingIds);
 
     if (Auth::check()) {
-        // Đã đăng nhập: lưu vào DB
         $cart = Cart::firstOrCreate(
             ['user_id' => Auth::id()],
             ['session_id' => null]
         );
-        // Tạo cart detail mới
-        $cartDetail = new Cartdetail([
-            'cart_id' => $cart->id,
-            'product_id' => $sanpham->id,
-            'size_id' => $sizeId,
-            'topping_id' => implode(',', (array)$toppingIds),
-            'quantity' => $qty
-        ]);
-        $cartDetail->save();
 
+        // Kiểm tra sản phẩm này đã có trong cart chưa (trùng product, size, topping)
+        $existingItem = Cartdetail::where('cart_id', $cart->id)
+            ->where('product_id', $sanpham->id)
+            ->where('size_id', $sizeId)
+            ->where('topping_id', implode(',', $toppingIds))
+            ->first();
+
+        if ($existingItem) {
+            // Tăng số lượng và cập nhật giá
+            $existingItem->quantity += $qty;
+            $existingItem->save();
+        } else {
+            // Thêm mới
+            $cartDetail = new Cartdetail([
+                'cart_id' => $cart->id,
+                'product_id' => $sanpham->id,
+                'size_id' => $sizeId,
+                'topping_id' => implode(',', $toppingIds),
+                'quantity' => $qty
+            ]);
+            $cartDetail->save();
+        }
     } else {
-        // Chưa đăng nhập: lưu vào session
+        // User chưa đăng nhập - làm việc với session
         $cart = session('cart', []);
-        // Tạo key duy nhất cho sản phẩm theo id-size-topping
-        $key = $sanpham->id . '-' . $sizeId . '-' . implode(',', (array)$toppingIds);
 
         if (isset($cart[$key])) {
             $cart[$key]['quantity'] += $qty;
-            $cart[$key]['price'] = ($basePrice + $toppingPrice) * $cart[$key]['quantity'];
+            $cart[$key]['price'] = $unitPrice * $cart[$key]['quantity'];
         } else {
             $cart[$key] = [
                 'sanpham_id'    => $sanpham->id,
@@ -66,35 +80,110 @@ public function addToCart(Request $request, $id)
                 'size_price'    => $size ? $size->price : 0,
                 'topping_ids'   => $toppingIds,
                 'quantity'      => $qty,
-                'unit_price'    => $basePrice + $toppingPrice,
+                'unit_price'    => $unitPrice,
                 'price'         => $totalPrice,
                 'image'         => $sanpham->image,
+                'topping_names' => [],
+                'topping_price' => []
             ];
-            $cart[$key]['topping_names'] = [];
-            $cart[$key]['topping_price'] = [];
-            foreach($toppingIds as $productToppingId){
+
+            foreach ($toppingIds as $productToppingId) {
                 $productTopping = \App\Models\Product_topping::find($productToppingId);
                 $cart[$key]['topping_names'][] = $productTopping ? $productTopping->topping : '';
                 $cart[$key]['topping_price'][] = $productTopping ? $productTopping->price : 0;
             }
         }
+
         session(['cart' => $cart]);
     }
 
     return redirect()->route('cart.index')->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
 }
 
-    public function index(){
-        if (Auth::check()) {
-            $cart = Cart::with('items.product')->where('user_id', Auth::id())->first();
-            $items = $cart?->items ?? [];
-            return view('client.cart', compact('items'));
-        }
 
+  public function index()
+{
+    $coupons = session('coupons', []); 
+    $discount = 0;
+    $subtotal = 0;
+    $total = 0;
+    $items = [];
+
+    if (Auth::check()) {
+        $cart = Cart::with('items.product')->where('user_id', Auth::id())->first();
+        $items = $cart?->items ?? [];
+
+        foreach ($items as $item) {
+            $sizePrice = $item->size?->price ?? $item->product->price;
+            $toppingPrice = 0;
+
+            if ($item->topping_id) {
+                $toppingIds = explode(',', $item->topping_id);
+                $toppingPrice = \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price');
+            }
+
+            $subtotal += ($sizePrice + $toppingPrice) * $item->quantity;
+        }
+    } else {
         $cart = session('cart', []);
-        return view('client.cart', compact('cart'));
+        foreach ($cart as $item) {
+            $subtotal += $item['price'];
+        }
     }
-    public function updateCart(Request $request){
+
+    // Tính tổng giảm giá từ nhiều mã
+    foreach ($coupons as $coupon) {
+        if ($coupon['type'] === 'percent') {
+            $discount += ($subtotal * $coupon['discount']) / 100;
+        } elseif ($coupon['type'] === 'fixed') {
+            $discount += $coupon['discount'];
+        }
+    }
+
+    $total = max(0, $subtotal - $discount);
+
+    return view('client.cart', compact(
+        'cart',
+        'items',
+        'subtotal',
+        'discount',
+        'total',
+        'coupons'
+    ));
+}
+
+
+
+    public function removeItem($key){
+    if (Auth::check()) {
+        $item = Cartdetail::find($key);
+    if ($item && $item->cart && $item->cart->user_id === Auth::id()) {
+            $item->delete();
+        }
+    } else {
+        $cart = session('cart', []);
+        unset($cart[$key]);
+        session(['cart' => $cart]);
+    }
+    return redirect()->route('cart.index')->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng!');
+}
+public function boot()
+{
+    View::composer('*', function ($view) {
+        $cartCount = 0;
+
+        if (Auth::check()) {
+            $cart = Cart::with('items')->where('user_id', Auth::id())->first();
+            $cartCount = $cart?->items->sum('quantity') ?? 0;
+        } else {
+            $cart = Session::get('cart', []);
+            $cartCount = collect($cart)->sum('quantity');
+        }
+        $view->with('cartCount', $cartCount);
+    });
+}
+
+public function updateCart(Request $request){
     if (Auth::check()) {
         $cart = Cart::where('user_id', Auth::id())->first();
         if (!$cart) return redirect()->back();
@@ -157,33 +246,47 @@ public function addToCart(Request $request, $id)
     return redirect()->route('cart.index')->with('success', 'Cập nhật giỏ hàng thành công!');
 }
 
-    public function removeItem($key){
-    if (Auth::check()) {
-        $item = Cartdetail::find($key);
-    if ($item && $item->cart && $item->cart->user_id === Auth::id()) {
-            $item->delete();
-        }
-    } else {
-        $cart = session('cart', []);
-        unset($cart[$key]);
-        session(['cart' => $cart]);
-    }
-    return redirect()->route('cart.index')->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng!');
-}
-public function boot()
+
+public function applyCoupon(Request $request)
 {
-    View::composer('*', function ($view) {
-        $cartCount = 0;
+    $code = trim($request->input('coupon_code'));
+    $appliedCoupons = session('coupons', []); 
 
-        if (Auth::check()) {
-            $cart = Cart::with('items')->where('user_id', Auth::id())->first();
-            $cartCount = $cart?->items->sum('quantity') ?? 0;
-        } else {
-            $cart = Session::get('cart', []);
-            $cartCount = collect($cart)->sum('quantity');
-        }
-        $view->with('cartCount', $cartCount);
-    });
+    if (collect($appliedCoupons)->contains('code', $code)) {
+        return back()->with('coupon_error', 'Mã giảm giá này đã được áp dụng.');
+    }
+
+    $coupon = Coupon::where('code', $code)
+        ->where(function($q) {
+            $q->whereNull('expires_at')->orWhere('expires_at', '>=', now());
+        })
+        ->first();
+
+    if (!$coupon) {
+        return back()->with('coupon_error', 'Mã giảm giá không hợp lệ hoặc đã hết hạn.');
+    }
+
+    $appliedCoupons[] = [
+        'code' => $coupon->code,
+        'discount' => $coupon->discount,
+        'type' => $coupon->type
+    ];
+
+    session(['coupons' => $appliedCoupons]);
+
+    return back()->with('coupon_success', 'Áp dụng mã giảm giá thành công!');
 }
 
+
+public function removeCoupon(Request $request)
+{
+    $codeToRemove = $request->input('code');
+    $coupons = session('coupons', []);
+
+    $coupons = array_filter($coupons, fn($c) => $c['code'] !== $codeToRemove);
+
+    session(['coupons' => $coupons]);
+
+    return back()->with('coupon_success', 'Đã xóa mã giảm giá.');
+}
 }
