@@ -33,7 +33,10 @@
                 @foreach($items as $item)
                 @php
                   $product = $item->product;
-                  $toppings = \App\Models\Topping::whereIn('id', explode(',', $item->topping_id))->get();
+                  $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id)));
+                  $toppings = \App\Models\Product_topping::where('product_id', $item->product_id)
+                      ->whereIn('id', $toppingIds)
+                      ->get();
                   $size = \App\Models\Size::find($item->size_id);
                   $unitPrice = $product->price + ($size->price ?? 0) + $toppings->sum('price');
                   $total = $unitPrice * $item->quantity;
@@ -50,7 +53,7 @@
                         @if($toppings->count())
                             <ul class="list-unstyled mb-0">
                                 @foreach($toppings as $top)
-                                    <li>{{ $top->name }}</li>
+                                    <li>{{ $top->topping }}</li>
                                 @endforeach
                             </ul>
                         @else
@@ -88,8 +91,8 @@
                   <td>{{ number_format($item['size_price'] ?? 0) }} VND</td>
                    <td>
                     @if(!empty($item['topping_names']))
-                        @foreach($item['topping_names'] as $i => $name)
-                            {{ $name }} <br>
+                        @foreach($item['topping_names'] as $i => $topping)
+                            {{ $topping }} <br>
                         @endforeach
                     @else
                         Không có
@@ -124,7 +127,7 @@
 
     @php
       $subtotal = $isLoggedIn
-        ? collect($items ?? [])->sum(fn($i) => ($i->product->price + optional(\App\Models\Size::find($i->size_id))->price + \App\Models\Topping::whereIn('id', explode(',', $i->topping_id))->sum('price')) * $i->quantity)
+        ? collect($items ?? [])->sum(fn($i) => ($i->product->price + optional(\App\Models\Size::find($i->size_id))->price + \App\Models\Product_topping::where('product_id', $i->product_id)->sum('price')) * $i->quantity)
         : collect($cart)->sum('price');
     @endphp
 
