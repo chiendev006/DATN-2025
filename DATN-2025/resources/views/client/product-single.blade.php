@@ -58,7 +58,7 @@
             @foreach($sizes as $size)
               <label class="mr-3">
                 <input type="radio" name="size_id" value="{{ $size->id }}" class="size-option" data-price="{{ $size->price }}" required>
-                {{ $size->size }} {{ number_format($size->price) }} VND
+                {{ $size->size }} (+{{ number_format($size->price) }} VND)
               </label><br>
             @endforeach
           </div>
@@ -66,19 +66,17 @@
           <div class="form-group">
             <label><strong>Chọn topping:</strong></label><br>
             @php
-              $toppings = $sanpham->attributes->pluck('topping')->unique('id')->filter();
+              $toppings = $sanpham->topping;
             @endphp
-           @foreach($topping as $topping)
+            @foreach($toppings as $top)
               <label class="mr-3">
-                <input
-                  type="checkbox"
-                  name="topping_ids[]"  {{-- Thêm dòng này --}}
-                  value="{{ $topping->id }}" {{-- Sửa lại value là id --}}
-                  class="topping-option"
-                  data-price="{{ $topping->price }}"
-                  {{ (is_array(old('topping_ids')) && in_array($topping->id, old('topping_ids'))) ? 'checked' : '' }}>
-                {{ $topping->name }} (+{{ number_format($topping->price) }} VND)
-              </label>
+                <input type="checkbox"
+                       name="topping_ids[]"
+                       value="{{ $top->id }}"
+                       class="topping-option"
+                       data-price="{{ $top->price }}">
+                {{ $top->topping }} (+{{ number_format($top->price) }} VND)
+              </label><br>
             @endforeach
           </div>
 
@@ -86,16 +84,16 @@
             <label><strong>Số lượng:</strong></label>
             <div class="input-group">
               <span class="input-group-btn">
-                <button type="button" class="btn btn-outline-secondary" onclick="changeQty(-1)">-</button>
+                <button type="button" class="quantity-left-minus btn btn-outline-secondary" onclick="changeQty(-1)">-</button>
               </span>
-              <input type="text" name="qty" id="quantity" class="form-control text-center" value="1" readonly>
+              <input type="number" name="qty" id="quantity" class="form-control text-center" value="1" min="1" readonly>
               <span class="input-group-btn">
-                <button type="button" class="btn btn-outline-secondary" onclick="changeQty(1)">+</button>
+                <button type="button" class="quantity-right-plus btn btn-outline-secondary" onclick="changeQty(1)">+</button>
               </span>
             </div>
           </div>
 
-          <button type="submit"> Thêm vào giỏ hàng</button>
+          <button type="submit" class="btn btn-primary py-3 px-5">Thêm vào giỏ hàng</button>
         </form>
       </div>
     </div>
