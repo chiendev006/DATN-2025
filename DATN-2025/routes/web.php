@@ -19,7 +19,7 @@ use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\ShowproductController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\admin\AuthController;
-
+use App\Http\Controllers\CheckoutController;
 
         Route::get('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
@@ -60,6 +60,10 @@ use App\Http\Controllers\admin\AuthController;
 
         // About
         Route::get('/about',[AboutController::class, 'index'])->name('about.index');
+
+        //checkout
+        Route::get('/checkout',[CheckoutController::class, 'index'])->name('checkout.index');
+        Route::get('/checkout/payment',[CheckoutController::class, 'index'])->name('client.payment');
 
         // Blog
         Route::get('/blog',[BlogController::class, 'index'])->name('blog.index');

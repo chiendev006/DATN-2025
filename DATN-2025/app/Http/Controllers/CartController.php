@@ -34,27 +34,20 @@ public function addToCart(Request $request, $id)
 
     if (Auth::check()) {
         // Đã đăng nhập: lưu vào DB
-        $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
-        // Kiểm tra sản phẩm đã có trong cart chưa (cùng size, topping)
-        $item = Cartdetail::where('cart_id', $cart->id)
-            ->where('product_id', $sanpham->id)
-            ->first();
+        $cart = Cart::firstOrCreate(
+            ['user_id' => Auth::id()],
+            ['session_id' => null]
+        );
+        // Tạo cart detail mới
+        $cartDetail = new Cartdetail([
+            'cart_id' => $cart->id,
+            'product_id' => $sanpham->id,
+            'size_id' => $sizeId,
+            'topping_id' => implode(',', (array)$toppingIds),
+            'quantity' => $qty
+        ]);
+        $cartDetail->save();
 
-        if ($item) {
-            $item->quantity += $qty;
-            $item->price = $totalPrice;
-            $item->save();
-        } else {
-            $item = new Cartdetail([
-                'cart_id' => $cart->id,
-                'product_id' => $sanpham->id,
-                'product_attributes_id' => $sizeId, // truyền đúng tên cột trong DB
-                'product_topping_ids' => implode(',', (array)$toppingIds), // nếu có
-                'quantity' => $qty,
-                'price' => $totalPrice, // BẮT BUỘC phải có
-            ]);
-            $item->save();
-        }
     } else {
         // Chưa đăng nhập: lưu vào session
         $cart = session('cart', []);
