@@ -38,7 +38,6 @@ public function addToCart(Request $request, $id)
             ['user_id' => Auth::id()],
             ['session_id' => null]
         );
-
         // Tạo cart detail mới
         $cartDetail = new Cartdetail([
             'cart_id' => $cart->id,
@@ -64,7 +63,7 @@ public function addToCart(Request $request, $id)
                 'name'          => $sanpham->name,
                 'size_id'       => $sizeId,
                 'size_name'     => $size ? $size->size : null,
-                'size_price'    => $size ? $size->price : 0, // <-- luôn có giá trị, mặc định 0 nếu không có size
+                'size_price'    => $size ? $size->price : 0,
                 'topping_ids'   => $toppingIds,
                 'quantity'      => $qty,
                 'unit_price'    => $basePrice + $toppingPrice,
