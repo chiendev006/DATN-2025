@@ -4,23 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Cartdetail;
+use App\Models\sanpham;
+use App\Models\Size;
+use App\Models\Topping;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
 {
     public function index() {
-        if(Auth::check()) {
-            $cart_id=
-            $cart=Cartdetail::where('cart_id', )->get();
-            carrt
-                foreach($cart as $item) {
-
-                }
-            dd($cart);
+        if (Auth::check()) {
+            $cartModel = Cart::with('items.product')->where('user_id', Auth::id())->first();
+            $items = $cartModel?->items ?? [];
+            $cart = [];
         } else {
-            $cart= session('cart', []);
+            $items = [];
+            $cart = session('cart', []);
         }
-
+        return view('client.checkout', compact('items', 'cart'));
     }
 }

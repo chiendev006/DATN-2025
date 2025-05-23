@@ -1,5 +1,9 @@
 @extends('layout')
 @section('main')
+@php
+    use Illuminate\Support\Facades\Auth;
+    $isLoggedIn = Auth::check();
+@endphp
 <section class="home-slider owl-carousel">
 
 <div class="slider-item" style="background-image: url(images/bg_3.jpg);" data-stellar-background-ratio="0.5">
@@ -20,7 +24,7 @@
 <section class="ftco-section">
 <div class="container">
   <div class="row">
-    <div class="col-xl-8 ftco-animate">
+    <div class="col-xl-9 ftco-animate">
                   <form action="#" class="billing-form ftco-bg-dark p-3 p-md-5">
                       <h3 class="mb-4 billing-heading">Billing Details</h3>
             <div class="row align-items-end">
@@ -102,30 +106,63 @@
           </div>
           </div>
         </form>
-        <div class="row mt-5 pt-3 d-flex">
-            <div class="col-md-6 d-flex">
-                <div class="cart-detail cart-total ftco-bg-dark p-3 p-md-4">
-                    <h3 class="billing-heading mb-4">Cart Total</h3>
-                    <p class="d-flex">
-                              <span>Subtotal</span>
-                              <span>$20.60</span>
-                          </p>
-                          <p class="d-flex">
-                              <span>Delivery</span>
-                              <span>$0.00</span>
-                          </p>
-                          <p class="d-flex">
-                              <span>Discount</span>
-                              <span>$3.00</span>
-                          </p>
-                          <hr>
-                          <p class="d-flex total-price">
-                              <span>Total</span>
-                              <span>$17.60</span>
-                          </p>
-                          </div>
+{{-- Thay đổi ở dòng này: Bỏ class d-flex và thêm style display: block !important; --}}
+<div class="row mt-5 pt-3">
+    <div class="col-md-12" style="display: block !important;">
+        <div class="cart-detail cart-total ftco-bg-dark p-3 p-md-4">
+            <h3 class="billing-heading mb-4">Cart Summary</h3>
+            <div class="table-responsive">
+                <table class="table" style="white-space: nowrap;">
+                    <thead class="thead-primary">
+                        <tr class="text-center">
+                            <th>Sản phẩm</th>
+                            <th>Topping</th>
+                            <th>Số lượng</th>
+                            <th>Tổng giá sản phâm</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if($isLoggedIn)
+                            @foreach($items as $item)
+                                @php
+                                    $product = $item->product;
+                                    $size = \App\Models\Size::find($item->size_id);
+                                    $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id)));
+                                    $toppings = \App\Models\Product_topping::where('product_id', $item->product_id)
+                                        ->whereIn('id', $toppingIds)
+                                        ->get();
+                                    $unitPrice = $product->price + ($size->price ?? 0) + $toppings->sum('price');
+                                    $total = $unitPrice * $item->quantity;
+                                    $toppingNamesArr = $toppings->pluck('topping')->toArray();
+                                @endphp
+                                <tr class="text-center">
+                                    <td class="align-middle"><strong>{{ $product->name }}  Size: {{ $size->size ?? 'Không rõ' }}</strong></td>
+                                    <td class="align-middle">{!! $toppingNamesArr ? implode('<br>', $toppingNamesArr) : '' !!}</td>
+                                    <td class="align-middle">{{ $item->quantity }}</td>
+                                    <td class="align-middle">{{ number_format($total) }} VND</td>
+                                </tr>
+                            @endforeach
+                        @else
+                            @foreach($cart as $item)
+                                @php
+                                    $toppingNamesArr = !empty($item['topping_names']) ? $item['topping_names'] : [];
+                                @endphp
+                                <tr class="text-center">
+                                    <td class="align-middle"><strong>{{ $item['name'] }}</strong></td>
+                                    <td class="align-middle">{{ $item['size_name'] ?? 'Không rõ' }}</td>
+                                    <td class="align-middle">{!! $toppingNamesArr ? implode('<br>', $toppingNamesArr) : '' !!}</td>
+                                    <td class="align-middle">{{ $item['quantity'] }}</td>
+                                    <td class="align-middle">{{ number_format($item['price']) }} VND</td>
+                                </tr>
+                            @endforeach
+                        @endif
+                    </tbody>
+                </table>
             </div>
-            <div class="col-md-6">
+        </div>
+    </div>
+</div>
+    <div class="col-md-6">
                 <div class="cart-detail ftco-bg-dark p-3 p-md-4">
                     <h3 class="billing-heading mb-4">Payment Method</h3>
                               <div class="form-group">
@@ -157,11 +194,10 @@
                                   </div>
                               </div>
                               <p><a href="#"class="btn btn-primary py-3 px-4">Place an order</a></p>
-                        </div>         
+                        </div>
                 </div>
           </div>
-    </div> 
-    <div class="col-xl-4 sidebar ftco-animate">
+    <div class="col-xl-3 sidebar ftco-animate">
       <div class="sidebar-box">
         <form action="#" class="search-form">
           <div class="form-group">

@@ -65,13 +65,18 @@ public function addToCart(Request $request, $id)
                 'size_name'     => $size ? $size->size : null,
                 'size_price'    => $size ? $size->price : 0,
                 'topping_ids'   => $toppingIds,
-                'topping_names' => $toppings->pluck('name')->toArray(),
-                'topping_price' => $toppings->pluck('price')->toArray(),
                 'quantity'      => $qty,
                 'unit_price'    => $basePrice + $toppingPrice,
                 'price'         => $totalPrice,
                 'image'         => $sanpham->image,
             ];
+            $cart[$key]['topping_names'] = [];
+            $cart[$key]['topping_price'] = [];
+            foreach($toppingIds as $productToppingId){
+                $productTopping = \App\Models\Product_topping::find($productToppingId);
+                $cart[$key]['topping_names'][] = $productTopping ? $productTopping->topping : '';
+                $cart[$key]['topping_price'][] = $productTopping ? $productTopping->price : 0;
+            }
         }
         session(['cart' => $cart]);
     }
