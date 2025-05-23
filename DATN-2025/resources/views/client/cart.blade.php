@@ -139,7 +139,7 @@
           <hr>
           <p class="d-flex justify-content-between font-weight-bold"><span>Tổng cộng</span><span>{{ number_format($subtotal) }} VND</span></p>
           <div class="text-center mt-3">
-            <a href="#" class="btn btn-primary">Thanh toán</a>
+            <a href="{{ route('checkout.index') }}" class="btn btn-primary">Thanh toán</a>
           </div>
         </div>
       </div>
