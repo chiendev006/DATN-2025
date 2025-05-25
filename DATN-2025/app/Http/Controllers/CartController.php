@@ -22,7 +22,7 @@ public function addToCart(Request $request, $id)
     $size = Size::find($sizeId);
 
     $toppingIds = $request->input('topping_ids', []);
-    sort($toppingIds); // Sắp xếp để tạo key ổn định
+    sort($toppingIds); 
 
     $toppings = Topping::whereIn('id', (array)$toppingIds)->get();
 
@@ -33,7 +33,6 @@ public function addToCart(Request $request, $id)
     $unitPrice = $basePrice + $toppingPrice;
     $totalPrice = $unitPrice * $qty;
 
-    // Tạo key định danh sp-size-topping
     $key = $sanpham->id . '-' . $sizeId . '-' . implode(',', $toppingIds);
 
     if (Auth::check()) {
@@ -42,7 +41,6 @@ public function addToCart(Request $request, $id)
             ['session_id' => null]
         );
 
-        // Kiểm tra sản phẩm này đã có trong cart chưa (trùng product, size, topping)
         $existingItem = Cartdetail::where('cart_id', $cart->id)
             ->where('product_id', $sanpham->id)
             ->where('size_id', $sizeId)
@@ -50,11 +48,9 @@ public function addToCart(Request $request, $id)
             ->first();
 
         if ($existingItem) {
-            // Tăng số lượng và cập nhật giá
             $existingItem->quantity += $qty;
             $existingItem->save();
         } else {
-            // Thêm mới
             $cartDetail = new Cartdetail([
                 'cart_id' => $cart->id,
                 'product_id' => $sanpham->id,
@@ -65,7 +61,6 @@ public function addToCart(Request $request, $id)
             $cartDetail->save();
         }
     } else {
-        // User chưa đăng nhập - làm việc với session
         $cart = session('cart', []);
 
         if (isset($cart[$key])) {
@@ -131,7 +126,6 @@ public function addToCart(Request $request, $id)
         }
     }
 
-    // Tính tổng giảm giá từ nhiều mã
     foreach ($coupons as $coupon) {
         if ($coupon['type'] === 'percent') {
             $discount += ($subtotal * $coupon['discount']) / 100;
@@ -152,12 +146,10 @@ public function addToCart(Request $request, $id)
     ));
 }
 
-
-
     public function removeItem($key){
     if (Auth::check()) {
         $item = Cartdetail::find($key);
-    if ($item && $item->cart && $item->cart->user_id === Auth::id()) {
+        if ($item && $item->cart && $item->cart->user_id === Auth::id()) {
             $item->delete();
         }
     } else {
@@ -165,8 +157,14 @@ public function addToCart(Request $request, $id)
         unset($cart[$key]);
         session(['cart' => $cart]);
     }
+
+    if (request()->ajax()) {
+        return response()->json(['success' => true, 'message' => 'Đã xóa sản phẩm khỏi giỏ hàng!']);
+    }
+
     return redirect()->route('cart.index')->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng!');
 }
+
 public function boot()
 {
     View::composer('*', function ($view) {
@@ -243,50 +241,11 @@ public function updateCart(Request $request){
         }
     }
     session(['cart' => $cart]);
+      if ($request->ajax()) {
+    return response()->json(['success' => true, 'message' => 'Đã cập nhật giỏ hàng!']);
+}
     return redirect()->route('cart.index')->with('success', 'Cập nhật giỏ hàng thành công!');
 }
 
 
-public function applyCoupon(Request $request)
-{
-    $code = trim($request->input('coupon_code'));
-    $appliedCoupons = session('coupons', []); 
-
-    if (collect($appliedCoupons)->contains('code', $code)) {
-        return back()->with('coupon_error', 'Mã giảm giá này đã được áp dụng.');
-    }
-
-    $coupon = Coupon::where('code', $code)
-        ->where(function($q) {
-            $q->whereNull('expires_at')->orWhere('expires_at', '>=', now());
-        })
-        ->first();
-
-    if (!$coupon) {
-        return back()->with('coupon_error', 'Mã giảm giá không hợp lệ hoặc đã hết hạn.');
-    }
-
-    $appliedCoupons[] = [
-        'code' => $coupon->code,
-        'discount' => $coupon->discount,
-        'type' => $coupon->type
-    ];
-
-    session(['coupons' => $appliedCoupons]);
-
-    return back()->with('coupon_success', 'Áp dụng mã giảm giá thành công!');
-}
-
-
-public function removeCoupon(Request $request)
-{
-    $codeToRemove = $request->input('code');
-    $coupons = session('coupons', []);
-
-    $coupons = array_filter($coupons, fn($c) => $c['code'] !== $codeToRemove);
-
-    session(['coupons' => $coupons]);
-
-    return back()->with('coupon_success', 'Đã xóa mã giảm giá.');
-}
 }

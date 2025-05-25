@@ -4,6 +4,7 @@
     <title>Coffee - Free Bootstrap 4 Template by Colorlib</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:400,700" rel="stylesheet">
@@ -27,8 +28,21 @@
     <link rel="stylesheet" href="{{ url('asset') }}/css/flaticon.css">
     <link rel="stylesheet" href="{{ url('asset') }}/css/icomoon.css">
     <link rel="stylesheet" href="{{ url('asset') }}/css/style.css">
+     @php
+      use Illuminate\Support\Facades\Auth;
 
+      $cartCount = 0;
 
+      if (Auth::check()) {
+          $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+          if ($cart) {
+              $cartCount = \App\Models\Cartdetail::where('cart_id', $cart->id)->sum('quantity');
+          }
+      } else {
+          $sessionCart = session('cart', []);
+          $cartCount = collect($sessionCart)->sum('quantity');
+      }
+    @endphp
   </head>
   <body>
   	<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
@@ -55,13 +69,13 @@
             </li>
 	          <li class="nav-item"><a href="/contact/create" class="nav-link">Contact</a></li>
 	          <li class="nav-item cart">
-              <a href="{{ route('cart.index') }}" class="nav-link">
-                <span class="icon icon-shopping_cart"></span>
-                <span class="bag d-flex justify-content-center align-items-center">
-                  <small>{{ $cartCount ?? 0 }}</small>
-                </span>
-              </a>
-            </li>
+                <a href="{{ route('cart.index') }}" class="nav-link">
+                  <span class="icon icon-shopping_cart"></span>
+                  <span class="bag d-flex justify-content-center align-items-center">
+                    <small>{{ $cartCount }}</small>
+                  </span>
+                </a>
+              </li>
                 @auth
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -189,8 +203,10 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
   <script src="{{ url('asset') }}/js/google-map.js"></script>
   <script src="{{ url('asset') }}/js/main.js"></script>
-
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+@yield('scripts')
 
   </body>
 
 </html>
+

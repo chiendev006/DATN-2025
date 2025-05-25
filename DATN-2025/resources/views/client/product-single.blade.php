@@ -60,7 +60,7 @@
             @foreach($sizes as $size)
               <label class="mr-3">
                 <input type="radio" name="size_id" value="{{ $size->id }}" class="size-option" data-price="{{ $size->price }}" required>
-                {{ $size->size }} (+{{ number_format($size->price) }} VND)
+                {{ $size->size }}
               </label><br>
             @endforeach
           </div>
@@ -77,7 +77,7 @@
                        value="{{ $top->id }}"
                        class="topping-option"
                        data-price="{{ $top->price }}">
-                {{ $top->topping }} (+{{ number_format($top->price) }} VND)
+                {{ $top->topping }} ({{ number_format($top->price) }} VND)
               </label><br>
             @endforeach
           </div>
