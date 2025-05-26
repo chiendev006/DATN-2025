@@ -397,9 +397,26 @@
                         @endif
                     </div>
                     <br>
-                    <button type="button" class="btn-primary">
-                        <a href="{{ route("product-images.create") }}" style="color:white;text-decoration:none;">Thêm kho ảnh</a>
-                    </button>
+                    <button type="button" class="btn-primary" id="open-img-modal">Thêm ảnh</button>
+                </div>
+               <div id="img-modal" class="custom-modal" style="display:none;">
+                    <div class="custom-modal-content">
+                        <span class="custom-modal-close" id="close-img-modal">&times;</span>
+                        <h3>Thêm ảnh sản phẩm</h3> {{-- Changed heading for clarity --}}
+                        <form action="{{ route('product-images.store', ['id' => $sanpham->id]) }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $sanpham->id }}">
+                            <div class="field">
+                                <label class="label">Chọn ảnh</label>
+                                <div class="control">
+                                    <input class="input" type="file" name="hasFile[]" placeholder="Ảnh sản phẩm" required multiple accept="image/*">
+                                </div>
+                            </div>
+                            <div class="field grouped">
+                                <button type="submit" class="button green">Thêm ảnh</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -518,6 +535,21 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('click', function(e) {
         if (e.target === toppingModal) toppingModal.style.display = 'none';
     });
+
+     // Modal Image Gallery (Corrected)
+    const imgGalleryModal = document.getElementById('img-modal'); // Correct ID
+    const openImgGalleryBtn = document.getElementById('open-img-modal'); // Correct ID from the button
+    const closeImgGalleryBtn = document.getElementById('close-img-modal'); // Correct ID
+
+    openImgGalleryBtn && openImgGalleryBtn.addEventListener('click', ()=>{
+        imgGalleryModal.style.display = 'flex';
+    });
+    closeImgGalleryBtn && closeImgGalleryBtn.addEventListener('click', ()=>{
+        imgGalleryModal.style.display = 'none';
+    });
+    window.addEventListener('click', function(e) {
+        if (e.target === imgGalleryModal) imgGalleryModal.style.display = 'none';
+    })
 
     const alert = document.getElementById('custom-alert-success');
     if(alert) {
