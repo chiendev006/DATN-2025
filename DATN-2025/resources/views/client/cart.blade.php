@@ -158,65 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
   // Gửi mã giảm giá
-  const couponForm = document.getElementById("coupon-form");
-  if (couponForm) {
-    couponForm.addEventListener("submit", function (e) {
-      e.preventDefault();
 
-      const formData = new FormData(couponForm);
-      const messageBox = document.getElementById("coupon-message");
-
-      fetch(couponForm.action, {
-        method: "POST",
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-          "X-CSRF-TOKEN": csrfToken
-        },
-        body: formData
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          messageBox.innerHTML = `<small class="text-success">${data.message}</small>`;
-          setTimeout(() => window.location.reload(), 800);
-        } else {
-          messageBox.innerHTML = `<small class="text-danger">${data.message}</small>`;
-        }
-      })
-      .catch(() => {
-        messageBox.innerHTML = `<small class="text-danger">Đã xảy ra lỗi hệ thống.</small>`;
-      });
-    });
-  }
-
-  // Xoá mã giảm giá
-  document.querySelectorAll(".remove-coupon-form").forEach(form => {
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const formData = new FormData(form);
-
-      fetch(form.action, {
-        method: "POST",
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-          "X-CSRF-TOKEN": csrfToken
-        },
-        body: formData
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          window.location.reload();
-        } else {
-          alert('Không thể xoá mã. Vui lòng thử lại.');
-        }
-      })
-      .catch(() => {
-        alert('Lỗi hệ thống khi xoá mã.');
-      });
-    });
-  });
 });
 //
 

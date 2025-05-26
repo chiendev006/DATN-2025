@@ -46,7 +46,7 @@ use App\Http\Controllers\CheckoutController;
 
         // Trang chủ Client
         Route::get('/', [Controller::class, 'index'])->name('index');
-        Route::get('/', [Controller::class, 'danhmuc'])->name('danhmuc1.index');
+        Route::get('/',         [Controller::class, 'danhmuc'])->name('danhmuc1.index');
         Route::get('/menu', [Controller::class, 'show'])->name('client.menu');
         Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp');
 
@@ -61,9 +61,10 @@ use App\Http\Controllers\CheckoutController;
         // About
         Route::get('/about',[AboutController::class, 'index'])->name('about.index');
 
-        //checkout
-        Route::get('/checkout',[CheckoutController::class, 'index'])->name('checkout.index');
-        Route::get('/checkout/payment',[CheckoutController::class, 'index'])->name('client.payment');
+                //checkout
+                Route::get('/checkout',[CheckoutController::class, 'index'])->name('checkout.index');
+                Route::get('/checkout/payment',[CheckoutController::class, 'index'])->name('client.payment');
+
 
         // Blog
         Route::get('/blog',[BlogController::class, 'index'])->name('blog.index');
@@ -157,5 +158,4 @@ use App\Http\Controllers\CheckoutController;
         Route::get('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
         Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
 
-
-        
+     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');

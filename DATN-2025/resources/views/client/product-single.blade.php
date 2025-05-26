@@ -169,7 +169,6 @@
   }
 
   function updatePrice() {
-  // Lấy giá size được chọn
   let basePrice = 0;
   const sizeChecked = document.querySelector('.size-option:checked');
   if (sizeChecked) {
@@ -191,7 +190,6 @@ document.querySelectorAll('.size-option, .topping-option').forEach(el => {
   el.addEventListener('change', updatePrice);
 });
 
-// Gọi updatePrice lần đầu để cập nhật giá khi load trang
 updatePrice();
 </script>
 @endsection

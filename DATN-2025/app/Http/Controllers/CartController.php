@@ -8,7 +8,6 @@ use App\Models\Size;
 use App\Models\Topping;
 use App\Models\Cart;
 use App\Models\Cartdetail;
-use App\Models\Coupon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Session;
@@ -246,6 +245,4 @@ public function updateCart(Request $request){
 }
     return redirect()->route('cart.index')->with('success', 'Cập nhật giỏ hàng thành công!');
 }
-
-
 }
