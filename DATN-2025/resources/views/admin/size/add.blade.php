@@ -11,10 +11,8 @@
         <div class="card-content">
             <form action="{{ route('size.store') }}" method="post">
                 @csrf
-
-                {{-- Container for all size entries --}}
                 <div id="sizes-container">
-                    {{-- Initial Size Entry --}}
+
                     <div class="size-entry mb-4 p-4 border rounded">
                         <div class="field">
                             <label class="label">Tên Size</label>

@@ -14,54 +14,19 @@ class Product_attributesController extends Controller
         $size = Size::paginate(5);
         return view('admin.size.index', compact('size'));
     }
-    public function create() {
-        return view('admin.size.add');
-    }
     public function store(Request $request) {
         $request->validate([
             'sizes.*.name' => 'required|string',
             'sizes.*.price' => 'required|numeric',
         ]);
 
-        if (session('sanpham_data')) {
-            $sanphamData = session('sanpham_data');
-            $sanpham = \App\Models\sanpham::create($sanphamData);
-
-            foreach ($request->sizes as $size) {
                 Size::create([
-                    'product_id' => $sanpham->id,
-                    'size' => $size['name'],
-                    'price' => $size['price'],
+                    'product_id' => $request->product_id,
+                    'size' => $request->size_name,
+                    'price' => $request->size_price,
                 ]);
-            }
-
-        $topping_ids = session('product_topping_ids', []);
-        foreach ($topping_ids as $topping_id) {
-            $topping = Topping::find($topping_id);
-            if ($topping) {
-                Product_topping::create([
-                    'product_id' => $sanpham->id,
-                    'topping'    => $topping->name,
-                    'price'      => $topping->price,
-                ]);
-            }
-        }
-        session(['sanpham_id' => $sanpham->id]);
-        session()->forget('sanpham_data');
-             return redirect()->route('product-images.create')->with('success', 'Thêm sản phẩm và size thành công!');
-        } else {
-            // Từ edit sản phẩm
-                foreach ($request->sizes as $size) {
-                Size::create([
-                    'product_id' => session('sanpham_id'),
-                    'size' => $size['name'],
-                    'price' => $size['price'],
-                ]);
-
-            }
              return redirect()->route('sanpham.edit', ['id' => session('sanpham_id'), ])->with('success', 'Thêm sản phẩm và size thành công!');
 
-        }
     }
 
 
