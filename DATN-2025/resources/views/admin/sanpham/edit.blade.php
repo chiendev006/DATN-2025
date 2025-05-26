@@ -6,6 +6,13 @@
     </h1>
   </div>
 </section>
+<div id="alert-container">
+@if(session('success'))
+    <div class="custom-alert-success" id="custom-alert-success">
+        <span class="custom-alert-icon">✔</span> {{ session('success') }}
+    </div>
+@endif
+</div>
 <style>
   /* Style for the div by default */
   .product-info {
@@ -145,6 +152,61 @@
     height: 40px;        /* (Tùy chọn) Chiều cao cố định cho label nếu muốn */
     margin-bottom: 0;
 }
+
+.custom-modal {
+    position: fixed;
+    z-index: 9999;
+    left: 0; top: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.3);
+    display: flex; align-items: center; justify-content: center;
+}
+.custom-modal-content {
+    background: #fff;
+    border-radius: 10px;
+    padding: 32px 24px 24px 24px;
+    min-width: 320px;
+    max-width: 95vw;
+    box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08), 0 1.5px 4px 0 rgba(0,0,0,0.03);
+    position: relative;
+}
+.custom-modal-close {
+    position: absolute;
+    top: 12px; right: 18px;
+    font-size: 2rem;
+    color: #888;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 2;
+}
+.custom-modal-close:hover { color: #e11d48; }
+
+.custom-alert-success {
+    background: #e6ffe6;
+    color: #1a7f37;
+    border: 1.5px solid #22c55e;
+    border-radius: 8px;
+    padding: 12px 24px;
+    margin: 18px auto 18px auto;
+    max-width: 420px;
+    font-size: 1.08rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(34,197,94,0.08);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    animation: fadeInDown 0.5s;
+    z-index: 10000;
+}
+.custom-alert-icon {
+    font-size: 1.4em;
+    color: #22c55e;
+    margin-right: 8px;
+}
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 </style>
 <section class="section main-section">
     <div class="card mb-6">
@@ -192,29 +254,35 @@
                     </div>
                 </div>
                 <div class="field">
-                    <label class="label">Ảnh sản phẩm</label>
+                    <label class="label">Ảnh bìa</label>
                     <div class="control icons-left">
-                        <input class="input" type="file" name="image">
-                        <span class="icon left"><i class="mdi mdi-image"></i></span>
+                        <input class="input" type="file" name="image" id="cover-image-input" style="display:none" accept="image/*">
+                        <div id="cover-image-preview" class="cover-image-preview" style="width: 140px; height: 140px; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background: #fafafa;">
+                            @if ($sanpham->image)
+                                <img src="{{ asset('storage/uploads/' . $sanpham->image) }}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"/>
+                            @else
+                                <span class="cover-image-placeholder" style="color: #aaa;">Chọn ảnh bìa</span>
+                            @endif
+                        </div>
                         @error('image')
                             <p style="color: red;">{{ $message }}</p>
                         @enderror
                     </div>
-                    @if ($sanpham->image)
-                        <p>Ảnh hiện tại:</p>
-                        <img src="{{ asset('storage/uploads/' . $sanpham->image) }}" width="150px" alt="Ảnh sản phẩm">
-                    @endif
                 </div>
                 <div class="field">
                     <label class="label">Mô tả sản phẩm</label>
-                    <div class="control icons-left">
-                        <input class="input" type="text" name="mota" value="{{ old('mota', $sanpham->mota) }}" placeholder="Mô tả">
-                        <span class="icon left"><i class="mdi mdi-text"></i></span>
+                    <div class="field-body">
+                        <div class="field">
+                        <div class="control">
+                        <textarea class="textarea" name="mota" placeholder="Nhập mô tả chi tiết sản phẩm..." required>{{ old('mota', $sanpham->mota) }}</textarea>
                         @error('mota')
-                            <p style="color: red;">{{ $message }}</p>
-                        @enderror
+                            <p style="color: red;">Bạn chưa nhập mô tả sản phẩm !!!</p>
+                            @enderror
+                        </div>
+                        </div>
                     </div>
                 </div>
+
                 <div class="field grouped">
                     <div class="control">
                         <button type="submit" class="button green">Cập nhật</button>
@@ -237,11 +305,32 @@
                         @else
                             <div style="color: #888; font-style: italic;">Sản phẩm này đang trống Size - Giá, hãy cập nhật thêm!</div>
                         @endif
-                        <button type="button" class="btn-primary">
-                            <a href="{{ route('size.add', ['sanpham_id' => $sanpham->id]) }}" style="color:white;text-decoration:none;">Thêm Size - Giá</a>
-                        </button>
+                        <button type="button" class="btn-primary" id="open-size-modal">Thêm Size - Giá</button>
                     </div>
                 </div>
+                <!-- MODAL SIZE -->
+                <div id="size-modal" class="custom-modal" style="display:none;">
+                    <div class="custom-modal-content">
+                        <span class="custom-modal-close" id="close-size-modal">&times;</span>
+                        <h3>Thêm Size - Giá</h3>
+                        <form action="{{ route('size.store', ['sanpham_id' => $sanpham->id]) }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $sanpham->id }}">
+                            <div class="field">
+                                <label class="label">Tên Size</label>
+                                <input class="input" type="text" name="size_name" placeholder="Tên size" required>
+                            </div>
+                            <div class="field">
+                                <label class="label">Giá</label>
+                                <input class="input" type="number" name="size_price" placeholder="Giá" min="0" required>
+                            </div>
+                            <div class="field grouped">
+                                <button type="submit" class="button green">Thêm</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- END MODAL SIZE -->
 
                 <!-- TOPPING -->
                 @if(isset($role) && $role == 0)
@@ -266,21 +355,30 @@
                             @endif
                         </div>
                         <div class="field">
-                        <form action="{{ route('topping_detail.add', ['id' => $sanpham->id]) }}" method="POST" style="display:inline;">
-                            @csrf
-                            <input type="hidden" name="id" value="{{ $sanpham->id }}">
-                            <div class="control update-topping-checkboxes">
-                                @foreach($topping_list as $tp)
-                                    <label>
-                                        <input type="checkbox" name="topping_ids[]" value="{{ $tp->id }}">
-                                        {{ $tp->name }} {{ number_format($tp->price)." VND" }}
-                                    </label>
-                                @endforeach
-                            </div>
-                            <button type="submit" class="btn-primary">Thêm Topping</button>
-                        </form>
+                            <button type="button" class="btn-primary" id="open-topping-modal">Thêm Topping</button>
                         </div>
                     </div>
+                    <!-- MODAL TOPPING -->
+                    <div id="topping-modal" class="custom-modal" style="display:none;">
+                        <div class="custom-modal-content">
+                            <span class="custom-modal-close" id="close-topping-modal">&times;</span>
+                            <h3>Thêm Topping</h3>
+                            <form action="{{ route('topping_detail.add', ['id' => $sanpham->id]) }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="id" value="{{ $sanpham->id }}">
+                                <div class="control update-topping-checkboxes" style="margin-bottom:16px;">
+                                    @foreach($topping_list as $tp)
+                                        <label>
+                                            <input type="checkbox" name="topping_ids[]" value="{{ $tp->id }}">
+                                            {{ $tp->name }} {{ number_format($tp->price)." VND" }}
+                                        </label>
+                                    @endforeach
+                                </div>
+                                <button type="submit" class="button green">Thêm Topping</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- END MODAL TOPPING -->
                 @endif
 
                 <!-- KHO ẢNH -->
@@ -326,9 +424,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
+                       localStorage.setItem('successMessage', 'Xóa Size-Giá thành công!');
                        location.reload();
                     } else {
-                        alert('Xóa thất bại!');
+                        alert('Xóa Size-Giá thất bại!');
                     }
                 })
                 .catch(() => alert('Có lỗi xảy ra!'));
@@ -350,9 +449,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
+                       localStorage.setItem('successMessage', 'Xóa Topping thành công!');
                        location.reload();
                     } else {
-                        alert('Xóa topping thất bại!');
+                        alert('Xóa Topping thất bại!');
                     }
                 })
                 .catch(() => alert('Có lỗi xảy ra!'));
@@ -374,14 +474,75 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
+                       localStorage.setItem('successMessage', 'Xóa Ảnh thành công!');
                        location.reload();
                     } else {
-                        alert('Xóa ảnh thất bại!');
+                        alert('Xóa Ảnh thất bại!');
                     }
                 })
                 .catch(() => alert('Có lỗi xảy ra!'));
             }
         });
     });
+
+    const coverInput = document.getElementById('cover-image-input');
+    const coverPreview = document.getElementById('cover-image-preview');
+    coverPreview.addEventListener('click', function() {
+        coverInput.click();
+    });
+    coverInput.addEventListener('change', function(e) {
+        if (coverInput.files && coverInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                coverPreview.innerHTML = `<img src='${e.target.result}' style='width:100%;height:100%;object-fit:cover;border-radius:10px;'/>`;
+            }
+            reader.readAsDataURL(coverInput.files[0]);
+        }
+    });
+
+    // Modal Size
+    const sizeModal = document.getElementById('size-modal');
+    const openSizeBtn = document.getElementById('open-size-modal');
+    const closeSizeBtn = document.getElementById('close-size-modal');
+    openSizeBtn && openSizeBtn.addEventListener('click', ()=>{ sizeModal.style.display = 'flex'; });
+    closeSizeBtn && closeSizeBtn.addEventListener('click', ()=>{ sizeModal.style.display = 'none'; });
+    window.addEventListener('click', function(e) {
+        if (e.target === sizeModal) sizeModal.style.display = 'none';
+    });
+    // Modal Topping
+    const toppingModal = document.getElementById('topping-modal');
+    const openToppingBtn = document.getElementById('open-topping-modal');
+    const closeToppingBtn = document.getElementById('close-topping-modal');
+    openToppingBtn && openToppingBtn.addEventListener('click', ()=>{ toppingModal.style.display = 'flex'; });
+    closeToppingBtn && closeToppingBtn.addEventListener('click', ()=>{ toppingModal.style.display = 'none'; });
+    window.addEventListener('click', function(e) {
+        if (e.target === toppingModal) toppingModal.style.display = 'none';
+    });
+
+    const alert = document.getElementById('custom-alert-success');
+    if(alert) {
+        setTimeout(()=>{ alert.style.display = 'none'; }, 2500);
+    }
+
+    // Hiển thị alert khi xóa thành công qua localStorage
+    const msg = localStorage.getItem('successMessage');
+    if (msg) {
+        showCustomSuccess(msg);
+        localStorage.removeItem('successMessage');
+    }
 });
+
+function showCustomSuccess(msg) {
+    let alert = document.createElement('div');
+    alert.className = 'custom-alert-success';
+    alert.innerHTML = '<span class="custom-alert-icon">✔</span> ' + msg;
+    alert.id = 'custom-alert-success';
+    var container = document.getElementById('alert-container');
+    if(container) {
+        container.appendChild(alert);
+    } else {
+        document.body.prepend(alert);
+    }
+    setTimeout(()=>{ alert.style.display = 'none'; }, 2500);
+}
 </script>

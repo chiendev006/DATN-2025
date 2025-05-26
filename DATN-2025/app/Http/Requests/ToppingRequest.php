@@ -11,11 +11,7 @@ class ToppingRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
-    {
-        // only allow updates if the user is logged in
-        return backpack_auth()->check();
-    }
+
 
     /**
      * Get the validation rules that apply to the request.

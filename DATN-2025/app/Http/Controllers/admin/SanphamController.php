@@ -46,23 +46,53 @@ class SanphamController extends Controller
             'mota' => 'required|string',
             'id_danhmuc'  => 'required|exists:danhmucs,id',
         ]);
-        // Lưu file ảnh tạm thời
+
+        session(['data' => $request->all ]); // Xóa session nếu có
         $image = $request->file('image');
         $fileName = uniqid() . $image->getClientOriginalName();
         $image->storeAs('public/uploads/', $fileName);
 
-        // Lưu dữ liệu vào session hoặc truyền qua route
-        $data = [
+         $sanpham = sanpham::create([
             'name' => $request->name,
             'image' => $fileName,
             'mota' => $request->mota,
-            'id_danhmuc' => $request->id_danhmuc,
-        ];
-        // Có thể dùng session hoặc truyền qua route, ví dụ dùng session:
-        session(['sanpham_data' => $data]);
-        session(['product_topping_ids' => $request->input('topping_ids', [])]);
+            'id_danhmuc' => $request->id_danhmuc,]
+        );
 
-        return redirect()->route('size.add');
+         foreach ($request->sizes as $size) {
+                Size::create([
+                    'product_id' => $sanpham->id,
+                    'size' => $size['name'],
+                    'price' => $size['price'],
+                ]);
+            }
+
+
+
+             foreach ($request->topping_ids as $topping_id) {
+            $topping = Topping::find($topping_id);
+            if ($topping) {
+                Product_topping::create([
+                    'product_id' => $sanpham->id,
+                    'topping'    => $topping->name,
+                    'price'      => $topping->price,
+                ]);
+            }
+        }
+
+        if ($request->hasFile('hasFile')) {
+            foreach ($request->file('hasFile') as $file) {
+                $fileName = uniqid() . '_' . $file->getClientOriginalName();
+                $file->storeAs('public/uploads', $fileName);
+
+                ProductImage::create([
+                    'product_id' => $sanpham->id,
+                    'image_url' => $fileName,
+                ]);
+            }
+        }
+
+     return redirect()->route('sanpham.edit', ['id' => $sanpham->id, ])->with('success', 'Thêm sản phẩm thành công!');
     }
 
     /**
