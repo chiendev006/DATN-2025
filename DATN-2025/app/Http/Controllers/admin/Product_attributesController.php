@@ -34,19 +34,7 @@ class Product_attributesController extends Controller
         $size = Size::find($id);
         return view('admin.size.edit', compact('size'));
     }
-    public function update(Request $request, $id) {
-        $request->validate([
-            'name' => 'required|string',
-            'price' => 'required|numeric',
-        ]);
-        $name = $request->name;
-        $price = $request->price;
-        Size::where('id', $id)->update([
-            'name' => $name,
-            'price' => $price,
-        ]);
-        return redirect()->route('size.index')->with('success', 'Sửa thành công!');
-    }
+
     public function delete($id) {
         \App\Models\Size::destroy($id);
         if (request()->ajax()) {

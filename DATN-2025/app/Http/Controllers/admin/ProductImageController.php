@@ -21,18 +21,16 @@ class ProductImageController extends Controller
 
     public function store(Request $request)
     {
-        if ($request->hasFile('image')) {
-            foreach ($request->file('image') as $file) {
-                $fileName = uniqid() . $file->getClientOriginalName();
-                $file->storeAs('public/uploads/', $fileName);
+        if ($request->hasFile('hasFile')) {
+            foreach ($request->file('hasFile') as $file) {
+                $fileName = uniqid() . '_' . $file->getClientOriginalName();
+                $file->storeAs('public/uploads', $fileName);
+
                 ProductImage::create([
-                    "product_id" => session('sanpham_id'),
+                    'product_id' => $request->product_id,
                     'image_url' => $fileName,
                 ]);
             }
-        }
-        if ($request->ajax()) {
-            return response()->json(['success' => true]);
         }
                 return redirect()->route('sanpham.edit', ['id' => session('sanpham_id'), ])->with('success', 'Thêm sản phẩm và size thành công!');
     }
