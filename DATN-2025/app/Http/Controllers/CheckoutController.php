@@ -23,4 +23,5 @@ class CheckoutController extends Controller
         }
         return view('client.checkout', compact('items', 'cart'));
     }
+    
 }

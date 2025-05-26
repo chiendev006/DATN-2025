@@ -100,7 +100,7 @@
 										<div class="desc pl-3">
 											<div class="d-flex text align-items-center">
 												<h3><span>{{ $product->name }}</span></h3>
-												<span class="price">{{ number_format($product->price) }}VND</span>
+												<span class="price">{{ number_format($product->min_price) }}VND</span>
 											</div>
 											<div class="d-block">
 												<p>{{ $product->mota }}</p>
