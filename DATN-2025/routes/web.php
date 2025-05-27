@@ -39,7 +39,7 @@ use App\Http\Controllers\CheckoutController;
         Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
         Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
         Route::post('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
-        Route::get('/cart/remove/{key}', [CartController::class, 'removeItem'])->name('cart.remove');
+        Route::post('/cart/remove/{key?}', [CartController::class, 'removeItem'])->name('cart.remove');
 
 
 
