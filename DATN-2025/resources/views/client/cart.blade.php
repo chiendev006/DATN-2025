@@ -43,7 +43,7 @@
                 @endphp
                 <tr class="text-center" data-key="{{ $rowKey }}">
                   <td>
-                  <button class="remove-item btn btn-danger btn-sm" data-key="{{ $rowKey }}" style="background-color: transparent !important; border: none; color: inherit; padding: 0;">Xóa</button>
+                  <button data-key="{{ $rowKey }}" >Xóa</button>
                   </td>
                   <td><img src="{{ asset('storage/uploads/' . $product->image) }}" width="80"></td>
                   <td><strong>{{ $product->name }}</strong></td>
@@ -79,7 +79,7 @@
               @else
                 @foreach($cart as $key => $item)
                 @php
-                  $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_price']);
+                  $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices']);
                   $total = $unitPrice * $item['quantity'];
                 @endphp
                 <tr class="text-center" data-key="{{ $key }}">
@@ -94,7 +94,7 @@
                   <td>
                     @if(!empty($item['topping_names']))
                       @foreach($item['topping_names'] as $index => $topping)
-                        {{ $topping }}<small class="text-muted"> (+{{ number_format($item['topping_price'][$index]) }} VND)</small><br>
+                        {{ $topping }}<small class="text-muted"> (+{{ number_format($item['topping_prices'][$index]) }} VND)</small><br>
                       @endforeach
                     @else
                       Không có
@@ -128,7 +128,7 @@
         ? collect($items ?? [])->sum(fn($i) =>
             ($i->product->price + optional(\App\Models\Size::find($i->size_id))->price + \App\Models\Product_topping::where('product_id', $i->product_id)->whereIn('id', explode(',', $i->topping_id))->sum('price')) * $i->quantity)
         : collect($cart)->sum(function($item) {
-            $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_price']);
+            $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices']);
             return $unitPrice * $item['quantity'];
         });
 

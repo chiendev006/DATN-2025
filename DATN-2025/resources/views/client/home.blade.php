@@ -280,7 +280,7 @@
 						<a href="{{ route('client.product.detail', ['id' => $item->id]) }}"><img src="{{ url("/storage/uploads/$item->image") }}"   alt=""></a>
     					<div class="text text-center pt-4">
     						<h3><a href="#">{{ $item->name }}</a></h3>
-    						<p>{{ $item->mota }}</p>
+    						<p>{!! strip_tags($item->mota, '<p><br><strong><em>') !!}</p>
     						<p class="price">
                 <span>
                     {{ isset($item->min_price) ? number_format($item->min_price) : 'Liên hệ' }} VND
