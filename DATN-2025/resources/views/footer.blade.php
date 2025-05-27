@@ -1,82 +1,60 @@
-<footer class="footer">
-  <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
-    <div class="flex items-center justify-start space-x-3">
-      <div>
-        © 2021, JustBoil.me
-      </div>
+<!-- App footer start -->
+					<div class="app-footer">© Uni Pro Admin 2021</div>
+					<!-- App footer end -->
 
-      <div>
-        <p>Distributed By: <a href="https://themewagon.com/" target="_blank">ThemeWagon</a></p>
-      </div>
-      <a href="https://github.com/justboil/admin-one-tailwind" style="height: 20px">
-        <img src="https://img.shields.io/github/v/release/justboil/admin-one-tailwind?color=%23999">
-      </a>
-    </div>
+				</div>
+				<!-- Content wrapper scroll end -->
 
+			</div>
+			<!-- *************
+				************ Main container end *************
+			************* -->
 
-  </div>
-</footer>
+		</div>
+		<!-- Page wrapper end -->
 
-<div id="sample-modal" class="modal">
-  <div class="modal-background --jb-modal-close"></div>
-  <div class="modal-card">
-    <header class="modal-card-head">
-      <p class="modal-card-title">Sample modal</p>
-    </header>
-    <section class="modal-card-body">
-      <p>Lorem ipsum dolor sit amet <b>adipiscing elit</b></p>
-      <p>This is sample modal</p>
-    </section>
-    <footer class="modal-card-foot">
-      <button class="button --jb-modal-close">Cancel</button>
-      <button class="button red --jb-modal-close">Confirm</button>
-    </footer>
-  </div>
-</div>
+		<!-- *************
+			************ Required JavaScript Files *************
+		************* -->
+		<!-- Required jQuery first, then Bootstrap Bundle JS -->
+		<script src="{{ url('assetadmin') }}/js/jquery.min.js"></script>
+		<script src="{{ url('assetadmin') }}/js/bootstrap.bundle.min.js"></script>
+		<script src="{{ url('assetadmin') }}/js/modernizr.js"></script>
+		<script src="{{ url('assetadmin') }}/js/moment.js"></script>
 
-<div id="sample-modal-2" class="modal">
-  <div class="modal-background --jb-modal-close"></div>
-  <div class="modal-card">
-    <header class="modal-card-head">
-      <p class="modal-card-title">Sample modal</p>
-    </header>
-    <section class="modal-card-body">
-      <p>Lorem ipsum dolor sit amet <b>adipiscing elit</b></p>
-      <p>This is sample modal</p>
-    </section>
-    <footer class="modal-card-foot">
-      <button class="button --jb-modal-close">Cancel</button>
-      <button class="button blue --jb-modal-close">Confirm</button>
-    </footer>
-  </div>
-</div>
+		<!-- *************
+			************ Vendor Js Files *************
+		************* -->
 
-</div>
+		<!-- Megamenu JS -->
+		<script src="{{ url('assetadmin') }}/vendor/megamenu/js/megamenu.js"></script>
+		<script src="{{ url('assetadmin') }}/vendor/megamenu/js/custom.js"></script>
 
-<!-- Scripts below are for demo only -->
-<script type="text/javascript" src="js/main.min.js?v=1628755089081"></script>
+		<!-- Slimscroll JS -->
+		<script src="{{ url('assetadmin') }}/vendor/slimscroll/slimscroll.min.js"></script>
+		<script src="{{ url('assetadmin') }}/vendor/slimscroll/custom-scrollbar.js"></script>
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
-<script type="text/javascript" src="js/chart.sample.min.js"></script>
+		<!-- Search Filter JS -->
+		<script src="{{ url('assetadmin') }}/vendor/search-filter/search-filter.js"></script>
+		<script src="{{ url('assetadmin') }}/vendor/search-filter/custom-search-filter.js"></script>
 
+		<!-- Apex Charts -->
+		<script src="{{ url('assetadmin') }}/vendor/apex/apexcharts.min.js"></script>
+		<script src="{{ url('assetadmin') }}/vendor/apex/custom/home/salesGraph.js"></script>
+		<script src="{{ url('assetadmin') }}/vendor/apex/custom/home/ordersGraph.js"></script>
+		<script src="{{ url('assetadmin') }}/vendor/apex/custom/home/earningsGraph.js"></script>
+		<script src="{{ url('assetadmin') }}/vendor/apex/custom/home/visitorsGraph.js"></script>
+		<script src="{{ url('assetadmin') }}/vendor/apex/custom/home/customersGraph.js"></script>
+		<script src="{{ url('assetadmin') }}/vendor/apex/custom/home/sparkline.js"></script>
 
-<script>
-  !function(f,b,e,v,n,t,s)
-  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', '658339141622648');
-  fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=658339141622648&ev=PageView&noscript=1"/></noscript>
+		<!-- Circleful Charts -->
+		<script src="{{ url('assetadmin') }}/vendor/circliful/circliful.min.js"></script>
+		<script src="{{ url('assetadmin') }}/vendor/circliful/circliful.custom.js"></script>
 
-<!-- Icons below are for demo only. Feel free to use any icon pack. Docs: https://bulma.io/documentation/elements/icon/ -->
-<link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+		<!-- Main Js Required -->
+		<script src="{{ url('assetadmin') }}/js/main.js"></script>
 
-</body>
+	</body>
 
+<!-- Mirrored from www.bootstrapget.com/demos/themeforest/unipro-admin-template/demos/01-design-blue/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 25 May 2025 08:58:21 GMT -->
 </html>
