@@ -46,7 +46,7 @@
         <p class="price">
           <span id="display-price" data-base="{{ $sanpham->price }}">{{ number_format($sanpham->price) }} VND</span>
         </p>
-        <p>{{ $sanpham->mota }}</p>
+       <p>{!! strip_tags($sanpham->mota, '<p><br><strong><em>') !!}</>
 
          <form action="{{ route('cart.add', $sanpham->id) }}" method="POST">
           @csrf

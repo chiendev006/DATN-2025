@@ -49,7 +49,7 @@
             </td>
             <td data-label="Company">{{ $item['name'] }}</td>
             <td data-label="Company"><img src="{{ url("/storage/uploads/$item->image") }}"  width="100px" alt=""></td>
-            <td data-label="Company">{{ $item['mota'] }}</td>
+            <td data-label="Company">{!! $item['mota'] !!}</td>
             <td data-label="Company">{{ $item->danhmuc->name ?? 'Không có danh mục' }}</td>
             <td class="actions-cell">
                 <a href="{{ route('sanpham.edit', ['id' => $item->id]) }}" class="button small blue">
