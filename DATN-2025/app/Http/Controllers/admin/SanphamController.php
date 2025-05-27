@@ -39,37 +39,46 @@ class SanphamController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request){
-        $request->validate([
-            'name' => 'required|string',
-            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'mota' => 'required|string',
-            'id_danhmuc'  => 'required|exists:danhmucs,id',
-        ]);
+    public function store(Request $request)
+{
+    // Validate dữ liệu đầu vào
+    $request->validate([
+        'name' => 'required|string',
+        'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'mota' => 'required|string',
+        'id_danhmuc'  => 'required|exists:danhmucs,id',
+    ]);
 
-        session(['data' => $request->all ]); // Xóa session nếu có
-        $image = $request->file('image');
-        $fileName = uniqid() . $image->getClientOriginalName();
-        $image->storeAs('public/uploads/', $fileName);
+    // Lưu session tạm nếu cần
+    session(['data' => $request->except(['image', 'hasFile'])]);
 
-         $sanpham = sanpham::create([
-            'name' => $request->name,
-            'image' => $fileName,
-            'mota' => $request->mota,
-            'id_danhmuc' => $request->id_danhmuc,]
-        );
+    // Xử lý ảnh đại diện
+    $image = $request->file('image');
+    $fileName = uniqid() . $image->getClientOriginalName();
+    $image->storeAs('public/uploads/', $fileName);
 
-         foreach ($request->sizes as $size) {
-                Size::create([
-                    'product_id' => $sanpham->id,
-                    'size' => $size['name'],
-                    'price' => $size['price'],
-                ]);
-            }
+    // Tạo sản phẩm
+    $sanpham = sanpham::create([
+        'name' => $request->name,
+        'image' => $fileName,
+        'mota' => $request->mota,
+        'id_danhmuc' => $request->id_danhmuc,
+    ]);
 
+    // Thêm size nếu có
+    if ($request->has('sizes') && is_array($request->sizes)) {
+        foreach ($request->sizes as $size) {
+            Size::create([
+                'product_id' => $sanpham->id,
+                'size' => $size['name'],
+                'price' => $size['price'],
+            ]);
+        }
+    }
 
-
-             foreach ($request->topping_ids as $topping_id) {
+    // Thêm topping nếu có
+    if ($request->has('topping_ids') && is_array($request->topping_ids)) {
+        foreach ($request->topping_ids as $topping_id) {
             $topping = Topping::find($topping_id);
             if ($topping) {
                 Product_topping::create([
@@ -79,21 +88,24 @@ class SanphamController extends Controller
                 ]);
             }
         }
-
-        if ($request->hasFile('hasFile')) {
-            foreach ($request->file('hasFile') as $file) {
-                $fileName = uniqid() . '_' . $file->getClientOriginalName();
-                $file->storeAs('public/uploads', $fileName);
-
-                ProductImage::create([
-                    'product_id' => $sanpham->id,
-                    'image_url' => $fileName,
-                ]);
-            }
-        }
-
-     return redirect()->route('sanpham.edit', ['id' => $sanpham->id, ])->with('success', 'Thêm sản phẩm thành công!');
     }
+
+    // Thêm nhiều ảnh nếu có
+    if ($request->hasFile('hasFile')) {
+        foreach ($request->file('hasFile') as $file) {
+            $fileName = uniqid() . '_' . $file->getClientOriginalName();
+            $file->storeAs('public/uploads', $fileName);
+
+            ProductImage::create([
+                'product_id' => $sanpham->id,
+                'image_url' => $fileName,
+            ]);
+        }
+    }
+
+    return redirect()->route('sanpham.edit', ['id' => $sanpham->id])
+                     ->with('success', 'Thêm sản phẩm thành công!');
+}
 
     /**
      * Display the specified resource.

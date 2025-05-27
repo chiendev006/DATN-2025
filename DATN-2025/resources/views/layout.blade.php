@@ -43,6 +43,7 @@
           $cartCount = collect($sessionCart)->sum('quantity');
       }
     @endphp
+    
   </head>
   <body>
   	<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">

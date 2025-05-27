@@ -103,7 +103,7 @@
 												<span class="price">{{ number_format($product->min_price) }}VND</span>
 											</div>
 											<div class="d-block">
-												<p>{{ $product->mota }}</p>
+												 <p>{!! strip_tags($product->mota, '<p><br><strong><em>') !!}</>
 											</div>
 										</div>
 									</div>
@@ -160,7 +160,7 @@
 												</a>
 											<div class="text">
 												<h3><a href="#">{{ $sanpham->name }}</a></h3>
-												<p>{{ $sanpham->mota }}</p>
+												<p>{!! strip_tags($sanpham->mota, '<p><br><strong><em>') !!}</p>
 												<p class="price"><span>{{ number_format($sanpham->min_price) }} VND</span></p>
 												<p><a href="" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
 											</div>
