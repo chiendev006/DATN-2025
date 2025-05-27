@@ -1,116 +1,106 @@
 @include('header')
-<section class="is-hero-bar">
-  <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
-    <h1 class="title">
-      Sản phẩm
-    </h1>
-  </div>
-</section>
- <section class="section main-section">
+
+ <div class="content-wrapper">
+
+						<!-- Row start -->
+						<div class="row gutters">
+							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+
+								<!-- Card start -->
+								<div class="card">
+									<section class="section main-section">
     <div class="card mb-6 custom-card">
-      <header class="card-header">
-        <p class="card-header-title">
-          <span class="icon"><i class="mdi mdi-ballot"></i></span>
-          Thêm sản phẩm
-        </p>
-      </header>
+
       <div class="card-content">
         <form action="{{ route('sanpham.store') }}" method="post" enctype="multipart/form-data">
             @csrf
-             <div class="field">
-                <label class="label">Danh mục sản phẩm</label>
-                <div class="control">
-                <div class="select">
-                    <select name="id_danhmuc" id="id_danhmuc">
-    @foreach($danhmuc as $dm)
-        <option value="{{ $dm->id }}" data-role="{{ $dm->role }}">{{ $dm->name }}</option>
-    @endforeach
-</select>
-                </div>
-                @error('id_danhmuc')
-                     <p style="color: red;">Bạn chưa chọn danh mục sản phẩm !!!</p>
-                @enderror
-                </div>
-            </div>
-          <div class="field">
-            <label class="label">Tên sản phẩm</label>
-            <div class="field-body">
-              <div class="field">
-                <div class="control icons-left">
-                  <input class="input" type="text" name="name" placeholder="Tên" required>
-                  <span class="icon left"><i class="mdi mdi-account"></i></span>
-                  @error('name')
-                    <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
-                  @enderror
-                </div>
-              </div>
-          </div>
-          <div class="field">
-                <label class="label">Ảnh bìa</label>
-                <div class="field-body">
-                    <div class="field">
-                    <div class="control icons-left">
-                        <input class="input" type="file" name="image" placeholder="Ảnh bìa" required >
-                        <span class="icon left"><i class="mdi mdi-account"></i></span>
-                    </div>
-                    </div>
-                </div>
-                </div>
-          <hr>
 
-          <div id="sizes-container">
-            <div class="size-entry mb-4 p-4 border rounded">
-                <div class="field">
-                    <label class="label">Tên Size</label>
-                    <div class="field-body">
-                        <div class="field">
-                            <div class="control icons-left">
-                                <input class="input" type="text" name="sizes[0][name]" placeholder="Tên" value="{{ old('sizes.0.name') }}">
-                                <span class="icon left"><i class="mdi mdi-account"></i></span>
-                                @error('sizes.0.name')
-                                    <p style="color: red;">{{ $message }}</p>
-                                @enderror
+                <div id="genCollapse" class="accordion-collapse collapse show" aria-labelledby="genInfo" data-bs-parent="#settingsAccordion">
+                    <div style="display: flex; justify-content: space-between;" class="accordion-body">
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+                        <div class="field-wrapper">
+                            <select class="select-single js-states" title="Select Product Category" data-live-search="true">
+                            @foreach($danhmuc as $dm)
+                            <option value="{{ $dm->id }}" data-role="{{ $dm->role }}">{{ $dm->name }}</option>
+                            @endforeach
+                            </select>
+                            <div class="field-placeholder">Single Select</div>
+				        </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12">
+                        <div class="field-wrapper">
+                            <input type="text"   name="name" placeholder="Tên" required />
+                            <div class="field-placeholder">Full Name</div>
+                            @error('name')
+                            <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
+                              @enderror
+                        </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+                        <div class="field-wrapper">
+                            <div class="input-group">
+                            <input name="image" type="file" class="form-control" id="inputGroupFile01">
+                            <div class="field-placeholder">Single Select</div>
                             </div>
                         </div>
+                </div>
                     </div>
                 </div>
 
-                <div class="field">
-                    <label class="label">Giá Size</label>
-                    <div class="field-body">
-                        <div class="field">
-                            <div class="control icons-left">
-                                <input class="input" type="number" name="sizes[0][price]" placeholder="Giá" value="{{ old('sizes.0.price') }}" min="0">
-                                <span class="icon left"><i class="mdi mdi-cash"></i></span>
-                                @error('sizes.0.price')
-                                    <p style="color: red;">{{ $message }}</p>
-                                @enderror
+
+    <div id="genCollapse" class="accordion-collapse collapse show" aria-labelledby="genInfo" data-bs-parent="#settingsAccordion">
+        <div style="display: flex; justify-content: space-between;" class="accordion-body">
+            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-7">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="field-wrapper">
+                            <div class="input-group">
+                            <input name="hasFile[]" placeholder="Ảnh sản phẩm" required multiple accept="image/*" type="file" class="form-control" id="inputGroupFile01">
+                            <div class="field-placeholder">Single Select</div>
                             </div>
                         </div>
+                        </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="field-wrapper">
+                    <div id="sizes-container">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="field-wrapper">
+                                    <input type="text" name="sizes[0][name]" placeholder="Tên" value="{{ old('sizes.0.name') }}"   name="name" placeholder="Tên" required />
+                                    <div class="field-placeholder">Full Name</div>
+                                    @error('sizes.0.name')
+                                    <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
+                                    @enderror
+                                </div>
+                                </div>
+
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="field-wrapper">
+                                    <input type="text" name="sizes[0][price]" placeholder="Tên" value="{{ old('sizes.0.price') }}"   name="name" placeholder="Tên" required />
+                                    <div class="field-placeholder">Full Name</div>
+                                    @error('sizes.0.price')
+                                    <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
+                                    @enderror
+                                </div>
+                                </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="field">
+            <div class="field">
             <div class="control">
                 <button type="button" id="add-size-button" class="button blue mb-3 custom-add-size">
                     <span class="icon"><i class="mdi mdi-plus"></i></span>
                     Thêm Size Khác
                 </button>
             </div>
-        </div>
-        <hr>
-        <div class="field">
-          <label class="label">Ảnh sản phẩm</label>
-          <div class="field-body">
-            <div class="field">
-              <div class="control icons-left">
-                <input class="input" type="file" name="hasFile[]" placeholder="Ảnh sản phẩm" required multiple accept="image/*">
-                <span class="icon left"><i class="mdi mdi-account"></i></span>
-              </div>
             </div>
-          </div>
-        </div>
+            </div>
+
+    </div>
+
+
+
         <hr>
         <div class="field">
             <label class="label">Mô tả sản phẩm</label>
@@ -137,7 +127,6 @@
                 @endforeach
             </div>
         </div>
-        <hr>
         <div class="field grouped">
             <div class="control">
               <button type="submit" class="button green custom-submit">
@@ -149,6 +138,14 @@
       </div>
     </div>
   </section>
+								</div>
+								<!-- Card end -->
+
+							</div>
+						</div>
+						<!-- Row end -->
+
+					</div>
   @include('footer')
   <style>
     .custom-card {
@@ -277,32 +274,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
         newSizeEntry.innerHTML = `
         <br>
-        <div class="field">
-            <label class="label">Tên Size ${sizeIndex + 1}</label>
-            <div class="field-body">
-                <div class="field">
-                    <div class="control icons-left">
-                        <input class="input" type="text" name="sizes[${sizeIndex}][name]" placeholder="Tên">
-                        <span class="icon left"><i class="mdi mdi-account"></i></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="field">
-            <label class="label">Giá Size ${sizeIndex + 1}</label>
-            <div class="field-body">
-                <div class="field">
-                    <div class="control icons-left">
-                        <input class="input" type="text" name="sizes[${sizeIndex}][price]" placeholder="Giá">
-                        <span class="icon left"><i class="mdi mdi-cash"></i></span>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="field-wrapper">
+                            <input type="text" name="sizes[${sizeIndex}][name]" placeholder="Tên" value="{{ old('sizes.0.name') }}"   name="name" placeholder="Tên" required />
+                            <div class="field-placeholder">Full Name ${sizeIndex + 1}</div>
+                            @error('sizes.${sizeIndex}.name')
+                            <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
+                              @enderror
+                        </div>
+                        </div>
+
+
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="field-wrapper">
+                            <input type="text" name="sizes[${sizeIndex}][price]" placeholder="Tên" value="{{ old('sizes.0.price') }}"   name="name" placeholder="Tên" required />
+                            <div class="field-placeholder">Full Name ${sizeIndex + 1}</div>
+                            @error('sizes.${sizeIndex}.price')
+                            <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
+                              @enderror
+                        </div>
+                        </div>
         <button type="button" class="button is-danger is-small remove-size-button" style="position: absolute; background-color: red; color: aliceblue; top: 10px; right: 10px;">
             <span class="icon is-small"><i class="mdi mdi-delete"></i></span> Xóa
         </button>
-        <hr class="mt-3 mb-0">
+
     `;
 
         sizesContainer.appendChild(newSizeEntry);
