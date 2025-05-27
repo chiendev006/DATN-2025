@@ -8,7 +8,7 @@
     <title>Login - Admin One Tailwind CSS Admin Dashboard</title>
 
     <!-- Tailwind is included -->
-    <link rel="stylesheet" href="{{ url('assetadmin') }}/css/main.css?v=1628755089081">
+    <link rel="stylesheet" href="{{ url('assetlogin') }}/css/main.css?v=1628755089081">
 
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"/>
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png"/>

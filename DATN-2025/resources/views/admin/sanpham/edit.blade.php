@@ -208,221 +208,203 @@
     to { opacity: 1; transform: translateY(0); }
 }
 </style>
-<section class="section main-section">
-    <div class="card mb-6">
-      <header class="card-header">
-        <p class="card-header-title">
-          <span class="icon"><i class="mdi mdi-ballot"></i></span>
-          Sửa sản phẩm
-        </p>
-        <a href="{{ route('sanpham.index') }}" class="btn-primary" style="min-width:110px;padding:6px 12px;font-size:15px;margin-right:12px;margin-top:8px;height:36px;display:flex;align-items:center;">
-            <span class="icon" style="margin-right:6px;"><i class="mdi mdi-arrow-left"></i></span>
-            List sản phẩm
-        </a>
-      </header>
-      <div class="card-content">
-        <div class="form-flex">
-            <!-- BÊN TRÁI: FORM -->
-            <form action="{{ route('sanpham.update', ['id' => $sanpham->id]) }}" method="POST" enctype="multipart/form-data" class="form-left">
-                @csrf
-                <div class="field">
-                    <label class="label">Danh mục sản phẩm</label>
-                    <div class="control">
-                        <div class="select">
-                            <select name="id_danhmuc">
-                                <option value="">-- Chọn danh mục --</option>
-                                @foreach($danhmuc as $dm)
-                                    <option value="{{ $dm->id }}" {{ $sanpham->id_danhmuc == $dm->id ? 'selected' : '' }}>
-                                        {{ $dm->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        @error('id_danhmuc')
-                            <p style="color: red;">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Tên sản phẩm</label>
-                    <div class="control icons-left">
-                        <input class="input" type="text" name="name" value="{{ old('name', $sanpham->name) }}" placeholder="Tên sản phẩm">
-                        <span class="icon left"><i class="mdi mdi-account"></i></span>
-                        @error('name')
-                            <p style="color: red;">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Ảnh bìa</label>
-                    <div class="control icons-left">
-                        <input class="input" type="file" name="image" id="cover-image-input" style="display:none" accept="image/*">
-                        <div id="cover-image-preview" class="cover-image-preview" style="width: 140px; height: 140px; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background: #fafafa;">
-                            @if ($sanpham->image)
-                                <img src="{{ asset('storage/uploads/' . $sanpham->image) }}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"/>
-                            @else
-                                <span class="cover-image-placeholder" style="color: #aaa;">Chọn ảnh bìa</span>
-                            @endif
-                        </div>
-                        @error('image')
-                            <p style="color: red;">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Mô tả sản phẩm</label>
-                    <div class="field-body">
-                        <div class="field">
-                        <div class="control">
-                        <textarea id="editor" class="textarea" name="mota" required>{{ old('mota', $sanpham->mota) }}</textarea>
-                        @error('mota')
-                            <p style="color: red;">Bạn chưa nhập mô tả sản phẩm !!!</p>
-                            @enderror
-                        </div>
-                        </div>
-                    </div>
-                </div>
+<div class="content-wrapper">
 
-                <div class="field grouped">
-                    <div class="control">
-                        <button type="submit" class="button green">Cập nhật</button>
-                    </div>
-                </div>
-            </form>
-            <!-- BÊN PHẢI: NGOÀI FORM -->
-            <div class="form-right">
-                <!-- SIZE -->
-                <div class="field">
-                    <label class="label">Giá sản phẩm (Size)</label>
-                    <div class="control icons-left">
-                        @if(isset($size) && count($size) > 0)
-                            @foreach ($size as $i )
-                                <div class="product-info" data-id="{{ $i->id }}">
-                                    <span class="original-content">{{ $i->size}}-{{ $i->price." VND" }}</span>
-                                </div>
-                            @endforeach
-                            <br>
-                        @else
-                            <div style="color: #888; font-style: italic;">Sản phẩm này đang trống Size - Giá, hãy cập nhật thêm!</div>
-                        @endif
-                        <button type="button" class="btn-primary" id="open-size-modal">Thêm Size - Giá</button>
-                    </div>
-                </div>
-                <!-- MODAL SIZE -->
-                <div id="size-modal" class="custom-modal" style="display:none;">
-                    <div class="custom-modal-content">
-                        <span class="custom-modal-close" id="close-size-modal">&times;</span>
-                        <h3>Thêm Size - Giá</h3>
-                        <form action="{{ route('size.store', ['sanpham_id' => $sanpham->id]) }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="product_id" value="{{ $sanpham->id }}">
-                            <div class="field">
-                                <label class="label">Tên Size</label>
-                                <input class="input" type="text" name="size_name" placeholder="Tên size" required>
-                            </div>
-                            <div class="field">
-                                <label class="label">Giá</label>
-                                <input class="input" type="number" name="size_price" placeholder="Giá" min="0" required>
-                            </div>
-                            <div class="field grouped">
-                                <button type="submit" class="button green">Thêm</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <!-- END MODAL SIZE -->
+						<!-- Row start -->
+						<div class="row gutters">
+							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 
-                <!-- TOPPING -->
-                @if(isset($role) && $role == 0)
-                    <div class="field" id="topping-detail-field">
-                        <label class="label">Topping có thể dùng</label>
-                        <div class="control">
-                            <div style="color: #888; font-style: italic;">Sản phẩm này không đi kèm Topping</div>
-                        </div>
-                    </div>
-                @elseif(isset($role) && $role == 1 && isset($topping_detail))
-                    <div class="field" id="topping-detail-field">
-                        <label class="label">Topping có thể dùng</label>
-                        <div class="control">
-                            @if(count($topping_detail) > 0)
-                                @foreach($topping_detail as $tp)
-                                    <span class="product-info topping-info" data-id="{{ $tp->id }}" style="margin-right:8px; cursor:pointer;">
-                                        <span class="original-content">{{ $tp->topping }} ({{ number_format($tp->price) }}đ)</span>
-                                    </span>
-                                @endforeach
-                            @else
-                                <div style="color: #888; font-style: italic;">Sản phẩm này đang trống Topping, hãy cập nhật thêm!</div>
-                            @endif
-                        </div>
-                        <div class="field">
-                            <button type="button" class="btn-primary" id="open-topping-modal">Thêm Topping</button>
-                        </div>
-                    </div>
-                    <!-- MODAL TOPPING -->
-                    <div id="topping-modal" class="custom-modal" style="display:none;">
-                        <div class="custom-modal-content">
-                            <span class="custom-modal-close" id="close-topping-modal">&times;</span>
-                            <h3>Thêm Topping</h3>
-                            <form action="{{ route('topping_detail.add', ['id' => $sanpham->id]) }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="id" value="{{ $sanpham->id }}">
-                                <div class="control update-topping-checkboxes" style="margin-bottom:16px;">
-                                    @foreach($topping_list as $tp)
-                                        <label>
-                                            <input type="checkbox" name="topping_ids[]" value="{{ $tp->id }}">
-                                            {{ $tp->name }} {{ number_format($tp->price)." VND" }}
-                                        </label>
-                                    @endforeach
-                                </div>
-                                <button type="submit" class="button green">Thêm Topping</button>
-                            </form>
-                        </div>
-                    </div>
-                    <!-- END MODAL TOPPING -->
-                @endif
+								<!-- Card start -->
+								<div class="card">
+									<div class="card-body">
 
-                <!-- KHO ẢNH -->
-                <div class="field">
-                    <label class="label">Kho ảnh</label>
-                    <div class="product-gallery control icons-left">
-                        @if(isset($product_img) && count($product_img) > 0)
-                            @foreach ($product_img as $i )
-                                <img src="{{ asset('storage/uploads/' . $i->image_url) }}" width="120px" style="margin:5px;"
-                                     alt="Ảnh sản phẩm"
-                                     class="product-gallery-img"
-                                     data-id="{{ $i->id }}">
-                            @endforeach
-                        @else
-                            <div style="color: #888; font-style: italic;">Sản phẩm này đang trống Ảnh về sản phẩm, hãy cập nhật thêm!</div>
-                        @endif
-                    </div>
-                    <br>
-                    <button type="button" class="btn-primary" id="open-img-modal">Thêm ảnh</button>
-                </div>
-               <div id="img-modal" class="custom-modal" style="display:none;">
-                    <div class="custom-modal-content">
-                        <span class="custom-modal-close" id="close-img-modal">&times;</span>
-                        <h3>Thêm ảnh sản phẩm</h3> {{-- Changed heading for clarity --}}
-                        <form action="{{ route('product-images.store', ['id' => $sanpham->id]) }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            <input type="hidden" name="product_id" value="{{ $sanpham->id }}">
-                            <div class="field">
-                                <label class="label">Chọn ảnh</label>
-                                <div class="control">
-                                    <input class="input" type="file" name="hasFile[]" placeholder="Ảnh sản phẩm" required multiple accept="image/*">
-                                </div>
-                            </div>
-                            <div class="field grouped">
-                                <button type="submit" class="button green">Thêm ảnh</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-      </div>
-    </div>
-  </section>
+										<!-- Row start -->
+										<div class="row gutters">
+											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-4 col-12">
+												<div class="form-section-header">Account</div>
+											</div>
+											<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+
+												<!-- Field wrapper start -->
+												<div class="field-wrapper">
+													<div class="input-group">
+														<input class="form-control" type="text">
+														<span class="input-group-text">
+															<i class="icon-user1"></i>
+														</span>
+													</div>
+													<div class="field-placeholder">Full Name <span class="text-danger">*</span></div>
+												</div>
+												<!-- Field wrapper end -->
+
+											</div>
+											<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+
+												<!-- Field wrapper start -->
+												<div class="field-wrapper">
+													<div class="input-group">
+														<input class="form-control" type="email">
+														<span class="input-group-text">
+															<i class="icon-email"></i>
+														</span>
+													</div>
+													<div class="field-placeholder">Email Address <span class="text-danger">*</span></div>
+												</div>
+												<!-- Field wrapper end -->
+
+											</div>
+											<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+
+												<!-- Field wrapper start -->
+												<div class="field-wrapper">
+													<div class="input-group">
+														<input class="form-control" type="text">
+														<span class="input-group-text">
+															<i class="icon-phone1"></i>
+														</span>
+													</div>
+													<div class="field-placeholder">Phone Number</div>
+												</div>
+												<!-- Field wrapper end -->
+
+											</div>
+											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-4 col-12">
+												<div class="form-section-header">Billing <span class="title-info">We'll never share your with anyone.</span></div>
+											</div>
+											<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+
+												<!-- Field wrapper start -->
+												<div class="field-wrapper">
+													<div class="input-group">
+														<input class="form-control" type="text">
+														<span class="input-group-text">
+															<i class="icon-info2"></i>
+														</span>
+													</div>
+													<div class="field-placeholder">Plan</div>
+												</div>
+												<!-- Field wrapper end -->
+
+											</div>
+											<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+
+												<!-- Field wrapper start -->
+												<div class="field-wrapper">
+													<div class="checkbox-container">
+														<div class="form-check form-check-inline">
+															<input class="form-check-input" type="radio" name="billingInterval" id="monthly" value="monthly">
+															<label class="form-check-label" for="monthly">Monthly</label>
+														</div>
+														<div class="form-check form-check-inline">
+															<input class="form-check-input" type="radio" name="billingInterval" id="quarterly" value="quarterly">
+															<label class="form-check-label" for="quarterly">Quatrerly</label>
+														</div>
+														<div class="form-check form-check-inline">
+															<input class="form-check-input" type="radio" name="billingInterval" id="yearly" value="yearly" disabled="">
+															<label class="form-check-label" for="yearly">Yearly</label>
+														</div>
+														<div class="field-placeholder">Billing Interval</div>
+													</div>
+												</div>
+												<!-- Field wrapper end -->
+
+											</div>
+											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-4 col-12">
+												<div class="form-section-header">Business Address</div>
+											</div>
+											<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+
+												<!-- Field wrapper start -->
+												<div class="field-wrapper">
+													<div class="input-group">
+														<input class="form-control" type="text">
+														<span class="input-group-text">
+															<i class="icon-map-pin"></i>
+														</span>
+													</div>
+													<div class="field-placeholder">Street Address</div>
+												</div>
+												<!-- Field wrapper end -->
+
+											</div>
+											<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+
+												<!-- Field wrapper start -->
+												<div class="field-wrapper">
+													<div class="input-group">
+														<input class="form-control" type="text">
+														<span class="input-group-text">
+															<i class="icon-map"></i>
+														</span>
+													</div>
+													<div class="field-placeholder">City</div>
+												</div>
+												<!-- Field wrapper end -->
+
+											</div>
+											<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+
+												<!-- Field wrapper start -->
+												<div class="field-wrapper">
+													<div class="input-group">
+														<input class="form-control" type="text">
+														<span class="input-group-text">
+															<i class="icon-edit-2"></i>
+														</span>
+													</div>
+													<div class="field-placeholder">Postal Code</div>
+												</div>
+												<!-- Field wrapper end -->
+
+											</div>
+											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+
+												<!-- Field wrapper start -->
+												<div class="field-wrapper">
+													<textarea class="form-control" rows="2"></textarea>
+													<div class="field-placeholder">Message <span class="text-danger">*</span></div>
+												</div>
+												<!-- Field wrapper end -->
+
+											</div>
+											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+
+												<!-- Field wrapper start -->
+												<div class="field-wrapper">
+													<div class="checkbox-container">
+														<div class="form-check form-check-inline">
+															<input class="form-check-input" type="checkbox" id="chcekEmail" value="option1">
+															<label class="form-check-label" for="chcekEmail">Email</label>
+														</div>
+														<div class="form-check form-check-inline">
+															<input class="form-check-input" type="checkbox" id="checkSms" value="option2">
+															<label class="form-check-label" for="checkSms">SMS</label>
+														</div>
+														<div class="form-check form-check-inline">
+															<input class="form-check-input" type="checkbox" id="checkPhone" value="option3">
+															<label class="form-check-label" for="checkPhone">Phone</label>
+														</div>
+														<div class="field-placeholder">Communication</div>
+													</div>
+												</div>
+												<!-- Field wrapper end -->
+
+											</div>
+											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+												<button class="btn btn-primary" disabled="">Submit</button>
+											</div>
+										</div>
+										<!-- Row end -->
+
+									</div>
+								</div>
+								<!-- Card end -->
+
+							</div>
+						</div>
+						<!-- Row end -->
+
+					</div>
   @include('footer')
 
   <script>
