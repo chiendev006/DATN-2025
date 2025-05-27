@@ -117,15 +117,14 @@
             <div class="field-body">
                 <div class="field">
                 <div class="control">
-                    <textarea class="textarea" name="mota" placeholder="Nhập mô tả chi tiết sản phẩm..." required>{{ old('mota') }}</textarea>
+                    <textarea id="editor" class="textarea" name="mota">{{ old('mota') }}</textarea>
                     @error('mota')
                     <p style="color: red;">Bạn chưa nhập mô tả sản phẩm !!!</p>
                     @enderror
                 </div>
                 </div>
             </div>
-        </div>
-
+            </div>
         <hr>
         <div class="field" id="topping-field" style="display:none;">
             <label class="label">Chọn topping</label>
@@ -331,4 +330,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
 </script>
+

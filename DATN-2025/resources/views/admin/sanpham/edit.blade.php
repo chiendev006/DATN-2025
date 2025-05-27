@@ -274,7 +274,7 @@
                     <div class="field-body">
                         <div class="field">
                         <div class="control">
-                        <textarea class="textarea" name="mota" placeholder="Nhập mô tả chi tiết sản phẩm..." required>{{ old('mota', $sanpham->mota) }}</textarea>
+                        <textarea id="editor" class="textarea" name="mota" required>{{ old('mota', $sanpham->mota) }}</textarea>
                         @error('mota')
                             <p style="color: red;">Bạn chưa nhập mô tả sản phẩm !!!</p>
                             @enderror

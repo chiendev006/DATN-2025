@@ -40,8 +40,35 @@
     gtag('js', new Date());
     gtag('config', 'UA-130795909-1');
   </script>
+<!-- jQuery (bắt buộc) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Summernote CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.css" rel="stylesheet">
+
+<!-- Summernote JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
 
 </head>
+<script>
+  $(document).ready(function() {
+    $('#editor').summernote({
+      height: 300,             // Chiều cao khung soạn thảo
+      placeholder: 'Nhập mô tả sản phẩm ở đây...',
+      toolbar: [
+        ['style', ['style']],
+        ['font', ['bold', 'italic', 'underline', 'clear']],
+        ['fontname', ['fontname']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['insert', ['link', 'picture', 'video']],
+        ['view', ['fullscreen', 'codeview', 'help']]
+      ]
+    });
+  });
+</script>
+
 <body>
 
 <div id="app">
