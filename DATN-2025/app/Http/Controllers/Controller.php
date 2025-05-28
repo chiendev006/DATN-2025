@@ -14,7 +14,6 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
-
     public function index(){
         return view('client.home');
     }
@@ -22,47 +21,34 @@ public function  danhmuc()
 {
     $danhmucs = Danhmuc::with('sanphams')->get();
     $sanpham = sanpham::take(4)->get();
-
-    // Gán giá nhỏ nhất cho từng sản phẩm
     foreach ($sanpham as $sp) {
         $minPrice = Size::where('product_id', $sp->id)->min('price');
         $sp->min_price = $minPrice;
     }
     return view('client.home', compact('danhmucs', 'sanpham'));
 }
-
 public function show(Request $request)
 {
     $danhmucs = Danhmuc::with(['sanphams' => function($query) {
         $query->withMin('sizes', 'price');
     }])->get();
-
-    // Xác định danh mục cần hiển thị
     $categoryId = $request->query('category');
     $firstDanhmuc = $categoryId
         ? $danhmucs->firstWhere('id', $categoryId)
         : $danhmucs->first();
-
     $firstProducts = $firstDanhmuc ? $firstDanhmuc->sanphams : [];
-
     foreach ($firstProducts as $sp) {
         $sp->min_price = $sp->sizes_min_price ?? 0;
     }
-
     return view('client.menu', compact('danhmucs', 'firstDanhmuc', 'firstProducts'));
 }
-
-
-
     public function getProductsByCategory($id)
     {
         $danhmuc = Danhmuc::with('sanphams')->findOrFail($id);
-
         foreach ($danhmuc->sanphams as $sp) {
             $minPrice = Size::where('product_id', $sp->id)->min('price');
             $sp->min_price = $minPrice;
         }
-
         return response()->json([
             'category_name' => $danhmuc->name,
             'category_description' => $danhmuc->description,
@@ -70,11 +56,46 @@ public function show(Request $request)
             'products' => $danhmuc->sanphams
         ]);
     }
-
-    public function search(Request $request){
+public function ajaxSearch(Request $request)
+{
     $keyword = $request->input('search');
-    $sanpham = sanpham::where('name', 'LIKE', '%' . $keyword . '%')->get();
-    return view('client.search', compact('sanpham', 'keyword'));
+    $sanphams = Sanpham::with('sizes')
+        ->where('name', 'LIKE', '%' . $keyword . '%')
+        ->get();
+    $data = $sanphams->map(function ($item) {
+        $minPrice = $item->sizes->min('price');
+        return [
+            'id' => $item->id,
+            'name' => $item->name,
+            'image' => asset('storage/' . ltrim($item->image, '/')),
+            'min_price' => $minPrice ?? 0, 
+        ];
+    });
+    return response()->json(['sanpham' => $data]);
 }
+public function filterByPrice(Request $request)
+{
+    $min = (int) $request->min;
+    $max = (int) $request->max;
 
+    // Get products that have at least one size within the price range
+    $sanphams = Sanpham::whereHas('attributes', function($q) use ($min, $max) {
+        $q->whereBetween('price', [$min, $max]);
+    })
+    ->with(['attributes' => function($q) use ($min, $max) {
+        $q->whereBetween('price', [$min, $max]);
+    }])
+    ->get();
+
+    $data = $sanphams->map(function ($item) {
+        return [
+            'id' => $item->id,
+            'name' => $item->name,
+            'image' => asset('storage/' . (str_contains($item->image, 'uploads/') ? $item->image : 'uploads/' . $item->image)),
+            'min_price' => $item->attributes->min('price') ?? 0,
+        ];
+    });
+
+    return response()->json(['sanpham' => $data]);
+}
 }

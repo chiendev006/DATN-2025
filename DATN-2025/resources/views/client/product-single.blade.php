@@ -300,4 +300,3 @@ document.querySelectorAll('.size-option, .topping-option').forEach(el => {
 updatePrice();
 </script>
 @endsection
-

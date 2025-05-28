@@ -16,4 +16,5 @@ class Contact extends Model
         'email',
         'massage', 
     ];
+
 }

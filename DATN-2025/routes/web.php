@@ -62,10 +62,13 @@ use App\Http\Controllers\ShopController;
 
 
         // Search
-        Route::get('/search', [Controller::class, 'search'])->name('search');
+        // web.php
+              Route::get('/ajax-search', [App\Http\Controllers\Controller::class, 'ajaxSearch'])->name('ajax.search');
+                Route::get('/ajax-filter-price', [Controller::class, 'filterByPrice'])->name('ajax.filter.price');
+
 
         // Liên hệ từ Client
-        Route::get('/contact/create', [ContactController::class, 'create'])->name('contact.create');
+        Route::get('/contact', [ContactController::class, 'create'])->name('contact.create');
         Route::post('/contact/store', [ContactController::class, 'store'])->name('contact.store');
 
 
