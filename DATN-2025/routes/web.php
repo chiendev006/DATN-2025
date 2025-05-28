@@ -20,6 +20,7 @@ use App\Http\Controllers\ShowproductController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\admin\AuthController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ShopController;
 
         Route::get('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
@@ -47,8 +48,18 @@ use App\Http\Controllers\CheckoutController;
         // Trang chủ Client
         Route::get('/', [Controller::class, 'index'])->name('index');
         Route::get('/',         [Controller::class, 'danhmuc'])->name('danhmuc1.index');
-        Route::get('/menu', [Controller::class, 'show'])->name('client.menu');
         Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp');
+        // routes/web.php
+        Route::get('/menu', [Controller::class, 'show'])->name('client.menu');
+        Route::get('/menu/category/{id}', [Controller::class, 'getProductsByCategory']);
+
+
+
+        // Shop
+        Route::get('/shop',[ShopController::class,'index'])->name('client.shop');
+        Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+        Route::get('/shop/category/{id}', [ShopController::class, 'getByCategory'])->name('shop.category');
+
 
         // Search
         Route::get('/search', [Controller::class, 'search'])->name('search');
@@ -158,4 +169,7 @@ use App\Http\Controllers\CheckoutController;
         Route::get('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
         Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
 
-     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+        Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+
+
+        

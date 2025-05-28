@@ -1,309 +1,170 @@
-@extends('layout')
+@extends('layout2')
 @section('main')
-<section class="home-slider owl-carousel">
+<main>
+            <div class="main-part">
 
-<div class="slider-item" style="background-image: url(images/bg_3.jpg);" data-stellar-background-ratio="0.5">
-    <div class="overlay"></div>
-  <div class="container">
-    <div class="row slider-text justify-content-center align-items-center">
+                <section class="breadcrumb-nav">
+                    <div class="container">
+                        <div class="breadcrumb-nav-inner">
+                            <ul>
+                                <li><a href="index-2.html">Home</a></li>
+                                <li class="active"><a href="#">Shop</a></li>
+                            </ul>
+                            <label class="now">SHOP</label>
+                        </div>
+                    </div>
+                </section>
 
-      <div class="col-md-7 col-sm-12 text-center ftco-animate">
-          <h1 class="mb-3 mt-5 bread">Order Online</h1>
-          <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Shop</span></p>
-      </div>
+                <!-- Start Blog List -->   
 
-    </div>
-  </div>
-</div>
-</section>
+                <section class="default-section shop-page">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-3 col-sm-4 col-xs-12">
+                                <div class="blog-left-section">
+                                    <div class="blog-left-search blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                        <input type="text" name="txt" placeholder="Search">
+                                        <input type="submit" name="submit" value="&#xf002;">
+                                    </div>
+                                    <div class="blog-left-categories blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                        <h5>Categories</h5>
+                                        <ul id="category-list">
+                                            @foreach ($danhmucs as $index => $danhmuc)
+                                                <li class="{{ $index == 0 ? 'current' : '' }}">
+                                                    <a href="#" data-id="{{ $danhmuc->id }}">{{ strtoupper($danhmuc->name) }}</a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                       </div>
+                                    <div class="blog-left-filter blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                        <h5>Filter</h5>
+                                        <p>Price: $40 — $350</p>
+                                        <input id="ex2" type="text" class="span2" value="" data-slider-min="40" data-slider-max="350" data-slider-step="5" data-slider-value="[50,200]"/>
+                                        <a href="#" class="filter-btn">FILTER</a>
+                                    </div>
+                                    <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                        <h5>Best Deals</h5>
+                                        <div class="best-deal-blog">
+                                            <div class="best-deal-left">
+                                                <img src="{{ url('asset') }}/images/img20.png" alt="">
+                                            </div>
+                                            <div class="best-deal-right">
+                                                <p>Lasal Cheese</p>
+                                                <p><strong>$ 15</strong></p>
+                                            </div>
+                                        </div>
+                                        <div class="best-deal-blog">
+                                            <div class="best-deal-left">
+                                                <img src="{{ url('asset') }}/images/img21.png" alt="">
+                                            </div>
+                                            <div class="best-deal-right">
+                                                <p>Lasal Cheese</p>
+                                                <p><strong>$ 15</strong></p>
+                                            </div>
+                                        </div>
+                                        <div class="best-deal-blog">
+                                            <div class="best-deal-left">
+                                                <img src="{{ url('asset') }}/images/img22.png" alt="">
+                                            </div>
+                                            <div class="best-deal-right">
+                                                <p>Lasal Cheese</p>
+                                                <p><strong>$ 15</strong></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="popular-tag blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                        <h5>Popular Tags</h5>
+                                        <a href="#">Audio</a> <a href="#">Service</a> <a href="#">Online Order</a> <a href="#">Contact</a> <a href="#">Cupcake</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-9 col-sm-8 col-xs-12">
+                                <div class="blog-right-section">
+                                    <div class="shop-search wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <h6>Showing all 12 results</h6>
+                                            </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <select class="select-dropbox">
+                                                    <option>Sort by newness</option>
+                                                    <option>Sort</option>
+                                                    <option>Sort newness</option>
+                                                    <option>Sort by newness</option>
+                                                    <option>newness</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                   <div class="row" id="product-list">
+                                        @foreach ($firstProducts as $product)
+                                            <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                                <div class="shop-main-list">
+                                                    <div class="shop-product">
+                                                        <a href="{{ route('client.product.detail', $product->id) }}">
+                                                        <img class="" src="{{ asset('storage/' . ltrim($product->image, '/')) }}"  alt="{{ $product->name }}" style="border-radius: 20px;">
+                                                        </a>
+                                                         <div class="cart-overlay-wrap">
+                                                        <div class="cart-overlay">
+                                                            <a href="#" class="shop-cart-btn">ADD TO CART</a>
+                                                        </div> 
+                                                    </div>
+                                                    </div>
+                                                      <a href="shop_single.html"><h5>{{ $product->name }}</h5></a>
+                                                    <h5><strong>{{ number_format($product->min_price) }} VND</strong></h5>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="gallery-pagination">
+                                        <div class="gallery-pagination-inner">
+                                            <ul>
+                                                <li><a href="#" class="pagination-prev"><i class="icon-left-4"></i> <span>PREV page</span></a></li>
+                                                <li class="active"><a href="#"><span>1</span></a></li>
+                                                <li><a href="#"><span>2</span></a></li>
+                                                <li><a href="#"><span>3</span></a></li>
+                                                <li><a href="#" class="pagination-next"><span>next page</span> <i class="icon-right-4"></i></a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
+                <!-- End Blog List -->
 
-<section class="ftco-menu mb-5 pb-5">
-  <div class="container">
-      <div class="row d-md-flex">
-          <div class="col-lg-12 ftco-animate p-md-5">
-              <div class="row">
-            <div class="col-md-12 nav-link-wrap mb-5">
-              <div class="nav ftco-animate nav-pills justify-content-center" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                  <a class="nav-link active" id="v-pills-0-tab" data-toggle="pill" href="#v-pills-0" role="tab" aria-controls="v-pills-0" aria-selected="true">Coffee</a>
-
-                <a class="nav-link" id="v-pills-1-tab" data-toggle="pill" href="#v-pills-1" role="tab" aria-controls="v-pills-1" aria-selected="false">Main Dish</a>
-
-                <a class="nav-link" id="v-pills-2-tab" data-toggle="pill" href="#v-pills-2" role="tab" aria-controls="v-pills-2" aria-selected="false">Drinks</a>
-
-                <a class="nav-link" id="v-pills-3-tab" data-toggle="pill" href="#v-pills-3" role="tab" aria-controls="v-pills-3" aria-selected="false">Desserts</a>
-              </div>
             </div>
-            <div class="col-md-12 d-flex align-items-center">
+        </main>
+        <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('#category-list a').forEach(function (link) {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                let categoryId = this.dataset.id;
 
-              <div class="tab-content ftco-animate" id="v-pills-tabContent">
-
-                <div class="tab-pane fade show active" id="v-pills-0" role="tabpanel" aria-labelledby="v-pills-0-tab">
-                    <div class="row">
-                        <div class="col-md-3">
-                                  <div class="menu-entry">
-                                          <a href="#" class="img" style="background-image: url(images/menu-1.jpg);"></a>
-                                          <div class="text text-center pt-4">
-                                              <h3><a href="product-single.html">Coffee Capuccino</a></h3>
-                                              <p>A small river named Duden flows by their place and supplies</p>
-                                              <p class="price"><span>$5.90</span></p>
-                                              <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
-                                          </div>
-                                      </div>
-                              </div>
-                              <div class="col-md-3">
-                                  <div class="menu-entry">
-                                          <a href="#" class="img" style="background-image: url(images/menu-2.jpg);"></a>
-                                          <div class="text text-center pt-4">
-                                              <h3><a href="product-single.html">Coffee Capuccino</a></h3>
-                                              <p>A small river named Duden flows by their place and supplies</p>
-                                              <p class="price"><span>$5.90</span></p>
-                                              <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
-                                          </div>
-                                      </div>
-                              </div>
-                              <div class="col-md-3">
-                                  <div class="menu-entry">
-                                          <a href="#" class="img" style="background-image: url(images/menu-3.jpg);"></a>
-                                          <div class="text text-center pt-4">
-                                              <h3><a href="product-single.html">Coffee Capuccino</a></h3>
-                                              <p>A small river named Duden flows by their place and supplies</p>
-                                              <p class="price"><span>$5.90</span></p>
-                                              <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
-                                          </div>
-                                      </div>
-                              </div>
-                              <div class="col-md-3">
-                                  <div class="menu-entry">
-                                          <a href="#" class="img" style="background-image: url(images/menu-4.jpg);"></a>
-                                          <div class="text text-center pt-4">
-                                              <h3><a href="product-single.html">Coffee Capuccino</a></h3>
-                                              <p>A small river named Duden flows by their place and supplies</p>
-                                              <p class="price"><span>$5.90</span></p>
-                                              <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
-                                          </div>
-                                      </div>
-                              </div>
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="v-pills-1" role="tabpanel" aria-labelledby="v-pills-1-tab">
-                  <div class="row">
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/dish-1.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Grilled Beef</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
+                fetch('/shop/category/' + categoryId)
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('product-list').innerHTML = '';
+                        data.products.forEach(product => {
+                            document.getElementById('product-list').innerHTML += `
+                                <div class="col-md-4">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="/storage/${product.image}" alt="${product.name}">
+                                        </div>
+                                        <h5>${product.name}</h5>
+                                        <h5><strong>${Number(product.min_price).toLocaleString()} VND</strong></h5>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/dish-2.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Grilled Beef</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/dish-3.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Grilled Beef</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/dish-4.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Grilled Beef</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/dish-5.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Grilled Beef</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/dish-6.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Grilled Beef</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="v-pills-2" role="tabpanel" aria-labelledby="v-pills-2-tab">
-                  <div class="row">
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/drink-1.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Lemonade Juice</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/drink-2.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Pineapple Juice</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/drink-3.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Soda Drinks</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/drink-4.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Lemonade Juice</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/drink-5.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Pineapple Juice</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/drink-6.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Soda Drinks</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="v-pills-3" role="tabpanel" aria-labelledby="v-pills-3-tab">
-                  <div class="row">
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/dessert-1.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Hot Cake Honey</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/dessert-2.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Hot Cake Honey</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/dessert-3.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Hot Cake Honey</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/dessert-4.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Hot Cake Honey</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/dessert-5.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Hot Cake Honey</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="menu-wrap">
-                                <a href="#" class="menu-img img mb-4" style="background-image: url(images/dessert-6.jpg);"></a>
-                                <div class="text">
-                                    <h3><a href="product-single.html">Hot Cake Honey</a></h3>
-                                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                                    <p class="price"><span>$2.90</span></p>
-                                    <p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-  </div>
-</section>
+                            `;
+                        });
+                    });
+            });
+        });
+    });
+</script>
+  
 @endsection
