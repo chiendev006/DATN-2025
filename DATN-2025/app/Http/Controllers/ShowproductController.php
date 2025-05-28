@@ -16,5 +16,3 @@ class ShowproductController extends Controller
         return view('client.product-single', compact('sanpham','topping'));
     }
 }
-
-

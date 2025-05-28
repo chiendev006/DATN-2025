@@ -1,182 +1,186 @@
-@extends('layout')
-@section('main')
-<section class="home-slider owl-carousel">
-
-      <div class="slider-item" style="background-image: url('{{ asset('asset/images/bg_3.jpg') }}');" data-stellar-background-ratio="0.5">
-      	<div class="overlay"></div>
-        <div class="container">
-          <div class="row slider-text justify-content-center align-items-center">
-
-            <div class="col-md-7 col-sm-12 text-center ftco-animate">
-            	<h1 class="mb-3 mt-5 bread">Our Menu</h1>
-	            <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Menu</span></p>
+    @extends('layout2')
+    @section('main')
+         <div class="header-category" style="background-color: #c19942; margin-top: 0px">
+            <div class="container">
+              <div class="category-icon">
+                <div class="category-icon-menu">
+                  <a href="#" class="hambarger-icon">
+                    <span class="bar-1"></span>
+                    <span class="bar-2"></span>
+                    <span class="bar-3"></span>
+                  </a>
+                </div>
+               <ul id="category-list">
+                  @foreach ($danhmucs as $index => $danhmuc)
+                      <li class="{{ $index == 0 ? 'current' : '' }}">
+                          <a href="#" data-id="{{ $danhmuc->id }}">
+                              <span class="custom-icon {{ strtolower($danhmuc->name) }}"></span>
+                              <strong>{{ strtoupper($danhmuc->name) }}</strong>
+                          </a>
+                      </li>
+                  @endforeach
+              </ul>
+              </div>
             </div>
-
           </div>
-        </div>
-      </div>
-    </section>
+        <main>
+            <div class="main-part">
+                <section class="breadcrumb-nav">
+                    <div class="container">
+                        <div class="breadcrumb-nav-inner">
+                            <ul>
+                                <li><a href="index-2.html">Home</a></li>
+                                <li class="active"><a href="#">Menu</a></li>
+                            </ul>
+                            <label class="now">MENU</label>
+                        </div>
+                    </div>
+                </section>
+               <section class="default-section menu-fix bg-grey">
+                    <div class="container">
+                        <div class="menu-fix-main-list menu-fix-with-item">
+                            <div class="title text-center">
+                                <h2 class="text-dark" id="category-name">{{ $firstDanhmuc->name ?? 'Danh mục' }}</h2>
+                                <h6 id="category-description">{{ $firstDanhmuc->description ?? 'Mô tả danh mục' }}</h6>
+                            </div>
 
-    <section class="ftco-intro">
-    	<div class="container-wrap">
-    		<div class="wrap d-md-flex align-items-xl-end">
-	    		<div class="info">
-	    			<div class="row no-gutters">
-	    				<div class="col-md-4 d-flex ftco-animate">
-	    					<div class="icon"><span class="icon-phone"></span></div>
-	    					<div class="text">
-	    						<h3>000 (123) 456 7890</h3>
-	    						<p>A small river named Duden flows by their place and supplies.</p>
-	    					</div>
-	    				</div>
-	    				<div class="col-md-4 d-flex ftco-animate">
-	    					<div class="icon"><span class="icon-my_location"></span></div>
-	    					<div class="text">
-	    						<h3>198 West 21th Street</h3>
-	    						<p>	203 Fake St. Mountain View, San Francisco, California, USA</p>
-	    					</div>
-	    				</div>
-	    				<div class="col-md-4 d-flex ftco-animate">
-	    					<div class="icon"><span class="icon-clock-o"></span></div>
-	    					<div class="text">
-	    						<h3>Open Monday-Friday</h3>
-	    						<p>8:00am - 9:00pm</p>
-	    					</div>
-	    				</div>
-	    			</div>
-	    		</div>
-	    		<div class="book p-4">
-	    			<h3>Book a Table</h3>
-	    			<form action="#" class="appointment-form">
-	    				<div class="d-md-flex">
-		    				<div class="form-group">
-		    					<input type="text" class="form-control" placeholder="First Name">
-		    				</div>
-		    				<div class="form-group ml-md-4">
-		    					<input type="text" class="form-control" placeholder="Last Name">
-		    				</div>
-	    				</div>
-	    				<div class="d-md-flex">
-		    				<div class="form-group">
-		    					<div class="input-wrap">
-		            		<div class="icon"><span class="ion-md-calendar"></span></div>
-		            		<input type="text" class="form-control appointment_date" placeholder="Date">
-	            		</div>
-		    				</div>
-		    				<div class="form-group ml-md-4">
-		    					<div class="input-wrap">
-		            		<div class="icon"><span class="ion-ios-clock"></span></div>
-		            		<input type="text" class="form-control appointment_time" placeholder="Time">
-	            		</div>
-		    				</div>
-		    				<div class="form-group ml-md-4">
-		    					<input type="text" class="form-control" placeholder="Phone">
-		    				</div>
-	    				</div>
-	    				<div class="d-md-flex">
-	    					<div class="form-group">
-		              <textarea name="" id="" cols="30" rows="2" class="form-control" placeholder="Message"></textarea>
-		            </div>
-		            <div class="form-group ml-md-4">
-		              <input type="submit" value="Appointment" class="btn btn-white py-3 px-4">
-		            </div>
-	    				</div>
-	    			</form>
-	    		</div>
-    		</div>
-    	</div>
-    </section>
-
-		<section class="ftco-section">
-			<div class="container">
-				<div class="row">
-					@foreach($danhmucs->chunk(ceil($danhmucs->count() / 2)) as $chunk)
-						<div class="col-md-6 mb-5 pb-3">
-							@foreach($chunk as $category)
-								<h3 class="mb-5 heading-pricing ftco-animate">{{ strtoupper($category->name) }}</h3>
-								@forelse($category->sanphams as $product)
-									<div class="pricing-entry d-flex ftco-animate">
-										<img style="width: 60px; height: 60px; border-radius: 50%;" src="{{ asset('/storage/uploads/' . $product->image) }}" alt="{{ $product->name }}">
-										<div class="desc pl-3">
-											<div class="d-flex text align-items-center">
-												<h3><span>{{ $product->name }}</span></h3>
-												<span class="price">{{ number_format($product->min_price) }}VND</span>
-											</div>
-											<div class="d-block">
-												 <p>{!! strip_tags($product->mota, '<p><br><strong><em>') !!}</>
-											</div>
-										</div>
-									</div>
-								@empty
-									<p>Không có sản phẩm nào trong danh mục này.</p>
-								@endforelse
-							@endforeach
-						</div>
-					@endforeach
-				</div>
-			</div>
-		</section>
-    <section class="ftco-menu mb-5 pb-5">
-    <div class="container">
-        <div class="row justify-content-center mb-5">
-            <div class="col-md-7 heading-section text-center ftco-animate">
-                <span class="subheading">Discover</span>
-                <h2 class="mb-4">Our Products</h2>
-                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+                            <div class="row" id="product-display">
+                                @foreach ($firstProducts as $product)
+                                    <div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="700ms">
+                                        <div class="menu-fix-list">
+                                            <span class="menu-fix-product">
+                                                <img src="{{ asset('storage/' . ltrim($product->image, '/')) }}" style="width: 100px; height: 100px; border-radius: 100px;" alt="{{ $product->name }}">
+                                            </span>
+                                            <h5>{{ strtoupper($product->name) }} <span> {{ number_format($product->min_price) }} VND</span></h5>
+                                            <p>{{ $product->mota ?? 'Không có mô tả.' }}</p>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="default-section">
+                    <div class="container">
+                        <div class="discount-part">
+                            <div class="row">
+                                <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="700ms">
+                                    <h6>HAPPY CUSTOMER EVENT</h6>
+                                    <h2 class="text-coffee">DISCOUNT <span>50%</span></h2>
+                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor int et lamp dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</p>
+                                    <a href="#" class="button-default buttone-text-dark">LEARN MORE</a>
+                                </div>
+                                <div class="col-md-7 col-sm-7 col-xs-12">
+                                    <div class="discount-right">
+                                        <img src="{{ url('asset') }}/images/item7.png" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="on-flow">
+                        <img src="{{ url('asset') }}/images/item8.png" alt="">
+                    </div>
+                </section>
             </div>
-        </div>
-        <div class="row d-md-flex">
-            <div class="col-lg-12 ftco-animate p-md-5">
-           <div class="row">
-		<div class="col-md-12 nav-link-wrap mb-5">
-			<div class="nav ftco-animate nav-pills justify-content-center" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-				@foreach($danhmucs as $index => $danhmuc)
-					<a class="nav-link {{ $index == 0 ? 'active' : '' }}"
-					id="v-pills-{{ $danhmuc->id }}-tab"
-					data-toggle="pill"
-					href="#v-pills-{{ $danhmuc->id }}"
-					role="tab"
-					aria-controls="v-pills-{{ $danhmuc->id }}"
-					aria-selected="{{ $index == 0 ? 'true' : 'false' }}">
-						{{ $danhmuc->name }}
-					</a>
-				@endforeach
-			</div>
-		</div>
-			<div class="col-md-12 d-flex align-items-center">
-				<div class="tab-content ftco-animate" id="v-pills-tabContent">
-					@foreach($danhmucs as $index => $danhmuc)
-						<div class="tab-pane fade {{ $index == 0 ? 'show active' : '' }}"
-							id="v-pills-{{ $danhmuc->id }}"
-							role="tabpanel"
-							aria-labelledby="v-pills-{{ $danhmuc->id }}-tab">
+        </main>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-							<div class="row">
-								@foreach($danhmuc->sanphams as $sanpham)
-									<div class="col-md-4 text-center">
-										<div class="menu-wrap">
-											<a href="{{ route('client.product.detail', ['id' => $sanpham->id]) }}" class="menu-img img mb-4">
-												<img src="{{ url("/storage/uploads/$sanpham->image") }}" width="250px" alt="{{ $sanpham->name }}">
-												</a>
-											<div class="text">
-												<h3><a href="#">{{ $sanpham->name }}</a></h3>
-												<p>{!! strip_tags($sanpham->mota, '<p><br><strong><em>') !!}</p>
-												<p class="price"><span>{{ number_format($sanpham->min_price) }} VND</span></p>
-												<p><a href="" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
-											</div>
-										</div>
-									</div>
-								@endforeach
-							</div>
 
-						</div>
-					@endforeach
-						</div>
-					</div>
-				</div>
-            </div>
-        </div>
-    </div>
-</section>
 
+<script>
+$(document).ready(function(){
+    $('#category-list a').click(function(e){
+        e.preventDefault();
+
+        var categoryId = $(this).data('id');
+
+        // Đổi active class
+        $('#category-list li').removeClass('current');
+        $(this).parent().addClass('current');
+
+        $.ajax({
+            url: '/menu/category/' + categoryId,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response){
+                // Cập nhật tên, mô tả danh mục
+                $('#category-name').text(response.category_name);
+                $('#category-description').text(response.category_description);
+
+                // Xóa hết sản phẩm cũ
+                $('#product-display').empty();
+
+                // Thêm sản phẩm mới
+                $.each(response.products, function(index, product){
+                    var productHtml = `
+                        <div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="700ms">
+                            <div class="menu-fix-list">
+                                <span class="menu-fix-product">
+                                    <img src="/storage/${product.image.replace(/^\/+/, '')}" alt="${product.name}">
+                                </span>
+                                <h5>${product.name.toUpperCase()} <span>$ ${parseFloat(product.min_price).toFixed(2)}</span></h5>
+                                <p>${product.description || 'Không có mô tả.'}</p>
+                            </div>
+                        </div>
+                    `;
+                    $('#product-display').append(productHtml);
+                });
+            },
+            error: function(){
+                alert('Không thể tải sản phẩm, vui lòng thử lại.');
+            }
+        });
+    });
+});
+$(document).ready(function() {
+    $('#category-list li a').click(function(e) {
+        e.preventDefault();
+
+        var categoryId = $(this).data('id');
+
+        $.ajax({
+            url: '/menu/category/' + categoryId,
+            method: 'GET',
+            success: function(response) {
+                // Cập nhật tên, mô tả danh mục
+                $('#category-name').text(response.category_name);
+                $('#category-description').text(response.category_description);
+
+                // Xóa hết sản phẩm cũ
+                $('#product-display').empty();
+
+                // Thêm sản phẩm mới với style giống Blade
+                $.each(response.products, function(index, product) {
+                    // Xử lý đường dẫn ảnh
+                    let imageUrl = product.image;
+                    if (!imageUrl.startsWith('http')) {
+                        imageUrl = '/storage/' + product.image.replace(/^\/+/, '');
+                    }
+
+                    let productHtml = `
+                        <div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="700ms">
+                            <div class="menu-fix-list">
+                                <span class="menu-fix-product">
+                                    <img src="${imageUrl}" style="width: 100px; height: 100px; border-radius: 100px;" alt="${product.name}">
+                                </span>
+                                <h5>${product.name.toUpperCase()} <span> ${Number(product.min_price).toLocaleString()} VND</span></h5>
+                                <p>${product.mota || 'Không có mô tả.'}</p>
+                            </div>
+                        </div>
+                    `;
+
+                    $('#product-display').append(productHtml);
+                });
+
+                // Nếu bạn dùng wow.js thì gọi lại init:
+                if (typeof WOW === 'function') {
+                    new WOW().init();
+                }
+            }
+        });
+    });
+});
+
+</script>
 @endsection

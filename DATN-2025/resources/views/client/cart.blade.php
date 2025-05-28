@@ -43,7 +43,7 @@
                 @endphp
                 <tr class="text-center" data-key="{{ $rowKey }}">
                   <td>
-                  <button class="remove-item btn btn-danger btn-sm" data-key="{{ $rowKey }}" style="background-color: transparent !important; border: none; color: inherit; padding: 0;">Xóa</button>
+                  <button data-key="{{ $rowKey }}" >Xóa</button>
                   </td>
                   <td><img src="{{ asset('storage/uploads/' . $product->image) }}" width="80"></td>
                   <td><strong>{{ $product->name }}</strong></td>
