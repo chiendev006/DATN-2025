@@ -37,5 +37,10 @@ public function product_images()
 {
     return $this->hasMany(ProductImage::class, 'product_id');
 }
+public function sizes()
+{
+    return $this->hasMany(\App\Models\Size::class, 'product_id');
+}
+
 }
 

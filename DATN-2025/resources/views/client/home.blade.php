@@ -1,533 +1,1023 @@
-@extends('layout');
+ @extends('layout2')
 @section('main')
+ <main>
+        <div class="main-part">
+          <!-- Slider Part -->
 
-    <!-- END nav -->
+          <section class="home-slider">
+            <div class="tp-banner-container">
+              <div class="tp-banner">
+                <ul>
+                  <li
+                    data-transition="fade"
+                    data-slotamount="2"
+                    data-masterspeed="500"
+                    data-thumb=""
+                    data-saveperformance="on"
+                    data-title="Slide"
+                  >
+                    <img
+                      src="{{ url('asset') }}/images/dummy.png"
+                      alt="slidebg1"
+                      data-lazyload="{{ url('asset') }}/images/bg1.jpg"
+                      data-bgposition="center top"
+                      data-bgfit="cover"
+                      data-bgrepeat="no-repeat"
+                    />
 
-    <section class="home-slider owl-carousel">
-		<div class="slider-item" style="background-image: url('{{ asset('asset/images/bg_1.jpg') }}');">
-      	<div class="overlay"></div>
-        <div class="container">
-          <div class="row slider-text justify-content-center align-items-center" data-scrollax-parent="true">
+                    <!-- LAYER NR. 1 -->
+                    <div
+                      class="tp-caption lft customout rs-parallaxlevel-0 left-slot"
+                      data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
+                      data-x="0"
+                      data-hoffset="0"
+                      data-y="bottom"
+                      data-speed="500"
+                      data-start="500"
+                      data-easing="Power3.easeInOut"
+                      data-endspeed="300"
+                      data-endeasing="Power1.easeIn"
+                      data-captionhidden="off"
+                    >
+                      <img
+                        src="{{ url('asset') }}/images/dummy.png"
+                        alt=""
+                        data-lazyload="{{ url('asset') }}/images/img1.png"
+                      />
+                    </div>
 
-            <div class="col-md-8 col-sm-12 text-center ftco-animate">
-            	<span class="subheading">Welcome</span>
-              <h1 class="mb-4">The Best Coffee Testing Experience</h1>
-              <p class="mb-4 mb-md-5">A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
-              <p><a href="#" class="btn btn-primary p-3 px-xl-4 py-xl-3">Order Now</a> <a href="#" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">View Menu</a></p>
-            </div>
+                    <!-- LAYER NR. 2 -->
+                    <div
+                      class="tp-caption lft customout rs-parallaxlevel-0 right-slot"
+                      data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
+                      data-x="right"
+                      data-hoffset="0"
+                      data-y="bottom"
+                      data-speed="500"
+                      data-start="500"
+                      data-easing="Power3.easeInOut"
+                      data-endspeed="300"
+                      data-endeasing="Power1.easeIn"
+                      data-captionhidden="off"
+                    >
+                      <img
+                        src="{{ url('asset') }}/images/dummy.png"
+                        alt=""
+                        data-lazyload="{{ url('asset') }}/images/img2.png"
+                      />
+                    </div>
 
-          </div>
-        </div>
-      </div>
+                    <!-- LAYER NR. 3 -->
+                    <div
+                      class="tp-caption lft very_large_text text-center"
+                      data-x="center"
+                      data-y="320"
+                      data-speed="900"
+                      data-start="1000"
+                      data-easing="Power4.easeOut"
+                      data-endspeed="350"
+                      data-endeasing="Power1.easeIn"
+                      data-captionhidden="off"
+                    >
+                      SPECIAL COFFEE <br />
+                      <span class="v-light">BEANS</span>
+                    </div>
 
-      <div class="slider-item" style="background-image: url('{{ asset('asset/images/bg_2.jpg') }}');">
-      	<div class="overlay"></div>
-        <div class="container">
-          <div class="row slider-text justify-content-center align-items-center" data-scrollax-parent="true">
+                    <!-- LAYER NR. 4 -->
+                    <div
+                      class="tp-caption lft text-uppercase large_text text-center best-after"
+                      data-x="center"
+                      data-y="220"
+                      data-speed="800"
+                      data-start="900"
+                      data-easing="Power4.easeOut"
+                      data-endspeed="300"
+                      data-endeasing="Power1.easeIn"
+                      data-captionhidden="off"
+                    >
+                      best quaITY
+                    </div>
 
-            <div class="col-md-8 col-sm-12 text-center ftco-animate">
-            	<span class="subheading">Welcome</span>
-              <h1 class="mb-4">Amazing Taste &amp; Beautiful Place</h1>
-              <p class="mb-4 mb-md-5">A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
-              <p><a href="#" class="btn btn-primary p-3 px-xl-4 py-xl-3">Order Now</a> <a href="#" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">View Menu</a></p>
-            </div>
+                    <!-- LAYER NR. 5 -->
+                    <div
+                      class="tp-caption lft text-uppercase medium_text text-center"
+                      data-x="center"
+                      data-y="270"
+                      data-speed="800"
+                      data-start="900"
+                      data-easing="Power4.easeOut"
+                      data-endspeed="300"
+                      data-endeasing="Power1.easeIn"
+                      data-captionhidden="off"
+                    >
+                      Established in 1991
+                    </div>
+                  </li>
 
-          </div>
-        </div>
-      </div>
+                  <li
+                    data-transition="fade"
+                    data-slotamount="2"
+                    data-masterspeed="500"
+                    data-thumb=""
+                    data-saveperformance="on"
+                    data-title="Slide"
+                  >
+                    <img
+                      src="{{ url('asset') }}/images/dummy.png"
+                      alt="slidebg1"
+                      data-lazyload="{{ url('asset') }}/images/bg1.jpg"
+                      data-bgposition="center top"
+                      data-bgfit="cover"
+                      data-bgrepeat="no-repeat"
+                    />
 
-      <div class="slider-item" style="background-image: url('{{ asset('asset/images/bg_3.jpg') }}');">
-      	<div class="overlay"></div>
-        <div class="container">
-          <div class="row slider-text justify-content-center align-items-center" data-scrollax-parent="true">
+                    <!-- LAYER NR. 1 -->
+                    <div
+                      class="tp-caption lft customout rs-parallaxlevel-0 left-slot"
+                      data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
+                      data-x="0"
+                      data-hoffset="0"
+                      data-y="bottom"
+                      data-speed="500"
+                      data-start="500"
+                      data-easing="Power3.easeInOut"
+                      data-endspeed="300"
+                      data-endeasing="Power1.easeIn"
+                      data-captionhidden="off"
+                    >
+                      <img
+                        src="{{ url('asset') }}/images/dummy.png"
+                        alt=""
+                        data-lazyload="{{ url('asset') }}/images/img1.png"
+                      />
+                    </div>
 
-            <div class="col-md-8 col-sm-12 text-center ftco-animate">
-            	<span class="subheading">Welcome</span>
-              <h1 class="mb-4">Creamy Hot and Ready to Serve</h1>
-              <p class="mb-4 mb-md-5">A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
-              <p><a href="#" class="btn btn-primary p-3 px-xl-4 py-xl-3">Order Now</a> <a href="#" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">View Menu</a></p>
-            </div>
+                    <!-- LAYER NR. 2 -->
+                    <div
+                      class="tp-caption lft customout rs-parallaxlevel-0 right-slot"
+                      data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
+                      data-x="right"
+                      data-hoffset="0"
+                      data-y="bottom"
+                      data-speed="500"
+                      data-start="500"
+                      data-easing="Power3.easeInOut"
+                      data-endspeed="300"
+                      data-endeasing="Power1.easeIn"
+                      data-captionhidden="off"
+                    >
+                      <img
+                        src="{{ url('asset') }}/images/dummy.png"
+                        alt=""
+                        data-lazyload="{{ url('asset') }}/images/img2.png"
+                      />
+                    </div>
 
-          </div>
-        </div>
-      </div>
-    </section>
+                    <!-- LAYER NR. 3 -->
+                    <div
+                      class="tp-caption lft very_large_text text-center"
+                      data-x="center"
+                      data-y="320"
+                      data-speed="900"
+                      data-start="1000"
+                      data-easing="Power4.easeOut"
+                      data-endspeed="350"
+                      data-endeasing="Power1.easeIn"
+                      data-captionhidden="off"
+                    >
+                      SPECIAL COFFEE <br />
+                      <span class="v-light">BEANS</span>
+                    </div>
 
-    <section class="ftco-intro">
-    	<div class="container-wrap">
-    		<div class="wrap d-md-flex align-items-xl-end">
-	    		<div class="info">
-	    			<div class="row no-gutters">
-	    				<div class="col-md-4 d-flex ftco-animate">
-	    					<div class="icon"><span class="icon-phone"></span></div>
-	    					<div class="text">
-	    						<h3>000 (123) 456 7890</h3>
-	    						<p>A small river named Duden flows by their place and supplies.</p>
-	    					</div>
-	    				</div>
-	    				<div class="col-md-4 d-flex ftco-animate">
-	    					<div class="icon"><span class="icon-my_location"></span></div>
-	    					<div class="text">
-	    						<h3>198 West 21th Street</h3>
-	    						<p>	203 Fake St. Mountain View, San Francisco, California, USA</p>
-	    					</div>
-	    				</div>
-	    				<div class="col-md-4 d-flex ftco-animate">
-	    					<div class="icon"><span class="icon-clock-o"></span></div>
-	    					<div class="text">
-	    						<h3>Open Monday-Friday</h3>
-	    						<p>8:00am - 9:00pm</p>
-	    					</div>
-	    				</div>
-	    			</div>
-	    		</div>
-	    		<div class="book p-4">
-	    			<h3>Book a Table</h3>
-	    			<form action="#" class="appointment-form">
-	    				<div class="d-md-flex">
-		    				<div class="form-group">
-		    					<input type="text" class="form-control" placeholder="First Name">
-		    				</div>
-		    				<div class="form-group ml-md-4">
-		    					<input type="text" class="form-control" placeholder="Last Name">
-		    				</div>
-	    				</div>
-	    				<div class="d-md-flex">
-		    				<div class="form-group">
-		    					<div class="input-wrap">
-		            		<div class="icon"><span class="ion-md-calendar"></span></div>
-		            		<input type="text" class="form-control appointment_date" placeholder="Date">
-	            		</div>
-		    				</div>
-		    				<div class="form-group ml-md-4">
-		    					<div class="input-wrap">
-		            		<div class="icon"><span class="ion-ios-clock"></span></div>
-		            		<input type="text" class="form-control appointment_time" placeholder="Time">
-	            		</div>
-		    				</div>
-		    				<div class="form-group ml-md-4">
-		    					<input type="text" class="form-control" placeholder="Phone">
-		    				</div>
-	    				</div>
-	    				<div class="d-md-flex">
-	    					<div class="form-group">
-		              <textarea name="" id="" cols="30" rows="2" class="form-control" placeholder="Message"></textarea>
-		            </div>
-		            <div class="form-group ml-md-4">
-		              <input type="submit" value="Appointment" class="btn btn-white py-3 px-4">
-		            </div>
-	    				</div>
-	    			</form>
-	    		</div>
-    		</div>
-    	</div>
-    </section>
+                    <!-- LAYER NR. 4 -->
+                    <div
+                      class="tp-caption lft text-uppercase large_text text-center best-after"
+                      data-x="center"
+                      data-y="220"
+                      data-speed="800"
+                      data-start="900"
+                      data-easing="Power4.easeOut"
+                      data-endspeed="300"
+                      data-endeasing="Power1.easeIn"
+                      data-captionhidden="off"
+                    >
+                      best quaITY
+                    </div>
 
-    <section class="ftco-about d-md-flex">
-    	<div class="one-half img" style="background-image: url('{{ asset('asset/images/about.jpg') }}');"></div>
-    	<div class="one-half ftco-animate">
-    		<div class="overlap">
-	        <div class="heading-section ftco-animate ">
-	        	<span class="subheading">Discover</span>
-	          <h2 class="mb-4">Our Story</h2>
-	        </div>
-	        <div>
-	  				<p>On her way she met a copy. The copy warned the Little Blind Text, that where it came from it would have been rewritten a thousand times and everything that was left from its origin would be the word "and" and the Little Blind Text should turn around and return to its own, safe country. But nothing the copy said could convince her and so it didn’t take long until a few insidious Copy Writers ambushed her, made her drunk with Longe and Parole and dragged her into their agency, where they abused her for their.</p>
-	  			</div>
-  			</div>
-    	</div>
-    </section>
+                    <!-- LAYER NR. 5 -->
+                    <div
+                      class="tp-caption lft text-uppercase medium_text text-center"
+                      data-x="center"
+                      data-y="270"
+                      data-speed="800"
+                      data-start="900"
+                      data-easing="Power4.easeOut"
+                      data-endspeed="300"
+                      data-endeasing="Power1.easeIn"
+                      data-captionhidden="off"
+                    >
+                      Established in 1991
+                    </div>
+                  </li>
 
-    <section class="ftco-section ftco-services">
-    	<div class="container">
-    		<div class="row">
-          <div class="col-md-4 ftco-animate">
-            <div class="media d-block text-center block-6 services">
-              <div class="icon d-flex justify-content-center align-items-center mb-5">
-              	<span class="flaticon-choices"></span>
+                  <li
+                    data-transition="fade"
+                    data-slotamount="2"
+                    data-masterspeed="500"
+                    data-thumb=""
+                    data-saveperformance="on"
+                    data-title="Slide"
+                  >
+                    <img
+                      src="{{ url('asset') }}/images/dummy.png"
+                      alt="slidebg1"
+                      data-lazyload="{{ url('asset') }}/images/bg1.jpg"
+                      data-bgposition="center top"
+                      data-bgfit="cover"
+                      data-bgrepeat="no-repeat"
+                    />
+
+                    <!-- LAYER NR. 1 -->
+                    <div
+                      class="tp-caption lft customout rs-parallaxlevel-0 left-slot"
+                      data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
+                      data-x="0"
+                      data-hoffset="0"
+                      data-y="bottom"
+                      data-speed="500"
+                      data-start="500"
+                      data-easing="Power3.easeInOut"
+                      data-endspeed="300"
+                      data-endeasing="Power1.easeIn"
+                      data-captionhidden="off"
+                    >
+                      <img
+                        src="{{ url('asset') }}/images/dummy.png"
+                        alt=""
+                        data-lazyload="{{ url('asset') }}/images/img1.png"
+                      />
+                    </div>
+
+                    <!-- LAYER NR. 2 -->
+                    <div
+                      class="tp-caption lft customout rs-parallaxlevel-0 right-slot"
+                      data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
+                      data-x="right"
+                      data-hoffset="0"
+                      data-y="bottom"
+                      data-speed="500"
+                      data-start="500"
+                      data-easing="Power3.easeInOut"
+                      data-endspeed="300"
+                      data-endeasing="Power1.easeIn"
+                      data-captionhidden="off"
+                    >
+                      <img
+                        src="{{ url('asset') }}/images/dummy.png"
+                        alt=""
+                        data-lazyload="{{ url('asset') }}/images/img2.png"
+                      />
+                    </div>
+
+                    <!-- LAYER NR. 3 -->
+                    <div
+                      class="tp-caption lft very_large_text text-center"
+                      data-x="center"
+                      data-y="320"
+                      data-speed="900"
+                      data-start="1000"
+                      data-easing="Power4.easeOut"
+                      data-endspeed="350"
+                      data-endeasing="Power1.easeIn"
+                      data-captionhidden="off"
+                    >
+                      SPECIAL COFFEE <br />
+                      <span class="v-light">BEANS</span>
+                    </div>
+
+                    <!-- LAYER NR. 4 -->
+                    <div
+                      class="tp-caption lft text-uppercase large_text text-center best-after"
+                      data-x="center"
+                      data-y="220"
+                      data-speed="800"
+                      data-start="900"
+                      data-easing="Power4.easeOut"
+                      data-endspeed="300"
+                      data-endeasing="Power1.easeIn"
+                      data-captionhidden="off"
+                    >
+                      best quaITY
+                    </div>
+
+                    <!-- LAYER NR. 5 -->
+                    <div
+                      class="tp-caption lft text-uppercase medium_text text-center"
+                      data-x="center"
+                      data-y="270"
+                      data-speed="800"
+                      data-start="900"
+                      data-easing="Power4.easeOut"
+                      data-endspeed="300"
+                      data-endeasing="Power1.easeIn"
+                      data-captionhidden="off"
+                    >
+                      Established in 1991
+                    </div>
+                  </li>
+                </ul>
+                <div class="tp-bannertimer"></div>
               </div>
-              <div class="media-body">
-                <h3 class="heading">Easy to Order</h3>
-                <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.</p>
-              </div>
             </div>
-          </div>
-          <div class="col-md-4 ftco-animate">
-            <div class="media d-block text-center block-6 services">
-              <div class="icon d-flex justify-content-center align-items-center mb-5">
-              	<span class="flaticon-delivery-truck"></span>
-              </div>
-              <div class="media-body">
-                <h3 class="heading">Fastest Delivery</h3>
-                <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 ftco-animate">
-            <div class="media d-block text-center block-6 services">
-              <div class="icon d-flex justify-content-center align-items-center mb-5">
-              	<span class="flaticon-coffee-bean"></span></div>
-              <div class="media-body">
-                <h3 class="heading">Quality Coffee</h3>
-                <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-    	</div>
-    </section>
+          </section>
 
-    <section class="ftco-section">
-    	<div class="container">
-    		<div class="row align-items-center">
-    			<div class="col-md-6 pr-md-5">
-    				<div class="heading-section text-md-right ftco-animate">
-	          	<span class="subheading">Discover</span>
-	            <h2 class="mb-4">Our Menu</h2>
-	            <p class="mb-4">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
-	            <p><a href="#" class="btn btn-primary btn-outline-primary px-4 py-3">View Full Menu</a></p>
-	          </div>
-    			</div>
-    			<div class="col-md-6">
-    				<div class="row">
-    					<div class="col-md-6">
-    						<div class="menu-entry">
-		    					<a href="#" class="img" style="background-image: url('{{ asset('asset/images/menu-1.jpg') }}');"></a>
-		    				</div>
-    					</div>
-    					<div class="col-md-6">
-    						<div class="menu-entry mt-lg-4">
-		    					<a href="#" class="img" style="background-image: url('{{ asset('asset/images/menu-2.jpg') }}');"></a>
-		    				</div>
-    					</div>
-    					<div class="col-md-6">
-    						<div class="menu-entry">
-		    					<a href="#" class="img" style="background-image: url('{{ asset('asset/images/menu-3.jpg') }}');"></a>
-		    				</div>
-    					</div>
-    					<div class="col-md-6">
-    						<div class="menu-entry mt-lg-4">
-		    					<a href="#" class="img" style="background-image: url('{{ asset('asset/images/menu-4.jpg') }}');"></a>
-		    				</div>
-    					</div>
-    				</div>
-    			</div>
-    		</div>
-    	</div>
-    </section>
+          <!-- End Slider Part -->
 
-    <section class="ftco-counter ftco-bg-dark img" id="section-counter" style="background-image: url('{{ asset('asset/images/bg_2.jpg') }}');" data-stellar-background-ratio="0.5">
-			<div class="overlay"></div>
-      <div class="container">
-        <div class="row justify-content-center">
-        	<div class="col-md-10">
-        		<div class="row">
-		          <div class="col-md-6 col-lg-3 d-flex justify-content-center counter-wrap ftco-animate">
-		            <div class="block-18 text-center">
-		              <div class="text">
-		              	<div class="icon"><span class="flaticon-coffee-cup"></span></div>
-		              	<strong class="number" data-number="100">0</strong>
-		              	<span>Coffee Branches</span>
-		              </div>
-		            </div>
-		          </div>
-		          <div class="col-md-6 col-lg-3 d-flex justify-content-center counter-wrap ftco-animate">
-		            <div class="block-18 text-center">
-		              <div class="text">
-		              	<div class="icon"><span class="flaticon-coffee-cup"></span></div>
-		              	<strong class="number" data-number="85">0</strong>
-		              	<span>Number of Awards</span>
-		              </div>
-		            </div>
-		          </div>
-		          <div class="col-md-6 col-lg-3 d-flex justify-content-center counter-wrap ftco-animate">
-		            <div class="block-18 text-center">
-		              <div class="text">
-		              	<div class="icon"><span class="flaticon-coffee-cup"></span></div>
-		              	<strong class="number" data-number="10567">0</strong>
-		              	<span>Happy Customer</span>
-		              </div>
-		            </div>
-		          </div>
-		          <div class="col-md-6 col-lg-3 d-flex justify-content-center counter-wrap ftco-animate">
-		            <div class="block-18 text-center">
-		              <div class="text">
-		              	<div class="icon"><span class="flaticon-coffee-cup"></span></div>
-		              	<strong class="number" data-number="900">0</strong>
-		              	<span>Staff</span>
-		              </div>
-		            </div>
-		          </div>
-		        </div>
-		      </div>
-        </div>
-      </div>
-    </section>
+          <!-- Default Section -->
 
-    <section class="ftco-section">
-    	<div class="container">
-    		<div class="row justify-content-center mb-5 pb-3">
-          <div class="col-md-7 heading-section ftco-animate text-center">
-          	<span class="subheading">Discover</span>
-            <h2 class="mb-4">Best Coffee Sellers</h2>
-            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-          </div>
-        </div>
-        <div class="row">
-        	@foreach ($sanpham as $item)
-        	<div class="col-md-3">
-        		<div class="menu-entry">
-						<a href="{{ route('client.product.detail', ['id' => $item->id]) }}"><img src="{{ url("/storage/uploads/$item->image") }}"   alt=""></a>
-    					<div class="text text-center pt-4">
-    						<h3><a href="#">{{ $item->name }}</a></h3>
-    						<p>{!! strip_tags($item->mota, '<p><br><strong><em>') !!}</p>
-    						<p class="price">
-                <span>
-                    {{ isset($item->min_price) ? number_format($item->min_price) : 'Liên hệ' }} VND
-                </span>
-            </p>
-    						<p><a href="#" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
-    					</div>
-    				</div>
-        	</div>
-			@endforeach
-        </div>
-    	</div>
-    </section>
-    <section class="ftco-gallery">
-    	<div class="container-wrap">
-    		<div class="row no-gutters">
-					<div class="col-md-3 ftco-animate">
-						<a href="gallery.html" class="gallery img d-flex align-items-center" style="background-image: url('{{ asset('asset/images/gallery-1.jpg') }}');">
-							<div class="icon mb-4 d-flex align-items-center justify-content-center">
-    						<span class="icon-search"></span>
-    					</div>
-						</a>
-					</div>
-					<div class="col-md-3 ftco-animate">
-						<a href="gallery.html" class="gallery img d-flex align-items-center" style="background-image: url('{{ asset('asset/images/gallery-2.jpg') }}');">
-							<div class="icon mb-4 d-flex align-items-center justify-content-center">
-    						<span class="icon-search"></span>
-    					</div>
-						</a>
-					</div>
-					<div class="col-md-3 ftco-animate">
-						<a href="gallery.html" class="gallery img d-flex align-items-center" style="background-image: url('{{ asset('asset/images/gallery-3.jpg') }}');">
-							<div class="icon mb-4 d-flex align-items-center justify-content-center">
-    						<span class="icon-search"></span>
-    					</div>
-						</a>
-					</div>
-					<div class="col-md-3 ftco-animate">
-						<a href="gallery.html" class="gallery img d-flex align-items-center" style="background-image: url('{{ asset('asset/images/gallery-4.jpg') }}');">
-							<div class="icon mb-4 d-flex align-items-center justify-content-center">
-    						<span class="icon-search"></span>
-    					</div>
-						</a>
-					</div>
-        </div>
-    	</div>
-    </section>
-
-		<section class="ftco-menu">
-    	<div class="container">
-    		<div class="row justify-content-center mb-5">
-          <div class="col-md-7 heading-section text-center ftco-animate">
-          	<span class="subheading">Discover</span>
-            <h2 class="mb-4">Our Products</h2>
-            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-          </div>
-    </section>
-
-    <section class="ftco-section img" id="ftco-testimony" style="background-image: url('{{ asset('asset/images/bg_1.jpg') }}');"  data-stellar-background-ratio="0.5">
-    	<div class="overlay"></div>
-	    <div class="container">
-	      <div class="row justify-content-center mb-5">
-	        <div class="col-md-7 heading-section text-center ftco-animate">
-	        	<span class="subheading">Testimony</span>
-	          <h2 class="mb-4">Customers Says</h2>
-	          <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-	        </div>
-	      </div>
-	    </div>
-	    <div class="container-wrap">
-	      <div class="row d-flex no-gutters">
-	        <div class="col-lg align-self-sm-end ftco-animate">
-	          <div class="testimony">
-	             <blockquote>
-	                <p>&ldquo;Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small.&rdquo;</p>
-	              </blockquote>
-	              <div class="author d-flex mt-4">
-	                <div class="image mr-3 align-self-center">
-	                  <img src="url('{{ asset('asset/images/person.jpg') }}')" alt="">
-	                </div>
-	                <div class="name align-self-center">Louise Kelly <span class="position">Illustrator Designer</span></div>
-	              </div>
-	          </div>
-	        </div>
-	        <div class="col-lg align-self-sm-end">
-	          <div class="testimony overlay">
-	             <blockquote>
-	                <p>&ldquo;Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar.&rdquo;</p>
-	              </blockquote>
-	              <div class="author d-flex mt-4">
-	                <div class="image mr-3 align-self-center">
-	                  <img src="images/person_2.jpg" alt="">
-	                </div>
-	                <div class="name align-self-center">Louise Kelly <span class="position">Illustrator Designer</span></div>
-	              </div>
-	          </div>
-	        </div>
-	        <div class="col-lg align-self-sm-end ftco-animate">
-	          <div class="testimony">
-	             <blockquote>
-	                <p>&ldquo;Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small  line of blind text by the name. &rdquo;</p>
-	              </blockquote>
-	              <div class="author d-flex mt-4">
-	                <div class="image mr-3 align-self-center">
-	                  <img src="images/person_3.jpg" alt="">
-	                </div>
-	                <div class="name align-self-center">Louise Kelly <span class="position">Illustrator Designer</span></div>
-	              </div>
-	          </div>
-	        </div>
-	        <div class="col-lg align-self-sm-end">
-	          <div class="testimony overlay">
-	             <blockquote>
-	                <p>&ldquo;Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however.&rdquo;</p>
-	              </blockquote>
-	              <div class="author d-flex mt-4">
-	                <div class="image mr-3 align-self-center">
-	                  <img src="images/person_2.jpg" alt="">
-	                </div>
-	                <div class="name align-self-center">Louise Kelly <span class="position">Illustrator Designer</span></div>
-	              </div>
-	          </div>
-	        </div>
-	        <div class="col-lg align-self-sm-end ftco-animate">
-	          <div class="testimony">
-	            <blockquote>
-	              <p>&ldquo;Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small  line of blind text by the name. &rdquo;</p>
-	            </blockquote>
-	            <div class="author d-flex mt-4">
-	              <div class="image mr-3 align-self-center">
-	                <img src="images/person_3.jpg" alt="">
-	              </div>
-	              <div class="name align-self-center">Louise Kelly <span class="position">Illustrator Designer</span></div>
-	            </div>
-	          </div>
-	        </div>
-	      </div>
-	    </div>
-	  </section>
-
-    <section class="ftco-section">
-      <div class="container">
-        <div class="row justify-content-center mb-5 pb-3">
-          <div class="col-md-7 heading-section ftco-animate text-center">
-            <h2 class="mb-4">Recent from blog</h2>
-            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-          </div>
-        </div>
-        <div class="row d-flex">
-          <div class="col-md-4 d-flex ftco-animate">
-          	<div class="blog-entry align-self-stretch">
-              <a href="blog-single.html" class="block-20" style="background-image: url('images/image_1.jpg');">
-              </a>
-              <div class="text py-4 d-block">
-              	<div class="meta">
-                  <div><a href="#">Sept 10, 2018</a></div>
-                  <div><a href="#">Admin</a></div>
-                  <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
+          <section class="default-section text-white">
+            <div class="container">
+              <div class="row">
+                <div
+                  class="col-md-7 col-sm-7 col-xs-12 wow fadeInDown"
+                  data-wow-duration="1000ms"
+                  data-wow-delay="300ms"
+                >
+                  <div class="blog-list dp-animation">
+                    <img src="{{ url('asset') }}/images/img3.png" alt="" class="animated" />
+                    <div class="blog-over-info">
+                      <h3>New coffee flavours</h3>
+                      <a
+                        href="about.html"
+                        class="button-default button-default-white"
+                        >Read More</a
+                      >
+                    </div>
+                  </div>
                 </div>
-                <h3 class="heading mt-2"><a href="#">The Delicious Pizza</a></h3>
-                <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 d-flex ftco-animate">
-          	<div class="blog-entry align-self-stretch">
-              <a href="blog-single.html" class="block-20" style="background-image: url('images/image_2.jpg');">
-              </a>
-              <div class="text py-4 d-block">
-              	<div class="meta">
-                  <div><a href="#">Sept 10, 2018</a></div>
-                  <div><a href="#">Admin</a></div>
-                  <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
+                <div
+                  class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown"
+                  data-wow-duration="1000ms"
+                  data-wow-delay="700ms"
+                >
+                  <div class="blog-list dp-animation">
+                    <img src="{{ url('asset') }}/images/img4.png" alt="" class="animated" />
+                    <div class="blog-over-info">
+                      <h3>
+                        Thıs frıday <span class="round-price">25%</span> off
+                      </h3>
+                    </div>
+                  </div>
+                  <div class="blog-list dp-animation">
+                    <img src="{{ url('asset') }}/images/img5.png" alt="" class="animated" />
+                    <div class="blog-over-info">
+                      <h3>ENJOYING GREAT</h3>
+                      <a
+                        href="about.html"
+                        class="button-default button-default-white"
+                        >Read More</a
+                      >
+                    </div>
+                  </div>
                 </div>
-                <h3 class="heading mt-2"><a href="#">The Delicious Pizza</a></h3>
-                <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
               </div>
             </div>
-          </div>
-          <div class="col-md-4 d-flex ftco-animate">
-          	<div class="blog-entry align-self-stretch">
-              <a href="blog-single.html" class="block-20" style="background-image: url('images/image_3.jpg');">
-              </a>
-              <div class="text py-4 d-block">
-              	<div class="meta">
-                  <div><a href="#">Sept 10, 2018</a></div>
-                  <div><a href="#">Admin</a></div>
-                  <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
+          </section>
+
+          <!-- End Default Section -->
+
+          <!-- Start Menu Item List -->
+
+          <section
+            class="default-section discover-menu parallax text-white"
+            data-stellar-offset-parent="true"
+            data-stellar-background-ratio="0.5"
+            style="background-image: url('{{ url('asset') }}/images/banner1.jpg')"
+          >
+            <div class="container">
+              <div class="title text-center">
+                <h2 class="text-primary">Discover Menu</h2>
+                <h6>What Happens Here</h6>
+              </div>
+              <div class="item-list">
+                <div class="row">
+                  @foreach($sanpham as $sp)
+					<div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+					<div class="item-wrap dp-animation">
+						<div class="item-left">
+            <img src="{{ asset('storage/' . ltrim($sp->image, '/')) }}" width="250px" alt="{{ $sp->name }}" style="width: 100px; height: 100px; border-radius: 100px;" class="animated">
+						</div>
+						<div class="item-right">
+						<div class="item-right-top">
+							<h5>{{ $sp->name }}</h5>
+							<span>$ {{ number_format($sp->min_price, 2) }}</span>
+						</div>
+						<p>{{ $sp->description ?? 'Mô tả sản phẩm đang cập nhật.' }}</p>
+						</div>
+					</div>
+					</div>
+					@endforeach
                 </div>
-                <h3 class="heading mt-2"><a href="#">The Delicious Pizza</a></h3>
-                <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+                <div
+                  class="btn-wrap wow fadeInUp"
+                  data-wow-duration="1000ms"
+                  data-wow-delay="300ms"
+                >
+                  <a href="menu_fixed.html" class="button-default"
+                    >Explore Full Menu</a
+                  >
+                </div>
               </div>
             </div>
-          </div>
+          </section>
+
+          <!-- End Menu Item List -->
+
+          <!-- Start Item list Part -->
+
+          <section class="default-section">
+            <div class="container">
+              <div class="title text-center">
+                <h2 class="text-primary">Coffee Build Your Base</h2>
+                <h6>What Happens Here</h6>
+              </div>
+              <div class="product-wrapper">
+				<div
+					class="owl-carousel owl-theme"
+					data-items="4"
+					data-tablet="3"
+					data-mobile="2"
+					data-nav="false"
+					data-dots="true"
+					data-autoplay="true"
+					data-speed="1800"
+					data-autotime="5000"
+				>
+					@foreach($sanpham as $sp)
+					<div class="item">
+					<div class="product-img">
+						<a href="{{ route('client.product.detail', $sp->id) }}">
+					<img src="{{ asset('storage/' . ltrim($sp->image, '/')) }}" width="250px" alt="{{ $sp->name }}">
+						<span class="icon-basket fontello"></span>
+						</a>
+					</div>
+					<h5>{{ $sp->name }}</h5>
+					<span>${{ number_format($sp->min_price, 2) }}</span>
+					<del>${{ number_format($sp->min_price + 20, 2) }}</del> {{-- giả lập giá cũ --}}
+					</div>
+					@endforeach
+				</div>
+				</div>
+
+              <div class="product-single">
+                <div class="row">
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="product-single-left bg-skin text-white">
+                      <div class="product-single-detail">
+                        <h2>TRY THE BEST COFFEE <span>IN THE CITY</span></h2>
+                        <p>
+                          Alienum phaedrum torquatos nec eu, vis detraxit
+                          periculis ex, nihil expetendis in mei. Mei an at
+                          dictum lacu pericula uni euripidis.
+                        </p>
+                        <div class="item-product">
+                          <img src="{{ url('asset') }}/images/img10.png" alt="" class="animated" />
+                        </div>
+                        <a
+                          href="menu.html"
+                          class="button-default button-default-white margin-top-30"
+                          >Explore Full Menu</a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div
+                      class="owl-carousel owl-theme"
+                      data-items="1"
+                      data-tablet="1"
+                      data-mobile="1"
+                      data-nav="false"
+                      data-dots="true"
+                      data-autoplay="true"
+                      data-speed="1300"
+                      data-autotime="6000"
+                    >
+                      <div class="item dp-animation">
+                        <div class="product-single-right">
+                          <img src="{{ url('asset') }}/images/img9.png" alt="" class="animated" />
+                        </div>
+                      </div>
+                      <div class="item dp-animation">
+                        <div class="product-single-right">
+                          <img src="{{ url('asset') }}/images/img9.png" alt="" class="animated" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- End Item list Part -->
+
+          <!-- Start Feature Part -->
+
+          <section class="default-section bg-grey">
+            <div class="container">
+              <div class="title text-center">
+                <h2 class="text-coffee">Feature Blog</h2>
+                <h6>Read Latest Delicious Posts And News</h6>
+              </div>
+              <div class="feature-blog">
+                <div
+                  class="owl-carousel owl-theme"
+                  data-items="3"
+                  data-tablet="2"
+                  data-mobile="1"
+                  data-nav="true"
+                  data-dots="false"
+                  data-autoplay="true"
+                  data-speed="2500"
+                  data-autotime="6000"
+                >
+                  <div class="item dp-animation">
+                    <div class="feature-img">
+                      <img src="{{ url('asset') }}/images/feature1.jpg" alt="" class="animated" />
+                      <div class="date-feature">
+                        27 <br />
+                        <small>may</small>
+                      </div>
+                    </div>
+                    <div class="feature-info">
+                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
+                      <span><i class="icon-comment-5"></i> 5 Comments</span>
+                      <h5>Make It SImple</h5>
+                      <p>
+                        Aptent taciti sociosqu ad litora euismod atras vulputate
+                        iltricies etri elit class.
+                      </p>
+                      <a href="blog_single.html"
+                        >Read More <i class="icon-right-4"></i
+                      ></a>
+                    </div>
+                  </div>
+                  <div class="item dp-animation">
+                    <div class="feature-img">
+                      <img src="{{ url('asset') }}/images/feature2.jpg" alt="" class="animated" />
+                      <div class="date-feature">
+                        27 <br />
+                        <small>may</small>
+                      </div>
+                    </div>
+                    <div class="feature-info">
+                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
+                      <span><i class="icon-comment-5"></i> 5 Comments</span>
+                      <h5>COFFEE SHOP</h5>
+                      <p>
+                        Aptent taciti sociosqu ad litora euismod atras vulputate
+                        iltricies etri elit class.
+                      </p>
+                      <a href="blog_single.html"
+                        >Read More <i class="icon-right-4"></i
+                      ></a>
+                    </div>
+                  </div>
+                  <div class="item dp-animation">
+                    <div class="feature-img">
+                      <img src="{{ url('asset') }}/images/feature3.jpg" alt="" class="animated" />
+                      <div class="date-feature">
+                        27 <br />
+                        <small>may</small>
+                      </div>
+                    </div>
+                    <div class="feature-info">
+                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
+                      <span><i class="icon-comment-5"></i> 5 Comments</span>
+                      <h5>COFFEE BAR</h5>
+                      <p>
+                        Aptent taciti sociosqu ad litora euismod atras vulputate
+                        iltricies etri elit class.
+                      </p>
+                      <a href="blog_single.html"
+                        >Read More <i class="icon-right-4"></i
+                      ></a>
+                    </div>
+                  </div>
+                  <div class="item dp-animation">
+                    <div class="feature-img">
+                      <img src="{{ url('asset') }}/images/feature1.jpg" alt="" class="animated" />
+                      <div class="date-feature">
+                        27 <br />
+                        <small>may</small>
+                      </div>
+                    </div>
+                    <div class="feature-info">
+                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
+                      <span><i class="icon-comment-5"></i> 5 Comments</span>
+                      <h5>Make It SImple</h5>
+                      <p>
+                        Aptent taciti sociosqu ad litora euismod atras vulputate
+                        iltricies etri elit class.
+                      </p>
+                      <a href="blog_single.html"
+                        >Read More <i class="icon-right-4"></i
+                      ></a>
+                    </div>
+                  </div>
+                  <div class="item dp-animation">
+                    <div class="feature-img">
+                      <img src="{{ url('asset') }}/images/feature2.jpg" alt="" class="animated" />
+                      <div class="date-feature">
+                        27 <br />
+                        <small>may</small>
+                      </div>
+                    </div>
+                    <div class="feature-info">
+                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
+                      <span><i class="icon-comment-5"></i> 5 Comments</span>
+                      <h5>COFFEE SHOP</h5>
+                      <p>
+                        Aptent taciti sociosqu ad litora euismod atras vulputate
+                        iltricies etri elit class.
+                      </p>
+                      <a href="blog_single.html"
+                        >Read More <i class="icon-right-4"></i
+                      ></a>
+                    </div>
+                  </div>
+                  <div class="item dp-animation">
+                    <div class="feature-img">
+                      <img src="{{ url('asset') }}/images/feature3.jpg" alt="" class="animated" />
+                      <div class="date-feature">
+                        27 <br />
+                        <small>may</small>
+                      </div>
+                    </div>
+                    <div class="feature-info">
+                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
+                      <span><i class="icon-comment-5"></i> 5 Comments</span>
+                      <h5>COFFEE BAR</h5>
+                      <p>
+                        Aptent taciti sociosqu ad litora euismod atras vulputate
+                        iltricies etri elit class.
+                      </p>
+                      <a href="blog_single.html"
+                        >Read More <i class="icon-right-4"></i
+                      ></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- End Feature Part -->
+
+          <!-- Start What Client Say -->
+
+          <section
+            class="default-section parallax text-center text-white client-say"
+            data-stellar-offset-parent="true"
+            data-stellar-background-ratio="0.5"
+            style="background-image: url('{{ url('asset') }}/images/banner2.jpg')"
+          >
+            <div class="container">
+              <div
+                class="owl-carousel owl-theme"
+                data-items="1"
+                data-tablet="1"
+                data-mobile="1"
+                data-nav="false"
+                data-dots="true"
+                data-autoplay="true"
+                data-speed="2000"
+                data-autotime="4000"
+              >
+                <div class="item">
+                  <h2 class="text-primary">What Clients Say</h2>
+                  <p>1500+ Satisfied Clients</p>
+                  <p><img src="{{ url('asset') }}/images/client1.png" alt="" /></p>
+                  <h5 class="text-primary">Alice Williams</h5>
+                  <p>Kitchen Manager</p>
+                  <p>
+                    Success isn’t really that difficult. There is a significant
+                    portion of the <br />
+                    population here in North America, that actually want and
+                    need <br />success really no magic to be hard.
+                  </p>
+                </div>
+                <div class="item">
+                  <h2 class="text-primary">What Clients Say</h2>
+                  <p>1500+ Satisfied Clients</p>
+                  <p><img src="{{ url('asset') }}/images/client1.png" alt="" /></p>
+                  <h5 class="text-primary">Alice Williams</h5>
+                  <p>Kitchen Manager</p>
+                  <p>
+                    Success isn’t really that difficult. There is a significant
+                    portion of the <br />
+                    population here in North America, that actually want and
+                    need <br />success really no magic to be hard.
+                  </p>
+                </div>
+                <div class="item">
+                  <h2 class="text-primary">What Clients Say</h2>
+                  <p>1500+ Satisfied Clients</p>
+                  <p><img src="{{ url('asset') }}/images/client1.png" alt="" /></p>
+                  <h5 class="text-primary">Alice Williams</h5>
+                  <p>Kitchen Manager</p>
+                  <p>
+                    Success isn’t really that difficult. There is a significant
+                    portion of the <br />
+                    population here in North America, that actually want and
+                    need <br />success really no magic to be hard.
+                  </p>
+                </div>
+                <div class="item">
+                  <h2 class="text-primary">What Clients Say</h2>
+                  <p>1500+ Satisfied Clients</p>
+                  <p><img src="{{ url('asset') }}/images/client1.png" alt="" /></p>
+                  <h5 class="text-primary">Alice Williams</h5>
+                  <p>Kitchen Manager</p>
+                  <p>
+                    Success isn’t really that difficult. There is a significant
+                    portion of the <br />
+                    population here in North America, that actually want and
+                    need <br />success really no magic to be hard.
+                  </p>
+                </div>
+                <div class="item">
+                  <h2 class="text-primary">What Clients Say</h2>
+                  <p>1500+ Satisfied Clients</p>
+                  <p><img src="{{ url('asset') }}/images/client1.png" alt="" /></p>
+                  <h5 class="text-primary">Alice Williams</h5>
+                  <p>Kitchen Manager</p>
+                  <p>
+                    Success isn’t really that difficult. There is a significant
+                    portion of the <br />
+                    population here in North America, that actually want and
+                    need <br />success really no magic to be hard.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- End What Client Say -->
+
+          <!-- Start Feature List -->
+
+          <section class="default-section">
+            <div class="container">
+              <div class="title text-center">
+                <h2 class="text-primary">Our Some Feature</h2>
+                <h6 class="text-turkish">
+                  The role of a good cook ware in the preparation of a sumptuous
+                  meal cannot be over <br />
+                  emphasized then one consider white bread
+                </h6>
+              </div>
+              <div class="feature-list">
+                <div class="row">
+                  <div class="col-md-3 col-sm-6 col-xs-12">
+                    <img src="{{ url('asset') }}/images/icon/icon1.png" alt="" />
+                    <h5 class="text-coffee">COFFEE MAKER</h5>
+                    <p>
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                      sed do eiusmod tempor incididunt
+                    </p>
+                  </div>
+                  <div class="col-md-3 col-sm-6 col-xs-12">
+                    <img src="{{ url('asset') }}/images/icon/icon2.png" alt="" />
+                    <h5 class="text-coffee">COFFEE GRINDER</h5>
+                    <p>
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                      sed do eiusmod tempor incididunt
+                    </p>
+                  </div>
+                  <div class="col-md-3 col-sm-6 col-xs-12">
+                    <img src="{{ url('asset') }}/images/icon/icon3.png" alt="" />
+                    <h5 class="text-coffee">COFFEE CUPS</h5>
+                    <p>
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                      sed do eiusmod tempor incididunt
+                    </p>
+                  </div>
+                  <div class="col-md-3 col-sm-6 col-xs-12">
+                    <img src="{{ url('asset') }}/images/icon/icon4.png" alt="" />
+                    <h5 class="text-coffee">ESPRESSO MACHINE</h5>
+                    <p>
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                      sed do eiusmod tempor incididunt
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- End Feature List -->
+
+          <!-- Start Gallery With Sllider -->
+
+          <section class="default-section pad-top-remove">
+            <div class="container">
+              <div class="title text-center">
+                <h2 class="text-primary">#coffeedespina</h2>
+                <h6 class="text-turkish">
+                  Enjoyed your stay at Despina? Share your moments with us.
+                  Follow us on Instagram and use
+                </h6>
+              </div>
+            </div>
+            <div class="gallery-slider">
+              <div
+                class="owl-carousel owl-theme"
+                data-items="5"
+                data-tablet="4"
+                data-mobile="1"
+                data-nav="true"
+                data-dots="false"
+                data-autoplay="true"
+                data-speed="2000"
+                data-autotime="3000"
+              >
+                <div class="item dp-animation">
+                  <a
+                    href="{{ url('asset') }}/images/gallery/gallery-big1.jpg"
+                    class="magnific-popup"
+                  >
+                    <img
+                      src="{{ url('asset') }}/images/gallery/gallery1.png"
+                      alt=""
+                      class="animated"
+                    />
+                    <div class="gallery-overlay">
+                      <div class="gallery-overlay-inner">
+                        <i class="fa fa-instagram" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="item dp-animation">
+                  <a
+                    href="{{ url('asset') }}/images/gallery/gallery-big2.jpg"
+                    class="magnific-popup"
+                  >
+                    <img
+                      src="{{ url('asset') }}/images/gallery/gallery2.png"
+                      alt=""
+                      class="animated"
+                    />
+                    <div class="gallery-overlay">
+                      <div class="gallery-overlay-inner">
+                        <i class="fa fa-instagram" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="item dp-animation">
+                  <a
+                    href="{{ url('asset') }}/images/gallery/gallery-big3.jpg"
+                    class="magnific-popup"
+                  >
+                    <img
+                      src="{{ url('asset') }}/images/gallery/gallery3.png"
+                      alt=""
+                      class="animated"
+                    />
+                    <div class="gallery-overlay">
+                      <div class="gallery-overlay-inner">
+                        <i class="fa fa-instagram" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="item dp-animation">
+                  <a
+                    href="{{ url('asset') }}/images/gallery/gallery-big4.jpg"
+                    class="magnific-popup"
+                  >
+                    <img
+                      src="{{ url('asset') }}/images/gallery/gallery4.png"
+                      alt=""
+                      class="animated"
+                    />
+                    <div class="gallery-overlay">
+                      <div class="gallery-overlay-inner">
+                        <i class="fa fa-instagram" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="item dp-animation">
+                  <a
+                    href="{{ url('asset') }}/images/gallery/gallery-big5.jpg"
+                    class="magnific-popup"
+                  >
+                    <img
+                      src="{{ url('asset') }}/images/gallery/gallery5.png"
+                      alt=""
+                      class="animated"
+                    />
+                    <div class="gallery-overlay">
+                      <div class="gallery-overlay-inner">
+                        <i class="fa fa-instagram" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="item dp-animation">
+                  <a
+                    href="{{ url('asset') }}/images/gallery/gallery-big1.jpg"
+                    class="magnific-popup"
+                  >
+                    <img
+                      src="{{ url('asset') }}/images/gallery/gallery1.png"
+                      alt=""
+                      class="animated"
+                    />
+                    <div class="gallery-overlay">
+                      <div class="gallery-overlay-inner">
+                        <i class="fa fa-instagram" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="item dp-animation">
+                  <a
+                    href="{{ url('asset') }}/images/gallery/gallery-big2.jpg"
+                    class="magnific-popup"
+                  >
+                    <img
+                      src="{{ url('asset') }}/images/gallery/gallery2.png"
+                      alt=""
+                      class="animated"
+                    />
+                    <div class="gallery-overlay">
+                      <div class="gallery-overlay-inner">
+                        <i class="fa fa-instagram" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="item dp-animation">
+                  <a
+                    href="{{ url('asset') }}/images/gallery/gallery-big3.jpg"
+                    class="magnific-popup"
+                  >
+                    <img
+                      src="{{ url('asset') }}/images/gallery/gallery3.png"
+                      alt=""
+                      class="animated"
+                    />
+                    <div class="gallery-overlay">
+                      <div class="gallery-overlay-inner">
+                        <i class="fa fa-instagram" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="item dp-animation">
+                  <a
+                    href="{{ url('asset') }}/images/gallery/gallery-big4.jpg"
+                    class="magnific-popup"
+                  >
+                    <img
+                      src="{{ url('asset') }}/images/gallery/gallery4.png"
+                      alt=""
+                      class="animated"
+                    />
+                    <div class="gallery-overlay">
+                      <div class="gallery-overlay-inner">
+                        <i class="fa fa-instagram" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="item dp-animation">
+                  <a
+                    href="{{ url('asset') }}/images/gallery/gallery-big5.jpg"
+                    class="magnific-popup"
+                  >
+                    <img
+                      src="{{ url('asset') }}/images/gallery/gallery5.png"
+                      alt=""
+                      class="animated"
+                    />
+                    <div class="gallery-overlay">
+                      <div class="gallery-overlay-inner">
+                        <i class="fa fa-instagram" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- End Gallery With Sllider -->
         </div>
-      </div>
-    </section>
-
-
-		<section class="ftco-appointment">
-			<div class="overlay"></div>
-    	<div class="container-wrap">
-    		<div class="row no-gutters d-md-flex align-items-center">
-    			<div class="col-md-6 d-flex align-self-stretch">
-    				<div id="map"></div>
-    			</div>
-	    		<div class="col-md-6 appointment ftco-animate">
-	    			<h3 class="mb-3">Book a Table</h3>
-	    			<form action="#" class="appointment-form">
-	    				<div class="d-md-flex">
-		    				<div class="form-group">
-		    					<input type="text" class="form-control" placeholder="First Name">
-		    				</div>
-		    				<div class="form-group ml-md-4">
-		    					<input type="text" class="form-control" placeholder="Last Name">
-		    				</div>
-	    				</div>
-	    				<div class="d-md-flex">
-		    				<div class="form-group">
-		    					<div class="input-wrap">
-		            		<div class="icon"><span class="ion-md-calendar"></span></div>
-		            		<input type="text" class="form-control appointment_date" placeholder="Date">
-	            		</div>
-		    				</div>
-		    				<div class="form-group ml-md-4">
-		    					<div class="input-wrap">
-		            		<div class="icon"><span class="ion-ios-clock"></span></div>
-		            		<input type="text" class="form-control appointment_time" placeholder="Time">
-	            		</div>
-		    				</div>
-		    				<div class="form-group ml-md-4">
-		    					<input type="text" class="form-control" placeholder="Phone">
-		    				</div>
-	    				</div>
-	    				<div class="d-md-flex">
-	    					<div class="form-group">
-		              <textarea name="" id="" cols="30" rows="2" class="form-control" placeholder="Message"></textarea>
-		            </div>
-		            <div class="form-group ml-md-4">
-		              <input type="submit" value="Appointment" class="btn btn-primary py-3 px-4">
-		            </div>
-	    				</div>
-	    			</form>
-	    		</div>
-    		</div>
-    	</div>
-    </section>
-
-
-@endsection
+      </main>
+	  @endsection
