@@ -12,6 +12,7 @@ return new class extends Migration
         $table->id();
         $table->string('name');
         $table->string('image')->nullable();
+        $table->string('title');
         $table->text('mota');
         $table->foreignId('id_danhmuc')
               ->constrained('danhmucs')
