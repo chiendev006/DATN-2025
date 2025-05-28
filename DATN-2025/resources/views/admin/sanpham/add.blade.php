@@ -155,6 +155,24 @@
     </div>
   </section>
   @include('footer')
+         <script>
+  $(document).ready(function() {
+    $('#editor').summernote({
+      height: 300,             // Chiều cao khung soạn thảo
+      placeholder: 'Nhập mô tả sản phẩm ở đây...',
+      toolbar: [
+        ['style', ['style']],
+        ['font', ['bold', 'italic', 'underline', 'clear']],
+        ['fontname', ['fontname']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['insert', ['link', 'picture', 'video']],
+        ['view', ['fullscreen', 'codeview', 'help']]
+      ]
+    });
+  });
+</script>
   <style>
     .topping{
             margin-top: -5px;

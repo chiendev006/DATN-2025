@@ -9,7 +9,7 @@
 
     <link rel="shortcut icon" href="{{ url('asset') }}/images/favicon.png" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <link
       href="https://fonts.googleapis.com/css?family=Pacifico|Quicksand:300,400,500,700|Source+Sans+Pro:400,600,700"
       rel="stylesheet"
@@ -74,6 +74,49 @@
     transform: translateY(-50%);
     color: #999;
     cursor: pointer;
+}
+
+.ui-slider-horizontal {
+    height: 4px;
+    background: #e9ecef;
+}
+
+.ui-slider .ui-slider-handle {
+    width: 16px;
+    height: 16px;
+    background: #c7a17a;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    cursor: pointer;
+    margin-top: -6px;
+}
+
+.ui-slider .ui-slider-range {
+    background: #c7a17a;
+}
+
+#price-range-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+.filter-btn {
+    background: #c7a17a;
+    color: #fff !important;
+    padding: 8px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+}
+
+.filter-btn:hover {
+    background: #b08b63;
+    color: #fff !important;
+    text-decoration: none;
 }
 
     </style>
@@ -516,10 +559,19 @@
     <script src="{{ url('asset') }}/js/progress-circle/waterbubble.min.js"></script>
     <script src="{{ url('asset') }}/js/app.js"></script>
     <script src="{{ url('asset') }}/js/script.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <!-- Bootstrap Slider JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/bootstrap-slider.min.js"></script>
     @yield('scripts')
   </body>
-  
+  <!-- jQuery (bắt buộc) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Summernote CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.css" rel="stylesheet">
+
+<!-- Summernote JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
+
   
 </html>

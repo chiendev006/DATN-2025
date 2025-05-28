@@ -44,7 +44,7 @@
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <label>Your Message *</label>
-                                             <input name="massage" type="text" required>
+                                          <textarea id="editor" name="massage" required></textarea>
                                         </div>  
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <button name="submit" class="submit-btn send_message" type="submit">Gửi</button>
@@ -78,6 +78,25 @@
             </div>
         </main> 
         @section('scripts')
+        <script>
+  $(document).ready(function() {
+    $('#editor').summernote({
+      height: 300,             // Chiều cao khung soạn thảo
+      placeholder: 'Nhập mô tả sản phẩm ở đây...',
+      toolbar: [
+        ['style', ['style']],
+        ['font', ['bold', 'italic', 'underline', 'clear']],
+        ['fontname', ['fontname']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['insert', ['link', 'picture', 'video']],
+        ['view', ['fullscreen', 'codeview', 'help']]
+      ]
+    });
+  });
+</script>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("contact-form");

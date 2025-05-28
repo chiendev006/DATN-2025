@@ -37,14 +37,18 @@
                                             @endforeach
                                         </ul>
                                        </div>
-                                   <div class="blog-left-filter blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                    <div class="blog-left-filter blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <h5>Filter</h5>
                                         <p>Price: <span id="price-range-label">50.000₫ — 10.000.000₫</span></p>
-                                        <input id="price-range" type="text"
-                                            data-slider-min="50000"
-                                            data-slider-max="10000000"
-                                            data-slider-step="50000"
-                                            data-slider-value="[50000,2000000]" />
+                                        <div class="slider-wrapper">
+                                            <input id="price-range" type="text" class="span2" value="" 
+                                                data-slider-min="50000" 
+                                                data-slider-max="10000000" 
+                                                data-slider-step="50000" 
+                                                data-slider-value="[50000,2000000]"
+                                                data-slider-tooltip="hide"
+                                            />
+                                        </div>
                                         <a href="#" id="btn-filter" class="filter-btn">FILTER</a>
                                     </div>
                                     <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
@@ -252,15 +256,11 @@
         }
     });
 });
-// price 
-   $(document).ready(function () {
+$(document).ready(function () {
     // Khởi tạo slider
-    $("#price-range").slider({
+    var slider = new Slider('#price-range', {
         formatter: function(value) {
-            if (Array.isArray(value)) {
-                return formatVND(value[0]) + " — " + formatVND(value[1]);
-            }
-            return formatVND(value);
+            return formatVND(value[0]) + ' — ' + formatVND(value[1]);
         }
     });
 
@@ -271,27 +271,19 @@
             currency: 'VND',
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
-        }).format(number).replace('₫', 'VND');
+        }).format(number);
     }
 
     // Cập nhật label khi slider thay đổi
-    $("#price-range").on('slide', function(event) {
-        let val = event.value;
-        if (Array.isArray(val)) {
-            $("#price-range-label").text(formatVND(val[0]) + " — " + formatVND(val[1]));
-        } else {
-            $("#price-range-label").text(formatVND(val));
-        }
+    slider.on('slide', function(value) {
+        $("#price-range-label").text(formatVND(value[0]) + ' — ' + formatVND(value[1]));
     });
-
-    // Hiển thị giá mặc định khi load trang
-    $("#price-range").trigger('slide', {value: $("#price-range").slider('getValue')});
 
     // Xử lý nút lọc giá
     $('#btn-filter').on('click', function (e) {
         e.preventDefault();
         
-        let range = $("#price-range").slider('getValue');
+        let range = slider.getValue();
         let minPrice = range[0];
         let maxPrice = range[1];
 
@@ -321,7 +313,7 @@
                                         </div>
                                     </div>
                                     <a href="/product/${item.id}"><h5>${item.name}</h5></a>
-                                    <h5><strong>${Number(item.min_price).toLocaleString('vi-VN')} VND</strong></h5>
+                                    <h5><strong>${formatVND(item.min_price)}</strong></h5>
                                 </div>
                             </div>
                         `;
@@ -340,6 +332,60 @@
 });
 
 </script>
+<style>
+.slider-wrapper {
+    padding: 10px 15px;
+    margin-bottom: 20px;
+}
+
+.slider.slider-horizontal {
+    width: 100%;
+    height: 20px;
+    margin: 0 auto;
+}
+
+.slider-track {
+    background: #e9ecef;
+    box-shadow: none;
+}
+
+.slider-selection {
+    background: #c7a17a;
+    box-shadow: none;
+}
+
+.slider-handle {
+    background: #c7a17a;
+    border: 2px solid #fff;
+    box-shadow: 0 0 3px rgba(0,0,0,0.3);
+}
+
+.slider-handle:hover {
+    background: #b08b63;
+}
+
+#price-range-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+.filter-btn {
+    background: #c7a17a;
+    color: #fff;
+    padding: 8px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    background: #b08b63;
+    color: #fff;
+}
+</style>
 
 
 @endsection
