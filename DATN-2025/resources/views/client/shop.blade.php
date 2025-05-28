@@ -16,15 +16,16 @@
                 </section>
 
                 <!-- Start Blog List -->   
-
                 <section class="default-section shop-page">
                     <div class="container">
                         <div class="row">
                             <div class="col-md-3 col-sm-4 col-xs-12">
                                 <div class="blog-left-section">
-                                    <div class="blog-left-search blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <input type="text" name="txt" placeholder="Search">
-                                        <input type="submit" name="submit" value="&#xf002;">
+                                   <div class="blog-left-search blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                        <div class="search-input-wrapper">
+                                            <input type="text" id="search" name="search" placeholder="Search">
+                                            <i class="fa fa-search" id="btn-search"></i>
+                                        </div>
                                     </div>
                                     <div class="blog-left-categories blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <h5>Categories</h5>
@@ -36,11 +37,15 @@
                                             @endforeach
                                         </ul>
                                        </div>
-                                    <div class="blog-left-filter blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                   <div class="blog-left-filter blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <h5>Filter</h5>
-                                        <p>Price: $40 — $350</p>
-                                        <input id="ex2" type="text" class="span2" value="" data-slider-min="40" data-slider-max="350" data-slider-step="5" data-slider-value="[50,200]"/>
-                                        <a href="#" class="filter-btn">FILTER</a>
+                                        <p>Price: <span id="price-range-label">50.000₫ — 10.000.000₫</span></p>
+                                        <input id="price-range" type="text"
+                                            data-slider-min="50000"
+                                            data-slider-max="10000000"
+                                            data-slider-step="50000"
+                                            data-slider-value="[50000,2000000]" />
+                                        <a href="#" id="btn-filter" class="filter-btn">FILTER</a>
                                     </div>
                                     <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <h5>Best Deals</h5>
@@ -101,12 +106,12 @@
                                             <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                                 <div class="shop-main-list">
                                                     <div class="shop-product">
-                                                        <a href="{{ route('client.product.detail', $product->id) }}">
+                                                        <a href="">
                                                         <img class="" src="{{ asset('storage/' . ltrim($product->image, '/')) }}"  alt="{{ $product->name }}" style="border-radius: 20px;">
                                                         </a>
                                                          <div class="cart-overlay-wrap">
                                                         <div class="cart-overlay">
-                                                            <a href="#" class="shop-cart-btn">ADD TO CART</a>
+                                                            <a href="{{ route('client.product.detail', $product->id) }}" class="shop-cart-btn">ADD TO CART</a>
                                                         </div> 
                                                     </div>
                                                     </div>
@@ -166,5 +171,175 @@
         });
     });
 </script>
-  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $('#btn-search').on('click', function () {
+        let keyword = $('#search').val();
+
+        $.ajax({
+            url: "{{ route('ajax.search') }}",
+            type: "GET",
+            data: { search: keyword },
+            success: function (response) {
+                let html = '';
+
+                if(response.sanpham.length > 0) {
+                    response.sanpham.forEach(function(item) {
+                        html += `
+                            <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown">
+                                <div class="shop-main-list">
+                                    <div class="shop-product">
+                                        <a href="/product/${item.id}">
+                                            <img src="${item.image}" alt="${item.name}" style="border-radius: 20px;">
+                                        </a>
+                                        <div class="cart-overlay-wrap">
+                                            <div class="cart-overlay">
+                                                <a href="/cart/add/${item.id}" class="shop-cart-btn">ADD TO CART</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a href="/product/${item.id}"><h5>${item.name}</h5></a>
+                                    <h5><strong>${Number(item.min_price).toLocaleString('vi-VN')} VND</strong></h5>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = '<p class="text-center">Không tìm thấy sản phẩm nào.</p>';
+                }
+
+                $('#product-list').html(html);
+            }
+        });
+    });
+    // Name sp 
+    document.getElementById('btn-search').addEventListener('click', function () {
+    let keyword = document.getElementById('search').value;
+
+    $.ajax({
+        url: "{{ route('ajax.search') }}",
+        type: "GET",
+        data: { search: keyword },
+        success: function (response) {
+            let html = '';
+
+            if (response.sanpham.length > 0) {
+                response.sanpham.forEach(function (item) {
+                    html += `
+                        <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown">
+                            <div class="shop-main-list">
+                                <div class="shop-product">
+                                    <a href="/product/${item.id}">
+                                        <img src="${item.image}" alt="${item.name}" style="border-radius: 20px;">
+                                    </a>
+                                    <div class="cart-overlay-wrap">
+                                        <div class="cart-overlay">
+                                            <a href="/cart/add/${item.id}" class="shop-cart-btn">ADD TO CART</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="/product/${item.id}"><h5>${item.name}</h5></a>
+                                <h5><strong>${Number(item.min_price).toLocaleString('vi-VN')} VND</strong></h5>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html = '<p class="text-center">Không tìm thấy sản phẩm nào.</p>';
+            }
+
+            $('#product-list').html(html);
+        }
+    });
+});
+// price 
+   $(document).ready(function () {
+    // Khởi tạo slider
+    $("#price-range").slider({
+        formatter: function(value) {
+            if (Array.isArray(value)) {
+                return formatVND(value[0]) + " — " + formatVND(value[1]);
+            }
+            return formatVND(value);
+        }
+    });
+
+    // Hàm format số thành VND
+    function formatVND(number) {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(number).replace('₫', 'VND');
+    }
+
+    // Cập nhật label khi slider thay đổi
+    $("#price-range").on('slide', function(event) {
+        let val = event.value;
+        if (Array.isArray(val)) {
+            $("#price-range-label").text(formatVND(val[0]) + " — " + formatVND(val[1]));
+        } else {
+            $("#price-range-label").text(formatVND(val));
+        }
+    });
+
+    // Hiển thị giá mặc định khi load trang
+    $("#price-range").trigger('slide', {value: $("#price-range").slider('getValue')});
+
+    // Xử lý nút lọc giá
+    $('#btn-filter').on('click', function (e) {
+        e.preventDefault();
+        
+        let range = $("#price-range").slider('getValue');
+        let minPrice = range[0];
+        let maxPrice = range[1];
+
+        // Thêm loading state
+        $('#product-list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x"></i></div>');
+
+        $.ajax({
+            url: "{{ route('ajax.filter.price') }}",
+            type: "GET",
+            data: { min: minPrice, max: maxPrice },
+            success: function (response) {
+                let html = '';
+
+                if(response.sanpham && response.sanpham.length > 0) {
+                    response.sanpham.forEach(function(item) {
+                        html += `
+                            <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown">
+                                <div class="shop-main-list">
+                                    <div class="shop-product">
+                                        <a href="/product/${item.id}">
+                                            <img src="${item.image}" alt="${item.name}" style="border-radius: 20px;">
+                                        </a>
+                                        <div class="cart-overlay-wrap">
+                                            <div class="cart-overlay">
+                                                <a href="/cart/add/${item.id}" class="shop-cart-btn">ADD TO CART</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a href="/product/${item.id}"><h5>${item.name}</h5></a>
+                                    <h5><strong>${Number(item.min_price).toLocaleString('vi-VN')} VND</strong></h5>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = '<div class="col-12 text-center"><p>Không tìm thấy sản phẩm nào trong khoảng giá này.</p></div>';
+                }
+
+                $('#product-list').html(html);
+            },
+            error: function() {
+                $('#product-list').html('<div class="col-12 text-center"><p>Đã có lỗi xảy ra. Vui lòng thử lại.</p></div>');
+            }
+        });
+    });
+});
+
+</script>
+
+
 @endsection

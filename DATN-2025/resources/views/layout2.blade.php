@@ -30,6 +30,8 @@
     <link href="{{ url('asset') }}/css/Slick-slider/slick-theme.css" rel="stylesheet" />
     <link href="{{ url('asset') }}/css/theme.css" rel="stylesheet" />
     <link href="{{ url('asset') }}/css/responsive.css" rel="stylesheet" />
+  <!-- Bootstrap Slider CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/css/bootstrap-slider.min.css">
 
    
     <!--[if lt IE 9]>
@@ -51,7 +53,35 @@
           $cartCount = collect($sessionCart)->sum('quantity');
       }
     @endphp
+    <style>
+      .search-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.search-input-wrapper input[type="text"] {
+    width: 100%;
+    padding: 10px 40px 10px 15px; 
+    border: 1px solid #ccc;
+    border-radius: 100px;
+    font-size: 14px;
+}
+
+.search-input-wrapper i.fa-search {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    cursor: pointer;
+}
+
+    </style>
   </head>
+
+
+
+
   <body>
     <!-- Page pre loader -->
     <div id="pre-loader">
@@ -214,9 +244,9 @@
                         </ul>
                       </li>
                       <li class="has-child">
-                        <a href="#">Pages</a>
+                        <a href="/about">Pages</a>
                         <ul class="drop-nav">
-                          <li><a href="about.html">About Us</a></li>
+                          <li><a href="/about">About Us</a></li>
                           <li class="drop-has-child">
                             <a href="service1.html">Services</a>
                             <ul class="drop-nav">
@@ -267,9 +297,9 @@
                         </ul>
                       </li>
                       <li class="has-child">
-                        <a href="blog_2col.html">Blog</a>
+                        <a href="/blog">Blog</a>
                         <ul class="drop-nav">
-                          <li><a href="blog_list.html">Blog List</a></li>
+                          <li><a href="/blog">Blog List</a></li>
                           <li><a href="blog_2col.html">Blog 2 Columns</a></li>
                           <li><a href="blog_full.html">Blog Full Width</a></li>
                           <li>
@@ -286,11 +316,14 @@
                         </ul>
                       </li>
                       <li class="has-child">
-                        <a href="contact_1.html">Contact</a>
+                        <a href="/contact">Contact</a>
                         <ul class="drop-nav">
                           <li><a href="contact_1.html">Contact 1</a></li>
                           <li><a href="contact_2.html">Contact 2</a></li>
                         </ul>
+                      </li>
+                       <li class="has-child">
+                        <a href="/login">Login</a>
                       </li>
                     </ul>
                   </div>
@@ -483,6 +516,9 @@
     <script src="{{ url('asset') }}/js/progress-circle/waterbubble.min.js"></script>
     <script src="{{ url('asset') }}/js/app.js"></script>
     <script src="{{ url('asset') }}/js/script.js"></script>
+    <!-- Bootstrap Slider JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/bootstrap-slider.min.js"></script>
+    @yield('scripts')
   </body>
   
   

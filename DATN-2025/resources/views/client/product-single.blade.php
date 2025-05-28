@@ -29,7 +29,7 @@
                             @endphp
                             @foreach ($allImages as $image)
                                 <div>
-                                    <img src="{{ asset('storage/' . (str_contains($image, 'uploads/') ? $image : 'uploads/' . $image)) }}" alt="Ảnh sản phẩm">
+                                    <img style= "width:555px;" src="{{ asset('storage/' . (str_contains($image, 'uploads/') ? $image : 'uploads/' . $image)) }}" alt="Ảnh sản phẩm">
                                 </div>
                             @endforeach
                         </div>
@@ -300,4 +300,3 @@ document.querySelectorAll('.size-option, .topping-option').forEach(el => {
 updatePrice();
 </script>
 @endsection
-

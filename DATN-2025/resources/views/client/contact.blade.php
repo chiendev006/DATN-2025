@@ -1,74 +1,83 @@
-@extends('layout')
+
+@extends('layout2')
 @section('main')
-<section class="home-slider owl-carousel">
-  <div class="slider-item" style="background-image: url('{{ asset('asset/images/bg_1.jpg') }}');" data-stellar-background-ratio="0.5">
-    <div class="overlay"></div>
-    <div class="container">
-      <div class="row slider-text justify-content-center align-items-center">
-        <div class="col-md-7 col-sm-12 text-center ftco-animate">
-          <h1 class="mb-3 mt-5 bread">Contact Us</h1>
-          <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Contact</span></p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+<main>
+            <div class="main-part">
 
-<section class="ftco-section contact-section">
-  <div class="container mt-5">
-    <div class="row block-9">
-      <div class="col-md-4 contact-info ftco-animate">
-        <div class="row">
-          <div class="col-md-12 mb-4">
-            <h2 class="h4">Contact Information</h2>
-          </div>
-          <div class="col-md-12 mb-3">
-            <p><span>Address:</span> 198 West 21th Street, Suite 721 New York NY 10016</p>
-          </div>
-          <div class="col-md-12 mb-3">
-            <p><span>Phone:</span> <a href="tel://1234567920">+ 1235 2355 98</a></p>
-          </div>
-          <div class="col-md-12 mb-3">
-            <p><span>Email:</span> <a href="mailto:info@yoursite.com">info@yoursite.com</a></p>
-          </div>
-          <div class="col-md-12 mb-3">
-            <p><span>Website:</span> <a href="#">yoursite.com</a></p>
-          </div>
-        </div>
-      </div>
+                <section class="breadcrumb-nav">
+                    <div class="container">
+                        <div class="breadcrumb-nav-inner">
+                            <ul>
+                                <li><a href="/">Home</a></li>
+                                <li class="active"><a href="#">Contact</a></li>
+                            </ul>
+                            <label class="now">Contact</label>
+                        </div>
+                    </div>
+                </section>
 
-      <div class="col-md-1"></div>
-      <div class="col-md-6 ftco-animate">
-        <div id="success-message"></div>
-        <form id="contact-form" action="{{ route('contact.store') }}" method="POST" class="contact-form">
-          @csrf
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <input type="text" name="name" class="form-control" placeholder="Your Name" required>
-              </div>
+                <!-- Start Contact Part -->
+
+                <section class="default-section contact-part pad-top-remove">
+                    
+                    <div class="container">
+                        <div class="title text-center">
+                            <h2 class="text-coffee">Contact Us</h2>
+                            <h6>We are a second-generation family business established in 1972</h6>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8 col-sm-8 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                <h5 class="text-coffee">Leave us a Message</h5>
+                                <p>Aenean massa diam, viverra vitae luctus sed, gravida eget est. Etiam nec ipsum porttitor, consequat libero eu, dignissim eros. Nulla auctor lacinia enim id mollis.</p>
+                                 <div id="success-message"></div>
+                                <form id="contact-form" action="{{ route('contact.store') }}" method="POST">
+                                  @csrf
+                                    <div class="alert-container"></div>
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <label>Full Name</label>
+                                            <input name="name" type="text" required>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <label>Email</label>
+                                            <input name="email" type="email" required>
+                                        </div>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <label>Your Message *</label>
+                                             <input name="massage" type="text" required>
+                                        </div>  
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <button name="submit" class="submit-btn send_message" type="submit">Gửi</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                <address>
+                                    <span class="text-primary co-title">Our Address</span>
+                                    <p>329 Queensberry Street, North Melbourne  VIC 3051, Australia.</p>
+                                    <p><a href="tel:1234567890">123 456 7890</a> <br> <a href="mailto:support@despina.com">support@despina.com</a></p>
+                                </address>
+                                <h5 class="text-coffee">Opening Hours</h5>
+                                <ul class="time-list">
+                                    <li><span class="week-name">Monday</span> <span>12-6 PM</span></li>
+                                    <li><span class="week-name">Tuesday</span> <span>12-6 PM</span></li>
+                                    <li><span class="week-name">Wednesday</span> <span>12-6 PM</span></li>
+                                    <li><span class="week-name">Thursday</span> <span>12-6 PM</span></li>
+                                    <li><span class="week-name">Friday</span> <span>12-6 PM</span></li>
+                                    <li><span class="week-name">Saturday</span> <span>12-6 PM</span></li>
+                                    <li><span class="week-name">Sunday</span> <span>Closed</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- End Contact Part -->
+
             </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <input type="email" name="email" class="form-control" placeholder="Your Email" required>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <textarea name="massage" cols="30" rows="7" class="form-control" placeholder="Message" required></textarea>
-          </div>
-          <div class="form-group">
-            <button type="submit" class="btn btn-primary py-3 px-5">Send Message</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</section>
-<div id="map"></div>
-@endsection
-
-@section('scripts')
+        </main> 
+        @section('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("contact-form");
@@ -100,5 +109,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
-</script>
-@endsection
+</script> 
+       @endsection
+       @endsection
