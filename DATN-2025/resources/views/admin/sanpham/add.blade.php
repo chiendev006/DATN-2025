@@ -17,30 +17,33 @@
 
                 <div id="genCollapse" class="accordion-collapse collapse show" aria-labelledby="genInfo" data-bs-parent="#settingsAccordion">
                     <div style="display: flex; justify-content: space-between;" class="accordion-body">
-                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+                        <div style="display: flex;  justify-content: space-between;" class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-12">
+                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-12">
                         <div class="field-wrapper">
-                            <select class="select-single js-states" title="Select Product Category" data-live-search="true">
+                            <select class="select-single js-states" id="id_danhmuc" title="Select Product Category" data-live-search="true">
                             @foreach($danhmuc as $dm)
                             <option value="{{ $dm->id }}" data-role="{{ $dm->role }}">{{ $dm->name }}</option>
                             @endforeach
                             </select>
-                            <div class="field-placeholder">Single Select</div>
+                            <div class="field-placeholder">Danh mục</div>
 				        </div>
                         </div>
-                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                         <div class="field-wrapper">
                             <input type="text"   name="name" placeholder="Tên" required />
-                            <div class="field-placeholder">Full Name</div>
+                            <div class="field-placeholder">Tên sản phẩm</div>
                             @error('name')
                             <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
                               @enderror
                         </div>
                         </div>
+                        </div>
+
                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                         <div class="field-wrapper">
                             <div class="input-group">
                             <input name="image" type="file" class="form-control" id="inputGroupFile01">
-                            <div class="field-placeholder">Single Select</div>
+                            <div class="field-placeholder">Ảnh bìa</div>
                             </div>
                         </div>
                 </div>
@@ -50,25 +53,67 @@
 
     <div id="genCollapse" class="accordion-collapse collapse show" aria-labelledby="genInfo" data-bs-parent="#settingsAccordion">
         <div style="display: flex; justify-content: space-between;" class="accordion-body">
-            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-7">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
                         <div class="field-wrapper">
                             <div class="input-group">
                             <input name="hasFile[]" placeholder="Ảnh sản phẩm" required multiple accept="image/*" type="file" class="form-control" id="inputGroupFile01">
-                            <div class="field-placeholder">Single Select</div>
+                            <div class="field-placeholder">Tiêu đề</div>
                             </div>
                         </div>
                         </div>
+
+                        <div style="display: flex;justify-content: space-between;" class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5">
+                            <div class="field-wrapper">
+                            <input type="text" name="sizes[0][name]" placeholder="Tên" value="{{ old('sizes.0.name') }}"   name="name" placeholder="Tên" required />
+                            <div class="field-placeholder">Full heeeeee</div>
+                            @error('sizes.0.name')
+                            <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
+                            @enderror
+                            </div>
+                            </div>
+
+                           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+                                <p class="topping"><strong>Topping</strong></p>
+                                <div class="form-check d-flex flex-wrap gap-2" id="topping-field">
+                                    @foreach($topping as $tp)
+                                        <div class="d-flex align-items-center" style="margin-left: 10px;">
+                                            <label class="form-check-label d-flex align-items-center">
+                                                <input class="form-check-input" type="checkbox" name="topping_ids[]" value="{{ $tp->id }}">
+                                                <span style="margin-left: 5px;">{{ $tp->name }}</span>
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
+                        <label class="label">Mô tả sản phẩm</label>
+                        <div class="field-body">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <textarea id="editor" class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" name="mota">{{ old('mota') }}</textarea>
+                                @error('mota')
+                                <p style="color: red;">Bạn chưa nhập mô tả sản phẩm !!!</p>
+                                @enderror
+
+                            </div>
+                        </div>
+                        </div>
+
+                        <button class="btn btn-primary" type="button">Save Changes</button>
             </div>
 
             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                 <div class="field-wrapper">
                     <div id="sizes-container">
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="size-entry mb-4 p-4 border rounded relative"><div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                 <div class="field-wrapper">
                                     <input type="text" name="sizes[0][name]" placeholder="Tên" value="{{ old('sizes.0.name') }}"   name="name" placeholder="Tên" required />
-                                    <div class="field-placeholder">Full Name</div>
+                                    <div class="field-placeholder">Tên Size</div>
                                     @error('sizes.0.name')
                                     <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
                                     @enderror
@@ -78,12 +123,13 @@
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                 <div class="field-wrapper">
                                     <input type="text" name="sizes[0][price]" placeholder="Tên" value="{{ old('sizes.0.price') }}"   name="name" placeholder="Tên" required />
-                                    <div class="field-placeholder">Full Name</div>
+                                    <div class="field-placeholder">Giá</div>
                                     @error('sizes.0.price')
                                     <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
                                     @enderror
                                 </div>
-                                </div>
+                                </div></div>
+
                     </div>
                 </div>
             </div>
@@ -101,53 +147,21 @@
 
 
 
-        <hr>
-        <div class="field">
-            <label class="label">Mô tả sản phẩm</label>
-            <div class="field-body">
-                <div class="field">
-                <div class="control">
-                    <textarea id="editor" class="textarea" name="mota">{{ old('mota') }}</textarea>
-                    @error('mota')
-                    <p style="color: red;">Bạn chưa nhập mô tả sản phẩm !!!</p>
-                    @enderror
-                </div>
-                </div>
-            </div>
-            </div>
-        <hr>
-        <div class="field" id="topping-field" style="display:none;">
-            <label class="label">Chọn topping</label>
-            <div class="control custom-topping">
-                @foreach($topping as $tp)
-                <label class="custom-topping-label">
-                    <input type="checkbox" name="topping_ids[]" value="{{ $tp->id }}">
-                    {{ $tp->name }}
-                </label>
-                @endforeach
-            </div>
-        </div>
-        <div class="field grouped">
-            <div class="control">
-              <button type="submit" class="button green custom-submit">
-                Submit
-              </button>
-            </div>
-        </div>
+
+
+
         </form>
       </div>
     </div>
   </section>
-								</div>
-								<!-- Card end -->
-
-							</div>
-						</div>
-						<!-- Row end -->
-
-					</div>
   @include('footer')
   <style>
+    .topping{
+            margin-top: -5px;
+            font-size:.7rem;
+            font-family: "Open Sans";
+            color:rgb(105, 163, 235);
+    }
     .custom-card {
         box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08), 0 1.5px 4px 0 rgba(0,0,0,0.03);
         border-radius: 16px;
@@ -228,6 +242,7 @@
         background: #e0e7ff;
         border: 1.5px solid #2563eb;
     }
+
     .custom-submit {
         background: #22c55e;
         color: #fff;
@@ -277,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="field-wrapper">
                             <input type="text" name="sizes[${sizeIndex}][name]" placeholder="Tên" value="{{ old('sizes.0.name') }}"   name="name" placeholder="Tên" required />
-                            <div class="field-placeholder">Full Name ${sizeIndex + 1}</div>
+                            <div class="field-placeholder">Tên Size ${sizeIndex + 1}</div>
                             @error('sizes.${sizeIndex}.name')
                             <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
                               @enderror
@@ -288,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="field-wrapper">
                             <input type="text" name="sizes[${sizeIndex}][price]" placeholder="Tên" value="{{ old('sizes.0.price') }}"   name="name" placeholder="Tên" required />
-                            <div class="field-placeholder">Full Name ${sizeIndex + 1}</div>
+                            <div class="field-placeholder">Giá ${sizeIndex + 1}</div>
                             @error('sizes.${sizeIndex}.price')
                             <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
                               @enderror
