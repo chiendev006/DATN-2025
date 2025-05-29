@@ -91,7 +91,7 @@
                     <li class="nav-item"><a href="{{ route('login') }}" class="nav-link">Login</a></li>
                 @endauth
             <li class="nav-item">
-             <form class="search-bar" action="{{ route('search') }}" method="GET">
+             <form class="search-bar" action="" method="GET">
                 <input class="search-input" required name="search" type="search" autocomplete="off" placeholder="Search products...">
                 <button type="submit" class="search-btn">
                     <span>Search</span>
