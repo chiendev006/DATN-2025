@@ -32,7 +32,7 @@ class ProductImageController extends Controller
                 ]);
             }
         }
-                return redirect()->route('sanpham.edit', ['id' => session('sanpham_id'), ])->with('success', 'Thêm sản phẩm và size thành công!');
+                return redirect()->route('sanpham.edit', ['id' => session('sanpham_id'), ])->with('success', 'Thêm Ảnh sản phẩm thành công');
     }
 
 

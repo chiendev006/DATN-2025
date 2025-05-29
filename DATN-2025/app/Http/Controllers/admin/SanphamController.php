@@ -41,13 +41,7 @@ class SanphamController extends Controller
      */
     public function store(Request $request)
 {
-    // Validate dữ liệu đầu vào
-    $request->validate([
-        'name' => 'required|string',
-        'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-        'mota' => 'required|string',
-        'id_danhmuc'  => 'required|exists:danhmucs,id',
-    ]);
+    dd($request->all());
 
     // Lưu session tạm nếu cần
     session(['data' => $request->except(['image', 'hasFile'])]);
@@ -61,6 +55,7 @@ class SanphamController extends Controller
     $sanpham = sanpham::create([
         'name' => $request->name,
         'image' => $fileName,
+        'title'=>$request->title,
         'mota' => $request->mota,
         'id_danhmuc' => $request->id_danhmuc,
     ]);
@@ -103,8 +98,7 @@ class SanphamController extends Controller
         }
     }
 
-    return redirect()->route('sanpham.edit', ['id' => $sanpham->id])
-                     ->with('success', 'Thêm sản phẩm thành công!');
+    return redirect()->route('sanpham.edit', ['id' => $sanpham->id])->with('success', 'Thêm sản phẩm thành công!');
 }
 
     /**
@@ -162,7 +156,7 @@ class SanphamController extends Controller
         $sanpham->mota = $request->mota;
         $sanpham->id_danhmuc = $request->id_danhmuc;
         $sanpham->save();
-        return redirect()->route('sanpham.index')->with('success', 'Cập nhật thành công!');
+    return redirect()->route('sanpham.edit', ['id' => $sanpham->id])->with('success', 'Thêm sản phẩm thành công!');
         }
     /**
      * Remove the specified resource from storage.
