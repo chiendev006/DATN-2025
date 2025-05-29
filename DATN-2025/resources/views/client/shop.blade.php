@@ -198,7 +198,7 @@
                                         </a>
                                         <div class="cart-overlay-wrap">
                                             <div class="cart-overlay">
-                                                <a href="/cart/add/${item.id}" class="shop-cart-btn">ADD TO CART</a>
+                                                <a href="{{ route('client.product.detail', $product->id) }}" class="shop-cart-btn">ADD TO CART</a>
                                             </div>
                                         </div>
                                     </div>
@@ -238,7 +238,7 @@
                                     </a>
                                     <div class="cart-overlay-wrap">
                                         <div class="cart-overlay">
-                                            <a href="/cart/add/${item.id}" class="shop-cart-btn">ADD TO CART</a>
+                                            <a href="{{ route('client.product.detail', $product->id) }}" class="shop-cart-btn">ADD TO CART</a>
                                         </div>
                                     </div>
                                 </div>
@@ -308,7 +308,7 @@ $(document).ready(function () {
                                         </a>
                                         <div class="cart-overlay-wrap">
                                             <div class="cart-overlay">
-                                                <a href="/cart/add/${item.id}" class="shop-cart-btn">ADD TO CART</a>
+                                                <a href="{{ route('client.product.detail', $product->id) }}" class="shop-cart-btn">ADD TO CART</a>
                                             </div>
                                         </div>
                                     </div>

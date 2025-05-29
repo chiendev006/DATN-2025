@@ -174,5 +174,9 @@ use App\Http\Controllers\ShopController;
 
         Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 
+        // Checkout routes
+        Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout.index');
+        Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
+        Route::get('/checkout/success', [App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 
         
