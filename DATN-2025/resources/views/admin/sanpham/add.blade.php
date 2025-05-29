@@ -8,7 +8,7 @@
 
 								<!-- Card start -->
 								<div class="card">
-									<section class="section main-section">
+							<section class="section main-section">
     <div class="card mb-6 custom-card">
 
       <div class="card-content">
@@ -20,7 +20,7 @@
                         <div style="display: flex;  justify-content: space-between;" class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-12">
                         <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-12">
                         <div class="field-wrapper">
-                            <select class="select-single js-states" id="id_danhmuc" title="Select Product Category" data-live-search="true">
+                            <select name="id_danhmuc" class="select-single js-states" id="id_danhmuc" title="Select Product Category" data-live-search="true">
                             @foreach($danhmuc as $dm)
                             <option value="{{ $dm->id }}" data-role="{{ $dm->role }}">{{ $dm->name }}</option>
                             @endforeach
@@ -54,20 +54,20 @@
     <div id="genCollapse" class="accordion-collapse collapse show" aria-labelledby="genInfo" data-bs-parent="#settingsAccordion">
         <div style="display: flex; justify-content: space-between;" class="accordion-body">
             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-8">
-                        <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
-                        <div class="field-wrapper">
-                            <div class="input-group">
-                            <input name="hasFile[]" placeholder="Ảnh sản phẩm" required multiple accept="image/*" type="file" class="form-control" id="inputGroupFile01">
-                            <div class="field-placeholder">Tiêu đề</div>
+                            <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
+                            <div class="field-wrapper">
+                                <div class="input-group">
+                                <input name="hasFile[]" placeholder="Ảnh sản phẩm" required multiple accept="image/*" type="file" class="form-control" id="inputGroupFile01">
+                                <div class="field-placeholder">Ảnh sản phẩm</div>
+                                </div>
                             </div>
-                        </div>
-                        </div>
+                            </div>
 
                         <div style="display: flex;justify-content: space-between;" class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
                             <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5">
                             <div class="field-wrapper">
-                            <input type="text" name="sizes[0][name]" placeholder="Tên" value="{{ old('sizes.0.name') }}"   name="name" placeholder="Tên" required />
-                            <div class="field-placeholder">Full heeeeee</div>
+                            <input type="text" name="title" placeholder="Tên" value="{{ old('sizes.0.name') }}"   name="name" placeholder="Tên" required />
+                            <div class="field-placeholder">Tiêu đề sản phẩm</div>
                             @error('sizes.0.name')
                             <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
                             @enderror
@@ -76,8 +76,10 @@
 
                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
                                 <p class="topping"><strong>Topping</strong></p>
-                                <div class="form-check d-flex flex-wrap gap-2" id="topping-field">
-                                    @foreach($topping as $tp)
+                                <p id="noToppingMsg" class="text-danger hide">Danh mục này không đi kèm topping</p>
+
+                                <div style="display: flex;" class="form-check d-flex flex-wrap gap-2 topping-fade" id="topping-field">
+                                        @foreach($topping as $tp)
                                         <div class="d-flex align-items-center" style="margin-left: 10px;">
                                             <label class="form-check-label d-flex align-items-center">
                                                 <input class="form-check-input" type="checkbox" name="topping_ids[]" value="{{ $tp->id }}">
@@ -85,16 +87,24 @@
                                             </label>
                                         </div>
                                     @endforeach
+
+                                    <br>
+                                     <div><button style="border-radius: 3px;"  type="button" id="btn-select-all" class="btn-primary">Chọn tất cả</button>
+                                        <button style="border-radius: 3px;"   type="button" id="btn-deselect-all" class="btn-danger">Bỏ chọn tất cả</button>
+                                        </div>
                                 </div>
+
+
                             </div>
 
                         </div>
 
                         <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
-                        <label class="label">Mô tả sản phẩm</label>
-                        <div class="field-body">
+
+                        <div class="field-wrapper">
+                               <div class="field-placeholder">Mô tả sản phẩm</div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                <textarea id="editor" class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" name="mota">{{ old('mota') }}</textarea>
+                                <textarea id="editor" class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" name="mota" placeholder="Nhập mô tả sản phẩm ở đây..."    required></textarea>
                                 @error('mota')
                                 <p style="color: red;">Bạn chưa nhập mô tả sản phẩm !!!</p>
                                 @enderror
@@ -103,7 +113,7 @@
                         </div>
                         </div>
 
-                        <button class="btn btn-primary" type="button">Save Changes</button>
+                        <button class="btn btn-primary" type="submit">Save Changes</button>
             </div>
 
             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
@@ -173,7 +183,7 @@
     });
   });
 </script>
-  <style>
+   <style>
     .topping{
             margin-top: -5px;
             font-size:.7rem;
@@ -277,18 +287,57 @@
         .custom-card { padding: 12px 4px; }
         .size-entry { padding: 1rem 0.5rem; }
     }
+    @keyframes fadeInSize {
+        from { opacity: 0; transform: translateY(30px);}
+        to { opacity: 1; transform: translateY(0);}
+    }
+    .size-entry-animate {
+        animation: fadeInSize 0.8s ease;
+    }
+    @keyframes fadeOutSize {
+        from { opacity: 1; transform: translateY(0);}
+        to { opacity: 0; transform: translateY(30px);}
+    }
+    .size-entry-fadeout {
+        animation: fadeOutSize 0.5s ease;
+    }
+    .topping-fade {
+        transition: opacity 0.4s, max-height 0.4s;
+        overflow: hidden;
+        opacity: 1;
+        max-height: 500px;
+    }
+    .topping-fade.hide {
+        opacity: 0;
+        max-height: 0;
+        pointer-events: none;
+    }
+    #noToppingMsg {
+        transition: opacity 0.4s, max-height 0.4s;
+        overflow: hidden;
+        opacity: 1;
+        max-height: 100px;
+    }
+    #noToppingMsg.hide {
+        opacity: 0;
+        max-height: 0;
+        pointer-events: none;
+    }
   </style>
   <script>
 document.addEventListener('DOMContentLoaded', function() {
     const select = document.getElementById('id_danhmuc');
+    const noToppingMsg = document.getElementById('noToppingMsg');
     const toppingField = document.getElementById('topping-field');
     function checkTopping() {
         const selected = select.options[select.selectedIndex];
         if (selected.getAttribute('data-role') == '1') {
-            toppingField.style.display = '';
+            toppingField.classList.remove('hide');
+            noToppingMsg.classList.add('hide');
         } else {
-            toppingField.style.display = 'none';
+            toppingField.classList.add('hide');
             toppingField.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+            noToppingMsg.classList.remove('hide');
         }
     }
     select.addEventListener('change', checkTopping);
@@ -303,8 +352,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     addSizeButton.addEventListener('click', function () {
         const newSizeEntry = document.createElement('div');
-        newSizeEntry.classList.add('size-entry', 'mb-4', 'p-4', 'border', 'rounded', 'relative');
-
+        newSizeEntry.classList.add('size-entry', 'mb-4', 'p-4', 'border', 'rounded', 'relative', 'size-entry-animate');
+        newSizeEntry.addEventListener('animationend', function() {
+            newSizeEntry.classList.remove('size-entry-animate');
+        });
         newSizeEntry.innerHTML = `
         <br>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -338,26 +389,46 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Sự kiện xóa form vừa thêm
         newSizeEntry.querySelector('.remove-size-button').addEventListener('click', function() {
-            newSizeEntry.remove();
-
-            // Cập nhật lại số thứ tự cho tất cả các size-entry
-            const allEntries = sizesContainer.querySelectorAll('.size-entry');
-            allEntries.forEach((entry, idx) => {
-                const labels = entry.querySelectorAll('label.label');
-                if (labels[0]) labels[0].textContent = `Tên Size ${idx + 1}`;
-                if (labels[1]) labels[1].textContent = `Giá Size ${idx + 1}`;
-
-                // Cập nhật lại name cho input
-                const allInputs = entry.querySelectorAll('input');
-                if (allInputs[0]) allInputs[0].name = `sizes[${idx}][name]`;
-                if (allInputs[1]) allInputs[1].name = `sizes[${idx}][price]`;
+            newSizeEntry.classList.add('size-entry-fadeout');
+            newSizeEntry.addEventListener('animationend', function handler() {
+                newSizeEntry.remove();
+                // Cập nhật lại số thứ tự cho tất cả các size-entry
+                const allEntries = sizesContainer.querySelectorAll('.size-entry');
+                allEntries.forEach((entry, idx) => {
+                    const labels = entry.querySelectorAll('label.label');
+                    if (labels[0]) labels[0].textContent = `Tên Size ${idx + 1}`;
+                    if (labels[1]) labels[1].textContent = `Giá Size ${idx + 1}`;
+                    // Cập nhật lại name cho input
+                    const allInputs = entry.querySelectorAll('input');
+                    if (allInputs[0]) allInputs[0].name = `sizes[${idx}][name]`;
+                    if (allInputs[1]) allInputs[1].name = `sizes[${idx}][price]`;
+                });
+                sizeIndex = allEntries.length;
+                newSizeEntry.removeEventListener('animationend', handler);
             });
-
-            // Giảm biến sizeIndex
-            sizeIndex = allEntries.length;
         });
     });
 });
 
 </script>
+<script>
+document.getElementById('btn-select-all').addEventListener('click', function () {
+  document.querySelectorAll('.form-check-input').forEach(function (checkbox) {
+    checkbox.checked = true;
+  });
 
+  // Đồng bộ trạng thái với checkbox "Chọn tất cả" nếu có
+  const checkAll = document.getElementById('check-all-toppings');
+  if (checkAll) checkAll.checked = true;
+});
+
+document.getElementById('btn-deselect-all').addEventListener('click', function () {
+  document.querySelectorAll('.form-check-input').forEach(function (checkbox) {
+    checkbox.checked = false;
+  });
+
+  // Đồng bộ trạng thái với checkbox "Chọn tất cả" nếu có
+  const checkAll = document.getElementById('check-all-toppings');
+  if (checkAll) checkAll.checked = false;
+});
+</script>
