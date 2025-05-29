@@ -175,4 +175,8 @@ use App\Http\Controllers\ShopController;
         Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 
 
-        
+        Route::group(['prefix' => 'staff'], function () {
+           Route::get('/');
+        });
+
+
