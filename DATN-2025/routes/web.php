@@ -76,10 +76,10 @@ use App\Http\Controllers\Staff\StaffController;
         // About
         Route::get('/about',[AboutController::class, 'index'])->name('about.index');
 
-                //checkout
-                Route::get('/checkout',[CheckoutController::class, 'index'])->name('checkout.index');
-                Route::get('/checkout/payment',[CheckoutController::class, 'index'])->name('client.payment');
-
+        // Checkout routes
+        Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+        Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+        Route::get('/order/complete/{orderId}', [CheckoutController::class, 'success'])->name('order.complete');
 
         // Blog
         Route::get('/blog',[BlogController::class, 'index'])->name('blog.index');
@@ -172,6 +172,8 @@ use App\Http\Controllers\Staff\StaffController;
         Route::get('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->name('product_img.delete');
         Route::get('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
         Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
+
+
         Route::post('danhmuc/update/{id}', [DanhmucController::class, 'update'])->name('danhmuc.update');
         Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 
@@ -186,7 +188,4 @@ use App\Http\Controllers\Staff\StaffController;
         Route::group(['prefix' => 'staff'], function () {
             Route::get('/', [StaffController::class, 'index'])->name('staff.index');
         });
-
-
-
 
