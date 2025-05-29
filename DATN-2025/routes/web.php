@@ -103,7 +103,7 @@ use App\Http\Controllers\Staff\StaffController;
         Route::get('/create', [DanhmucController::class, 'create'])->name('danhmuc.create');
         Route::post('/store', [DanhmucController::class, 'store'])->name('danhmuc.store');
         Route::get('/edit/{id}', [DanhmucController::class, 'edit'])->name('danhmuc.edit');
-        Route::post('/update/{id}', [DanhmucController::class, 'update'])->name('danhmuc.update');
+
         Route::get('/delete/{id}', [DanhmucController::class, 'delete'])->name('danhmuc.delete');
         });
 
@@ -172,7 +172,7 @@ use App\Http\Controllers\Staff\StaffController;
         Route::get('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->name('product_img.delete');
         Route::get('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
         Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
-
+        Route::post('danhmuc/update/{id}', [DanhmucController::class, 'update'])->name('danhmuc.update');
         Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 
         // Checkout routes
@@ -186,5 +186,7 @@ use App\Http\Controllers\Staff\StaffController;
         Route::group(['prefix' => 'staff'], function () {
             Route::get('/', [StaffController::class, 'index'])->name('staff.index');
         });
+
+
 
 
