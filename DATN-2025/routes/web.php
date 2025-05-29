@@ -185,7 +185,9 @@ use App\Http\Controllers\Staff\StaffController;
         // Staff
         Route::get('staff/login', [StaffController::class, 'login'])->name('staff.login');
 
-        Route::group(['prefix' => 'staff'], function () {
-            Route::get('/', [StaffController::class, 'index'])->name('staff.index');
+        Route::prefix('staff')->group(function () {
+        Route::get('/', [StaffController::class, 'index'])->name('staff.index');
+        Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
+        Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
         });
 
