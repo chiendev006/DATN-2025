@@ -72,8 +72,8 @@
                                             </div>
                                             <div class="payment-method">
                                                 <label>
-                                                    <input type="radio" name="payment_method" value="banking" required>
-                                                    <span>Chuyển khoản ngân hàng</span>
+                                                    <input type="radio" name="payment_method" value="banking" {{ old('payment_method') === 'banking' ? 'checked' : '' }}>
+                                                     <span>Chuyển khoản ngân hàng (qua VNPAY)</span>
                                                 </label>
                                             </div>
                                             <div class="payment-method">

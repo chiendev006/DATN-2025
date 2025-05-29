@@ -11,4 +11,9 @@ class Topping extends Model
     use HasFactory;
     protected $table = 'topping';
 
+    protected $fillable = [
+        'name',
+        'price',
+    ];
+
 }

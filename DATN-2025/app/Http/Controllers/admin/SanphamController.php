@@ -50,7 +50,6 @@ class SanphamController extends Controller
     ]);
 
     // Lưu session tạm nếu cần
-    session(['data' => $request->except(['image', 'hasFile'])]);
 
     // Xử lý ảnh đại diện
     $image = $request->file('image');
@@ -61,6 +60,7 @@ class SanphamController extends Controller
     $sanpham = sanpham::create([
         'name' => $request->name,
         'image' => $fileName,
+        'title' => $request->title,
         'mota' => $request->mota,
         'id_danhmuc' => $request->id_danhmuc,
     ]);
@@ -142,6 +142,7 @@ class SanphamController extends Controller
      * Update the specified resource in storage.
      */
    public function update(Request $request, $id){
+
         $sanpham = sanpham::findOrFail($id);
         $request->validate([
         'name'=> 'required|string',
@@ -162,8 +163,8 @@ class SanphamController extends Controller
         $sanpham->mota = $request->mota;
         $sanpham->id_danhmuc = $request->id_danhmuc;
         $sanpham->save();
-        return redirect()->route('sanpham.index')->with('success', 'Cập nhật thành công!');
-        }
+        return redirect()->route('sanpham.edit', ['id' => $sanpham->id])
+        ->with('success', 'Cập nhật sản phẩm thành công!');        }
     /**
      * Remove the specified resource from storage.
      */

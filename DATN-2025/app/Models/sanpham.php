@@ -14,6 +14,7 @@ class sanpham extends Model
      protected $fillable = [
     'name',
     'image',
+    'title',
     'mota',
     'id_danhmuc',
 ];
