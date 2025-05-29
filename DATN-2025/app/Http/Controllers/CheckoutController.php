@@ -6,7 +6,7 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Cart;
 use App\Models\Cartdetail;
-use App\Models\Product;
+use App\Models\sanpham;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +30,9 @@ class CheckoutController extends Controller
             $cart = session()->get('cart', []);
         }
 
+        // Reset old form data
+        session()->forget('_old_input');
+        
         return view('client.checkout', compact('items', 'cart'));
     }
 
@@ -57,17 +60,22 @@ class CheckoutController extends Controller
             $orderDetails = [];
             
             if (Auth::check()) {
-                $cart = Cart::where('user_id', Auth::id())->first();
-                if (!$cart) {
+                Log::info('Processing logged-in user checkout');
+                
+                $userCart = Cart::where('user_id', Auth::id())->first();
+                if (!$userCart) {
                     throw new \Exception('Giỏ hàng không tồn tại');
                 }
 
                 $cartDetails = Cartdetail::with(['product', 'size'])
-                    ->where('cart_id', $cart->id)
+                    ->where('cart_id', $userCart->id)
                     ->get();
 
                 foreach ($cartDetails as $item) {
-                    if (!$item->product) continue;
+                    if (!$item->product) {
+                        Log::warning('Product not found for cart item', ['item' => $item]);
+                        continue;
+                    }
                     
                     $productPrice = $item->product->price ?? 0;
                     $sizePrice = $item->size ? ($item->size->price ?? 0) : 0;
@@ -85,7 +93,7 @@ class CheckoutController extends Controller
                     $total += $itemTotal;
 
                     $orderDetails[] = [
-                        'product_id' => $item->product_id,
+                        'product_id' => $item->product->id,
                         'product_name' => $item->product->name,
                         'product_price' => $unitPrice,
                         'quantity' => $item->quantity,
@@ -93,6 +101,8 @@ class CheckoutController extends Controller
                     ];
                 }
             } else {
+                Log::info('Processing guest checkout');
+                
                 $sessionCart = session()->get('cart', []);
                 Log::info('Processing guest cart', ['cart_data' => $sessionCart]);
                 
@@ -101,26 +111,28 @@ class CheckoutController extends Controller
                 }
 
                 foreach ($sessionCart as $cartKey => $cartItem) {
-                    $product = DB::table('sanphams')->find($cartItem['sanpham_id']);
+                    // Lấy thông tin sản phẩm từ database
+                    $product = DB::table('sanphams')
+                        ->select(['id', 'name'])
+                        ->where('id', $cartItem['sanpham_id'])
+                        ->first();
+
                     if (!$product) {
-                        Log::error('Product not found', ['product_id' => $cartItem['sanpham_id']]);
+                        Log::error('Không tìm thấy sản phẩm', ['product_id' => $cartItem['sanpham_id']]);
                         continue;
                     }
 
-                    Log::info('Processing cart item', [
-                        'product' => $product,
-                        'cart_item' => $cartItem
-                    ]);
+                    // Lấy giá từ bảng product_attributes dựa vào size_id
+                    $basePrice = DB::table('product_attributes')
+                        ->where('product_id', $product->id)
+                        ->where('id', $cartItem['size_id'])
+                        ->value('price') ?? 0;
 
-                    // Calculate total price including size and toppings
-                    $basePrice = $product->price;
                     $sizePrice = floatval($cartItem['size_price'] ?? 0);
                     $toppingTotal = 0;
                     
                     if (isset($cartItem['topping_prices']) && is_array($cartItem['topping_prices'])) {
-                        foreach ($cartItem['topping_prices'] as $price) {
-                            $toppingTotal += floatval($price);
-                        }
+                        $toppingTotal = array_sum(array_map('floatval', $cartItem['topping_prices']));
                     }
 
                     $unitPrice = $basePrice + $sizePrice + $toppingTotal;
@@ -137,11 +149,6 @@ class CheckoutController extends Controller
                         'total' => $itemTotal
                     ];
                 }
-
-                Log::info('Calculated order details', [
-                    'total' => $total,
-                    'order_details' => $orderDetails
-                ]);
             }
 
             // Apply discount if any
@@ -157,7 +164,7 @@ class CheckoutController extends Controller
 
             // Create and save order
             $order = new Order();
-            $order->user_id = null; // Explicitly set null for guest users
+            $order->user_id = Auth::check() ? Auth::id() : null;
             $order->name = $request->name;
             $order->phone = $request->phone;
             $order->address = $request->address;
@@ -194,14 +201,15 @@ class CheckoutController extends Controller
 
             // Clear cart data
             if (Auth::check()) {
-                Cartdetail::where('cart_id', $cart->id)->delete();
-                $cart->delete();
-            } else {
-                session()->forget('cart');
+                $userCart = Cart::where('user_id', Auth::id())->first();
+                if ($userCart) {
+                    Cartdetail::where('cart_id', $userCart->id)->delete();
+                    $userCart->delete();
+                }
             }
 
-            // Clear coupons
-            session()->forget('coupons');
+            // Clear all session data
+            session()->forget(['cart', 'coupons', '_old_input']);
 
             DB::commit();
             Log::info('Checkout completed successfully');
@@ -216,18 +224,22 @@ class CheckoutController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
             
-            return back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
+            return back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())
+                ->withInput();
         }
     }
+
+
 
     public function success($orderId)
     {
         try {
-            $order = Order::with('orderDetails')->findOrFail($orderId);
+            $order = Order::with('details')->findOrFail($orderId);
             return view('client.order-complete', compact('order'));
         } catch (\Exception $e) {
             Log::error('Order Complete Page Error: ' . $e->getMessage());
             return redirect()->route('home')->with('error', 'Không tìm thấy đơn hàng');
         }
     }
+
 }

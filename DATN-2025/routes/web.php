@@ -75,10 +75,10 @@ use App\Http\Controllers\ShopController;
         // About
         Route::get('/about',[AboutController::class, 'index'])->name('about.index');
 
-                //checkout
-                Route::get('/checkout',[CheckoutController::class, 'index'])->name('checkout.index');
-                Route::get('/checkout/payment',[CheckoutController::class, 'index'])->name('client.payment');
-
+        // Checkout routes
+        Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+        Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+        Route::get('/order/complete/{orderId}', [CheckoutController::class, 'success'])->name('order.complete');
 
         // Blog
         Route::get('/blog',[BlogController::class, 'index'])->name('blog.index');
@@ -171,12 +171,6 @@ use App\Http\Controllers\ShopController;
         Route::get('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->name('product_img.delete');
         Route::get('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
         Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
-
-        Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
-
-        // Checkout routes
-        Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout.index');
-        Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
-        Route::get('/checkout/success', [App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
+        
 
         
