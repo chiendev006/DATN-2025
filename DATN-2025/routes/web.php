@@ -189,5 +189,7 @@ use App\Http\Controllers\Staff\StaffController;
         Route::get('/', [StaffController::class, 'index'])->name('staff.index');
         Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
         Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
+        Route::get('/order_detailtoday', [StaffController::class, 'order_detailtoday'])->name('staff.order_detailtoday');
+
         });
 

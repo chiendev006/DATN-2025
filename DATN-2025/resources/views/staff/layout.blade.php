@@ -69,45 +69,8 @@
                 <!-- END pos-menu -->
 
                 <!-- BEGIN pos-content -->
-                    <div class="pos-content">
-                        <div class="pos-content-container h-100">
-                            @if($sanpham->isEmpty())
-                                <div class="text-center text-danger fs-4 mt-4">
-                                    Không có sản phẩm nào trong danh mục này.
-                                </div>
-                            @else
-                                <div class="row gx-4">
-                                    @foreach ($sanpham as $item)
-                                        <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-4 col-sm-6 pb-4" data-type="meat">
-                                            <a href="#" class="pos-product" data-bs-toggle="modal" data-bs-target="#modalPosItem">
-                                                <div class="img">
-                                                    <img src="{{ url("/storage/uploads/$item->image") }}" width="100%" alt="{{ $item->name }}">
-                                                </div>
-                                                <div class="info">
-                                                    <div class="title">{{ $item->name }}</div>
-                                                    <div class="desc">{{ $item->title }}</div>
-                                                    <div class="price">
-                                                        @php
-                                                            $minSize = $item->sizes->sortBy('price')->first();
-                                                        @endphp
+                  <div class="flex-1 overflow-y-auto p-4 bg-white">@yield('main-content')</div>
 
-                                                        @if($minSize)
-                                                            <p>{{ number_format($minSize->price, 0, ',', '.') }}đ</p>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-
-                <!-- END pos-content -->
-                <!-- Hoa Don Hom Nay -->
-
-                <!-- BEGIN pos-sidebar -->
                 <div class="pos-sidebar" id="pos-sidebar">
                     <div class="h-100 d-flex flex-column p-0">
                         <!-- BEGIN pos-sidebar-header -->
@@ -826,7 +789,7 @@
         </div>
     </div>
 </div>
-@yield('main-content')
+
 <!-- END #modalPosItem -->
 
 <!-- ================== BEGIN core-js ================== -->
