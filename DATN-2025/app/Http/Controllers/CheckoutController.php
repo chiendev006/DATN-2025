@@ -30,7 +30,6 @@ class CheckoutController extends Controller
             $cart = session()->get('cart', []);
         }
 
-        // Reset old form data
         session()->forget('_old_input');
         
         return view('client.checkout', compact('items', 'cart'));
@@ -44,7 +43,6 @@ class CheckoutController extends Controller
                 'request_data' => $request->all()
             ]);
 
-            // Validate request
             $request->validate([
                 'name' => 'required|string|max:255',
                 'phone' => 'required|string|max:15',
@@ -55,7 +53,6 @@ class CheckoutController extends Controller
 
             DB::beginTransaction();
 
-            // Calculate total from cart first
             $total = 0;
             $orderDetails = [];
             
@@ -111,7 +108,6 @@ class CheckoutController extends Controller
                 }
 
                 foreach ($sessionCart as $cartKey => $cartItem) {
-                    // Lấy thông tin sản phẩm từ database
                     $product = DB::table('sanphams')
                         ->select(['id', 'name'])
                         ->where('id', $cartItem['sanpham_id'])
@@ -122,7 +118,6 @@ class CheckoutController extends Controller
                         continue;
                     }
 
-                    // Lấy giá từ bảng product_attributes dựa vào size_id
                     $basePrice = DB::table('product_attributes')
                         ->where('product_id', $product->id)
                         ->where('id', $cartItem['size_id'])
@@ -151,7 +146,6 @@ class CheckoutController extends Controller
                 }
             }
 
-            // Apply discount if any
             $coupons = session()->get('coupons', []);
             $discount = 0;
             foreach ($coupons as $coupon) {
@@ -162,7 +156,6 @@ class CheckoutController extends Controller
             
             $total = max(0, $total - $discount);
 
-            // Create and save order
             $order = new Order();
             $order->user_id = Auth::check() ? Auth::id() : null;
             $order->name = $request->name;
@@ -182,7 +175,6 @@ class CheckoutController extends Controller
 
             Log::info('Order saved successfully', ['order_id' => $order->id]);
 
-            // Create order details
             foreach ($orderDetails as $detail) {
                 $orderDetail = new OrderDetail();
                 $orderDetail->order_id = $order->id;
@@ -199,7 +191,6 @@ class CheckoutController extends Controller
 
             Log::info('Order details saved successfully');
 
-            // Clear cart data
             if (Auth::check()) {
                 $userCart = Cart::where('user_id', Auth::id())->first();
                 if ($userCart) {
@@ -208,7 +199,6 @@ class CheckoutController extends Controller
                 }
             }
 
-            // Clear all session data
             session()->forget(['cart', 'coupons', '_old_input']);
 
             DB::commit();

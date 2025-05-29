@@ -173,4 +173,5 @@ use App\Http\Controllers\ShopController;
         Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
         
 
-        
+        // routes/web.php
+
