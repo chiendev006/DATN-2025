@@ -30,8 +30,7 @@
 													  	{{ $item['name'] }}
 													  </td>
 													  <td><img src="{{ url("/storage/uploads/$item->image") }}"  width="100px" alt=""></td>
-													  <td>{{ $item['mota'] }}</td>
-													  <td>{{ $item->danhmuc->name ?? 'Không có danh mục' }}</td>
+                                                      <td>{!! $item['mota'] !!}</td>													  <td>{{ $item->danhmuc->name ?? 'Không có danh mục' }}</td>
 													  <td>
 													  	<div class="actions">
 													  		<a href="{{ route('sanpham.edit', ['id' => $item->id]) }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit">
