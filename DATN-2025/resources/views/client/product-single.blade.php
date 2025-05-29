@@ -86,9 +86,9 @@
                                 @endforeach
                             </div>
                             <div class="price-textbox">
-                                <span class="minus-text"><i class="icon-minus" onclick="changeQty(-1)"></i></span>
+                                <span class="minus-text"><i class="icon-minus"></i></span>
                                 <input type="text" name="qty" id="quantity" placeholder="1" pattern="[0-9]" value="1" readonly>
-                                <span class="plus-text"><i class="icon-plus" onclick="changeQty(1)"></i></span>
+                                <span class="plus-text"><i class="icon-plus"></i></span>
                             </div>
                             <button type="submit" class="filter-btn btn-large"><i class="fa fa-shopping-bag" aria-hidden="true"></i> Add to Cart</button>
                         </form>
@@ -265,38 +265,73 @@
     </div>
 </main>
 
+@endsection
+
+@section('scripts')
 <script>
- function changeQty(delta) {
-    const input = document.getElementById('quantity');
-    let qty = parseInt(input.value);
-    if (isNaN(qty)) qty = 1;
-    qty = Math.max(1, qty + delta);
-    input.value = qty;
+$(document).ready(function() {
+    // Hàm cập nhật giá
+    function updatePrice() {
+        console.log('Updating price...');
+        
+        // Lấy giá gốc của sản phẩm
+        const productBasePrice = parseInt($('#display-price').data('base')) || 0;
+        console.log('Base price:', productBasePrice);
+        
+        // Lấy giá của size đã chọn
+        const selectedSize = $('input[name="size_id"]:checked');
+        const sizePrice = selectedSize.length ? parseInt(selectedSize.data('price')) || 0 : 0;
+        console.log('Size price:', sizePrice);
+        
+        // Tính tổng giá topping
+        let toppingPrice = 0;
+        $('input[name="topping_ids[]"]:checked').each(function() {
+            toppingPrice += parseInt($(this).data('price')) || 0;
+        });
+        console.log('Topping price:', toppingPrice);
+        
+        // Lấy số lượng
+        const quantity = parseInt($('#quantity').val()) || 1;
+        console.log('Quantity:', quantity);
+        
+        // Tính tổng giá
+        const totalPrice = (productBasePrice + sizePrice + toppingPrice) * quantity;
+        console.log('Total price:', totalPrice);
+        
+        // Hiển thị giá
+        $('#display-price').text(totalPrice.toLocaleString('vi-VN') + ' VND');
+    }
+
+    // Hàm thay đổi số lượng
+    function changeQty(delta) {
+        const $input = $('#quantity');
+        let qty = parseInt($input.val()) || 1;
+        qty = Math.max(1, qty + delta);
+        $input.val(qty);
+        updatePrice();
+    }
+
+    // Gắn sự kiện cho size
+    $('input[name="size_id"]').on('click', function() {
+        updatePrice();
+    });
+
+    // Gắn sự kiện cho topping
+    $('input[name="topping_ids[]"]').on('click', function() {
+        updatePrice();
+    });
+
+    // Gắn sự kiện cho nút tăng/giảm số lượng
+    $('.minus-text').on('click', function() {
+        changeQty(-1);
+    });
+
+    $('.plus-text').on('click', function() {
+        changeQty(1);
+    });
+
+    // Cập nhật giá ban đầu khi trang load xong
     updatePrice();
-  }
-
-  function updatePrice() {
-  let basePrice = 0;
-  const sizeChecked = document.querySelector('.size-option:checked');
-  if (sizeChecked) {
-    basePrice = parseInt(sizeChecked.dataset.price);
-  }
-  const qty = parseInt(document.getElementById('quantity').value);
-  let extra = 0;
-
-  document.querySelectorAll('.topping-option:checked').forEach(el => {
-    extra += parseInt(el.dataset.price);
-  });
-
-  const finalPrice = (basePrice + extra) * qty;
-  document.getElementById('display-price').textContent = finalPrice.toLocaleString('vi-VN') + ' VND';
-  document.getElementById('display-price').dataset.base = basePrice; // Cập nhật lại data-base nếu cần
-}
-
-document.querySelectorAll('.size-option, .topping-option').forEach(el => {
-  el.addEventListener('change', updatePrice);
 });
-
-updatePrice();
 </script>
 @endsection

@@ -12,11 +12,17 @@ class Cart extends Model
     protected $table = 'cart';
      protected $fillable = [
         'user_id',
-        'session_id',
+        'total',
+        'session_id'
     ];
 
-    public function items()
+    public function cartdetails()
     {
-        return $this->hasMany(CartDetail::class);
+        return $this->hasMany(Cartdetail::class, 'cart_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
