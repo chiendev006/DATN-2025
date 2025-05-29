@@ -1,291 +1,523 @@
-@extends('layout')
-
+@extends('layout2')
 @section('main')
-<section class="ftco-section ftco-cart">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12 ftco-animate">
-        <div class="cart-list">
-          @php
-            use Illuminate\Support\Facades\Auth;
-            $cart = session('cart', []);
-            $isLoggedIn = Auth::check();
-          @endphp
+<main>
+    <div class="main-part">
+        <section class="breadcrumb-nav">
+            <div class="container">
+                <div class="breadcrumb-nav-inner">
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/shop">Shop</a></li>
+                        <li class="active"><a href="#">Shop Cart</a></li>
+                    </ul>
+                    <label class="now">SHOP CART</label>
+                </div>
+            </div>
+        </section>
 
-          @if(($isLoggedIn && isset($items) && count($items)) || (!$isLoggedIn && count($cart)))
-          <form action="{{ route('cart.update') }}" method="POST">
-            @csrf
-            <table class="table">
-              <thead class="thead-primary">
-                <tr class="text-center">
-                  <th>Xóa</th>
-                  <th>Ảnh</th>
-                  <th>Sản phẩm</th>
-                  <th>Size</th>
-                  <th>Topping</th>
-                  <th class="w-[80px]">Số lượng</th>
-                  <th>Thành tiền</th>
-                </tr>
-              </thead>
-              <tbody>
-              @if($isLoggedIn)
-                @foreach($items as $item)
+        <!-- Start Shop Cart -->   
+        <section class="default-section shop-cart bg-grey">
+            <div class="container">
+                <div class="checkout-wrap wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                    <ul class="checkout-bar">
+                        <li class="active">Shopping Cart</li>
+                        <li>Checkout</li>
+                        <li>Order Complete</li>
+                    </ul>
+                </div>
                 @php
-                  $product = $item->product;
-                  $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id)));
-                  $toppings = \App\Models\Product_topping::where('product_id', $item->product_id)
-                      ->whereIn('id', $toppingIds)
-                      ->get();
-                  $size = \App\Models\Size::find($item->size_id);
-                  $unitPrice = $product->price + ($size->price ?? 0) + $toppings->sum('price');
-                  $total = $unitPrice * $item->quantity;
-                  $rowKey = $item->product_id . '-' . $item->size_id . '-' . implode(',', $toppingIds);
+                    use Illuminate\Support\Facades\Auth;
+                    $cart = session('cart', []);
+                    $isLoggedIn = Auth::check();
                 @endphp
-                <tr class="text-center" data-key="{{ $rowKey }}">
-                  <td>
-                  <button data-key="{{ $rowKey }}" >Xóa</button>
-                  </td>
-                  <td><img src="{{ asset('storage/uploads/' . $product->image) }}" width="80"></td>
-                  <td><strong>{{ $product->name }}</strong></td>
-                  <td>
-                    {{ $size->size ?? 'Không rõ' }}<br>
-                  </td>
-                  <td>
-                    @if($toppings->count())
-                      <ul class="list-unstyled mb-0">
-                        @foreach($toppings as $top)
-                          <li>{{ $top->topping }}<small class="text-muted"> (+{{ number_format($top->price) }} VND)</small></li>
-                        @endforeach
-                      </ul>
-                    @else
-                      Không có
-                    @endif
-                  </td>
-                  <td>
-                    <div class="input-group">
-                        <button class="btn btn-outline-secondary decrement-btn" type="button">-</button>
-                        <input readonly type="number" name="quantity" value="{{ $item->quantity }}"
-                            class="form-control text-center quantity-input" min="1"
-                            data-key="{{ $rowKey }}" data-product_id="{{ $item->product_id }}"
-                            data-size_id="{{ $item->size_id }}"
-                            data-topping_ids="{{ implode(',', $toppingIds) }}">
-                        <button class="btn btn-outline-secondary increment-btn" type="button">+</button>
-                    </div>
-                </td>
 
-                  <td class="line-total">{{ number_format($total) }} VND</td>
-                </tr>
-                @endforeach
-              @else
-                @foreach($cart as $key => $item)
+                @if(($isLoggedIn && isset($items) && count($items)) || (!$isLoggedIn && count($cart)))
+                <div class="shop-cart-list wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="600ms">
+                    <table class="shop-cart-table">
+                        <thead>
+                            <tr>
+                                <th>ẢNH</th>
+                                <th>TÊN</th>
+                                <th>SIZE</th>
+                                <th>TOPPING</th>
+                                <th>GIÁ</th>
+                                <th>TĂNG GIẢM</th>
+                                <th>TỔNG TIỀN</th>
+                                <th>XÓA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($items as $item)
+                            @php
+                                if (Auth::check()) {
+                                    // Get product info
+                                    $product = $item->product;
+                                    if (!$product) continue;
+
+                                    // Get size info and price (if size exists) or product price
+                                    $size = $item->size;
+                                    $basePrice = $size ? $size->price : $product->price;
+                                    
+                                    // Get topping prices
+                                    $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id ?? '')));
+                                    $toppings = \App\Models\Product_topping::whereIn('id', $toppingIds)->get();
+                                    $toppingPrice = $toppings->sum('price');
+                                    
+                                    // Calculate total prices
+                                    $unitPrice = $basePrice + $toppingPrice;
+                                    $total = $unitPrice * $item->quantity;
+                                    
+                                    // Generate cart item key
+                                    $rowKey = $item->product_id . '-' . ($item->size_id ?? '0') . '-' . implode(',', $toppingIds);
+                                    
+                                    // Get display info
+                                    $image = $product->image;
+                                    $name = $product->name;
+                                    $quantity = $item->quantity;
+                                } else {
+                                    // For guest cart
+                                    $basePrice = $item->size_price ?? 0;
+                                    $toppingPrice = array_sum($item->topping_prices ?? []);
+                                    $unitPrice = $basePrice + $toppingPrice;
+                                    $total = $unitPrice * $item->quantity;
+                                    $rowKey = $item->sanpham_id . '-' . $item->size_id . '-' . implode(',', $item->topping_ids ?? []);
+                                    $image = $item->image;
+                                    $name = $item->name;
+                                    $quantity = $item->quantity;
+                                }
+                            @endphp
+                            <tr data-key="{{ $rowKey }}">
+                                <td>
+                                    <div class="product-cart">
+                                        <img src="{{ asset('storage/' . $image) }}" alt="" style="width: 100px; height: 100px; object-fit: cover;">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="product-cart-title">
+                                        <span>{{ $name }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="size-info">
+                                        @if(Auth::check())
+                                            {{ $size ? ($size->size ?? 'Không rõ') : 'Không rõ' }}
+                                        @else
+                                            {{ $item->size_name ?? 'Không rõ' }}
+                                        @endif
+                                    </div>
+                                </td>
+                                <td>
+                                    @if(Auth::check())
+                                        @if($toppings->count())
+                                            <ul class="topping-list" style="list-style: none; padding: 0;">
+                                                @foreach($toppings as $top)
+                                                    <li>{{ $top->topping }}</li>
+                                                @endforeach
+                                            </ul>
+                                        @else
+                                            <span>Không có</span>
+                                        @endif
+                                    @else
+                                        @if(!empty($item->topping_names))
+                                            <ul class="topping-list" style="list-style: none; padding: 0;">
+                                                @foreach($item->topping_names as $index => $topping)
+                                                    <li>{{ $topping }}</li>
+                                                @endforeach
+                                            </ul>
+                                        @else
+                                            <span>Không có</span>
+                                        @endif
+                                    @endif
+                                </td>
+                                <td><strong>{{ number_format($unitPrice) }} VND</strong></td>
+                                <td>
+                                    <div class="price-textbox">
+                                        <span class="minus-text decrement-btn"><i class="icon-minus"></i></span>
+                                        <input type="number" name="quantity" value="{{ $quantity }}" 
+                                            class="quantity-input" min="1" readonly
+                                            data-key="{{ $rowKey }}" 
+                                            data-product_id="{{ Auth::check() ? $item->product_id : $item->sanpham_id }}"
+                                            data-size_id="{{ Auth::check() ? ($item->size_id ?? '0') : $item->size_id }}"
+                                            data-topping_ids="{{ Auth::check() ? implode(',', $toppingIds) : implode(',', $item->topping_ids ?? []) }}">
+                                        <span class="plus-text increment-btn"><i class="icon-plus"></i></span>
+                                    </div>
+                                </td>
+                                <td class="line-total">{{ number_format($total) }} VND</td>
+                                <td class="shop-cart-close">
+                                    <i class="icon-cancel-5 remove-item" data-key="{{ $rowKey }}"></i>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <div class="product-cart-detail">
+                        <div class="cupon-part">
+                            <input type="text" name="coupon_code" placeholder="Mã giảm giá">
+                        </div>
+                        <a href="#" class="btn-medium btn-dark-coffee" id="apply-coupon">Áp dụng mã</a>
+                        <a href="#" class="btn-medium btn-skin pull-right" id="update-cart">Cập nhật giỏ hàng</a>
+                    </div>
+                </div>
+
                 @php
-                  $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices']);
-                  $total = $unitPrice * $item['quantity'];
+                    $subtotal = $isLoggedIn
+                        ? collect($items ?? [])->sum(function($item) {
+                            // Skip if product doesn't exist
+                            $product = $item->product;
+                            if (!$product) return 0;
+                            
+                            // Get size price (if size exists) or product price
+                            $size = $item->size;
+                            $basePrice = $size ? $size->price : $product->price;
+                            
+                            // Get topping prices
+                            $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id ?? '')));
+                            $toppingPrice = \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price');
+                            
+                            // Calculate total for this item
+                            return ($basePrice + $toppingPrice) * $item->quantity;
+                        })
+                        : collect($cart)->sum(function($item) {
+                            // For guest cart, use size_price as base price
+                            $basePrice = $item['size_price'] ?? 0;
+                            $toppingPrice = array_sum($item['topping_prices'] ?? []);
+                            return ($basePrice + $toppingPrice) * ($item['quantity'] ?? 1);
+                        });
+
+                    $coupons = session('coupons', []);
+                    $discount = 0;
+                    foreach ($coupons as $c) {
+                        $discount += ($c['type'] === 'percent') ? ($subtotal * $c['discount'] / 100) : $c['discount'];
+                    }
+                    $total = max(0, $subtotal - $discount);
                 @endphp
-                <tr class="text-center" data-key="{{ $key }}">
-                  <td>
-                    <button class="remove-item btn btn-danger btn-sm" data-key="{{ $key }}">Xóa</button>
-                  </td>
-                  <td><img src="{{ asset('storage/uploads/' . $item['image']) }}" width="80"></td>
-                  <td><strong>{{ $item['name'] }}</strong></td>
-                  <td>
-                    {{ $item['size_name'] ?? 'Không rõ' }}
-                  </td>
-                  <td>
-                    @if(!empty($item['topping_names']))
-                      @foreach($item['topping_names'] as $index => $topping)
-                        {{ $topping }}<small class="text-muted"> (+{{ number_format($item['topping_prices'][$index]) }} VND)</small><br>
-                      @endforeach
-                    @else
-                      Không có
-                    @endif
-                  </td>
-                  <td>
-                    <div class="input-group">
-                      <input type="number" name="quantity" value="{{ $item['quantity'] }}" class="form-control text-center quantity-input" min="1"
-                        data-key="{{ $key }}" data-product_id="{{ $item['sanpham_id'] }}" data-size_id="{{ $item['size_id'] }}" data-topping_ids="{{ implode(',', $item['topping_ids']) }}">
+
+                <div class="cart-total wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="900ms">
+                    <div class="cart-total-title">
+                        <h5>TỔNG GIỎ HÀNG</h5>
                     </div>
-                  </td>
-                  <td class="line-total">{{ number_format($total) }} VND</td>
-                </tr>
-                @endforeach
-              @endif
-              </tbody>
-            </table>
-          </form>
-          @else
-            <p class="text-center">Giỏ hàng trống.</p>
-          @endif
-        </div>
-      </div>
+                    <div class="product-cart-total">
+                        <small>Tạm tính</small>
+                        <span id="cart-subtotal">{{ number_format($subtotal) }} VND</span>
+                    </div>
+                    @foreach($coupons as $c)
+                    <div class="product-cart-total">
+                        <small>Mã giảm giá ({{ $c['code'] }})</small>
+                        <span>-{{ $c['type'] === 'percent' ? number_format($subtotal * $c['discount'] / 100) : number_format($c['discount']) }} VND</span>
+                    </div>
+                    @endforeach
+                    <div class="grand-total">
+                        <h5>TỔNG CỘNG <span id="cart-total">{{ number_format($total) }} VND</span></h5>
+                    </div>
+                    <div class="proceed-check">
+                        <a href="{{ route('checkout.index') }}" class="btn-primary-gold btn-medium">TIẾN HÀNH THANH TOÁN</a>
+                    </div>
+                </div>
+                @else
+                <div class="text-center wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                    <p>Giỏ hàng trống.</p>
+                    <a href="/shop" class="btn-medium btn-dark-coffee">Tiếp tục mua sắm</a>
+                </div>
+                @endif
+            </div>
+        </section>
+        <!-- End Shop Cart -->
     </div>
-
-
-
-    {{-- TỔNG TIỀN --}}
-    @php
-      $subtotal = $isLoggedIn
-        ? collect($items ?? [])->sum(fn($i) =>
-            ($i->product->price + optional(\App\Models\Size::find($i->size_id))->price + \App\Models\Product_topping::where('product_id', $i->product_id)->whereIn('id', explode(',', $i->topping_id))->sum('price')) * $i->quantity)
-        : collect($cart)->sum(function($item) {
-            $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices']);
-            return $unitPrice * $item['quantity'];
-        });
-
-      $coupons = session('coupons', []);
-      $discount = 0;
-      foreach ($coupons as $c) {
-        $discount += ($c['type'] === 'percent') ? ($subtotal * $c['discount'] / 100) : $c['discount'];
-      }
-      $total = max(0, $subtotal - $discount);
-    @endphp
-
-    @if($subtotal > 0)
-    <div class="row justify-content-end mt-4">
-      <div class="col-lg-4">
-        <div class="cart-total p-4 border">
-          <h3>Tổng giỏ hàng</h3>
-          <p>Tạm tính: <span id="cart-subtotal">{{ number_format($subtotal, 0, ',', '.') }} đ</span></p>
-
-          @foreach($coupons as $c)
-            <p>Mã giảm giá ({{ $c['code'] }}): -{{ $c['type'] === 'percent' ? number_format($subtotal * $c['discount'] / 100, 0, ',', '.') : number_format($c['discount'], 0, ',', '.') }} đ</p>
-          @endforeach
-
-          <hr>
-          <p class="d-flex justify-content-between font-weight-bold"><span>Tổng cộng</span><span id="cart-total">{{ number_format($total, 0, ',', '.') }} đ</span></p>
-
-          <div class="text-center mt-3">
-            <a href="{{ route('checkout.index') }}" class="btn btn-primary">Thanh toán</a>
-          </div>
-        </div>
-      </div>
-    </div>
-    @endif
-  </div>
-</section>
+</main>  
 @endsection
 
 @section('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-  // Gửi mã giảm giá
+    // Debug function
+    function logDebug(action, data) {
+        console.log(`[${action}]`, data);
+    }
 
+    // Format currency
+    function formatCurrency(amount) {
+        return Number(amount).toLocaleString('vi-VN') + ' VND';
+    }
+
+    // Update UI elements
+    function updateUIElements(data) {
+        if (data.line_total !== undefined) {
+            const row = document.querySelector(`tr[data-key="${data.key}"]`);
+            if (row?.querySelector('.line-total')) {
+                row.querySelector('.line-total').textContent = formatCurrency(data.line_total);
+            }
+        }
+        
+        if (data.subtotal !== undefined) {
+            const subtotalEl = document.getElementById('cart-subtotal');
+            if (subtotalEl) subtotalEl.textContent = formatCurrency(data.subtotal);
+        }
+        
+        if (data.total !== undefined) {
+            const totalEl = document.getElementById('cart-total');
+            if (totalEl) totalEl.textContent = formatCurrency(data.total);
+        }
+    }
+
+    // Xử lý xóa sản phẩm
+    document.querySelectorAll('.remove-item').forEach(btn => {
+        btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            if (!confirm('Xóa sản phẩm?')) return;
+
+            const row = this.closest('tr');
+            const key = this.dataset.key;
+            
+            if (!key) {
+                console.error('Missing key for remove item');
+                return;
+            }
+
+            logDebug('Remove Request', { key });
+            
+            try {
+                const response = await fetch(`/cart/remove/${encodeURIComponent(key)}`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": csrfToken,
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                logDebug('Remove Response', data);
+                
+                if (data.success) {
+                    // Xóa dòng sản phẩm khỏi bảng
+                    row?.remove();
+                    
+                    // Cập nhật tổng tiền
+                    updateUIElements(data);
+                    
+                    // Kiểm tra nếu giỏ hàng trống thì reload trang
+                    const remainingRows = document.querySelectorAll('.shop-cart-table tbody tr');
+                    if (remainingRows.length === 0) {
+                        // Thay vì reload trang, ẩn bảng và hiện thông báo giỏ hàng trống
+                        const cartTable = document.querySelector('.shop-cart-list');
+                        const cartTotal = document.querySelector('.cart-total');
+                        if (cartTable) cartTable.style.display = 'none';
+                        if (cartTotal) cartTotal.style.display = 'none';
+                        
+                        // Hiển thị thông báo giỏ hàng trống
+                        const container = document.querySelector('.container');
+                        if (container) {
+                            const emptyCart = document.createElement('div');
+                            emptyCart.className = 'text-center wow fadeInDown';
+                            emptyCart.setAttribute('data-wow-duration', '1000ms');
+                            emptyCart.setAttribute('data-wow-delay', '300ms');
+                            emptyCart.innerHTML = `
+                                <p>Giỏ hàng trống.</p>
+                                <a href="/shop" class="btn-medium btn-dark-coffee">Tiếp tục mua sắm</a>
+                            `;
+                            container.appendChild(emptyCart);
+                        }
+                    }
+                } else {
+                    alert(data.message || "Không thể xóa sản phẩm.");
+                }
+            } catch (error) {
+                console.error('Remove Error:', error);
+                alert("Lỗi khi xóa sản phẩm. Vui lòng thử lại.");
+            }
+        });
+    });
+
+    // Xử lý cập nhật số lượng
+    async function updateQuantity(input, newQuantity) {
+        const key = input.dataset.key;
+        const product_id = input.dataset.product_id;
+        const size_id = input.dataset.size_id;
+        const topping_ids = input.dataset.topping_ids;
+        
+        if (!key || !product_id || size_id === undefined) {
+            console.error('Missing required data:', { key, product_id, size_id, topping_ids });
+            alert("Thiếu thông tin sản phẩm");
+            return false;
+        }
+
+        const oldQuantity = parseInt(input.value);
+        const requestData = {
+            key: key,
+            quantity: newQuantity,
+            product_id: product_id,
+            size_id: size_id,
+            topping_ids: topping_ids ? topping_ids.split(',').map(id => parseInt(id)) : []
+        };
+
+        logDebug('Update Request', requestData);
+
+        try {
+            const response = await fetch('/cart/update', {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            logDebug('Update Response', data);
+
+            if (data.success) {
+                input.value = data.quantity;
+                updateUIElements(data);
+                return true;
+            } else {
+                input.value = oldQuantity;
+                alert(data.message || "Không thể cập nhật số lượng.");
+                return false;
+            }
+        } catch (error) {
+            console.error('Update Error:', error);
+            input.value = oldQuantity;
+            alert("Lỗi khi cập nhật số lượng. Vui lòng thử lại.");
+            return false;
+        }
+    }
+
+    // Xử lý nút tăng/giảm số lượng
+    document.querySelectorAll('.increment-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const input = this.parentElement.querySelector('.quantity-input');
+            if (!input) return;
+            const oldValue = parseInt(input.value) || 1;
+            updateQuantity(input, oldValue + 1);
+        });
+    });
+
+    document.querySelectorAll('.decrement-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const input = this.parentElement.querySelector('.quantity-input');
+            if (!input) return;
+            const oldValue = parseInt(input.value) || 1;
+            const minValue = parseInt(input.min) || 1;
+            if (oldValue > minValue) {
+                updateQuantity(input, oldValue - 1);
+            }
+        });
+    });
+
+    // Xử lý mã giảm giá
+    document.getElementById('apply-coupon')?.addEventListener('click', async function(e) {
+        e.preventDefault();
+        const couponInput = document.querySelector('input[name="coupon_code"]');
+        const couponCode = couponInput?.value;
+        
+        if (!couponCode) {
+            alert('Vui lòng nhập mã giảm giá');
+            return;
+        }
+
+        const requestData = { code: couponCode };
+        logDebug('Coupon Request', requestData);
+
+        try {
+            const response = await fetch('/cart/apply-coupon', {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            const data = await response.json();
+            logDebug('Coupon Response', data);
+            
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert(data.message || "Mã giảm giá không hợp lệ");
+            }
+        } catch (error) {
+            console.error('Coupon Error:', error);
+            alert("Lỗi khi áp dụng mã giảm giá. Vui lòng thử lại.");
+        }
+    });
 });
-//
-
-document.addEventListener("DOMContentLoaded", function () {
-  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-  // Xử lý xóa sản phẩm bằng AJAX POST
-  document.querySelectorAll('.remove-item').forEach(btn => {
-    btn.addEventListener('click', function (e) {
-      e.preventDefault();
-      if (!confirm('Xóa sản phẩm?')) return;
-      const key = this.dataset.key;
-      fetch("{{ url('/cart/remove') }}/" + key, {
-        method: "POST",
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-          "X-CSRF-TOKEN": csrfToken
-        }
-      })
-      .then(res => {
-        if (res.ok) return res.json();
-        throw new Error('Network response was not ok');
-      })
-      .then(data => {
-        if (data.success) {
-          // Ẩn dòng sản phẩm vừa xóa
-          document.querySelectorAll(`tr[data-key='${data.key}']`).forEach(row => row.remove());
-          // Cập nhật tổng tiền nếu có
-          if (data.subtotal !== undefined) {
-            document.getElementById('cart-subtotal').textContent = Number(data.subtotal).toLocaleString('vi-VN') + ' đ';
-          }
-          if (data.total !== undefined) {
-            document.getElementById('cart-total').textContent = Number(data.total).toLocaleString('vi-VN') + ' đ';
-          }
-        } else {
-          alert(data.message || "Không thể xóa sản phẩm.");
-        }
-      })
-      .catch(() => alert("Lỗi khi xóa sản phẩm."));
-    });
-  });
-
-  // Xử lý cập nhật số lượng bằng AJAX
-  document.querySelectorAll('.quantity-input').forEach(input => {
-    input.addEventListener('change', function () {
-      const key = this.dataset.key;
-      const quantity = this.value;
-      const product_id = this.dataset.product_id;
-      const size_id = this.dataset.size_id;
-      const topping_ids = this.dataset.topping_ids;
-      fetch("{{ url('/cart/update') }}", {
-        method: "POST",
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-          "X-CSRF-TOKEN": csrfToken,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          key: key,
-          quantity: quantity,
-          product_id: product_id,
-          size_id: size_id,
-          topping_ids: topping_ids ? topping_ids.split(',') : []
-        })
-      })
-      .then(res => {
-        if (res.ok) return res.json();
-        throw new Error('Network response was not ok');
-      })
-      .then(data => {
-        if (data.success) {
-          // Cập nhật lại số lượng nếu backend trả về (phòng trường hợp backend chỉnh lại)
-          this.value = data.quantity;
-          // Cập nhật lại thành tiền dòng
-          const row = this.closest('tr');
-          if (row && row.querySelector('.line-total')) {
-            row.querySelector('.line-total').textContent = Number(data.line_total).toLocaleString('vi-VN') + ' VND';
-          }
-          // Cập nhật tổng tiền
-          if (data.subtotal !== undefined) {
-            document.getElementById('cart-subtotal').textContent = Number(data.subtotal).toLocaleString('vi-VN') + ' đ';
-          }
-          if (data.total !== undefined) {
-            document.getElementById('cart-total').textContent = Number(data.total).toLocaleString('vi-VN') + ' đ';
-          }
-        } else {
-          alert(data.message || "Không thể cập nhật số lượng.");
-        }
-      })
-      .catch(() => alert("Lỗi khi cập nhật số lượng."));
-    });
-  });
-});
-
-
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.increment-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        const input = this.previousElementSibling;
-        input.value = parseInt(input.value) + 1;
-        input.dispatchEvent(new Event('change')); // kích hoạt sự kiện nếu bạn lắng nghe
-      });
-    });
-
-    document.querySelectorAll('.decrement-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        const input = this.nextElementSibling;
-        if (parseInt(input.value) > parseInt(input.min)) {
-          input.value = parseInt(input.value) - 1;
-          input.dispatchEvent(new Event('change'));
-        }
-      });
-    });
-  });
-
 </script>
+
+<style>
+.product-cart img {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.size-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.topping-list {
+    margin: 0;
+    padding: 0;
+}
+
+.topping-list li {
+    margin-bottom: 5px;
+}
+
+.topping-list small {
+    color: #666;
+}
+
+.quantity-input {
+    width: 50px;
+    text-align: center;
+}
+
+.shop-cart-table th {
+    text-align: center;
+}
+
+.shop-cart-table td {
+    vertical-align: middle;
+}
+
+.price-textbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.minus-text, .plus-text {
+    cursor: pointer;
+    padding: 5px;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.minus-text:hover, .plus-text:hover {
+    background: #e0e0e0;
+}
+
+.shop-cart-close {
+    cursor: pointer;
+}
+
+.shop-cart-close:hover {
+    color: #ff0000;
+}
+</style>
 @endsection
