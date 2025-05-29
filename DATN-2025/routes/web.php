@@ -76,10 +76,10 @@ use App\Http\Controllers\Staff\StaffController;
         // About
         Route::get('/about',[AboutController::class, 'index'])->name('about.index');
 
-                //checkout
-                Route::get('/checkout',[CheckoutController::class, 'index'])->name('checkout.index');
-                Route::get('/checkout/payment',[CheckoutController::class, 'index'])->name('client.payment');
-
+        // Checkout routes
+        Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+        Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+        Route::get('/order/complete/{orderId}', [CheckoutController::class, 'success'])->name('order.complete');
 
         // Blog
         Route::get('/blog',[BlogController::class, 'index'])->name('blog.index');
@@ -103,7 +103,7 @@ use App\Http\Controllers\Staff\StaffController;
         Route::get('/create', [DanhmucController::class, 'create'])->name('danhmuc.create');
         Route::post('/store', [DanhmucController::class, 'store'])->name('danhmuc.store');
         Route::get('/edit/{id}', [DanhmucController::class, 'edit'])->name('danhmuc.edit');
-        Route::post('/update/{id}', [DanhmucController::class, 'update'])->name('danhmuc.update');
+
         Route::get('/delete/{id}', [DanhmucController::class, 'delete'])->name('danhmuc.delete');
         });
 
@@ -173,6 +173,8 @@ use App\Http\Controllers\Staff\StaffController;
         Route::get('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
         Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
 
+
+        Route::post('danhmuc/update/{id}', [DanhmucController::class, 'update'])->name('danhmuc.update');
         Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 
         // Checkout routes
@@ -188,6 +190,4 @@ use App\Http\Controllers\Staff\StaffController;
         Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
         Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
         });
-
-
 

@@ -13,7 +13,7 @@ return new class extends Migration
         $table->string('name');
         $table->string('image')->nullable();
         $table->string('title');
-        $table->text('mota');
+        $table->longText('mota');
         $table->foreignId('id_danhmuc')
               ->constrained('danhmucs')
               ->onDelete('cascade');
