@@ -21,6 +21,7 @@ use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\admin\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\Staff\StaffController;
 
         Route::get('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
@@ -179,8 +180,11 @@ use App\Http\Controllers\ShopController;
         Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
         Route::get('/checkout/success', [App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 
+        // Staff
+        Route::get('staff/login', [StaffController::class, 'login'])->name('staff.login');
+
         Route::group(['prefix' => 'staff'], function () {
-           Route::get('/');
+            Route::get('/', [StaffController::class, 'index'])->name('staff.index');
         });
 
 

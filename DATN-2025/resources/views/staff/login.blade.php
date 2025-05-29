@@ -8,8 +8,9 @@
     <meta name="author" content="" />
 
     <!-- ================== BEGIN core-css ================== -->
-    <link href="assets/css/vendor.min.css" rel="stylesheet" />
-    <link href="assets/css/app.min.css" rel="stylesheet" />
+    <link href="{{ url('assetstaff') }}/css/vendor.min.css" rel="stylesheet" />
+    <link href="{{ url('assetstaff') }}/css/app.min.css" rel="stylesheet" />
+
     <!-- ================== END core-css ================== -->
 </head>
 <body>
@@ -20,7 +21,7 @@
         <!-- BEGIN login-content -->
         <div class="login-content">
             <form action="" method="post" name="login_form">
-
+                @csrf
                 <h1 class="text-center">Sign In</h1>
                 <div class="text-muted text-center mb-4">
                     For your protection, please verify your identity.
@@ -45,19 +46,6 @@
                         name="password"
                         placeholder="Enter your password"
                     />
-                </div>
-                <div class="mb-3">
-                    <div class="form-check">
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            value=""
-                            id="customCheck1"
-                        />
-                        <label class="form-check-label fw-500" for="customCheck1"
-                        >Remember me</label
-                        >
-                    </div>
                 </div>
                 <button
                     type="submit"
@@ -312,11 +300,11 @@
 
 <!-- ================== BEGIN core-js ================== -->
 <script
-    src="assets/js/vendor.min.js"
+    src="{{ url('assetstaff') }}/js/vendor.min.js"
     type="109ae531c2c46eac75a2f14c-text/javascript"
 ></script>
 <script
-    src="assets/js/app.min.js"
+    src="{{ url('assetstaff') }}/js/app.min.js"
     type="109ae531c2c46eac75a2f14c-text/javascript"
 ></script>
 <!-- ================== END core-js ================== -->
