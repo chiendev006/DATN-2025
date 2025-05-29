@@ -50,7 +50,6 @@ class SanphamController extends Controller
     ]);
 
     // Lưu session tạm nếu cần
-    session(['data' => $request->except(['image', 'hasFile'])]);
 
     // Xử lý ảnh đại diện
     $image = $request->file('image');
