@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const itemHasTopping = this.dataset.role ;
 
             // Cập nhật action của form trong modal
-            editForm.action = `/danhmuc/update/${itemId}`;
+            editForm.action = `danhmuc/update/${itemId}`;
             document.getElementById('edit-id').value = itemId;
 
             // Điền dữ liệu vào các trường input trong modal
