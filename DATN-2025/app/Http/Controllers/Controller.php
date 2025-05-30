@@ -78,7 +78,6 @@ public function filterByPrice(Request $request)
     $min = (int) $request->min;
     $max = (int) $request->max;
 
-    // Get products that have at least one size within the price range
     $sanphams = Sanpham::whereHas('attributes', function($q) use ($min, $max) {
         $q->whereBetween('price', [$min, $max]);
     })
