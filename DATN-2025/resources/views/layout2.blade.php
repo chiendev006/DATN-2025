@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -406,45 +407,58 @@
                     ><span>2 items - $ 10.89</span>
                     <div class="cart-wrap">
                       <div class="cart-blog">
-                        <div class="cart-item">
-                          <div class="cart-item-left">
-                            <img src="{{ url('asset') }}/images/img21.png" alt="" />
-                          </div>
-                          <div class="cart-item-right">
-                            <h6>Caramel Chesse Cake</h6>
-                            <span>$ 14.00</span>
-                          </div>
-                          <span class="delete-icon"></span>
-                        </div>
-                        <div class="cart-item">
-                          <div class="cart-item-left">
-                            <img src="{{ url('asset') }}/images/img21.png" alt="" />
-                          </div>
-                          <div class="cart-item-right">
-                            <h6>Caramel Chesse Cake</h6>
-                            <span>$ 14.00</span>
-                          </div>
-                          <span class="delete-icon"></span>
-                        </div>
-                        <div class="subtotal">
-                          <div class="row">
-                            <div class="col-md-6 col-sm-6 col-xs-6">
-                              <h6>Subtotal :</h6>
+                            @forelse ($items as $item)
+                                @php
+                                    $productName = $item->product->name ?? $item->name;
+                                    $productImage = isset($item->product->image) 
+                                                    ? asset('storage/uploads/' . $item->product->image)
+                                                    : asset('asset/images/img21.png');
+                                    $quantity = $item->quantity ?? 1;
+                                    $price = 0;
+
+                                    if (isset($item->product)) {
+                                        $basePrice = $item->size->price ?? $item->product->price;
+                                        $toppingIds = array_filter(explode(',', $item->topping_id ?? ''));
+                                        $toppingPrice = $toppingIds ? \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price') : 0;
+                                        $price = ($basePrice + $toppingPrice) * $quantity;
+                                    } else {
+                                        $basePrice = $item->size_price ?? 0;
+                                        $toppingPrice = array_sum($item->topping_prices ?? []);
+                                        $price = ($basePrice + $toppingPrice) * $quantity;
+                                    }
+                                @endphp
+
+                                <div class="cart-item">
+                                    <div class="cart-item-left">
+                                        <img src="{{ $productImage }}" alt="" />
+                                    </div>
+                                    <div class="cart-item-right">
+                                        <h6>{{ $productName }}</h6>
+                                        <span>{{ number_format($price, 0, ',', '.') }}₫</span>
+                                    </div>
+                                    <span class="delete-icon"></span> 
+                                </div>
+                            @empty
+                                <div class="cart-item">
+                                    <p>Không có sản phẩm nào trong giỏ hàng.</p>
+                                </div>
+                            @endforelse
+
+                            <div class="subtotal">
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-6 col-xs-6">
+                                        <h6>Tạm tính :</h6>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-xs-6">
+                                        <span>{{ number_format($subtotal, 0, ',', '.') }}₫</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6 col-sm-6 col-xs-6">
-                              <span>$ 140.00</span>
+
+                            <div class="cart-btn">
+                                <a href="{{ route('cart.index') }}" class="button-default view">XEM GIỎ HÀNG</a>
+                                <a href="{{ route('checkout.index') }}" class="button-default checkout">THANH TOÁN</a>
                             </div>
-                          </div>
-                        </div>
-                        <div class="cart-btn">
-                          <a href="{{ route('cart.index') }}" class="button-default view"
-                            >VIEW ALL</a
-                          >
-                          <a
-                            href="shop_checkout.html"
-                            class="button-default checkout"
-                            >CHECK OUT</a
-                          >
                         </div>
                       </div>
                     </div>
@@ -599,5 +613,7 @@
 <!-- Summernote JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
 
-  
+
 </html>
+
+

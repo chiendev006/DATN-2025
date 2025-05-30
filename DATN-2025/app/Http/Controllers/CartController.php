@@ -167,7 +167,7 @@ class CartController extends Controller
             session(['cart' => $cartSession]);
         }
 
-        return redirect()->route('cart.index')->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
+        return redirect()->route('shop.index')->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
     }
 
     /**
@@ -498,4 +498,6 @@ class CartController extends Controller
         
         return $total;
     }
+ 
+    
 }

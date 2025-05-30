@@ -68,24 +68,22 @@
                                     <div class="col-md-12">
                                         <h5>Phương thức thanh toán</h5>
                                         <div class="payment-methods">
-                                            <div class="payment-method">
-                                                <label>
+                                           <div class="payment-method" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                                <label style="display: flex; align-items: center; gap: 10px;">
                                                     <input type="radio" name="payment_method" value="cash" required>
+                                                    <img src="{{ url('asset') }}/images/cod.png" alt="COD" style="height: 24px;">
                                                     <span>Thanh toán khi nhận hàng (COD)</span>
                                                 </label>
                                             </div>
-                                            <div class="payment-method">
-                                                <label>
+
+                                            <div class="payment-method" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                                <label style="display: flex; align-items: center; gap: 10px;">
                                                     <input type="radio" name="payment_method" value="banking" {{ old('payment_method') === 'banking' ? 'checked' : '' }}>
+                                                    <img src="{{ url('asset') }}/images/vnpay.jpg" alt="VNPAY" style="height: 24px;">
                                                     <span>Chuyển khoản ngân hàng (qua VNPAY)</span>
-                                                </label>
+                                                </label> 
                                             </div>
-                                            <div class="payment-method">
-                                                <label>
-                                                    <input type="radio" name="payment_method" value="momo" required>
-                                                    <span>Ví MoMo</span>
-                                                </label>
-                                            </div>
+                                           
                                             @error('payment_method')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
@@ -279,4 +277,70 @@
     color: #c7a17a;
 }
 </style>
+<script>
+let provinces = {};
+let districts = {};
+
+fetch('/data/tinh_tp.json')
+    .then(res => res.json())
+    .then(data => {
+        provinces = data;
+        const provinceSelect = document.getElementById('province');
+        Object.entries(data).forEach(([code, info]) => {
+            const opt = document.createElement('option');
+            opt.value = info.name;
+            opt.text = info.name;
+            provinceSelect.appendChild(opt);
+        });
+    });
+
+document.getElementById('province').addEventListener('change', function () {
+    const provinceCode = Object.keys(provinces).find(k => provinces[k].name === this.value);
+    fetch('/data/quan_huyen.json')
+        .then(res => res.json())
+        .then(data => {
+            districts = data;
+            const districtSelect = document.getElementById('district');
+            districtSelect.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+            Object.entries(data)
+                .filter(([code, info]) => info.parent_code === provinceCode)
+                .forEach(([code, info]) => {
+                    const opt = document.createElement('option');
+                    opt.value = info.name;
+                    opt.text = info.name;
+                    districtSelect.appendChild(opt);
+                });
+            fetchShippingFee(); // cập nhật phí khi tỉnh thay đổi
+        });
+});
+
+document.getElementById('district').addEventListener('change', fetchShippingFee);
+document.getElementById('address').addEventListener('input', fetchShippingFee);
+
+function fetchShippingFee() {
+    const province = document.getElementById('province').value;
+    const district = document.getElementById('district').value;
+    const address = document.getElementById('address').value;
+
+    if (!province || !district || !address) {
+        document.getElementById('shipping-fee').innerText = 'Vui lòng chọn đầy đủ địa chỉ';
+        return;
+    }
+
+    fetch(`/calculate-fee?province=${province}&district=${district}&address=${encodeURIComponent(address)}&weight=1000&value=300000&transport=road&deliver_option=none`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.fee) {
+                document.getElementById('shipping-fee').innerText = data.fee.fee.toLocaleString() + ' VND';
+            } else {
+                document.getElementById('shipping-fee').innerText = 'Không hỗ trợ giao';
+            }
+        })
+        .catch(() => {
+            document.getElementById('shipping-fee').innerText = 'Lỗi tính phí giao hàng';
+        });
+}
+</script>
+
+
 @endsection
