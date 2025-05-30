@@ -19,6 +19,7 @@ class Order extends Model
         'payment_method',
         'status',
         'total',
+        'transaction_id',
     ];
     public function details()
     {
