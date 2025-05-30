@@ -104,7 +104,7 @@ use App\Http\Controllers\VNPayController;
         Route::get('/create', [DanhmucController::class, 'create'])->name('danhmuc.create');
         Route::post('/store', [DanhmucController::class, 'store'])->name('danhmuc.store');
         Route::get('/edit/{id}', [DanhmucController::class, 'edit'])->name('danhmuc.edit');
-
+        Route::post('/update/{id}', [DanhmucController::class, 'update'])->name('danhmuc.update');
         Route::get('/delete/{id}', [DanhmucController::class, 'delete'])->name('danhmuc.delete');
         });
 
@@ -116,12 +116,14 @@ use App\Http\Controllers\VNPayController;
         Route::get('images/{image}/edit', [SanphamController::class, 'editImage'])->name('images.edit');
         Route::put('images/{image}', [SanphamController::class, 'updateImage'])->name('images.update');
         Route::delete('images/{image}', [SanphamController::class, 'deleteImage'])->name('images.delete');
+        Route::get('/filter-category', [SanphamController::class, 'filterByCategory'])->name('filterCategory');
         });
 
 
         // Sản phẩm
         Route::prefix('sanpham')->group(function () {
         Route::get('/', [SanphamController::class, 'index'])->name('sanpham.index');
+        Route::get('/search', [SanphamController::class, 'search'])->name('sanpham.search');
         Route::get('/create', [SanphamController::class, 'create'])->name('sanpham.create');
         Route::post('/store', [SanphamController::class, 'store'])->name('sanpham.store');
         Route::get('/edit/{id}', [SanphamController::class, 'edit'])->name('sanpham.edit');
@@ -175,7 +177,6 @@ use App\Http\Controllers\VNPayController;
         Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
 
 
-        Route::post('danhmuc/update/{id}', [DanhmucController::class, 'update'])->name('danhmuc.update');
         Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 
         // Checkout routes
@@ -186,8 +187,10 @@ use App\Http\Controllers\VNPayController;
         // Staff
         Route::get('staff/login', [StaffController::class, 'login'])->name('staff.login');
 
-        Route::group(['prefix' => 'staff'], function () {
-            Route::get('/', [StaffController::class, 'index'])->name('staff.index');
+        Route::prefix('staff')->group(function () {
+        Route::get('/', [StaffController::class, 'index'])->name('staff.index');
+        Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
+        Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
         });
 
         // VNPAY 

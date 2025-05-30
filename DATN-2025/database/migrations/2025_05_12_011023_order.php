@@ -20,6 +20,7 @@ return new class extends Migration
         $table->enum('payment_method', ['cash', 'banking', 'momo'])->default('cash');
         $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
         $table->decimal('total', 10, 2); 
+
         $table->string('transaction_id', 191)->nullable(); 
         $table->timestamps();
     });
