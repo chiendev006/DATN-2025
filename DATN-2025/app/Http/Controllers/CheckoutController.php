@@ -47,7 +47,7 @@ class CheckoutController extends Controller
                 'name' => 'required|string|max:255',
                 'phone' => 'required|string|max:15',
                 'address' => 'required|string|max:255',
-                'payment_method' => 'required|in:cash,banking,momo',
+                'payment_method' => 'required|in:cash,banking',
                 'terms' => 'required|accepted'
             ]);
     
@@ -106,7 +106,6 @@ class CheckoutController extends Controller
     
                     if (!$product) continue;
     
-                    // ✅ Chỉ lấy giá từ DB - không cộng thêm size_price từ session
                     $basePrice = DB::table('product_attributes')
                         ->where('product_id', $product->id)
                         ->where('id', $cartItem['size_id'])

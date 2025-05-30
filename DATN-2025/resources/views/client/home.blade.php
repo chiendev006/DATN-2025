@@ -405,7 +405,7 @@
 					<div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
 					<div class="item-wrap dp-animation">
 						<div class="item-left">
-            <img src="{{ asset('storage/' . ltrim($sp->image, '/')) }}" width="250px" alt="{{ $sp->name }}" style="width: 100px; height: 100px; border-radius: 100px;" class="animated">
+            <img src="{{ url('storage/uploads/' .$sp->image) }}" width="250px" alt="{{ $sp->name }}" style="width: 100px; height: 100px; border-radius: 100px;" class="animated">
 						</div>
 						<div class="item-right">
 						<div class="item-right-top">
