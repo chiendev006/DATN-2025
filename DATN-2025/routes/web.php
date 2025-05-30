@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\admin\AdminStaffController;
 use App\Http\Controllers\admin\Product_attributesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Controller;
@@ -129,6 +130,14 @@ use App\Http\Controllers\VNPayController;
         Route::get('/edit/{id}', [SanphamController::class, 'edit'])->name('sanpham.edit');
         Route::post('/update/{id}', [SanphamController::class, 'update'])->name('sanpham.update');
         Route::get('/delete/{id}', [SanphamController::class, 'delete'])->name('sanpham.delete');
+        });
+
+          // Staff
+        Route::prefix('staff')->group(function () {
+        Route::get('/', [AdminStaffController::class, 'index'])->name('admin.staff.index');
+        Route::post('/store', [AdminStaffController::class, 'store'])->name('admin.staff.store');
+        Route::post('/update/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
+        Route::get('/delete/{id}', [AdminStaffController::class, 'delete'])->name('admin.staff.delete');
         });
 
         // Ảnh sản phẩm

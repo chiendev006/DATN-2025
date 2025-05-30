@@ -72,10 +72,7 @@
 							<i class="icon-layers2"></i>
 							<span class="nav-link-text">Product</span>
 						</a>
-						<a class="nav-link" id="pages-tab" data-bs-toggle="tab" href="#tab-pages" role="tab" aria-controls="tab-pages" aria-selected="false">
-							<i class="icon-book-open"></i>
-							<span class="nav-link-text">Pages</span>
-						</a>
+
 						<a class="nav-link" id="forms-tab" data-bs-toggle="tab" href="#tab-forms" role="tab" aria-controls="tab-forms" aria-selected="false">
 							<i class="icon-edit1"></i>
 							<span class="nav-link-text">Forms</span>
@@ -268,78 +265,7 @@
 
 						</div>
 
-						<!-- Pages tab -->
-						<div class="tab-pane fade" id="tab-pages" role="tabpanel" aria-labelledby="pages-tab">
 
-							<!-- Tab content header start -->
-							<div class="tab-pane-header">
-								Pages
-							</div>
-							<!-- Tab content header end -->
-
-							<!-- Sidebar menu starts -->
-							<div class="sidebarMenuScroll">
-								<div class="sidebar-menu">
-									<ul>
-										<li>
-											<a href="chat.html">Chat</a>
-										</li>
-										<li>
-											<a href="tasks.html">Tasks</a>
-										</li>
-										<li>
-											<a href="create-invoice.html">Create Invoice</a>
-										</li>
-										<li>
-											<a href="view-invoice.html">View Invoice</a>
-										</li>
-										<li>
-											<a href="documents.html">Documents</a>
-										</li>
-										<li>
-											<a href="faq.html">Faq's</a>
-										</li>
-										<li>
-											<a href="contacts.html">Contacts</a>
-										</li>
-										<li>
-											<a href="pricing.html">Pricing</a>
-                                        </li>
-                                        <li>
-											<a href="gallery-tiles.html">Gallery Tiles</a>
-                                        </li>
-                                        <li>
-											<a href="gallery.html">Gallery</a>
-										</li>
-										<li>
-											<a href="icons.html">Icons</a>
-										</li>
-										<li>
-											<a href="timeline.html">Timeline</a>
-										</li>
-										<li>
-											<a href="search-results.html">Search Results</a>
-										</li>
-										<li>
-											<a href="account-settings.html">Account Settings</a>
-                                        </li>
-                                        <li>
-											<a href="user-profile.html">User Profile</a>
-										</li>
-									</ul>
-								</div>
-							</div>
-							<!-- Sidebar menu ends -->
-
-							<!-- Sidebar actions starts -->
-							<div class="sidebar-actions">
-								<div class="support-tile green">
-									<i class="icon-pie-chart1"></i> 5GB Free Space
-								</div>
-							</div>
-							<!-- Sidebar actions ends -->
-
-						</div>
 
 						<!-- Forms tab -->
 						<div class="tab-pane fade" id="tab-forms" role="tabpanel" aria-labelledby="forms-tab">
