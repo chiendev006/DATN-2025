@@ -49,7 +49,7 @@
                                     <div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="700ms">
                                         <div class="menu-fix-list">
                                             <span class="menu-fix-product">
-                                                <img src="{{ asset('storage/' . ltrim($product->image, '/')) }}" style="width: 100px; height: 100px; border-radius: 100px;" alt="{{ $product->name }}">
+                                                <img src="{{ url('storage/uploads/' . $product->image) }}" style="width: 100px; height: 100px; border-radius: 100px;" alt="{{ $product->name }}">
                                             </span>
                                             <h5>{{ strtoupper($product->name) }} <span> {{ number_format($product->min_price) }} VND</span></h5>
                                             <p>{{ $product->mota ?? 'Không có mô tả.' }}</p>

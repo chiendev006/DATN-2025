@@ -89,7 +89,7 @@
                             <tr data-key="{{ $rowKey }}">
                                 <td>
                                     <div class="product-cart">
-                                        <img src="{{ asset('storage/' . $image) }}" alt="" style="width: 100px; height: 100px; object-fit: cover;">
+                                        <img src="{{ url('storage/uploads/' . $image) }}" alt="" style="width: 100px; height: 100px; object-fit: cover;">
                                     </div>
                                 </td>
                                 <td>

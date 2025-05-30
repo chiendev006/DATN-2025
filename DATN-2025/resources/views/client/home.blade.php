@@ -452,12 +452,12 @@
 					data-autoplay="true"
 					data-speed="1800"
 					data-autotime="5000"
-				>
+			  >
 					@foreach($sanpham as $sp)
 					<div class="item">
 					<div class="product-img">
 						<a href="{{ route('client.product.detail', $sp->id) }}">
-					<img src="{{ asset('storage/' . ltrim($sp->image, '/')) }}" width="250px" alt="{{ $sp->name }}">
+					<img src="{{ url('storage/uploads/'.$sp->image) }}" width="250px" alt="{{ $sp->name }}">
 						<span class="icon-basket fontello"></span>
 						</a>
 					</div>
