@@ -22,12 +22,13 @@ use App\Http\Controllers\admin\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Staff\StaffController;
+use App\Http\Controllers\VNPayController;
 
         Route::get('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
         Route::get('register', [AuthenticationController::class, 'register'])->name('register');
         Route::post('register', [AuthenticationController::class, 'postRegister'])->name('post-register');
-        Route::get('logout', [AuthenticationController::class, 'logout'])->name('logout');
+        Route::post('logout', [AuthenticationController::class, 'logout'])->name('logout');
         Route::get('forgot-password', [AuthenticationController::class, 'forgotPassword'])->name('forgot-password');
         Route::post('forgot-password/send', [AuthenticationController::class, 'sendResetPassword'])->name('send.reset');
         Route::get('reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
@@ -168,7 +169,7 @@ use App\Http\Controllers\Staff\StaffController;
          });
 
 
-});
+        });
         Route::get('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->name('product_img.delete');
         Route::get('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
         Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
@@ -189,3 +190,7 @@ use App\Http\Controllers\Staff\StaffController;
             Route::get('/', [StaffController::class, 'index'])->name('staff.index');
         });
 
+        // VNPAY 
+        Route::get('/vnpay/return', [App\Http\Controllers\VNPayController::class, 'vnpayReturn'])->name('vnpay.return');
+        Route::get('/vnpay/redirect', [App\Http\Controllers\VNPayController::class, 'redirectToVnpay'])->name('vnpay.redirect');
+        

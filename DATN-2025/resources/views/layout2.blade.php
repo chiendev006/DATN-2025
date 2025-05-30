@@ -130,7 +130,7 @@
     <div id="pre-loader">
       <div class="loader-holder">
         <div class="frame">
-          <img src="{{ url('asset') }}/{{ url('asset') }}/images/Preloader.gif" alt="Despına" />
+          <img src="{{ url('asset') }}/images/Preloader.gif" alt="Despına" />
         </div>
       </div>
     </div>
@@ -366,15 +366,41 @@
                         </ul>
                       </li>
                        <li class="has-child">
-                        <a href="/login">Login</a>
+                        <a href="/contact">Contact</a>
+                        <ul class="drop-nav">
+                          <li><a href="contact_1.html">Contact 1</a></li>
+                          <li><a href="contact_2.html">Contact 2</a></li>
+                        </ul>
                       </li>
-                    </ul>
+                     @auth
+    <li class="has-child">
+        <a href="#" class="nav-link dropdown-toggle" id="userDropdown">
+            Xin chào, {{ Auth::user()->name }}
+        </a>
+        <ul class="drop-nav">
+            <li>
+                <a class="dropdown-item" href="{{ route('logout') }}"
+                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    Đăng xuất
+                </a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+            </li>
+        </ul>
+    </li>
+@else
+    <li class="has-child">
+        <a href="#" class="nav-link">Tài khoản</a>
+        <ul class="drop-nav">
+            <li><a href="{{ route('login') }}">Đăng nhập</a></li>
+            <li><a href="{{ route('register') }}">Đăng ký</a></li>
+        </ul>
+    </li>
+@endauth
+
                   </div>
-                  <div class="cell-part">
-                    <a href="tel:123-456-7890"
-                      ><span class="icon-phone fontello"></span>123-456-7890</a
-                    >
-                  </div>
+                 
                   <div class="cart animated">
                     <span class="icon-basket fontello"></span
                     ><span>2 items - $ 10.89</span>

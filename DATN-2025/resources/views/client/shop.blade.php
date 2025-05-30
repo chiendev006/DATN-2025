@@ -111,7 +111,7 @@
                                                 <div class="shop-main-list">
                                                     <div class="shop-product">
                                                         <a href="">
-                                                        <img class="" src="{{ asset('storage/' . ltrim($product->image, '/')) }}"  alt="{{ $product->name }}" style="border-radius: 20px;">
+                                                        <img class="" src="{{ url('storage/uploads/'.$product->image) }}"  alt="{{ $product->name }}" style="border-radius: 20px;">
                                                         </a>
                                                          <div class="cart-overlay-wrap">
                                                         <div class="cart-overlay">

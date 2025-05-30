@@ -34,25 +34,29 @@
                             @if(!$isLoggedIn)
                             <h6>Returning customer? Click here to <a href="{{ route('login') }}">login</a></h6>
                             @endif
-                            <form class="form" method="POST" action="{{ route('checkout.process') }}">
+                            <form id="checkout-form" class="form" method="POST" action="{{ route('checkout.process') }}">
                                 @csrf
+
                                 <div class="row">
-                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="col-md-12">
                                         <h5>Thông tin đặt hàng</h5>
                                     </div>
-                                    <div class="col-md-12 col-sm-12 col-xs-12">
+
+                                    <div class="col-md-12">
                                         <input type="text" name="name" value="{{ old('name') }}" placeholder="Họ và tên" required>
                                         @error('name')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                    <div class="col-md-12 col-sm-12 col-xs-12">
+
+                                    <div class="col-md-12">
                                         <input type="text" name="phone" value="{{ old('phone') }}" placeholder="Số điện thoại" required>
                                         @error('phone')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                    <div class="col-md-12 col-sm-12 col-xs-12">
+
+                                    <div class="col-md-12">
                                         <textarea name="address" placeholder="Địa chỉ giao hàng" required>{{ old('address') }}</textarea>
                                         @error('address')
                                             <span class="text-danger">{{ $message }}</span>
@@ -73,7 +77,7 @@
                                             <div class="payment-method">
                                                 <label>
                                                     <input type="radio" name="payment_method" value="banking" {{ old('payment_method') === 'banking' ? 'checked' : '' }}>
-                                                     <span>Chuyển khoản ngân hàng (qua VNPAY)</span>
+                                                    <span>Chuyển khoản ngân hàng (qua VNPAY)</span>
                                                 </label>
                                             </div>
                                             <div class="payment-method">
@@ -88,7 +92,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="row mt-4">
                                     <div class="col-md-12">
                                         <div class="terms-conditions">
@@ -103,12 +106,16 @@
                                     </div>
                                 </div>
 
+                                <!-- Hidden input để xác định redirect (nếu dùng JS cũng có thể xử lý redirect này tự động sau khi form gửi) -->
+                                <input type="hidden" name="redirect" value="1">
+
                                 <div class="row mt-4">
                                     <div class="col-md-12">
                                         <button type="submit" class="btn-large btn-primary-gold">Đặt hàng</button>
                                     </div>
                                 </div>
                             </form>
+
                         </div>
                     </div>
                     <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
