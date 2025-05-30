@@ -189,11 +189,11 @@ use App\Http\Controllers\VNPayController;
 
         Route::prefix('staff')->group(function () {
         Route::get('/', [StaffController::class, 'index'])->name('staff.index');
+        Route::get('/product/{id}/options', [StaffController::class, 'getOptions'])->name('staff.options');
         Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
         Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
         });
 
-        // VNPAY 
+        // VNPAY
         Route::get('/vnpay/return', [App\Http\Controllers\VNPayController::class, 'vnpayReturn'])->name('vnpay.return');
         Route::get('/vnpay/redirect', [App\Http\Controllers\VNPayController::class, 'redirectToVnpay'])->name('vnpay.redirect');
-        
