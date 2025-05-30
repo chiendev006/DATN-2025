@@ -22,7 +22,8 @@ class SanphamController extends Controller
     public function index()
     {
         $sanpham = Sanpham::with('danhmuc')->paginate(10);
-        return view('admin.sanpham.index', ['sanpham' => $sanpham]);
+        $danhmucs = Danhmuc::all();
+        return view('admin.sanpham.index', ['sanpham' => $sanpham, 'danhmucs' => $danhmucs]);
     }
 
 
@@ -196,4 +197,36 @@ class SanphamController extends Controller
 
     return redirect()->route('sanpham.index')->with('success', 'Đã xóa sản phẩm!');
 }
+
+    /**
+     * Search sản phẩm theo tên.
+     */
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+        $sanpham = Sanpham::with('danhmuc')
+            ->where('name', 'like', '%' . $query . '%')
+            ->paginate(10);
+        $danhmucs = Danhmuc::all();
+        return view('admin.sanpham.index', ['sanpham' => $sanpham, 'search' => $query, 'danhmucs' => $danhmucs]);
+    }
+
+    /**
+     * Lọc sản phẩm theo danh mục.
+     */
+    public function filterByCategory(Request $request)
+    {
+        $categoryId = $request->input('category_id');
+        $sanpham = Sanpham::with('danhmuc')
+            ->where('id_danhmuc', $categoryId)
+            ->paginate(10);
+        $search = null;
+        $danhmucs = Danhmuc::all();
+        return view('admin.sanpham.index', [
+            'sanpham' => $sanpham,
+            'selectedCategory' => $categoryId,
+            'search' => $search,
+            'danhmucs' => $danhmucs
+        ]);
+    }
 }

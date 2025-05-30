@@ -1,5 +1,7 @@
 @include('header')
 
+
+
 <div class="content-wrapper-scroll">
 
 					<!-- Content wrapper start -->
@@ -11,6 +13,26 @@
 
 								<div class="card">
 									<div class="card-body">
+                                    <div style="display: flex; justify-content: space-between;" class="field-wrapper">
+
+                                    <form action="{{ route('sanpham.filterCategory') }}" method="GET" class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2" style="gap: 5px;">
+                                    <div class="field-placeholder">Lọc theo danh mục</div>
+                                    <select name="category_id" class="form-select" style="min-width: 180px;" onchange="this.form.submit()">
+                                            <option value="">-- Lọc --</option>
+                                            @foreach($danhmucs as $danhmuc)
+                                                <option value="{{ $danhmuc->id }}" {{ (isset($selectedCategory) && $selectedCategory == $danhmuc->id) ? 'selected' : '' }}>{{ $danhmuc->name }}</option>
+                                            @endforeach
+                                        </select>
+
+                                    </form>
+                                    <form class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4" action="{{ route('sanpham.search') }}" method="GET" class="mb-3">
+                                    <div class="input-group" style="max-width: 400px;">
+                                        <input type="text" name="q" class="form-control" placeholder="Tìm kiếm sản phẩm theo tên..." value="{{ isset($search) ? $search : '' }}">
+                                        <button class="btn btn-primary" type="submit"><span class="icon-search"></span></button>
+                                    </div>
+                                </form>
+                                </div>
+
 
 										<div class="table-responsive">
 											<table id="copy-print-csv" class="table v-middle">
