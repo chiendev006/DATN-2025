@@ -191,6 +191,7 @@ use App\Http\Controllers\VNPayController;
         Route::get('/', [StaffController::class, 'index'])->name('staff.index');
         Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
         Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
+        Route::get('/orderdetailtoday', [StaffController::class, 'orderdetailtoday'])->name('staff.orderdetailtoday');
         });
 
         // VNPAY 

@@ -54,10 +54,10 @@
                                 </a>
                             </li>
                         @endforeach
-                             <li class="nav-item">
+                            <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('staff.orderdetailtoday') ? 'active' : '' }}" 
                                 href="{{ route('staff.orderdetailtoday') }}">
-                                   Hóa đơn hôm nay
+                                     Hóa đơn hôm nay
                                 </a>
                             </li>
                         </ul>
@@ -69,38 +69,8 @@
                 <!-- END pos-menu -->
 
                 <!-- BEGIN pos-content -->
-             <div class="pos-content">
-    <div class="pos-content-container h-100">
-        @if($sanpham->isEmpty())
-            <div class="text-center text-danger fs-4 mt-4">
-                Không có sản phẩm nào trong danh mục này.
-            </div>
-        @else
-            <div class="row gx-4">
-                @foreach ($sanpham as $item)
-                    <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-4 col-sm-6 pb-4" data-type="meat">
-                        <a href="#" class="pos-product" data-bs-toggle="modal" data-bs-target="#modalPosItem">
-                            <div class="img">
-                                <img src="{{ url("/storage/uploads/$item->image") }}" width="100%" alt="{{ $item->name }}">
-                            </div>
-                            <div class="info">
-                                <div class="title">{{ $item->name }}</div>
-                                <div class="desc">{{ $item->title }}</div>
-                            </div>
-                        </a>
-                    </div>
-                @endforeach
-            </div>
-        @endif
-    </div>
-</div>
+                  <div class="flex-1 overflow-y-auto p-4 bg-white">@yield('main-content')</div>
 
-
-
-                </div>
-                <!-- END pos-content -->
-
-                <!-- BEGIN pos-sidebar -->
                 <div class="pos-sidebar" id="pos-sidebar">
                     <div class="h-100 d-flex flex-column p-0">
                         <!-- BEGIN pos-sidebar-header -->
@@ -159,12 +129,6 @@
                                 <!-- BEGIN pos-order -->
                                 <div class="pos-order">
                                     <div class="pos-order-product">
-                                        @foreach ($sanpham as $item)
-                                        <div class="img">
-                                            <img src="{{ url("/storage/uploads/$item->image") }}" width="100%" alt="{{ $item->name }}">
-                                        </div>
-                                        <div class="flex-1">
-                                            <div class="h6 mb-1">{{ $item->name }}</div>
                                             <div class="small">$12.99</div>
                                             <div class="small mb-2">- size: large</div>
                                             <div class="d-flex">
@@ -181,7 +145,6 @@
                                                     ></a>
                                             </div>
                                         </div>
-                                        @endforeach
                                         
                                         
                                     </div>
@@ -732,117 +695,97 @@
                 class="btn-close position-absolute top-0 end-0 m-4"
             ></a>
             <div class="modal-pos-product">
+                @foreach ($sanpham as $item)
                 <div class="modal-pos-product-img">
                     <div class="img">
-                        <img src="{{ url("/storage/uploads/$item->image") }}"  width="100%" alt="">
-                    </div>
+                    <img src="{{ url("/storage/uploads/$item->image") }}" width="100%" alt="{{ $item->name }}">
+                                        </div>
                 </div>
                 <div class="modal-pos-product-info">
-                    <div class="fs-4 fw-semibold" id="productName"></div>
-                    <div class="text-body text-opacity-50 mb-2" id="productDescription"></div>
-                    <div class="fs-3 fw-bold mb-3" id="basePrice" data-price="0">$0.00</div>
                     
-                    <!-- Quantity Controls -->
+                    <div class="fs-4 fw-semibold">{{ $item->name }}</div>
+                    <div class="text-body text-opacity-50 mb-2">
+                        {{ $item->title }}
+                    </div>
+                    <div class="fs-3 fw-bold mb-3">$10.99</div>
                     <div class="d-flex mb-3">
-                        <a href="#" class="btn btn-secondary btn-qty-minus">
-                            <i class="fa fa-minus"></i>
-                        </a>
+                        <a href="#" class="btn btn-secondary"
+                        ><i class="fa fa-minus"></i
+                            ></a>
                         <input
                             type="text"
                             class="form-control w-50px fw-bold mx-2 text-center"
                             name="qty"
                             value="1"
-                            min="1"
                         />
-                        <a href="#" class="btn btn-secondary btn-qty-plus">
-                            <i class="fa fa-plus"></i>
-                        </a>
+                        <a href="#" class="btn btn-secondary"
+                        ><i class="fa fa-plus"></i
+                            ></a>
                     </div>
-                    
                     <hr class="opacity-1"/>
-                    
-                    <!-- Size Options -->
-                    @if(isset($size_gia) && count($size_gia) > 0)
-                    <div class="mb-3">
-                        <div class="fw-bold mb-2">Size:</div>
+                    <div class="mb-2">
+                        <div class="fw-bold">Size:</div>
                         <div class="option-list">
-                            @foreach ($size_gia as $index => $size)
                             <div class="option">
                                 <input
                                     type="radio"
-                                    id="size_{{ $size->id }}"
+                                    id="size3"
                                     name="size"
-                                    value="{{ $size->id }}"
-                                    class="option-input size-option"
-                                    data-price="{{ $size->gia }}"
-                                    {{ $index == 0 ? 'checked' : '' }}
+                                    class="option-input"
+                                    checked
                                 />
-                                <label class="option-label" for="size_{{ $size->id }}">
-                                    <span class="option-text">{{ $size->ten_size }}</span>
-                                    <span class="option-price">+${{ number_format($size->gia, 2) }}</span>
+                                <label class="option-label" for="size3">
+                                    <span class="option-text">Small</span>
+                                    <span class="option-price">+0.00</span>
                                 </label>
                             </div>
-                            @endforeach
                         </div>
                     </div>
-                    @endif
-                    
-                    <!-- Topping Options -->
-                    @if(isset($topping) && count($topping) > 0)
-                    <div class="mb-3">
-                        <div class="fw-bold mb-2">Topping:</div>
+                    <div class="mb-2">
+                        <div class="fw-bold">Add On:</div>
                         <div class="option-list">
-                            @foreach ($topping as $top)
                             <div class="option">
                                 <input
                                     type="checkbox"
-                                    name="topping[]"
-                                    value="{{ $top->id }}"
-                                    class="option-input topping-option"
-                                    id="topping_{{ $top->id }}"
-                                    data-price="{{ $top->gia }}"
+                                    name="addon[sos]"
+                                    value="true"
+                                    class="option-input"
+                                    id="addon1"
                                 />
-                                <label class="option-label" for="topping_{{ $top->id }}">
-                                    <span class="option-text">{{ $top->ten_topping }}</span>
-                                    <span class="option-price">+${{ number_format($top->gia, 2) }}</span>
+                                <label class="option-label" for="addon1">
+                                    <span class="option-text">More BBQ sos</span>
+                                    <span class="option-price">+0.00</span>
                                 </label>
                             </div>
-                            @endforeach
                         </div>
                     </div>
-                    @endif
-                    
                     <hr class="opacity-1"/>
-                    
-                    <!-- Action Buttons -->
                     <div class="row">
                         <div class="col-4">
                             <a
                                 href="#"
                                 class="btn btn-default fw-semibold mb-0 d-block py-3"
                                 data-bs-dismiss="modal"
-                            >Cancel</a>
+                            >Cancel</a
+                            >
                         </div>
                         <div class="col-8">
                             <a
                                 href="#"
                                 class="btn btn-theme fw-semibold d-flex justify-content-center align-items-center py-3 m-0"
-                                id="addToCartBtn"
-                            >
-                                Add to cart 
-                                <span id="totalPrice" class="ms-2">$0.00</span> 
-                                <i class="fa fa-plus ms-2 my-n3"></i>
-                            </a>
+                            >Add to cart <i class="fa fa-plus ms-2 my-n3"></i
+                                ></a>
                         </div>
                     </div>
+                    @endforeach
+                    
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Script để xử lý chọn sản phẩm và tính giá -->
-
+<!-- END #modalPosItem -->
 
 <!-- ================== BEGIN core-js ================== -->
 <script
