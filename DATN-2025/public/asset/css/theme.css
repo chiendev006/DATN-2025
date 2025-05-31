@@ -33,10 +33,10 @@ Sidebar heading : 18px 14px/42px Source Sans Pro, Graviola-Regular, QuicksandBoo
 
 @font-face {
     font-family: 'Graviola-Regular';
-    src: url('../fonts/Graviola-Regulard41d.eot?#iefix') format('embedded-opentype'),  
+    src: url('../fonts/Graviola-Regulard41d.eot?#iefix') format('embedded-opentype'),
     url('../fonts/Graviola-Regular.otf')  format('opentype'),
-       url('../fonts/Graviola-Regular.woff') format('woff'), 
-       url('../fonts/Graviola-Regular.ttf')  format('truetype'), 
+       url('../fonts/Graviola-Regular.woff') format('woff'),
+       url('../fonts/Graviola-Regular.ttf')  format('truetype'),
        url('../fonts/Graviola-Regular.svg#Graviola-Regular') format('svg');
     font-weight: normal;
     font-style: normal;
@@ -44,10 +44,10 @@ Sidebar heading : 18px 14px/42px Source Sans Pro, Graviola-Regular, QuicksandBoo
 
 @font-face {
     font-family: 'QuicksandBook-Regular';
-    src: url('../fonts/QuicksandBook-Regulard41d.eot?#iefix') format('embedded-opentype'),  
+    src: url('../fonts/QuicksandBook-Regulard41d.eot?#iefix') format('embedded-opentype'),
     url('../fonts/QuicksandBook-Regular.otf')  format('opentype'),
-       url('../fonts/QuicksandBook-Regular.woff') format('woff'), 
-       url('../fonts/QuicksandBook-Regular.ttf')  format('truetype'), 
+       url('../fonts/QuicksandBook-Regular.woff') format('woff'),
+       url('../fonts/QuicksandBook-Regular.ttf')  format('truetype'),
        url('../fonts/QuicksandBook-Regular.svg#QuicksandBook-Regular') format('svg');
     font-weight: normal;
     font-style: normal;
@@ -55,10 +55,10 @@ Sidebar heading : 18px 14px/42px Source Sans Pro, Graviola-Regular, QuicksandBoo
 
 @font-face {
     font-family: 'GraviolaSoft-Medium';
-    src: url('../fonts/GraviolaSoft-Mediumd41d.eot?#iefix') format('embedded-opentype'),  
+    src: url('../fonts/GraviolaSoft-Mediumd41d.eot?#iefix') format('embedded-opentype'),
     url('../fonts/GraviolaSoft-Medium.otf')  format('opentype'),
-       url('../fonts/GraviolaSoft-Medium.woff') format('woff'), 
-       url('../fonts/GraviolaSoft-Medium.ttf')  format('truetype'), 
+       url('../fonts/GraviolaSoft-Medium.woff') format('woff'),
+       url('../fonts/GraviolaSoft-Medium.ttf')  format('truetype'),
        url('../fonts/GraviolaSoft-Medium.svg#GraviolaSoft-Medium') format('svg');
     font-weight: normal;
     font-style: normal;
@@ -66,10 +66,10 @@ Sidebar heading : 18px 14px/42px Source Sans Pro, Graviola-Regular, QuicksandBoo
 
 @font-face {
     font-family: 'QuicksandBold-Regular';
-    src: url('../fonts/QuicksandBold-Regulard41d.eot?#iefix') format('embedded-opentype'),  
+    src: url('../fonts/QuicksandBold-Regulard41d.eot?#iefix') format('embedded-opentype'),
     url('../fonts/QuicksandBold-Regular.otf')  format('opentype'),
-       url('../fonts/QuicksandBold-Regular.woff') format('woff'), 
-       url('../fonts/QuicksandBold-Regular.ttf')  format('truetype'), 
+       url('../fonts/QuicksandBold-Regular.woff') format('woff'),
+       url('../fonts/QuicksandBold-Regular.ttf')  format('truetype'),
        url('../fonts/QuicksandBold-Regular.svg#QuicksandBold-Regular') format('svg');
     font-weight: normal;
     font-style: normal;
@@ -77,10 +77,10 @@ Sidebar heading : 18px 14px/42px Source Sans Pro, Graviola-Regular, QuicksandBoo
 
 @font-face {
     font-family: 'QuicksandLight-Regular';
-    src: url('../fonts/QuicksandLight-Regulard41d.eot?#iefix') format('embedded-opentype'),  
+    src: url('../fonts/QuicksandLight-Regulard41d.eot?#iefix') format('embedded-opentype'),
     url('../fonts/QuicksandLight-Regular.otf')  format('opentype'),
-       url('../fonts/QuicksandLight-Regular.woff') format('woff'), 
-       url('../fonts/QuicksandLight-Regular.ttf')  format('truetype'), 
+       url('../fonts/QuicksandLight-Regular.woff') format('woff'),
+       url('../fonts/QuicksandLight-Regular.ttf')  format('truetype'),
        url('../fonts/QuicksandLight-Regular.svg#QuicksandLight-Regular') format('svg');
     font-weight: normal;
     font-style: normal;
@@ -88,9 +88,9 @@ Sidebar heading : 18px 14px/42px Source Sans Pro, Graviola-Regular, QuicksandBoo
 
 @font-face {
     font-family: 'jey';
-    src: url('../fonts/jeyd41d.eot?#iefix') format('embedded-opentype'),  
-      url('../fonts/jey.woff') format('woff'), 
-      url('../fonts/jey.ttf')  format('truetype'), 
+    src: url('../fonts/jeyd41d.eot?#iefix') format('embedded-opentype'),
+      url('../fonts/jey.woff') format('woff'),
+      url('../fonts/jey.ttf')  format('truetype'),
       url('../fonts/jey.svg#jey') format('svg');
     font-weight: normal;
     font-style: normal;
@@ -212,7 +212,7 @@ ul , ol{
 ul li , ol li{
     list-style: none;
     margin: 0px;
-    padding: 0px; 
+    padding: 0px;
 }
 
 ul.list , ol.list{
@@ -306,7 +306,7 @@ a{
 
 .button-default-dark{
     color: #959393;
-    border-color: #959393;   
+    border-color: #959393;
 }
 
 .buttone-text-dark{
@@ -414,15 +414,15 @@ img{
     opacity: 1 !important;
 }
 
-:-moz-placeholder { 
+:-moz-placeholder {
     opacity: 1 !important;
 }
 
-::-moz-placeholder { 
+::-moz-placeholder {
     opacity: 1 !important;
 }
 
-:-ms-input-placeholder {  
+:-ms-input-placeholder {
     opacity: 1 !important;
 }
 
@@ -506,7 +506,7 @@ img{
 .Banner-Bg{
     background-size: cover;
     background-position: center center;
-    background-repeat: no-repeat;   
+    background-repeat: no-repeat;
 }
 
 .input-fields{
@@ -854,7 +854,7 @@ textarea{
     width: auto;
     margin-top: 28px;
     font-size: 16px;
-    font-weight: 700; 
+    font-weight: 700;
 }
 
 /*------------------------------------------------------------------
@@ -864,7 +864,7 @@ textarea{
     float: left;
     width: auto;
     font-size: 16px;
-    font-weight: 700;   
+    font-weight: 700;
 }
 
 .menu-nav-main li{
@@ -882,7 +882,7 @@ textarea{
 }
 
 .menu-nav-main li > a{
-    color: #ffffff;   
+    color: #ffffff;
 }
 
 .drop-nav-arrow{
@@ -1477,7 +1477,7 @@ textarea{
     color: #ffe2a4;
     font-size: 16px;
     font-family: 'Graviola-Regular';
-    text-transform: uppercase;   
+    text-transform: uppercase;
 }
 
 .category-icon li a{
@@ -1492,7 +1492,7 @@ textarea{
     bottom: -26px;
     content: "";
     border-bottom: 12px dashed #ffffff;
-    border-left: 12px solid transparent; 
+    border-left: 12px solid transparent;
     border-right: 12px solid transparent;
     width: 0px;
     height: 0px;
@@ -1538,13 +1538,13 @@ textarea{
 .tea{
     background: url('../images/tea.png') no-repeat center center;
     width: 39px;
-    height: 39px;   
+    height: 39px;
 }
 
 .cake{
     background: url('../images/cake.png') no-repeat center center;
     width: 35px;
-    height: 35px;   
+    height: 35px;
 }
 
 
@@ -2046,7 +2046,7 @@ textarea{
     -ms-transition-delay: 0.1s;
     -o-transition-delay: 0.1s;
     transition-delay: 0.1s;
-    z-index: 1;   
+    z-index: 1;
 }
 
 
@@ -2065,7 +2065,7 @@ textarea{
     float: left;
     width: 100%;
     padding: 90px 0 60px;
-    color: #ffffff; 
+    color: #ffffff;
     font-size: 13px;
 }
 
@@ -2081,7 +2081,7 @@ textarea{
 }
 
 .footer-part a:hover{
-    color: #e4b95b; 
+    color: #e4b95b;
 }
 
 .footer-part .logo span::after{
@@ -2496,7 +2496,7 @@ textarea{
 
 .menu-thumb-img{
     float: left;
-    width: 100%;   
+    width: 100%;
     -webkit-border-top-left-radius: 20px;
     -moz-border-top-left-radius: 20px;
     -ms-border-top-left-radius: 20px;
@@ -2663,7 +2663,7 @@ textarea{
   -webkit-transform: rotateY(180deg);
   -moz-transform: rotateY(180deg);
   -ms-transform: rotateY(180deg);
-  -o-transform: rotateY(180deg);  
+  -o-transform: rotateY(180deg);
   transform: rotateY(180deg);
 }
 
@@ -2915,7 +2915,7 @@ textarea{
     -ms-transition-delay: 0.1s;
     -o-transition-delay: 0.1s;
     transition-delay: 0.1s;
-    z-index: 1;   
+    z-index: 1;
 }
 
 .gallery-pagination{
@@ -2977,7 +2977,7 @@ textarea{
 
 .gallery-pagination li:hover a , .gallery-pagination li.active a{
     background: #20202f;
-    color: #ffffff;   
+    color: #ffffff;
 }
 
 /* Gallery Masonry Page Style Start Here... */
@@ -3001,7 +3001,7 @@ textarea{
 }
 
 .small-grid-item{
-    width: 25%;    
+    width: 25%;
     float: left;
 }
 
@@ -3604,7 +3604,7 @@ textarea{
     -ms-transition-delay: 0.1s;
     -o-transition-delay: 0.1s;
     transition-delay: 0.1s;
-    z-index: 1;   
+    z-index: 1;
 }
 
 .cart-overlay{
@@ -3665,7 +3665,7 @@ textarea{
 .nto span{
     font-size: 59px;
     color: #20202f;
-    font-family: 'jey';   
+    font-family: 'jey';
 }
 
 /*------------------------------------------------------------------
@@ -3776,7 +3776,7 @@ textarea{
 
 .form-common .tweeter-btn{
     background: #1da1f2;
-    border-color: #1da1f2; 
+    border-color: #1da1f2;
 }
 
 .form-common .tweeter-btn{
@@ -3950,7 +3950,7 @@ textarea{
 }
 
 .price-textbox input{
-    text-align: center; 
+    text-align: center;
     color: #372727;
     margin: 0px;
 }
@@ -3959,15 +3959,15 @@ textarea{
    text-align:center !important;
 }
 
-.price-textbox input:-moz-placeholder { 
+.price-textbox input:-moz-placeholder {
    text-align:center !important;
 }
 
-.price-textbox input::-moz-placeholder { 
+.price-textbox input::-moz-placeholder {
    text-align:center !important;
 }
 
-.price-textbox input:-ms-input-placeholder {  
+.price-textbox input:-ms-input-placeholder {
    text-align:center !important;
 }
 
@@ -4145,7 +4145,7 @@ textarea{
 }
 
 .contact-part address a{
-    color: #20202f;   
+    color: #20202f;
 }
 
 .contact-part address a:hover{
@@ -4393,7 +4393,7 @@ table.shop-cart-table .shop-cart-close{
     -moz-border-radius: 17px;
     -ms-border-radius: 17px;
     -o-border-radius: 17px;
-    border-radius: 17px;   
+    border-radius: 17px;
     margin-top: 45px;
     max-width: 460px;
     color: #372727;
@@ -4457,7 +4457,7 @@ table.shop-cart-table .shop-cart-close{
     -moz-border-radius: 17px;
     -ms-border-radius: 17px;
     -o-border-radius: 17px;
-    border-radius: 17px; 
+    border-radius: 17px;
 }
 
 .order-complete-box p{
@@ -4474,7 +4474,7 @@ table.shop-cart-table .shop-cart-close{
     -moz-border-radius: 17px;
     -ms-border-radius: 17px;
     -o-border-radius: 17px;
-    border-radius: 17px;    
+    border-radius: 17px;
 }
 
 .track-oder-inner{
@@ -4503,7 +4503,7 @@ table.shop-cart-table .shop-cart-close{
 .track-status{
     display: table-cell;
     vertical-align: middle;
-    padding-left: 65px;   
+    padding-left: 65px;
 }
 
 /*------------------------------------------------------------------
@@ -5005,7 +5005,7 @@ table.shop-cart-table .shop-cart-close{
 }
 
 .package h2{
-    color: #c19942; 
+    color: #c19942;
     margin-bottom: 10px;
 }
 
@@ -5057,7 +5057,7 @@ table.shop-cart-table .shop-cart-close{
 
 .package:hover .package-title{
     background: #c19942;
-    color: #ffffff;   
+    color: #ffffff;
 }
 
 .package:hover .package-title h2 , .package:hover .package-title h3{
@@ -5083,4 +5083,12 @@ table.shop-cart-table .shop-cart-close{
   width: 100%;
   min-height: 500px;
   margin-bottom: 50px;
+}
+
+table.shop-cart-table th:nth-child(2),
+table.shop-cart-table td:nth-child(2) {
+    width: 120px;
+    max-width: 160px;
+    word-break: break-word;
+    white-space: normal;
 }

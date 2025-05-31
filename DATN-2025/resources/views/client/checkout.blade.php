@@ -81,9 +81,9 @@
                                                     <input type="radio" name="payment_method" value="banking" {{ old('payment_method') === 'banking' ? 'checked' : '' }}>
                                                     <img src="{{ url('asset') }}/images/vnpay.jpg" alt="VNPAY" style="height: 24px;">
                                                     <span>Chuyển khoản ngân hàng (qua VNPAY)</span>
-                                                </label> 
+                                                </label>
                                             </div>
-                                           
+
                                             @error('payment_method')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
@@ -134,18 +134,25 @@
                                             if (Auth::check()) {
                                                 $product = $item->product;
                                                 if (!$product) continue;
-                                                
+
                                                 $productPrice = $product->price ?? 0;
                                                 $sizePrice = $item->size ? ($item->size->price ?? 0) : 0;
-                                                
-                                                $toppingPrice = 0;
+
+                                                $sizeName = $item->size ? $item->size->size : null;
+
+                                                $toppingNames = [];
                                                 if (!empty($item->topping_id)) {
                                                     $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id)));
                                                     if (!empty($toppingIds)) {
-                                                        $toppingPrice = \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price');
+                                                        $toppingNames = \App\Models\Product_topping::whereIn('id', $toppingIds)->pluck('topping')->toArray();
                                                     }
                                                 }
-                                                
+
+                                                $toppingPrice = 0;
+                                                if (!empty($toppingIds)) {
+                                                    $toppingPrice = \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price');
+                                                }
+
                                                 $unitPrice = $productPrice + $sizePrice + $toppingPrice;
                                                 $total = $unitPrice * $item->quantity;
                                                 $subtotal += $total;
@@ -159,10 +166,17 @@
 
                                                 $name = $item['name'];
                                                 $quantity = $item['quantity'] ?? 1;
+                                                $sizeName = $item['size_name'] ?? null;
+                                                $toppingNames = $item['topping_names'] ?? [];
                                             }
+                                            // Tạo chuỗi mô tả size và topping
+                                            $desc = [];
+                                            if (!empty($sizeName)) $desc[] = 'Size: ' . $sizeName;
+                                            if (!empty($toppingNames)) $desc[] = 'Topping: ' . implode(', ', $toppingNames);
+                                            $descStr = $desc ? ' (' . implode(', ', $desc) . ')' : '';
                                         @endphp
                                         <p>
-                                            <span>{{ $name }}</span>
+                                            <span>{{ $name }}{!! $descStr !!}</span>
                                             <small>x{{ $quantity }}</small>
                                             <strong>{{ number_format($total) }} VND</strong>
                                         </p>
@@ -177,8 +191,8 @@
                                     $coupons = session('coupons', []);
                                     $discount = 0;
                                     foreach ($coupons as $coupon) {
-                                        $discount += ($coupon['type'] === 'percent') 
-                                            ? ($subtotal * $coupon['discount'] / 100) 
+                                        $discount += ($coupon['type'] === 'percent')
+                                            ? ($subtotal * $coupon['discount'] / 100)
                                             : $coupon['discount'];
                                     }
                                     $total = max(0, $subtotal - $discount);

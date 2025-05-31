@@ -15,7 +15,7 @@
             </div>
         </section>
 
-        <!-- Start Shop Cart -->   
+        <!-- Start Shop Cart -->
         <section class="default-section shop-cart bg-grey">
             <div class="container">
                 <div class="checkout-wrap wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
@@ -57,19 +57,19 @@
                                     // Get size info and price (if size exists) or product price
                                     $size = $item->size;
                                     $basePrice = $size ? $size->price : $product->price;
-                                    
+
                                     // Get topping prices
                                     $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id ?? '')));
                                     $toppings = \App\Models\Product_topping::whereIn('id', $toppingIds)->get();
                                     $toppingPrice = $toppings->sum('price');
-                                    
+
                                     // Calculate total prices
                                     $unitPrice = $basePrice + $toppingPrice;
                                     $total = $unitPrice * $item->quantity;
-                                    
+
                                     // Generate cart item key
                                     $rowKey = $item->product_id . '-' . ($item->size_id ?? '0') . '-' . implode(',', $toppingIds);
-                                    
+
                                     // Get display info
                                     $image = $product->image;
                                     $name = $product->name;
@@ -98,11 +98,21 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="size-info">
+                                    <div class="size-info text-center">
                                         @if(Auth::check())
-                                            {{ $size ? ($size->size ?? 'Không rõ') : 'Không rõ' }}
+                                            @if($size)
+                                                <div>{{ $size->size ?? 'Không rõ' }}</div>
+                                                <div class="size-price">{{ number_format($size->price) }} VND</div>
+                                            @else
+                                                <div>Không rõ</div>
+                                            @endif
                                         @else
-                                            {{ $item->size_name ?? 'Không rõ' }}
+                                            @if(isset($item->size_name) && isset($item->size_price))
+                                                <div>{{ $item->size_name }}</div>
+                                                <div class="size-price">{{ number_format($item->size_price) }} VND</div>
+                                            @else
+                                                <div>{{ $item->size_name ?? 'Không rõ' }}</div>
+                                            @endif
                                         @endif
                                     </div>
                                 </td>
@@ -111,7 +121,10 @@
                                         @if($toppings->count())
                                             <ul class="topping-list" style="list-style: none; padding: 0;">
                                                 @foreach($toppings as $top)
-                                                    <li>{{ $top->topping }}</li>
+                                                    <li class="text-center">
+                                                        <div>{{ $top->topping }}</div>
+                                                        <div class="topping-price">{{ number_format($top->price) }} VND</div>
+                                                    </li>
                                                 @endforeach
                                             </ul>
                                         @else
@@ -121,7 +134,12 @@
                                         @if(!empty($item->topping_names))
                                             <ul class="topping-list" style="list-style: none; padding: 0;">
                                                 @foreach($item->topping_names as $index => $topping)
-                                                    <li>{{ $topping }}</li>
+                                                    <li class="text-center">
+                                                        <div>{{ $topping }}</div>
+                                                        @if(isset($item->topping_prices[$index]))
+                                                            <div class="topping-price">{{ number_format($item->topping_prices[$index]) }} VND</div>
+                                                        @endif
+                                                    </li>
                                                 @endforeach
                                             </ul>
                                         @else
@@ -133,9 +151,9 @@
                                 <td>
                                     <div class="price-textbox">
                                         <span class="minus-text decrement-btn"><i class="icon-minus"></i></span>
-                                        <input type="number" name="quantity" value="{{ $quantity }}" 
+                                        <input type="number" name="quantity" value="{{ $quantity }}"
                                             class="quantity-input" min="1" readonly
-                                            data-key="{{ $rowKey }}" 
+                                            data-key="{{ $rowKey }}"
                                             data-product_id="{{ Auth::check() ? $item->product_id : $item->sanpham_id }}"
                                             data-size_id="{{ Auth::check() ? ($item->size_id ?? '0') : $item->size_id }}"
                                             data-topping_ids="{{ Auth::check() ? implode(',', $toppingIds) : implode(',', $item->topping_ids ?? []) }}">
@@ -165,15 +183,15 @@
                             // Skip if product doesn't exist
                             $product = $item->product;
                             if (!$product) return 0;
-                            
+
                             // Get size price (if size exists) or product price
                             $size = $item->size;
                             $basePrice = $size ? $size->price : $product->price;
-                            
+
                             // Get topping prices
                             $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id ?? '')));
                             $toppingPrice = \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price');
-                            
+
                             // Calculate total for this item
                             return ($basePrice + $toppingPrice) * $item->quantity;
                         })
@@ -223,7 +241,7 @@
         </section>
         <!-- End Shop Cart -->
     </div>
-</main>  
+</main>
 @endsection
 
 @section('scripts')
@@ -249,12 +267,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 row.querySelector('.line-total').textContent = formatCurrency(data.line_total);
             }
         }
-        
+
         if (data.subtotal !== undefined) {
             const subtotalEl = document.getElementById('cart-subtotal');
             if (subtotalEl) subtotalEl.textContent = formatCurrency(data.subtotal);
         }
-        
+
         if (data.total !== undefined) {
             const totalEl = document.getElementById('cart-total');
             if (totalEl) totalEl.textContent = formatCurrency(data.total);
@@ -269,14 +287,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const row = this.closest('tr');
             const key = this.dataset.key;
-            
+
             if (!key) {
                 console.error('Missing key for remove item');
                 return;
             }
 
             logDebug('Remove Request', { key });
-            
+
             try {
                 const response = await fetch(`/cart/remove/${encodeURIComponent(key)}`, {
                     method: "POST",
@@ -293,14 +311,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const data = await response.json();
                 logDebug('Remove Response', data);
-                
+
                 if (data.success) {
                     // Xóa dòng sản phẩm khỏi bảng
                     row?.remove();
-                    
+
                     // Cập nhật tổng tiền
                     updateUIElements(data);
-                    
+
                     // Kiểm tra nếu giỏ hàng trống thì reload trang
                     const remainingRows = document.querySelectorAll('.shop-cart-table tbody tr');
                     if (remainingRows.length === 0) {
@@ -309,7 +327,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         const cartTotal = document.querySelector('.cart-total');
                         if (cartTable) cartTable.style.display = 'none';
                         if (cartTotal) cartTotal.style.display = 'none';
-                        
+
                         // Hiển thị thông báo giỏ hàng trống
                         const container = document.querySelector('.container');
                         if (container) {
@@ -340,7 +358,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const product_id = input.dataset.product_id;
         const size_id = input.dataset.size_id;
         const topping_ids = input.dataset.topping_ids;
-        
+
         if (!key || !product_id || size_id === undefined) {
             console.error('Missing required data:', { key, product_id, size_id, topping_ids });
             alert("Thiếu thông tin sản phẩm");
@@ -420,7 +438,7 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
         const couponInput = document.querySelector('input[name="coupon_code"]');
         const couponCode = couponInput?.value;
-        
+
         if (!couponCode) {
             alert('Vui lòng nhập mã giảm giá');
             return;
@@ -442,7 +460,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const data = await response.json();
             logDebug('Coupon Response', data);
-            
+
             if (data.success) {
                 window.location.reload();
             } else {
@@ -462,10 +480,14 @@ document.addEventListener("DOMContentLoaded", function () {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.size-info {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+.size-info, .topping-list li {
+    text-align: center;
+}
+
+.size-price, .topping-price {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
 }
 
 .topping-list {
