@@ -3,10 +3,8 @@
 
 
 <div class="content-wrapper-scroll">
-
 					<!-- Content wrapper start -->
 					<div class="content-wrapper">
-
 						<!-- Row start -->
 						<div class="row gutters">
 
@@ -88,6 +86,9 @@
                                                     @endif
 												</tbody>
 								    	</table>
+										<button>
+											<a href="{{ route('sanpham.create') }}">Thêm sản phẩm</a>
+										</button>
 										</div>
 
 									</div>
@@ -98,5 +99,30 @@
 						<!-- Row end -->
 
 					</div>
+<style>
+    button {
+        background-color:rgb(76, 106, 175); /* Màu nền */
+        color: white; /* Màu chữ */
+        padding: 10px 20px; /* Khoảng cách xung quanh chữ */
+        border: none; /* Loại bỏ viền */
+        border-radius: 5px; /* Bo tròn góc */
+        cursor: pointer; /* Hiển thị con trỏ là nút bấm */
+        font-size: 16px; /* Kích thước chữ */
+        text-align: center; /* Canh giữa chữ */
+        transition: background-color 0.3s; /* Hiệu ứng khi di chuột */
+    }
 
+    button a {
+        color: white; /* Màu chữ của link */
+        text-decoration: none; /* Loại bỏ gạch chân */
+    }
+
+    button:hover {
+        background-color:rgb(67, 89, 170); /* Màu nền khi hover */
+    }
+
+    button:active {
+        background-color:rgb(50, 100, 144); /* Màu nền khi nhấn */
+    }
+</style>
 @include('footer')
