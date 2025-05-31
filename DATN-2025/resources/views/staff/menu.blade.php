@@ -54,6 +54,12 @@
                                         </a>
                                     </li>
                                 @endforeach
+                                <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('staff.orderdetailtoday') ? 'active' : '' }}" 
+                                href="{{ route('staff.orderdetailtoday') }}">
+                                    <i class="fa fa-fw fa-file-invoice-dollar"></i> Hóa đơn hôm nay
+                                </a>
+                            </li>
 
                             </ul>
 
