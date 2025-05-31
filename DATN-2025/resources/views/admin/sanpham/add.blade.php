@@ -10,7 +10,8 @@
 								<div class="card">
 							<section class="section main-section">
     <div class="card mb-6 custom-card">
-
+    <div style='margin-left: 30px; margin-top: 30px;'><strong><h2>Thêm sản phẩm</h2> </strong></div>
+    <br>
       <div class="card-content">
         <form action="{{ route('sanpham.store') }}" method="post" enctype="multipart/form-data">
             @csrf
@@ -18,7 +19,7 @@
                 <div id="genCollapse" class="accordion-collapse collapse show" aria-labelledby="genInfo" data-bs-parent="#settingsAccordion">
                     <div style="display: flex; justify-content: space-between;" class="accordion-body">
                         <div style="display: flex;  justify-content: space-between;" class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-12">
-                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-12">
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
                         <div class="field-wrapper">
                             <select name="id_danhmuc" class="select-single js-states" id="id_danhmuc" title="Select Product Category" data-live-search="true">
                             @foreach($danhmuc as $dm)
@@ -28,7 +29,7 @@
                             <div class="field-placeholder">Danh mục</div>
 				        </div>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
                         <div class="field-wrapper">
                             <input type="text"   name="name" placeholder="Tên" required />
                             <div class="field-placeholder">Tên sản phẩm</div>
@@ -37,6 +38,16 @@
                               @enderror
                         </div>
                         </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+                            <div class="field-wrapper">
+                            <input type="text" name="title" placeholder="Tên" value="{{ old('sizes.0.name') }}"   name="name" placeholder="Tên" required />
+                            <div class="field-placeholder">Tiêu đề sản phẩm</div>
+                            @error('sizes.0.name')
+                            <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
+                            @enderror
+                            </div>
+                            </div>
+
                         </div>
 
                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
@@ -51,7 +62,7 @@
                 </div>
 
 
-    <div id="genCollapse" class="accordion-collapse collapse show" aria-labelledby="genInfo" data-bs-parent="#settingsAccordion">
+    <div style="margin-top: -20px;" id="genCollapse" class="accordion-collapse collapse show" aria-labelledby="genInfo" data-bs-parent="#settingsAccordion">
         <div style="display: flex; justify-content: space-between;" class="accordion-body">
             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-8">
                             <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
@@ -63,18 +74,60 @@
                             </div>
                             </div>
 
-                        <div style="display: flex;justify-content: space-between;" class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5">
-                            <div class="field-wrapper">
-                            <input type="text" name="title" placeholder="Tên" value="{{ old('sizes.0.name') }}"   name="name" placeholder="Tên" required />
-                            <div class="field-placeholder">Tiêu đề sản phẩm</div>
-                            @error('sizes.0.name')
-                            <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
-                            @enderror
-                            </div>
-                            </div>
+                        <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
 
-                           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+                        <div class="field-wrapper">
+                               <div class="field-placeholder">Mô tả sản phẩm</div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <textarea id="editor" class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" name="mota" placeholder="Nhập mô tả sản phẩm ở đây..."    required></textarea>
+                                @error('mota')
+                                <p style="color: red;">Bạn chưa nhập mô tả sản phẩm !!!</p>
+                                @enderror
+
+                            </div>
+                        </div>
+                        </div>
+
+                        <button class="btn btn-primary" type="submit">Save Changes</button>
+            </div>
+
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="display: flex; justify-content: space-between;" class="accordion-body">
+           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+                <div class="field-wrapper">
+                <p style="margin-top: -12px; padding-bottom: 5px;" class="topping"><strong>Size - Giá</strong></p>
+                    <div id="sizes-container">
+                                <div class="size-entry mb-4 p-4 border rounded relative"><div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="field-wrapper">
+                                    <select name="sizes[0][size]" class="select-single js-states" id="sizes[0][size]" title="Select Product Category" data-live-search="true">
+                                    <option value="S">S</option>
+                                    <option value="M">M</option>
+                                    <option value="L">L</option>
+                                    <option value="XL">XL</option>
+                                    <option value="XXL">XXL</option>
+                                    </select>
+                                    <div class="field-placeholder">Tên Size</div>
+                                    @error('sizes.0.name')
+                                    <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
+                                    @enderror
+                                </div>
+                                </div>
+
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="field-wrapper">
+                                    <input type="number" name="sizes[0][price]" placeholder="Điền giá" value="{{ old('sizes.0.price') }}"  required />
+                                    <div class="field-placeholder">Giá</div>
+                                    @error('sizes.0.price')
+                                    <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
+                                    @enderror
+                                </div>
+                                </div></div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5">
                                 <p class="topping"><strong>Topping</strong></p>
                                 <p id="noToppingMsg" class="text-danger hide">Danh mục này không đi kèm topping</p>
 
@@ -96,53 +149,7 @@
 
 
                             </div>
-
-                        </div>
-
-                        <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
-
-                        <div class="field-wrapper">
-                               <div class="field-placeholder">Mô tả sản phẩm</div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                <textarea id="editor" class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" name="mota" placeholder="Nhập mô tả sản phẩm ở đây..."    required></textarea>
-                                @error('mota')
-                                <p style="color: red;">Bạn chưa nhập mô tả sản phẩm !!!</p>
-                                @enderror
-
-                            </div>
-                        </div>
-                        </div>
-
-                        <button class="btn btn-primary" type="submit">Save Changes</button>
-            </div>
-
-            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                <div class="field-wrapper">
-                    <div id="sizes-container">
-                                <div class="size-entry mb-4 p-4 border rounded relative"><div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                <div class="field-wrapper">
-                                    <input type="text" name="sizes[0][name]" placeholder="Tên" value="{{ old('sizes.0.name') }}"   name="name" placeholder="Tên" required />
-                                    <div class="field-placeholder">Tên Size</div>
-                                    @error('sizes.0.name')
-                                    <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
-                                    @enderror
-                                </div>
-                                </div>
-
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                <div class="field-wrapper">
-                                    <input type="text" name="sizes[0][price]" placeholder="Tên" value="{{ old('sizes.0.price') }}"   name="name" placeholder="Tên" required />
-                                    <div class="field-placeholder">Giá</div>
-                                    @error('sizes.0.price')
-                                    <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
-                                    @enderror
-                                </div>
-                                </div></div>
-
-                    </div>
-                </div>
-            </div>
+           </div>
             <div class="field">
             <div class="control">
                 <button type="button" id="add-size-button" class="button blue mb-3 custom-add-size">
@@ -168,7 +175,7 @@
          <script>
   $(document).ready(function() {
     $('#editor').summernote({
-      height: 300,             // Chiều cao khung soạn thảo
+      height: 200,             // Chiều cao khung soạn thảo
       placeholder: 'Nhập mô tả sản phẩm ở đây...',
       toolbar: [
         ['style', ['style']],
@@ -360,7 +367,13 @@ document.addEventListener('DOMContentLoaded', function () {
         <br>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="field-wrapper">
-                            <input type="text" name="sizes[${sizeIndex}][name]" placeholder="Tên" value="{{ old('sizes.0.name') }}"   name="name" placeholder="Tên" required />
+                            <select name="sizes[${sizeIndex}][size]" class="select-single js-states" id="sizes[${sizeIndex}][size]" title="Select Product Category" data-live-search="true">
+                                    <option value="S">S</option>
+                                    <option value="M">M</option>
+                                    <option value="L">L</option>
+                                    <option value="XL">XL</option>
+                                    <option value="XXL">XXL</option>
+                                    </select>
                             <div class="field-placeholder">Tên Size ${sizeIndex + 1}</div>
                             @error('sizes.${sizeIndex}.name')
                             <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
@@ -371,7 +384,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="field-wrapper">
-                            <input type="text" name="sizes[${sizeIndex}][price]" placeholder="Tên" value="{{ old('sizes.0.price') }}"   name="name" placeholder="Tên" required />
+                            <input type="number" name="sizes[${sizeIndex}][price]" placeholder="Điền giá" value="{{ old('sizes.0.price') }}"   required />
                             <div class="field-placeholder">Giá ${sizeIndex + 1}</div>
                             @error('sizes.${sizeIndex}.price')
                             <p style="color: red;">Bạn chưa nhập tên sản phẩm !!!</p>
