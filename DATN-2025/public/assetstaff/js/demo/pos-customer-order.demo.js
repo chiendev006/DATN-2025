@@ -96,10 +96,10 @@ $(document).ready(function () {
                     response.toppings.forEach(function (topping, index) {
                         toppingHtml += `
                             <div class="option">
-                                <input type="checkbox" name="addon[${topping.name}]" value="true"
+                                <input type="checkbox" name="addon[${topping.topping}]" value="true"
                                     class="option-input" id="addon${index}" data-price="${parseFloat(topping.price)}"/>
                                 <label class="option-label" for="addon${index}">
-                                    <span class="option-text">${topping.name}</span>
+                                    <span class="option-text">${topping.topping}</span>
                                     <span class="option-price">+${parseFloat(topping.price).toFixed(2)}</span>
                                 </label>
                             </div>
