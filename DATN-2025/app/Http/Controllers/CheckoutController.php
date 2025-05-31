@@ -89,7 +89,11 @@ class CheckoutController extends Controller
                         'product_name' => $item->product->name,
                         'product_price' => $unitPrice,
                         'quantity' => $item->quantity,
-                        'total' => $itemTotal
+                        'total' => $itemTotal,
+                        'size_id' => $item->size_id ?? null,
+                        'topping_id' => $item->topping_id ?? null,
+                        'note' => $request->note ?? null,
+                        'status' => 'pending',
                     ];
                 }
             } else {
@@ -135,7 +139,9 @@ class CheckoutController extends Controller
                         'product_name' => $product->name,
                         'product_price' => $unitPrice,
                         'quantity' => $quantity,
-                        'total' => $itemTotal
+                        'total' => $itemTotal,
+                        'size_id' => $cartItem['size_id'] ?? null,
+                        'topping_id' => !empty($cartItem['topping_ids']) ? implode(',', $cartItem['topping_ids']) : null,
                     ];
                 }
             }
@@ -161,13 +167,15 @@ class CheckoutController extends Controller
     
                 session([
                     'vnp_order' => [
-                        'name' => $request->name,
-                        'phone' => $request->phone,
-                        'address' => $request->address,
-                        'total' => $total,
-                        'details' => $orderDetails,
-                        'discount' => $discount,
-                        'user_id' => Auth::check() ? Auth::id() : null,
+                    'name' => $request->name,
+                    'phone' => $request->phone,
+                    'address' => $request->address,
+                    'total' => $total,
+                    'details' => $orderDetails,
+                    'discount' => $discount,
+                    'user_id' => Auth::check() ? Auth::id() : null,
+                    'note' => $request->note ?? null,
+                    'status' => 'completed',
                     ]
                 ]);
     
@@ -187,19 +195,24 @@ class CheckoutController extends Controller
                 throw new \Exception('Không thể lưu đơn hàng');
             }
     
-            foreach ($orderDetails as $detail) {
-                $orderDetail = new OrderDetail();
-                $orderDetail->order_id = $order->id;
-                $orderDetail->product_id = $detail['product_id'];
-                $orderDetail->product_name = $detail['product_name'];
-                $orderDetail->product_price = $detail['product_price'];
-                $orderDetail->quantity = $detail['quantity'];
-                $orderDetail->total = $detail['total'];
-    
-                if (!$orderDetail->save()) {
-                    throw new \Exception('Không thể lưu chi tiết đơn hàng');
-                }
+           foreach ($orderDetails as $detail) {
+            $orderDetail = new OrderDetail();
+            $orderDetail->order_id = $order->id;
+            $orderDetail->product_id = $detail['product_id'];
+            $orderDetail->product_name = $detail['product_name'];
+            $orderDetail->product_price = $detail['product_price'];
+            $orderDetail->quantity = $detail['quantity'];
+            $orderDetail->total = $detail['total'];
+            $orderDetail->size_id = $detail['size_id'] ?? null;
+            $orderDetail->topping_id = $detail['topping_id'] ?? null;
+            $orderDetail->note = $detail['note'] ?? null;
+            $orderDetail->status = $detail['status'] ?? 'pending';
+
+            if (!$orderDetail->save()) {
+                throw new \Exception('Không thể lưu chi tiết đơn hàng');
             }
+        }
+
     
             if (Auth::check()) {
                 $userCart = Cart::where('user_id', Auth::id())->first();

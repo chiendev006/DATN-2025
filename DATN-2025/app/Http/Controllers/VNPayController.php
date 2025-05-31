@@ -36,7 +36,7 @@ class VNPayController extends Controller
             $vnp_Locale = 'vn';
             $vnp_IpAddr = request()->ip();
 
-            $inputData = array(
+            $inputData = [
                 "vnp_Version" => "2.1.0",
                 "vnp_TmnCode" => $vnp_TmnCode,
                 "vnp_Amount" => $vnp_Amount,
@@ -49,7 +49,7 @@ class VNPayController extends Controller
                 "vnp_OrderType" => $vnp_OrderType,
                 "vnp_ReturnUrl" => $vnp_Returnurl,
                 "vnp_TxnRef" => $vnp_TxnRef
-            );
+            ];
 
             ksort($inputData);
             $query = "";
@@ -65,14 +65,16 @@ class VNPayController extends Controller
                 $query .= urlencode($key) . "=" . urlencode($value) . '&';
             }
 
-            $vnp_Url = $vnp_Url . "?" . $query;
+            $vnp_Url .= "?" . $query;
             $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
             $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
 
-            session(['vnp_transaction' => [
-                'amount' => $vnp_Amount,
-                'txnRef' => $vnp_TxnRef
-            ]]);
+            session([
+                'vnp_transaction' => [
+                    'amount' => $vnp_Amount,
+                    'txnRef' => $vnp_TxnRef
+                ]
+            ]);
 
             return redirect($vnp_Url);
         } catch (\Exception $e) {
@@ -102,7 +104,7 @@ class VNPayController extends Controller
             }
 
             $vnp_HashSecret = "1UCXBCKLKT6HJBREEWRX1FS5HHR6YVEX";
-            $inputData = array();
+            $inputData = [];
             foreach ($vnpData as $key => $value) {
                 if (substr($key, 0, 4) == "vnp_") {
                     $inputData[$key] = $value;
@@ -114,7 +116,7 @@ class VNPayController extends Controller
             $i = 0;
             foreach ($inputData as $key => $value) {
                 if ($i == 1) {
-                    $hashData = $hashData . '&' . urlencode($key) . "=" . urlencode($value);
+                    $hashData .= '&' . urlencode($key) . "=" . urlencode($value);
                 } else {
                     $hashData = urlencode($key) . "=" . urlencode($value);
                     $i = 1;
@@ -140,7 +142,7 @@ class VNPayController extends Controller
                     $order->phone = $vnpOrder['phone'];
                     $order->address = $vnpOrder['address'];
                     $order->payment_method = 'banking';
-                    $order->status = 'completed';
+                    $order->status = $vnpOrder['status'] ?? 'completed';
                     $order->total = $vnpOrder['total'];
                     $order->transaction_id = $vnpData['vnp_TransactionNo'];
 
@@ -156,6 +158,10 @@ class VNPayController extends Controller
                         $orderDetail->product_price = $detail['product_price'];
                         $orderDetail->quantity = $detail['quantity'];
                         $orderDetail->total = $detail['total'];
+                        $orderDetail->size_id = $detail['size_id'] ?? null;
+                        $orderDetail->topping_id = $detail['topping_id'] ?? null;
+                        $orderDetail->note = $detail['note'] ?? null;
+                        $orderDetail->status = $detail['status'] ?? 'pending';
 
                         if (!$orderDetail->save()) {
                             throw new \Exception('Không thể lưu chi tiết đơn hàng');
@@ -180,7 +186,6 @@ class VNPayController extends Controller
 
                     return redirect()->route('order.complete', $order->id)
                         ->with('success', 'Thanh toán thành công!');
-
                 } catch (\Exception $e) {
                     DB::rollBack();
                     Log::error('VNPAY Return DB Error: ' . $e->getMessage(), [
@@ -206,4 +211,4 @@ class VNPayController extends Controller
                 ->with('error', 'Có lỗi xảy ra trong quá trình xử lý thanh toán');
         }
     }
-} 
+}

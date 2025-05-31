@@ -21,6 +21,7 @@ return new class extends Migration
         $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
         $table->decimal('total', 10, 2); 
         $table->string('transaction_id', 191)->nullable(); 
+        $table->string('pay_status',10)->default(1);
         $table->timestamps();
     });
 }
