@@ -82,7 +82,7 @@
 
 /* Thẻ bọc ảnh */
 .product-item {
-  background-color: aqua;
+
   border-radius: 18px;
   padding: 1px;
   cursor: pointer;
@@ -233,7 +233,7 @@
 
     <section class="section main-section">
 <div class="card mb-6 custom-card">
-<div><strong><h2>Cập nhật sản phẩm</h2> </strong></div>
+<div style='margin-left: 30px; margin-top: 30px;'><strong><h2>Cập nhật sản phẩm</h2> </strong></div>
 <br>
 <div class="card-content" style="display: flex; justify-content: space-around;">
 
@@ -274,12 +274,12 @@
                 </div>
                 <div style="display: flex; ">
                 <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
-                     <div class="field-placeholder">Ảnh bìa</div>
-                    <div class="control icons-left">
-                        <input class="input" type="file" name="image" id="cover-image-input" style="display:none" accept="image/*">
-                        <div id="cover-image-preview" class="cover-image-preview" style="width: 140px; height: 140px; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background: #fafafa;">
+                     <div  class="field-placeholder">Ảnh bìa</div>
+                    <div class="control icons-left ">
+                        <input  class="input " type="file" name="image" id="cover-image-input" style="display:none" accept="image/*">
+                        <div id="cover-image-preview" class="cover-image-preview " style="width: 140px; height: 140px; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background: #fafafa;">
                             @if ($sanpham->image)
-                                <img src="{{ asset('storage/uploads/' . $sanpham->image) }}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"/>
+                                <img  src="{{ asset('storage/uploads/' . $sanpham->image) }}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"/>
                             @else
                                 <span class="cover-image-placeholder" style="color: #aaa;">Chọn ảnh bìa</span>
                             @endif
@@ -321,7 +321,7 @@
                         @if(isset($size) && count($size) > 0)
                             @foreach ($size as $i )
                                 <div class="product-info" data-id="{{ $i->id }}">
-                                    <span class="original-content">{{ $i->size}}-{{ $i->price." VND" }}</span>
+                                    <span class="original-content">{{ $i->size}} - {{ number_format($i->price) }} VND</span>
                                 </div>
                             @endforeach
                             <br>
@@ -655,7 +655,7 @@ document.getElementById('btn-deselect-all').addEventListener('click', function (
  <script>
   $(document).ready(function() {
     $('#editor').summernote({
-      height: 250,             // Chiều cao khung soạn thảo
+      height: 230,             // Chiều cao khung soạn thảo
       placeholder: 'Nhập mô tả sản phẩm ở đây...',
       toolbar: [
         ['style', ['style']],
