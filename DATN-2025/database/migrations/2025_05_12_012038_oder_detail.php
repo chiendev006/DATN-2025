@@ -19,6 +19,10 @@ return new class extends Migration
         $table->decimal('product_price', 10, 2);
         $table->integer('quantity');
         $table->decimal('total', 10, 2);
+        $table->unsignedBigInteger('size_id')->nullable();
+        $table->string('topping_id')->nullable();
+        $table->text('note')->nullable();
+        $table->string('status',10)->default(1);
         $table->timestamps();
     });
 

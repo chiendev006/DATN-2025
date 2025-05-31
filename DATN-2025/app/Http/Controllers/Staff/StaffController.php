@@ -3,12 +3,14 @@ namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\admin\Product_attributesController;
 use App\Http\Controllers\Controller;
+use App\Models\Product_topping;
 use App\Models\Size;
 use App\Models\SanPham;
 use App\Models\DanhMuc;
 use App\Models\Topping;
 use App\Models\Order;
 use Carbon\Carbon;
+
 use Illuminate\Http\Request;
 
 class StaffController extends Controller
@@ -27,7 +29,7 @@ class StaffController extends Controller
     {
         $products = SanPham::all();
         $attributes = Size::where('product_id', $id)->get(['size', 'price']);
-        $toppings = Topping::all();
+        $toppings = Product_topping::where('product_id', $id)->get(['topping', 'price']);
         return response()->json([
             'attributes' => $attributes,
             'toppings' => $toppings

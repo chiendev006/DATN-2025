@@ -217,7 +217,10 @@ class SanphamController extends Controller
     public function filterByCategory(Request $request)
     {
         $categoryId = $request->input('category_id');
-        $sanpham = Sanpham::with('danhmuc')
+        if($categoryId == 'allproduct'){
+            return redirect()->route('sanpham.index');
+        }else{
+            $sanpham = Sanpham::with('danhmuc')
             ->where('id_danhmuc', $categoryId)
             ->paginate(10);
         $search = null;
@@ -228,5 +231,7 @@ class SanphamController extends Controller
             'search' => $search,
             'danhmucs' => $danhmucs
         ]);
+        }
     }
+
 }
