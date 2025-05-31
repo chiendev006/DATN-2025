@@ -5084,6 +5084,13 @@ table.shop-cart-table .shop-cart-close{
   min-height: 500px;
   margin-bottom: 50px;
 }
+table.shop-cart-table th:nth-child(1),
+table.shop-cart-table td:nth-child(1) {
+    width: 120px;
+    max-width: 160px;
+    word-break: break-word;
+    white-space: normal;
+}
 
 table.shop-cart-table th:nth-child(2),
 table.shop-cart-table td:nth-child(2) {

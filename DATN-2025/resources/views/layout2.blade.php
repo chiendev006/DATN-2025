@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -34,7 +33,7 @@
   <!-- Bootstrap Slider CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/css/bootstrap-slider.min.css">
 
-   
+
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -62,7 +61,7 @@
 
 .search-input-wrapper input[type="text"] {
     width: 100%;
-    padding: 10px 40px 10px 15px; 
+    padding: 10px 40px 10px 15px;
     border: 1px solid #ccc;
     border-radius: 100px;
     font-size: 14px;
@@ -401,16 +400,16 @@
 @endauth
 
                   </div>
-                 
+
                   <div class="cart animated">
-                    <span class="icon-basket fontello"></span
-                    ><span>2 items - $ 10.89</span>
+                    <span class="icon-basket fontello"></span>
+                    <span>{{ $cartCount }} items - {{ number_format($subtotal, 0, ',', '.') }}₫</span>
                     <div class="cart-wrap">
                       <div class="cart-blog">
                             @forelse ($items as $item)
                                 @php
                                     $productName = $item->product->name ?? $item->name;
-                                    $productImage = isset($item->product->image) 
+                                    $productImage = isset($item->product->image)
                                                     ? asset('storage/uploads/' . $item->product->image)
                                                     : asset('asset/images/img21.png');
                                     $quantity = $item->quantity ?? 1;
@@ -436,7 +435,7 @@
                                         <h6>{{ $productName }}</h6>
                                         <span>{{ number_format($price, 0, ',', '.') }}₫</span>
                                     </div>
-                                    <span class="delete-icon"></span> 
+                                    <span class="delete-icon"></span>
                                 </div>
                             @empty
                                 <div class="cart-item">
@@ -474,7 +473,7 @@
               </div>
             </div>
           </div>
-         
+
         </div>
       </header>
     @yield('main')
