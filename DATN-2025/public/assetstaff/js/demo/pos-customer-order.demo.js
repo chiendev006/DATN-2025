@@ -46,9 +46,9 @@ $(document).ready(function () {
     $('.pos-product').on('click', function (e) {
         e.preventDefault();
         var productId = $(this).data('id');
+        $('#modalPosItem').data('product-id', productId);
         var productName = $(this).data('name');
         var productImage = $(this).data('image');
-        var productDescription = $(this).data('description');
 
         // Điền dữ liệu cơ bản vào modal
         $('#modalPosItem .product-name').text(productName);
