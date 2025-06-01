@@ -56,6 +56,8 @@ use App\Http\Controllers\VNPayController;
         Route::get('/menu', [Controller::class, 'show'])->name('client.menu');
         Route::get('/menu/category/{id}', [Controller::class, 'getProductsByCategory']);
 
+        Route::post('comment', [Controller::class, 'postComment'])->name('comment.store');
+
 
 
         // Shop
