@@ -161,17 +161,26 @@
 													<i class="icon-archive1"></i>
 												</div>
 												<div class="stats-info">
-													<h6 class="stats-title">New</h6>
-													<p class="stats-amount">15</p>
+													<h6 class="stats-title">Chưa thanh toán</h6>
+													<p class="stats-amount">{{ $unpaid }}</p>
 												</div>
 											</li>
 											<li class="stats-list-item primary">
 												<div class="stats-icon">
-													<i class="icon-truck"></i>
+													<i class="icon-check-circle"></i>
 												</div>
 												<div class="stats-info">
-													<h6 class="stats-title">Delivered</h6>
-													<p class="stats-amount">10</p>
+													<h6 class="stats-title">Đã thanh toán</h6>
+													<p class="stats-amount">{{ $paid }}</p>
+												</div>
+											</li>
+											<li class="stats-list-item primary">
+												<div class="stats-icon">
+													<i class="icon-x-circle"></i>
+												</div>
+												<div class="stats-info">
+													<h6 class="stats-title">Đã hủy</h6>
+													<p class="stats-amount">{{ $cancelled }}</p>
 												</div>
 											</li>
 										</ul>
@@ -346,6 +355,83 @@
 						</div>
 						<!-- Row end -->
 
+						<!-- Thêm biểu đồ doanh thu và số hóa đơn theo tháng -->
+						<div class="row gutters">
+							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+								<div class="card">
+									<div class="card-header">
+										<div class="card-title">Biểu đồ hóa đơn & doanh thu 12 tháng gần nhất</div>
+									</div>
+									<div class="card-body">
+										<div id="salesGraph" style="height: 350px;"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- End chart -->
+
 					</div>
 					<!-- Content wrapper end -->
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    var unpaid = {{ $unpaid }};
+    var paid = {{ $paid }};
+    var cancelled = {{ $cancelled }};
+    var ordersPerMonth = @json($ordersPerMonth);
+    var revenuePerMonth = @json($revenuePerMonth);
+    var monthLabels = @json($monthLabels);
+
+    var options = {
+        chart: {
+            type: 'bar',
+            height: 350
+        },
+        series: [
+            {
+                name: 'Số hóa đơn',
+                type: 'column',
+                data: ordersPerMonth
+            },
+            {
+                name: 'Doanh thu',
+                type: 'line',
+                data: revenuePerMonth
+            }
+        ],
+        xaxis: {
+            categories: monthLabels
+        },
+        yaxis: [
+            {
+                title: {
+                    text: 'Số hóa đơn'
+                },
+            },
+            {
+                opposite: true,
+                title: {
+                    text: 'Doanh thu (VNĐ)'
+                },
+            }
+        ],
+        tooltip: {
+            y: [
+                {
+                    formatter: function(val) {
+                        return val + " hóa đơn";
+                    }
+                },
+                {
+                    formatter: function(val) {
+                        return val.toLocaleString('vi-VN') + " đ";
+                    }
+                }
+            ]
+        }
+    };
+    var chart = new ApexCharts(document.querySelector("#salesGraph"), options);
+    chart.render();
+</script>
+
 @include('footer')
