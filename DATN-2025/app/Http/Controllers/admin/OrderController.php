@@ -70,4 +70,39 @@ class OrderController extends Controller
         $orderArr['details'] = $details;
         return response()->json($orderArr);
     }
+
+    /**
+     * Lọc đơn hàng theo trạng thái thanh toán hoặc trạng thái đơn hàng.
+     * Truyền query string: ?pay_status=0|1|2 hoặc ?status=pending|processing|completed|cancelled
+     */
+    public function filterOrders(Request $request)
+    {
+        $query = Order::query();
+        $hasPayStatus = $request->filled('pay_status');
+        $hasStatus = $request->filled('status');
+
+        if ($hasPayStatus && $hasStatus) {
+            $query->where('pay_status', $request->input('pay_status'))
+                  ->where('status', $request->input('status'));
+        } elseif ($hasPayStatus) {
+            $query->where('pay_status', $request->input('pay_status'));
+        } elseif ($hasStatus) {
+            $query->where('status', $request->input('status'));
+        }
+        // Nếu cả hai đều không có thì không where gì, trả về toàn bộ
+        $orders = $query->paginate(10);
+        return view('admin.order.index', ['orders' => $orders]);
+    }
+
+    /**
+     * Tìm kiếm đơn hàng theo transaction_id (mã đơn hàng).
+     * Truyền query string: ?transaction_id=xxxx
+     */
+    public function searchByTransactionId(Request $request)
+    {
+        $transactionId = $request->input('transaction_id');
+        $orders = Order::where('transaction_id', 'like', "%$transactionId%")
+            ->paginate(10);
+        return view('admin.order.index', ['orders' => $orders]);
+    }
 }

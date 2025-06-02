@@ -38,6 +38,38 @@
 
                                     <div class="card-body">
 
+                                        <div class="row" style="margin-bottom: 20px;">
+                                            <div class="col-md-6">
+                                                <form method="GET" action="{{ route('admin.order.filter') }}" class="form-inline">
+                                                  <div style="display: flex; align-items: center;">
+                                                  <div  class="field-wrapper">    <div class="field-placeholder">Trạng thái thanh toán</div>
+                                                    <select name="pay_status" id="pay_status" class="form-control" style="width: 150px; margin-right: 12px;">
+                                                        <option value="">Tất cả</option>
+                                                        <option value="0" {{ request('pay_status')==='0' ? 'selected' : '' }}>Chờ thanh toán</option>
+                                                        <option value="1" {{ request('pay_status')==='1' ? 'selected' : '' }}>Đã thanh toán</option>
+                                                        <option value="2" {{ request('pay_status')==='2' ? 'selected' : '' }}>Đã hủy</option>
+                                                    </select></div>
+                                                    <div  class="field-wrapper">
+                                                        <div class="field-placeholder">Trạng thái đơn</div>
+                                                    <select name="status" id="status" class="form-control" style="width: 150px; margin-right: 12px;">
+                                                        <option value="">Tất cả</option>
+                                                        <option value="pending" {{ request('status')==='pending' ? 'selected' : '' }}>Chờ xử lý</option>
+                                                        <option value="processing" {{ request('status')==='processing' ? 'selected' : '' }}>Đã xác nhận</option>
+                                                        <option value="completed" {{ request('status')==='completed' ? 'selected' : '' }}>Hoàn thành</option>
+                                                        <option value="cancelled" {{ request('status')==='cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                                                    </select></div>
+                                                    <button style="margin-top: -8px;" type="submit" class="btn btn-primary">Lọc</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <form method="GET" action="{{ route('admin.order.search') }}" class="form-inline" style="float: right; display: flex; align-items: center;">
+                                                    <input type="text" name="transaction_id" class="form-control" placeholder="Tìm kiếm theo mã giao dịch..." value="{{ request('transaction_id') }}" style="width: 220px; margin-right: 8px;">
+                                                    <button type="submit" class="btn btn-success">Tìm kiếm</button>
+                                                </form>
+                                            </div>
+                                        </div>
+
                                         <div class="table-responsive">
                                             <table id="copy-print-csv" class="table v-middle">
                                                 <thead>
