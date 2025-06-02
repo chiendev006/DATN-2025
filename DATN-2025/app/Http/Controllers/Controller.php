@@ -20,7 +20,7 @@ class Controller extends BaseController
 public function  danhmuc()
 {
     $danhmucs = Danhmuc::with('sanphams')->get();
-    $sanpham = sanpham::take(4)->get();
+    $sanpham = sanpham::take(8)->get();
     foreach ($sanpham as $sp) {
         $minPrice = Size::where('product_id', $sp->id)->min('price');
         $sp->min_price = $minPrice;

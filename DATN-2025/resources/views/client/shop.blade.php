@@ -146,35 +146,45 @@
 
             </div>
         </main>
-        <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('#category-list a').forEach(function (link) {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-                let categoryId = this.dataset.id;
+     <script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('#category-list a').forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            let categoryId = this.dataset.id;
 
-                fetch('/shop/category/' + categoryId)
-                    .then(res => res.json())
-                    .then(data => {
-                        document.getElementById('product-list').innerHTML = '';
-                        data.products.forEach(product => {
-                            document.getElementById('product-list').innerHTML += `
-                                <div class="col-md-4">
-                                    <div class="shop-main-list">
-                                        <div class="shop-product">
-                                            <img src="/storage/${product.image}" alt="${product.name}">
+            fetch('/shop/category/' + categoryId)
+                .then(res => res.json())
+                .then(data => {
+                    const productList = document.getElementById('product-list');
+                    productList.innerHTML = '';
+
+                    data.products.forEach(product => {
+                        productList.innerHTML += `
+                            <div class="col-md-4">
+                                <div class="shop-main-list">
+                                    <div class="shop-product">
+                                        <a href="/product/${product.id}">
+                                            <img src="/storage/uploads/${product.image}" alt="${product.name}" style="border-radius: 20px;">
+                                        </a>
+                                        <div class="cart-overlay-wrap">
+                                            <div class="cart-overlay">
+                                                <a href="/product/${product.id}" class="shop-cart-btn">ADD TO CART</a>
+                                            </div>
                                         </div>
-                                        <h5>${product.name}</h5>
-                                        <h5><strong>${Number(product.min_price).toLocaleString()} VND</strong></h5>
                                     </div>
+                                    <a href="/product/${product.id}"><h5>${product.name}</h5></a>
+                                    <h5><strong>${Number(product.min_price).toLocaleString()} VND</strong></h5>
                                 </div>
-                            `;
-                        });
+                            </div>
+                        `;
                     });
-            });
+                });
         });
     });
+});
 </script>
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $('#btn-search').on('click', function () {

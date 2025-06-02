@@ -56,11 +56,31 @@
                                         @enderror
                                     </div>
 
-                                    <div class="col-md-12">
-                                        <textarea name="address" placeholder="Địa chỉ giao hàng" required>{{ old('address') }}</textarea>
-                                        @error('address')
+                                   <div class="col-md-12">
+                                        <label>Chọn huyện (tỉnh Hải Phòng) <span class="text-danger">*</span></label>
+                                        <select name="district" id="district-select" class="form-control" required>
+                                            <option value="" disabled selected>-- Chọn huyện --</option>
+                                            <option value="An Lao" data-ship="20000" {{ old('district') == 'An Lao' ? 'selected' : '' }}>An Lão</option>
+                                            <option value="Kien An" data-ship="25000" {{ old('district') == 'Kien An' ? 'selected' : '' }}>Kiến An</option>
+                                            <option value="Hai An" data-ship="30000" {{ old('district') == 'Hai An' ? 'selected' : '' }}>Hải An</option>
+                                            <option value="Ngo Quyen" data-ship="35000" {{ old('district') == 'Ngo Quyen' ? 'selected' : '' }}>Ngô Quyền</option>
+                                            <!-- Thêm các huyện khác tương tự -->
+                                        </select>
+                                        @error('district')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
+                                    </div>
+
+                                    <div class="col-md-12 mt-3">
+                                        <label>Địa chỉ chi tiết (Số nhà, tên đường, ngõ,...) <span class="text-danger">*</span></label>
+                                        <input type="text" name="address_detail" value="{{ old('address_detail') }}" placeholder="Nhập số nhà, tên đường..." required class="form-control">
+                                        @error('address_detail')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <div class="col-md-12 mt-3">
+                                        <p>Phí vận chuyển hiện tại: <strong id="shipping-fee-display">Chưa chọn huyện</strong></p>
                                     </div>
                                 </div>
 
@@ -125,12 +145,11 @@
                                 </div>
                                 <div class="shop-checkout-row">
                                     @php
+                                        // Tính tổng tạm tính từ sản phẩm
                                         $subtotal = 0;
                                         $items = Auth::check() ? $items : $cart;
-                                    @endphp
 
-                                    @foreach($items as $item)
-                                        @php
+                                        foreach ($items as $item) {
                                             if (Auth::check()) {
                                                 $product = $item->product;
                                                 if (!$product) continue;
@@ -138,79 +157,77 @@
                                                 $productPrice = $product->price ?? 0;
                                                 $sizePrice = $item->size ? ($item->size->price ?? 0) : 0;
 
-                                                $sizeName = $item->size ? $item->size->size : null;
-
-                                                $toppingNames = [];
+                                                $toppingPrice = 0;
                                                 if (!empty($item->topping_id)) {
                                                     $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id)));
                                                     if (!empty($toppingIds)) {
-                                                        $toppingNames = \App\Models\Product_topping::whereIn('id', $toppingIds)->pluck('topping')->toArray();
+                                                        $toppingPrice = \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price');
                                                     }
                                                 }
 
-                                                $toppingPrice = 0;
-                                                if (!empty($toppingIds)) {
-                                                    $toppingPrice = \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price');
-                                                }
-
                                                 $unitPrice = $productPrice + $sizePrice + $toppingPrice;
-                                                $total = $unitPrice * $item->quantity;
-                                                $subtotal += $total;
+                                                $totalItem = $unitPrice * $item->quantity;
+                                                $subtotal += $totalItem;
 
-                                                $name = $product->name;
-                                                $quantity = $item->quantity;
                                             } else {
                                                 $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
-                                                $total = $unitPrice * ($item['quantity'] ?? 1);
-                                                $subtotal += $total;
-
-                                                $name = $item['name'];
-                                                $quantity = $item['quantity'] ?? 1;
-                                                $sizeName = $item['size_name'] ?? null;
-                                                $toppingNames = $item['topping_names'] ?? [];
+                                                $totalItem = $unitPrice * ($item['quantity'] ?? 1);
+                                                $subtotal += $totalItem;
                                             }
-                                            // Tạo chuỗi mô tả size và topping
-                                            $desc = [];
-                                            if (!empty($sizeName)) $desc[] = 'Size: ' . $sizeName;
-                                            if (!empty($toppingNames)) $desc[] = 'Topping: ' . implode(', ', $toppingNames);
-                                            $descStr = $desc ? ' (' . implode(', ', $desc) . ')' : '';
-                                        @endphp
-                                        <p>
-                                            <span>{{ $name }}{!! $descStr !!}</span>
-                                            <small>x{{ $quantity }}</small>
-                                            <strong>{{ number_format($total) }} VND</strong>
-                                        </p>
-                                    @endforeach
-                                </div>
+                                        }
 
-                                <div class="checkout-total">
-                                    <h6>Tạm tính: <span>{{ number_format($subtotal) }} VND</span></h6>
-                                </div>
+                                        // Lấy coupon từ session
+                                        $coupons = session('coupons', []);
+                                        $discount = 0;
+                                        foreach ($coupons as $coupon) {
+                                            if ($coupon['type'] === 'percent') {
+                                                $discount += $subtotal * $coupon['discount'] / 100;
+                                            } else {
+                                                $discount += $coupon['discount'];
+                                            }
+                                        }
 
-                                @php
-                                    $coupons = session('coupons', []);
-                                    $discount = 0;
-                                    foreach ($coupons as $coupon) {
-                                        $discount += ($coupon['type'] === 'percent')
-                                            ? ($subtotal * $coupon['discount'] / 100)
-                                            : $coupon['discount'];
-                                    }
-                                    $total = max(0, $subtotal - $discount);
-                                @endphp
+                                        // Tính tổng sau giảm giá
+                                        $total = max(0, $subtotal - $discount);
+                                        $shippingFee = 0;
+                                        if (old('district')) {
+                                            $districtShippingFees = [
+                                                'An Lao' => 20000,
+                                                'Kien An' => 25000,
+                                                'Hai An' => 30000,
+                                                'Ngo Quyen' => 35000,   
+                                                // Thêm các huyện khác nếu có
+                                            ];
+                                            $shippingFee = $districtShippingFees[old('district')] ?? 0;
+}
 
-                                @if($discount > 0)
-                                    <div class="checkout-total">
-                                        <h6>Giảm giá: <span>-{{ number_format($discount) }} VND</span></h6>
+                                        $totalWithShipping = $total + $shippingFee;
+                                    @endphp
+                                    <div>
+                                        <h6>Tạm tính: <span>{{ number_format($subtotal) }} đ</span> </h6>
                                     </div>
-                                @endif
 
-                                <div class="checkout-total">
-                                    <h6>Phí vận chuyển: <span>Miễn phí</span></h6>
-                                </div>
+                                    @if($discount > 0)
+                                    <div class="checkout-total">
+                                        <h6>Giảm giá: <span>{{ number_format($discount) }}</span> đ</h6>
+                                    </div>
+                                    @endif
 
-                                <div class="checkout-total">
-                                    <h6>Tổng cộng: <span class="price-big">{{ number_format($total) }} VND</span></h6>
-                                </div>
+                                    <div class="checkout-total">
+                                        <h6>Phí vận chuyển: 
+                                            <span id="shipping-fee-display-right">
+                                                {{ $shippingFee > 0 ? number_format($shippingFee) . ' đ' : '0 đ' }}
+                                            </span>
+                                        </h6>
+                                    </div>
+                                    <div>
+                                        <h6>
+                                            Tổng cộng: 
+                                            <span class="price-big" id="total-with-shipping">
+                                                {{ number_format($totalWithShipping) }} đ
+                                            </span>
+                                        </h6>
+                                    </div>
                             </div>
                         </div>
                     </div>
@@ -292,69 +309,34 @@
 }
 </style>
 <script>
-let provinces = {};
-let districts = {};
+    const districtSelect = document.getElementById("district-select");
+    const shippingCostElement = document.getElementById("shipping-fee-display");
+    const shippingFeeDisplayRight = document.getElementById("shipping-fee-display-right");
+    const totalWithShippingElement = document.getElementById("total-with-shipping");
 
-fetch('/data/tinh_tp.json')
-    .then(res => res.json())
-    .then(data => {
-        provinces = data;
-        const provinceSelect = document.getElementById('province');
-        Object.entries(data).forEach(([code, info]) => {
-            const opt = document.createElement('option');
-            opt.value = info.name;
-            opt.text = info.name;
-            provinceSelect.appendChild(opt);
-        });
-    });
+    const totalBeforeShipping = {{ $total }};
 
-document.getElementById('province').addEventListener('change', function () {
-    const provinceCode = Object.keys(provinces).find(k => provinces[k].name === this.value);
-    fetch('/data/quan_huyen.json')
-        .then(res => res.json())
-        .then(data => {
-            districts = data;
-            const districtSelect = document.getElementById('district');
-            districtSelect.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
-            Object.entries(data)
-                .filter(([code, info]) => info.parent_code === provinceCode)
-                .forEach(([code, info]) => {
-                    const opt = document.createElement('option');
-                    opt.value = info.name;
-                    opt.text = info.name;
-                    districtSelect.appendChild(opt);
-                });
-            fetchShippingFee(); // cập nhật phí khi tỉnh thay đổi
-        });
-});
 
-document.getElementById('district').addEventListener('change', fetchShippingFee);
-document.getElementById('address').addEventListener('input', fetchShippingFee);
-
-function fetchShippingFee() {
-    const province = document.getElementById('province').value;
-    const district = document.getElementById('district').value;
-    const address = document.getElementById('address').value;
-
-    if (!province || !district || !address) {
-        document.getElementById('shipping-fee').innerText = 'Vui lòng chọn đầy đủ địa chỉ';
-        return;
+    function formatCurrency(amount) {
+        return amount.toLocaleString('vi-VN') + " đ";
     }
 
-    fetch(`/calculate-fee?province=${province}&district=${district}&address=${encodeURIComponent(address)}&weight=1000&value=300000&transport=road&deliver_option=none`)
-        .then(res => res.json())
-        .then(data => {
-            if (data.success && data.fee) {
-                document.getElementById('shipping-fee').innerText = data.fee.fee.toLocaleString() + ' VND';
-            } else {
-                document.getElementById('shipping-fee').innerText = 'Không hỗ trợ giao';
-            }
-        })
-        .catch(() => {
-            document.getElementById('shipping-fee').innerText = 'Lỗi tính phí giao hàng';
-        });
-}
+    districtSelect.addEventListener("change", function () {
+        const selectedOption = this.options[this.selectedIndex];
+        const shippingCost = parseInt(selectedOption.getAttribute("data-ship")) || 0;
+
+        // Cập nhật phí vận chuyển ở 2 nơi
+        shippingCostElement.textContent = formatCurrency(shippingCost);
+        shippingFeeDisplayRight.textContent = formatCurrency(shippingCost);
+
+        // Cập nhật tổng tiền
+        const total = totalBeforeShipping + shippingCost;
+        totalWithShippingElement.textContent = formatCurrency(total);
+    });
 </script>
+
+
+
 
 
 @endsection

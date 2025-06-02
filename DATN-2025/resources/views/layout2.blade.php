@@ -34,6 +34,12 @@
   <!-- Bootstrap Slider CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/css/bootstrap-slider.min.css">
 
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
    
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -430,7 +436,7 @@
 
                                 <div class="cart-item">
                                     <div class="cart-item-left">
-                                        <img src="{{ $productImage }}" alt="" />
+                                        <img src="{{ url('storage/uploads/'.$item->image) }}" alt="" />
                                     </div>
                                     <div class="cart-item-right">
                                         <h6>{{ $productName }}</h6>
