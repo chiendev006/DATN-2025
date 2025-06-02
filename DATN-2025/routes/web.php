@@ -103,8 +103,9 @@ use App\Http\Controllers\VNPayController;
 
         // Đơn hàng
         Route::get('/order', [\App\Http\Controllers\admin\OrderController::class, 'index'])->name('admin.order.index');
-        Route::get('/order/{id}', [\App\Http\Controllers\admin\OrderController::class, 'show'])->name('admin.order.show');
+        Route::post('/order/update/{id}', [\App\Http\Controllers\admin\OrderController::class, 'update'])->name('admin.order.update');
         Route::get('/order/{id}/delete', [\App\Http\Controllers\admin\OrderController::class, 'delete'])->name('admin.order.delete');
+        Route::get('/order/json/{id}', [\App\Http\Controllers\admin\OrderController::class, 'showJson'])->name('admin.order.json');
 
         // Danh mục
         Route::prefix('danhmuc')->group(function () {
