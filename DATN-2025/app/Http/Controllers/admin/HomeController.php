@@ -7,33 +7,67 @@ use Illuminate\Http\Request;
 use PhpParser\Node\Stmt\Return_;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class HomeController extends Controller
 {
-    public function index() {
-        $unpaid = Order::where('pay_status', 0)->count();
-        $paid = Order::where('pay_status', 1)->count();
-        $cancelled = Order::where('pay_status', 2)->count();
-
-        // Lấy 12 tháng gần nhất
+    public function index()
+    {
+        // 12 tháng gần nhất
         $months = collect();
-        for ($i = 11; $i >= 0; $i--) {
-            $months->push(now()->subMonths($i)->format('Y-m'));
-        }
-
         $ordersPerMonth = [];
         $revenuePerMonth = [];
-        foreach ($months as $month) {
-            $ordersPerMonth[] = Order::whereYear('created_at', substr($month, 0, 4))
-                ->whereMonth('created_at', substr($month, 5, 2))
+        for ($i = 11; $i >= 0; $i--) {
+            $month = Carbon::now()->subMonths($i)->format('Y-m');
+            $months->push($month);
+
+            // Đếm tất cả đơn trong tháng
+            $ordersPerMonth[] = Order::whereYear('created_at', Carbon::parse($month)->year)
+                ->whereMonth('created_at', Carbon::parse($month)->month)
                 ->count();
-            $revenuePerMonth[] = Order::whereYear('created_at', substr($month, 0, 4))
-                ->whereMonth('created_at', substr($month, 5, 2))
+
+            // Tổng doanh thu đơn đã thanh toán trong tháng
+            $revenuePerMonth[] = Order::whereYear('created_at', Carbon::parse($month)->year)
+                ->whereMonth('created_at', Carbon::parse($month)->month)
                 ->where('pay_status', 1)
                 ->sum('total');
         }
-        $monthLabels = $months->map(function($m) { return date('m/Y', strtotime($m.'-01')); });
 
-        return view('admin.home', compact('unpaid', 'paid', 'cancelled', 'ordersPerMonth', 'revenuePerMonth', 'monthLabels'));
+        // Đơn trong tuần này
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+
+        $ordersThisWeek = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek]);
+        $success = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('pay_status', 1)->count();
+        $pending = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('pay_status', 0)->count();
+        $cancel = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('pay_status', 2)->count();
+
+        // Pie chart: Xu hướng khách hàng
+        // Lấy tất cả user_id là null hoặc user_id có role=21
+        $orders = Order::all();
+        $userIds = $orders->pluck('user_id')->filter()->unique();
+        $role21Ids = [];
+        if ($userIds->count() > 0) {
+            $role21Ids = \App\Models\User::whereIn('id', $userIds)->where('role', 21)->pluck('id')->toArray();
+        }
+        $muaThang = $orders->where(function($order) use ($role21Ids) {
+            return is_null($order->user_id) || in_array($order->user_id, $role21Ids);
+        })->count();
+        $muaTaiKhoan = $orders->where(function($order) use ($role21Ids) {
+            return !is_null($order->user_id) && !in_array($order->user_id, $role21Ids);
+        })->count();
+
+        return view('admin.home', [
+            'months' => $months,
+            'ordersPerMonth' => $ordersPerMonth,
+            'revenuePerMonth' => $revenuePerMonth,
+            'orderStatusWeek' => [
+                'success' => $success,
+                'pending' => $pending,
+                'cancel' => $cancel,
+            ],
+            'muaThang' => $muaThang,
+            'muaTaiKhoan' => $muaTaiKhoan,
+        ]);
     }
 }
