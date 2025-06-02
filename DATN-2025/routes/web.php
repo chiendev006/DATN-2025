@@ -99,6 +99,11 @@ use App\Http\Controllers\VNPayController;
         // Trang chủ Admin
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
+        // Đơn hàng
+        Route::get('/order', [\App\Http\Controllers\admin\OrderController::class, 'index'])->name('admin.order.index');
+        Route::get('/order/{id}', [\App\Http\Controllers\admin\OrderController::class, 'show'])->name('admin.order.show');
+        Route::get('/order/{id}/delete', [\App\Http\Controllers\admin\OrderController::class, 'delete'])->name('admin.order.delete');
+
         // Danh mục
         Route::prefix('danhmuc')->group(function () {
         Route::get('/', [DanhmucController::class, 'index'])->name('danhmuc.index');
