@@ -10,7 +10,7 @@
 								<div class="card">
 							<section class="section main-section">
     <div class="card mb-6 custom-card">
-    <div style='margin-left: 30px; margin-top: 30px;'><strong><h2>Thêm sản phẩm</h2> </strong></div>
+    <div style='margin-left: 30px; ;'><strong><h2>Thêm sản phẩm</h2> </strong></div>
     <br>
       <div class="card-content">
         <form action="{{ route('sanpham.store') }}" method="post" enctype="multipart/form-data">
@@ -175,7 +175,7 @@
          <script>
   $(document).ready(function() {
     $('#editor').summernote({
-      height: 200,             // Chiều cao khung soạn thảo
+      height: 150,             // Chiều cao khung soạn thảo
       placeholder: 'Nhập mô tả sản phẩm ở đây...',
       toolbar: [
         ['style', ['style']],
