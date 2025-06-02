@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
@@ -19,7 +20,7 @@ class CheckoutController extends Controller
     {
         $items = [];
         $cart = [];
-        
+
         if (Auth::check()) {
             $userCart = Cart::where('user_id', Auth::id())->first();
             if ($userCart) {
@@ -32,9 +33,10 @@ class CheckoutController extends Controller
         }
 
         session()->forget('_old_input');
-        
+
         return view('client.checkout', compact('items', 'cart'));
     }
+
 
   public function process(Request $request)
 {
@@ -203,6 +205,7 @@ class CheckoutController extends Controller
                     'user_id' => Auth::check() ? Auth::id() : null,
                     'note' => $request->note ?? null,
                     'status' => 'completed',
+
                 ]
             ]);
 
@@ -241,6 +244,7 @@ class CheckoutController extends Controller
                 throw new \Exception('Không thể lưu chi tiết đơn hàng');
             }
         }
+
         if (Auth::check()) {
             $userCart = Cart::where('user_id', Auth::id())->first();
             if ($userCart) {
@@ -269,7 +273,6 @@ class CheckoutController extends Controller
 }
 
     
-
   public function success($orderId)
 {
     try {

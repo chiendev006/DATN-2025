@@ -56,6 +56,8 @@ use App\Http\Controllers\VNPayController;
         Route::get('/menu', [Controller::class, 'show'])->name('client.menu');
         Route::get('/menu/category/{id}', [Controller::class, 'getProductsByCategory']);
 
+        Route::post('comment', [Controller::class, 'postComment'])->name('comment.store');
+
 
 
         // Shop
@@ -98,6 +100,14 @@ use App\Http\Controllers\VNPayController;
         Route::prefix('admin')->middleware('checkAdmin')->group(function () {
         // Trang chủ Admin
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
+
+        // Đơn hàng
+        Route::get('/order', [\App\Http\Controllers\admin\OrderController::class, 'index'])->name('admin.order.index');
+        Route::post('/order/update/{id}', [\App\Http\Controllers\admin\OrderController::class, 'update'])->name('admin.order.update');
+        Route::get('/order/{id}/delete', [\App\Http\Controllers\admin\OrderController::class, 'delete'])->name('admin.order.delete');
+        Route::get('/order/json/{id}', [\App\Http\Controllers\admin\OrderController::class, 'showJson'])->name('admin.order.json');
+        Route::get('/order/filter', [\App\Http\Controllers\admin\OrderController::class, 'filterOrders'])->name('admin.order.filter');
+        Route::get('/order/search', [\App\Http\Controllers\admin\OrderController::class, 'searchByTransactionId'])->name('admin.order.search');
 
         // Danh mục
         Route::prefix('danhmuc')->group(function () {
@@ -201,6 +211,7 @@ use App\Http\Controllers\VNPayController;
         Route::get('/product/{id}/options', [StaffController::class, 'getOptions'])->name('staff.options');
         Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
         Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
+        Route::get('/orderdetailtoday', [StaffController::class, 'orderdetailtoday'])->name('staff.orderdetailtoday');
         });
 
         // VNPAY

@@ -7,6 +7,10 @@ use App\Models\Product_topping;
 use App\Models\Size;
 use App\Models\SanPham;
 use App\Models\DanhMuc;
+use App\Models\Topping;
+use App\Models\Order;
+use Carbon\Carbon;
+
 use Illuminate\Http\Request;
 
 class StaffController extends Controller
@@ -48,5 +52,18 @@ class StaffController extends Controller
             return redirect()->route('staff.products')->with('error', 'Danh mục không tồn tại.');
         }
         return view('staff.menu', compact('sanpham', 'danhmuc', 'selectedDanhmuc'));
+    }
+     public function orderdetailtoday()
+    {
+        $donhangs = Order::with('details')
+            ->whereDate('created_at', Carbon::today())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $danhmuc = DanhMuc::all();
+        $sanpham = SanPham::all();
+
+        return view('staff.orderdetail', compact('donhangs', 'danhmuc', 'sanpham'));
+
     }
 }

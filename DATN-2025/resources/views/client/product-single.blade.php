@@ -17,7 +17,7 @@
             </div>
         </section>
 
-        <!-- Start Shop Single -->   
+        <!-- Start Shop Single -->
 
         <section class="default-section shop-single pad-bottom-remove">
             <div class="container">
@@ -47,7 +47,6 @@
                             <div class="star-rating">
                                 <span class="star-rating-customer" style="width: 50%"></span>
                             </div>
-                            <a href="#" class="review-text">03 customer review</a>
                         </div>
                         <p>{!! strip_tags($sanpham->mota, '<p><br><strong><em>') !!}</p>
                         <h3 class="text-coffee">
@@ -60,12 +59,13 @@
                             <div class="form-group">
                                 <label><strong>Chọn size:</strong></label><br>
                                 @php
-                                    $sizes = $sanpham->attributes;
+                                    $sizes = collect($sanpham->attributes->all());
+                                    $minSizeId = $sizes->sortBy('price')->first()['id'] ?? null;
                                 @endphp
                                 @foreach($sizes as $size)
                                     <label class="mr-3">
-                                        <input type="radio" name="size_id" value="{{ $size->id }}" class="size-option" data-price="{{ $size->price }}" required>
-                                        {{ $size->size }}
+                                        <input type="radio" name="size_id" value="{{ $size['id'] }}" class="size-option" data-price="{{ $size['price'] }}" required {{ $size['id'] == $minSizeId ? 'checked' : '' }}>
+                                        {{ $size['size'] }}
                                     </label><br>
                                 @endforeach
                             </div>
@@ -133,7 +133,7 @@
                             <a href="#description" aria-controls="description" role="tab" data-toggle="tab">Description</a>
                         </li>
                         <li role="presentation" class="active">
-                            <a href="#reviews" aria-controls="reviews" role="tab" data-toggle="tab">Reviews ( 5 )</a>
+                            <a href="#reviews" aria-controls="reviews" role="tab" data-toggle="tab">Reviews ( {{ $product->comments->count() }} )</a>
                         </li>
                     </ul>
                     <div class="tab-content">
@@ -145,62 +145,55 @@
                         </div>
                         <div role="tabpanel" class="tab-pane active" id="reviews">
                             <div class="title text-center">
-                                <h3 class="text-coffee">2 Comment</h3>
+                                <h3 class="text-coffee">{{ $product->comments->count() }} Comments</h3>
                             </div>
                             <div class="comment-blog">
-                                <div class="comment-inner-list">
-                                    <div class="comment-img">
-                                        <img src="images/comment-img1.png" alt="">
-                                    </div>
-                                    <div class="comment-info">
-                                        <h5>Anna Taylor</h5>
-                                        <span class="comment-date">AUGUST 9, 2016 10:57 AM</span>
-                                        <p>Aqua Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                                    </div>
-                                </div>
-                                <div class="comment-inner-list">
-                                    <div class="comment-img">
-                                        <img src="images/comment-img1.png" alt="">
-                                    </div>
-                                    <div class="comment-info">
-                                        <h5>Anna Taylor</h5>
-                                        <span class="comment-date">AUGUST 9, 2016 10:57 AM</span>
-                                        <p>Aqua Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                                    </div>
-                                </div>
-                                <div class="title text-center">
-                                    <h3 class="text-coffee">Leave a Reply</h3>
-                                </div>
-                                <form class="form" method="post" name="form">
-                                    <div class="row">
-                                        <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <textarea placeholder="Comment"></textarea>
+                                @foreach($comment as $item)
+                                    <div class="comment-inner-list">
+                                        <div class="comment-img">
+                                            <img src="images/comment-img1.png" alt="">
                                         </div>
-                                        <div class="col-md-6 col-sm-6 col-xs-12">
-                                            <input name="txt" placeholder="Name" type="text">
+                                        <div class="comment-info">
+                                            <h5>{{ $item->user->name }}</h5>
+                                            <span class="comment-date">{{ $item->created_at }}</span>
+                                            <p>{{ $item->comment }}</p>
                                         </div>
-                                        <div class="col-md-6 col-sm-6 col-xs-12">
-                                            <input name="email" placeholder="Email" type="email">
-                                        </div>
-                                        <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <div class="star-review">
-                                                <p>
-                                                    <span>Your Rating</span>
-                                                    <span class="star-review-customer">
+                                    </div>
+                                @endforeach
+                                @if (Auth::check())
+                                    <div class="title text-center">
+                                        <h3 class="text-coffee">Leave a Reply</h3>
+                                    </div>
+                                    <form class="form" method="post" action="{{ route('comment.store') }}">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <textarea placeholder="Comment" name="comment" required></textarea>
+                                            </div>
+                                            <input type="hidden" name="rating" id="rating" value="5">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="star-review">
+                                                    <p>
+                                                        <span>Your Rating</span>
+                                                        <span class="star-review-customer">
                                                         <a href="#" class="star-1"></a>
                                                         <a href="#" class="star-2"></a>
                                                         <a href="#" class="star-3"></a>
                                                         <a href="#" class="star-4"></a>
                                                         <a href="#" class="star-5"></a>
                                                     </span>
-                                                </p>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 col-sm-12 col-xs-12 text-center">
+                                                <input name="submit" value="POST COMMENT" class="submit-btn" type="submit">
                                             </div>
                                         </div>
-                                        <div class="col-md-12 col-sm-12 col-xs-12 text-center">
-                                            <input name="submit" value="POST COMMENT" class="submit-btn" type="submit">
-                                        </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                @else
+                                    <h6>Muốn phọt ra bình luận? <a href="{{ route('login') }}">Đăng nhập cái đã!</a></h6>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -269,69 +262,99 @@
 
 @section('scripts')
 <script>
-$(document).ready(function() {
-    // Hàm cập nhật giá
-    function updatePrice() {
-        console.log('Updating price...');
-        
-        // Lấy giá gốc của sản phẩm
-        const productBasePrice = parseInt($('#display-price').data('base')) || 0;
-        console.log('Base price:', productBasePrice);
-        
-        // Lấy giá của size đã chọn
-        const selectedSize = $('input[name="size_id"]:checked');
-        const sizePrice = selectedSize.length ? parseInt(selectedSize.data('price')) || 0 : 0;
-        console.log('Size price:', sizePrice);
-        
-        // Tính tổng giá topping
-        let toppingPrice = 0;
-        $('input[name="topping_ids[]"]:checked').each(function() {
-            toppingPrice += parseInt($(this).data('price')) || 0;
+    document.addEventListener('DOMContentLoaded', function () {
+        const displayPrice = document.getElementById('display-price');
+        const quantityInput = document.getElementById('quantity');
+        const minusBtn = document.querySelector('.minus-text');
+        const plusBtn = document.querySelector('.plus-text');
+        const formGroups = document.querySelectorAll('.form-group');
+
+        function getSelectedSizePrice() {
+            const checkedSize = document.querySelector('input.size-option:checked');
+            return checkedSize ? parseInt(checkedSize.dataset.price) : 0;
+        }
+        function getSelectedToppingPrice() {
+            let total = 0;
+            document.querySelectorAll('input.topping-option:checked').forEach(function (el) {
+                total += parseInt(el.dataset.price);
+            });
+            return total;
+        }
+        function getQuantity() {
+            let qty = parseInt(quantityInput.value);
+            return isNaN(qty) || qty < 1 ? 1 : qty;
+        }
+        function updatePrice() {
+            const sizePrice = getSelectedSizePrice();
+            const toppingPrice = getSelectedToppingPrice();
+            const qty = getQuantity();
+            const total = (sizePrice + toppingPrice) * qty;
+            displayPrice.textContent = total.toLocaleString('vi-VN') + ' VND';
+            console.log('Update price:', {sizePrice, toppingPrice, qty, total});
+        }
+        function checkMinSizeAndUpdate() {
+            const sizeOptions = document.querySelectorAll('input.size-option');
+            let minPrice = Infinity;
+            let minRadio = null;
+            sizeOptions.forEach(function (el) {
+                const price = parseInt(el.dataset.price);
+                if (price < minPrice) {
+                    minPrice = price;
+                    minRadio = el;
+                }
+            });
+            if (minRadio && !minRadio.checked) {
+                minRadio.checked = true;
+            }
+            updatePrice();
+        }
+
+        // Bắt sự kiện click trên từng .form-group (size và topping)
+        formGroups.forEach(function(group) {
+            group.addEventListener('click', function(e) {
+                // Nếu click vào label hoặc input bên trong
+                if (
+                    e.target.matches('label') ||
+                    e.target.matches('input.size-option') ||
+                    e.target.matches('input.topping-option')
+                ) {
+                    // Delay 1 chút để input nhận checked
+                    setTimeout(updatePrice, 10);
+                }
+            });
         });
-        console.log('Topping price:', toppingPrice);
-        
-        // Lấy số lượng
-        const quantity = parseInt($('#quantity').val()) || 1;
-        console.log('Quantity:', quantity);
-        
-        // Tính tổng giá
-        const totalPrice = (productBasePrice + sizePrice + toppingPrice) * quantity;
-        console.log('Total price:', totalPrice);
-        
-        // Hiển thị giá
-        $('#display-price').text(totalPrice.toLocaleString('vi-VN') + ' VND');
-    }
 
-    // Hàm thay đổi số lượng
-    function changeQty(delta) {
-        const $input = $('#quantity');
-        let qty = parseInt($input.val()) || 1;
-        qty = Math.max(1, qty + delta);
-        $input.val(qty);
-        updatePrice();
-    }
+        // Sự kiện tăng/giảm số lượng
+        plusBtn.addEventListener('click', function () {
+            let qty = getQuantity();
+            quantityInput.value = qty + 1;
+            updatePrice();
+        });
+        minusBtn.addEventListener('click', function () {
+            let qty = getQuantity();
+            if (qty > 1) {
+                quantityInput.value = qty - 1;
+                updatePrice();
+            }
+        });
+        quantityInput.addEventListener('input', function () {
+            let val = quantityInput.value.replace(/[^0-9]/g, '');
+            quantityInput.value = val === '' ? 1 : val;
+            updatePrice();
+        });
+        checkMinSizeAndUpdate();
 
-    // Gắn sự kiện cho size
-    $('input[name="size_id"]').on('click', function() {
-        updatePrice();
+        document.addEventListener('click', function(e) {
+            if (
+                e.target.matches('input.size-option') ||
+                e.target.matches('input.topping-option') ||
+                e.target.closest('label')
+            ) {
+                setTimeout(updatePrice, 10);
+            }
+        });
     });
-
-    // Gắn sự kiện cho topping
-    $('input[name="topping_ids[]"]').on('click', function() {
-        updatePrice();
-    });
-
-    // Gắn sự kiện cho nút tăng/giảm số lượng
-    $('.minus-text').on('click', function() {
-        changeQty(-1);
-    });
-
-    $('.plus-text').on('click', function() {
-        changeQty(1);
-    });
-
-    // Cập nhật giá ban đầu khi trang load xong
-    updatePrice();
+  updatePrice();
 });
 //#
 $(document).ready(function(){
@@ -352,6 +375,7 @@ $(document).ready(function(){
         focusOnSelect: true
     });
 });
+
 
 </script>
 @endsection

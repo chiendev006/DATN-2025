@@ -11,7 +11,9 @@
 							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 
 								<div class="card">
-                                <div style='margin-left: 30px; margin-top: 30px;'><strong><h2>Sản phẩm</h2> </strong></div>
+                                <div style='display: flex; justify-content: space-between; margin-top: 30px;'><strong><h2 style="margin-left: 30px;">Sản phẩm</h2> </strong> 	<button style="margin-right: 30px;">
+											<a href="{{ route('sanpham.create') }}">Thêm sản phẩm</a>
+										</button></div>
                                 <br>
 									<div class="card-body">
                                     <div style="display: flex; justify-content: space-between;" class="field-wrapper">
@@ -86,9 +88,7 @@
                                                     @endif
 												</tbody>
 								    	</table>
-										<button>
-											<a href="{{ route('sanpham.create') }}">Thêm sản phẩm</a>
-										</button>
+
 										</div>
 
 									</div>
