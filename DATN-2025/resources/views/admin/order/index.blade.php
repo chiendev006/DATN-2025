@@ -43,11 +43,7 @@
                                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>User ID</th>
                                         <th>Tên khách hàng</th>
-                                        <th>Địa chỉ</th>
-                                        <th>Số điện thoại</th>
-                                        <th>Phương thức thanh toán</th>
                                         <th>Trạng thái</th>
                                         <th>Tổng tiền</th>
                                         <th>Mã giao dịch</th>
@@ -61,11 +57,7 @@
                                     @foreach ($orders as $order)
                                     <tr>
                                         <td>{{ $order->id }}</td>
-                                        <td>{{ $order->user_id }}</td>
                                         <td>{{ $order->name }}</td>
-                                        <td>{{ $order->address }}</td>
-                                        <td>{{ $order->phone }}</td>
-                                        <td>{{ $order->payment_method }}</td>
                                         <td>
                                             @if ($order->status == 'pending' || $order->status == 0)
                                                 <span style="color: orange;">Chờ xử lý</span>
@@ -81,11 +73,31 @@
                                         </td>
                                         <td>{{ number_format($order->total, 0, ',', '.') }} đ</td>
                                         <td>{{ $order->transaction_id }}</td>
-                                        <td>{{ $order->pay_status }}</td>
+                                        <td>
+                                            @if ($order->pay_status == 0)
+                                                <span style="color: orange;">Chờ thanh toán</span>
+                                            @elseif ($order->pay_status == 1)
+                                                <span style="color: green;">Đã thanh toán</span>
+                                            @elseif ($order->pay_status == 2)
+                                                <span style="color: red;">Đã hủy</span>
+                                            @else
+                                                <span>{{ $order->pay_status }}</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $order->created_at }}</td>
                                         <td>{{ $order->updated_at }}</td>
                                         <td>
-                                            <a href="{{ route('admin.order.show', $order->id) }}" class="btn-action btn-view">Xem</a>
+                                            <button type="button" class="btn-action btn-view"
+                                                onclick="openOrderModal(this)"
+                                                data-id="{{ $order->id }}"
+                                                data-name="{{ $order->name }}"
+                                                data-status="@if ($order->status == 'pending' || $order->status == 0)Chờ xử lý@elseif ($order->status == 'processing' || $order->status == 1)Đã xác nhận @elseif ($order->status == 'completed' || $order->status == 3)Hoàn thành @elseif ($order->status == 'cancelled' || $order->status == 4)Đã hủy @else{{ $order->status }}@endif"
+                                                data-total="{{ number_format($order->total, 0, ',', '.') }} đ"
+                                                data-transaction_id="{{ $order->transaction_id }}"
+                                                data-pay_status="{{ $order->pay_status }}"
+                                                data-created_at="{{ $order->created_at }}"
+                                                data-updated_at="{{ $order->updated_at }}"
+                                            >Xem</button>
                                             <a href="{{ route('admin.order.delete', $order->id) }}" class="btn-action btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</a>
                                         </td>
                                     </tr>
@@ -100,3 +112,143 @@
         @include('footer')
     </div>
 </div>
+
+<!-- Modal Popup -->
+<div id="orderModal" class="modal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.4);">
+  <div  style="background:#fff; margin:2% auto; padding:20px; border-radius:8px; width:800px; position:relative;">
+    <span onclick="closeOrderModal()" style="position:absolute; top:10px; right:20px; font-size:24px; cursor:pointer;">&times;</span>
+    <h3>Thông tin hóa đơn</h3>
+    <form id="orderForm" method="POST" action="{{ route('admin.order.update', ['id' => 0]) }}">
+      @csrf
+        <div class="field-wrapper ">
+        <input type="hidden" name="id" id="modal_id">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Tên khách hàng</div>
+        <input type="text" class="form-control" name="name" id="modal_name" readonly />
+      </div>
+      </div>
+
+      <div class="field-wrapper ">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Trạng thái</div>
+        <input type="text" class="form-control" name="status" id="modal_status" readonly />
+      </div>
+      </div>
+
+      <div class="field-wrapper ">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Tổng tiền</div>
+        <input type="text" class="form-control" name="total" id="modal_total" readonly />
+      </div>
+      </div>
+
+      <div class="field-wrapper ">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Mã giao dịch</div>
+        <input type="text" class="form-control" name="transaction_id" id="modal_transaction_id" readonly />
+      </div>
+      </div>
+
+      <div class="field-wrapper ">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Trạng thái thanh toán</div>
+        <select class="form-control" name="pay_status" id="modal_pay_status">
+          <option value="0">Chờ thanh toán</option>
+          <option value="1">Đã thanh toán</option>
+          <option value="2">Đã hủy</option>
+        </select>
+      </div>
+      </div>
+
+      <div class="field-wrapper ">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Ngày tạo</div>
+        <input type="text" class="form-control" name="created_at" id="modal_created_at" readonly />
+      </div>
+      </div>
+
+      <div class="field-wrapper ">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Ngày cập nhật</div>
+        <input type="text" class="form-control" name="updated_at" id="modal_updated_at" readonly />
+      </div>
+      </div>
+      <!-- Bảng sản phẩm -->
+      <div class="field-wrapper">
+        <div style="margin-bottom:10px;">
+          <div class="field-placeholder">Danh sách sản phẩm</div>
+          <div id="order_products_container">
+            <table class="order-table" id="order_products_table">
+              <thead>
+                <tr>
+
+                  <th>Tên sản phẩm</th>
+                  <th>Ảnh</th>
+                  <th>Size</th>
+                  <th>Topping</th>
+                  <th>Số lượng</th>
+                  <th>Thành tiền</th>
+                  <th>Ghi chú</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Sản phẩm sẽ được render ở đây -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn-action btn-view">Cập nhật đơn hàng</button>
+        </div>
+
+    </form>
+  </div>
+</div>
+<script>
+function openOrderModal(btn) {
+  document.getElementById('orderModal').style.display = 'block';
+  document.getElementById('modal_id').value = btn.getAttribute('data-id');
+  document.getElementById('modal_name').value = btn.getAttribute('data-name');
+  document.getElementById('modal_status').value = btn.getAttribute('data-status');
+  document.getElementById('modal_total').value = btn.getAttribute('data-total');
+  document.getElementById('modal_transaction_id').value = btn.getAttribute('data-transaction_id');
+  document.getElementById('modal_pay_status').value = btn.getAttribute('data-pay_status');
+  document.getElementById('modal_created_at').value = btn.getAttribute('data-created_at');
+  document.getElementById('modal_updated_at').value = btn.getAttribute('data-updated_at');
+  document.getElementById('orderForm').action = "{{ url('admin/order/update') }}/" + btn.getAttribute('data-id');
+
+  // Lấy sản phẩm của đơn hàng
+  var orderId = btn.getAttribute('data-id');
+  fetch('/admin/order/json/' + orderId)
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+      var tbody = document.querySelector('#order_products_table tbody');
+      tbody.innerHTML = '';
+      // Kiểm tra có details không
+      if (data.details && Array.isArray(data.details) && data.details.length > 0) {
+        data.details.forEach(function(product) {
+          var row = `<tr>
+
+            <td>${product.product_name ?? ''}</td>
+            <td>${product.product_image ? `<img src='/storage/uploads/${product.product_image}' width='50'>` : ''}</td>
+            <td>${product.size ?? ''}</td>
+            <td>${product.topping ?? ''}</td>
+            <td>${product.quantity ?? ''}</td>
+            <td>${product.total !== undefined ? parseInt(product.total).toLocaleString('vi-VN') + ' đ' : ''}</td>
+            <td>${product.note ?? ''}</td>
+          </tr>`;
+          tbody.innerHTML += row;
+        });
+      } else {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Không có sản phẩm</td></tr>';
+      }
+    })
+    .catch(function(err) {
+      var tbody = document.querySelector('#order_products_table tbody');
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:red;">Lỗi lấy dữ liệu</td></tr>';
+    });
+}
+function closeOrderModal() {
+  document.getElementById('orderModal').style.display = 'none';
+}
+</script>

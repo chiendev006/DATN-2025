@@ -59,12 +59,13 @@
                             <div class="form-group">
                                 <label><strong>Chọn size:</strong></label><br>
                                 @php
-                                    $sizes = $sanpham->attributes;
+                                    $sizes = collect($sanpham->attributes->all());
+                                    $minSizeId = $sizes->sortBy('price')->first()['id'] ?? null;
                                 @endphp
                                 @foreach($sizes as $size)
                                     <label class="mr-3">
-                                        <input type="radio" name="size_id" value="{{ $size->id }}" class="size-option" data-price="{{ $size->price }}" required>
-                                        {{ $size->size }}
+                                        <input type="radio" name="size_id" value="{{ $size['id'] }}" class="size-option" data-price="{{ $size['price'] }}" required {{ $size['id'] == $minSizeId ? 'checked' : '' }}>
+                                        {{ $size['size'] }}
                                     </label><br>
                                 @endforeach
                             </div>
@@ -261,88 +262,97 @@
 
 @section('scripts')
 <script>
-$(document).ready(function() {
-    // Hàm cập nhật giá
-    function updatePrice() {
-        console.log('Updating price...');
+    document.addEventListener('DOMContentLoaded', function () {
+        const displayPrice = document.getElementById('display-price');
+        const quantityInput = document.getElementById('quantity');
+        const minusBtn = document.querySelector('.minus-text');
+        const plusBtn = document.querySelector('.plus-text');
+        const formGroups = document.querySelectorAll('.form-group');
 
-        // Lấy giá gốc của sản phẩm
-        const productBasePrice = parseInt($('#display-price').data('base')) || 0;
-        console.log('Base price:', productBasePrice);
-
-        // Lấy giá của size đã chọn
-        const selectedSize = $('input[name="size_id"]:checked');
-        const sizePrice = selectedSize.length ? parseInt(selectedSize.data('price')) || 0 : 0;
-        console.log('Size price:', sizePrice);
-
-        // Tính tổng giá topping
-        let toppingPrice = 0;
-        $('input[name="topping_ids[]"]:checked').each(function() {
-            toppingPrice += parseInt($(this).data('price')) || 0;
-        });
-        console.log('Topping price:', toppingPrice);
-
-        // Lấy số lượng
-        const quantity = parseInt($('#quantity').val()) || 1;
-        console.log('Quantity:', quantity);
-
-        // Tính tổng giá
-        const totalPrice = (productBasePrice + sizePrice + toppingPrice) * quantity;
-        console.log('Total price:', totalPrice);
-
-        // Hiển thị giá
-        $('#display-price').text(totalPrice.toLocaleString('vi-VN') + ' VND');
-    }
-
-    // Hàm thay đổi số lượng
-    function changeQty(delta) {
-        const $input = $('#quantity');
-        let qty = parseInt($input.val()) || 1;
-        qty = Math.max(1, qty + delta);
-        $input.val(qty);
-        updatePrice();
-    }
-
-    // Gắn sự kiện cho size
-    $('input[name="size_id"]').on('click', function() {
-        updatePrice();
-    });
-
-    // Gắn sự kiện cho topping
-    $('input[name="topping_ids[]"]').on('click', function() {
-        updatePrice();
-    });
-
-    // Gắn sự kiện cho nút tăng/giảm số lượng
-    $('.minus-text').on('click', function() {
-        changeQty(-1);
-    });
-
-    $('.plus-text').on('click', function() {
-        changeQty(1);
-    });
-
-    // Cập nhật giá ban đầu khi trang load xong
-    updatePrice();
-});
-
-const stars = document.querySelectorAll('.star-review-customer a');
-const ratingInput = document.getElementById('rating');
-
-stars.forEach((star, index) => {
-    star.addEventListener('click', function(e) {
-        e.preventDefault();
-        const rating = index + 1;
-        ratingInput.value = rating;
-
-        // Reset màu hết trước
-        stars.forEach(s => s.classList.remove('active'));
-        // Active mấy cái sao đã chọn
-        for (let i = 0; i <= index; i++) {
-            stars[i].classList.add('active');
+        function getSelectedSizePrice() {
+            const checkedSize = document.querySelector('input.size-option:checked');
+            return checkedSize ? parseInt(checkedSize.dataset.price) : 0;
         }
-    });
-});
+        function getSelectedToppingPrice() {
+            let total = 0;
+            document.querySelectorAll('input.topping-option:checked').forEach(function (el) {
+                total += parseInt(el.dataset.price);
+            });
+            return total;
+        }
+        function getQuantity() {
+            let qty = parseInt(quantityInput.value);
+            return isNaN(qty) || qty < 1 ? 1 : qty;
+        }
+        function updatePrice() {
+            const sizePrice = getSelectedSizePrice();
+            const toppingPrice = getSelectedToppingPrice();
+            const qty = getQuantity();
+            const total = (sizePrice + toppingPrice) * qty;
+            displayPrice.textContent = total.toLocaleString('vi-VN') + ' VND';
+            console.log('Update price:', {sizePrice, toppingPrice, qty, total});
+        }
+        function checkMinSizeAndUpdate() {
+            const sizeOptions = document.querySelectorAll('input.size-option');
+            let minPrice = Infinity;
+            let minRadio = null;
+            sizeOptions.forEach(function (el) {
+                const price = parseInt(el.dataset.price);
+                if (price < minPrice) {
+                    minPrice = price;
+                    minRadio = el;
+                }
+            });
+            if (minRadio && !minRadio.checked) {
+                minRadio.checked = true;
+            }
+            updatePrice();
+        }
 
+        // Bắt sự kiện click trên từng .form-group (size và topping)
+        formGroups.forEach(function(group) {
+            group.addEventListener('click', function(e) {
+                // Nếu click vào label hoặc input bên trong
+                if (
+                    e.target.matches('label') ||
+                    e.target.matches('input.size-option') ||
+                    e.target.matches('input.topping-option')
+                ) {
+                    // Delay 1 chút để input nhận checked
+                    setTimeout(updatePrice, 10);
+                }
+            });
+        });
+
+        // Sự kiện tăng/giảm số lượng
+        plusBtn.addEventListener('click', function () {
+            let qty = getQuantity();
+            quantityInput.value = qty + 1;
+            updatePrice();
+        });
+        minusBtn.addEventListener('click', function () {
+            let qty = getQuantity();
+            if (qty > 1) {
+                quantityInput.value = qty - 1;
+                updatePrice();
+            }
+        });
+        quantityInput.addEventListener('input', function () {
+            let val = quantityInput.value.replace(/[^0-9]/g, '');
+            quantityInput.value = val === '' ? 1 : val;
+            updatePrice();
+        });
+        checkMinSizeAndUpdate();
+
+        document.addEventListener('click', function(e) {
+            if (
+                e.target.matches('input.size-option') ||
+                e.target.matches('input.topping-option') ||
+                e.target.closest('label')
+            ) {
+                setTimeout(updatePrice, 10);
+            }
+        });
+    });
 </script>
 @endsection

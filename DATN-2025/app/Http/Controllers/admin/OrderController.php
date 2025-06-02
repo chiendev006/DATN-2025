@@ -17,9 +17,12 @@ class OrderController extends Controller
         return view('admin.order.index', ['orders' => $orders]);
     }
 
-    public function show($id)
+    public function update(Request $request, $id)
     {
-        // TODO: Hiển thị chi tiết đơn hàng
+        $order = \App\Models\Order::findOrFail($id);
+        $order->pay_status = $request->input('pay_status');
+        $order->save();
+        return redirect()->route('admin.order.index')->with('success', 'Cập nhật trạng thái thanh toán thành công!');
     }
 
     public function delete($id)
@@ -29,5 +32,42 @@ class OrderController extends Controller
         // Xóa order
         \App\Models\Order::where('id', $id)->delete();
         return redirect()->route('admin.order.index')->with('success', 'Đã xóa đơn hàng thành công!');
+    }
+
+    public function showJson($id)
+    {
+        $order = \App\Models\Order::with('details')->findOrFail($id);
+        $details = $order->details->map(function($detail) {
+            // Lấy sản phẩm
+            $product = \App\Models\sanpham::find($detail->product_id);
+            $product_name = $product ? $product->name : '';
+            $product_image = $product ? $product->image : '';
+            // Lấy size
+            $size = $detail->size_id ? \App\Models\Size::find($detail->size_id) : null;
+            $size_name = $size ? ($size->size . ' - ' . number_format($size->price) . ' VND') : '';
+            // Lấy topping (có thể nhiều)
+            $topping_arr = [];
+            if (!empty($detail->topping_id)) {
+                $topping_ids = array_filter(array_map('trim', explode(',', $detail->topping_id)));
+                if (!empty($topping_ids)) {
+                    $toppings = \App\Models\Product_topping::whereIn('id', $topping_ids)->get();
+                    foreach ($toppings as $tp) {
+                        $topping_arr[] = $tp->topping . ' - ' . number_format($tp->price) . ' VND';
+                    }
+                }
+            }
+            return [
+                'product_name' => $product_name,
+                'product_image' => $product_image,
+                'size' => $size_name,
+                'topping' => implode(', ', $topping_arr),
+                'quantity' => $detail->quantity,
+                'total' => $detail->total,
+                'note' => $detail->note,
+            ];
+        });
+        $orderArr = $order->toArray();
+        $orderArr['details'] = $details;
+        return response()->json($orderArr);
     }
 }
