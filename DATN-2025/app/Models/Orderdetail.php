@@ -26,4 +26,16 @@ class Orderdetail extends Model
     {
         return $this->belongsTo(Order::class);
     }
+    public function size()
+{
+    return $this->belongsTo(Size::class, 'size_id');
+}
+   public function sanpham()
+{
+    return $this->belongsTo(sanpham::class, 'product_id');
+}
+public function product()
+{
+    return $this->belongsTo(sanpham::class);
+}
 }
