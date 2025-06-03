@@ -21,6 +21,7 @@ use App\Http\Controllers\ShowproductController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\admin\AuthController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\MyaccountController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\VNPayController;
@@ -217,3 +218,6 @@ use App\Http\Controllers\VNPayController;
         // VNPAY
         Route::get('/vnpay/return', [App\Http\Controllers\VNPayController::class, 'vnpayReturn'])->name('vnpay.return');
         Route::get('/vnpay/redirect', [App\Http\Controllers\VNPayController::class, 'redirectToVnpay'])->name('vnpay.redirect');
+
+        // My account
+        Route::get('/myaccount',[MyaccountController::class, 'index'])->name('client.myaccount');

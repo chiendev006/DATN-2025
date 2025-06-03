@@ -355,7 +355,6 @@
         });
     });
   updatePrice();
-});
 //#
 $(document).ready(function(){
     $('.slider-for').slick({

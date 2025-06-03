@@ -12,21 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('order', function (Blueprint $table) {
-            $table->id(); // Khóa chính tự tăng
-            $table->foreignId('user_id') // Khóa ngoại liên kết với bảng 'users'
-                  ->nullable() // Cho phép giá trị null (nếu người dùng không đăng nhập hoặc đã bị xóa)
-                  ->constrained('users') // Ràng buộc khóa ngoại với bảng 'users'
-                  ->onDelete('set null'); // Khi user bị xóa, user_id trong order sẽ thành null
-
-            $table->string('name', 255); // Tên người đặt hàng
-            $table->string('address', 255); // Địa chỉ giao hàng
-            $table->string('phone', 15); // Số điện thoại liên hệ
-
-            // Phương thức thanh toán: 'cash' (tiền mặt), 'banking' (chuyển khoản)
+            $table->id(); 
+            $table->foreignId('user_id') 
+                  ->nullable() 
+                  ->constrained('users') 
+                  ->onDelete('set null'); 
+            $table->string('name', 255); 
+            $table->string('address', 255); 
+            $table->string('phone', 15);
             $table->enum('payment_method', ['cash', 'banking'])->default('cash');
-
-            // Trạng thái đơn hàng: 'pending' (chờ xử lý), 'processing' (đang xử lý), 'completed' (hoàn thành), 'cancelled' (đã hủy)
             $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
+
 
             $table->decimal('total', 10, 2); // Tổng giá trị đơn hàng (10 chữ số tổng cộng, 2 chữ số sau dấu thập phân)
 
@@ -38,9 +34,10 @@ return new class extends Migration
             $table->string('pay_status', 10)->default('0');
 
             $table->timestamps(); // Tạo cột 'created_at' và 'updated_at' tự động
+
+        
         });
     }
-
     /**
      * Reverse the migrations.
      */

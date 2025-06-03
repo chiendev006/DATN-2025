@@ -60,11 +60,11 @@
                                         <label>Chọn huyện (tỉnh Hải Phòng) <span class="text-danger">*</span></label>
                                         <select name="district" id="district-select" class="form-control" required>
                                             <option value="" disabled selected>-- Chọn huyện --</option>
-                                            <option value="An Lao" data-ship="20000" {{ old('district') == 'An Lao' ? 'selected' : '' }}>An Lão</option>
-                                            <option value="Kien An" data-ship="25000" {{ old('district') == 'Kien An' ? 'selected' : '' }}>Kiến An</option>
-                                            <option value="Hai An" data-ship="30000" {{ old('district') == 'Hai An' ? 'selected' : '' }}>Hải An</option>
-                                            <option value="Ngo Quyen" data-ship="35000" {{ old('district') == 'Ngo Quyen' ? 'selected' : '' }}>Ngô Quyền</option>
-                                            <!-- Thêm các huyện khác tương tự -->
+                                            <option value="Lê Chân" data-ship="10000" {{ old('district') == 'Lê Chân' ? 'selected' : '' }}>An Lão</option>
+                                            <option value="Ngô Quyền" data-ship="12000" {{ old('district') == 'Ngô Quyền' ? 'selected' : '' }}>Kiến An</option>
+                                            <option value="Hồng Bàng" data-ship="15000" {{ old('district') == 'Hồng Bàng' ? 'selected' : '' }}>Hải An</option>
+                                            <option value="Kiến An" data-ship="18000" {{ old('district') == 'Kiến An' ? 'selected' : '' }}>Ngô Quyền</option>
+                                            <option value="Dương Kinh" data-ship="20000" {{ old('district') == 'Dương Kinh' ? 'selected' : '' }}>Ngô Quyền</option>
                                         </select>
                                         @error('district')
                                             <span class="text-danger">{{ $message }}</span>
@@ -83,7 +83,6 @@
                                         <p>Phí vận chuyển hiện tại: <strong id="shipping-fee-display">Chưa chọn huyện</strong></p>
                                     </div>
                                 </div>
-
                                 <div class="row mt-4">
                                     <div class="col-md-12">
                                         <h5>Phương thức thanh toán</h5>
@@ -123,10 +122,7 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Hidden input để xác định redirect (nếu dùng JS cũng có thể xử lý redirect này tự động sau khi form gửi) -->
                                 <input type="hidden" name="redirect" value="1">
-
                                 <div class="row mt-4">
                                     <div class="col-md-12">
                                         <button type="submit" class="btn-large btn-primary-gold">Đặt hàng</button>
@@ -136,207 +132,138 @@
 
                         </div>
                     </div>
-                    <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                        <div class="shop-checkout-right">
-                            <div class="shop-checkout-box">
-                                <h5>ĐƠN HÀNG CỦA BẠN</h5>
-                                <div class="shop-checkout-title">
-                                    <h6>SẢN PHẨM <span>THÀNH TIỀN</span></h6>
-                                </div>
-                                <div class="shop-checkout-row">
-                                    @php
-                                        // Tính tổng tạm tính từ sản phẩm
-                                        $subtotal = 0;
-                                        $items = Auth::check() ? $items : $cart;
+                <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+    <div class="shop-checkout-right">
+        <div class="shop-checkout-box">
+            <h5 class="checkout-heading">ĐƠN HÀNG CỦA BẠN</h5>
+            <div class="shop-checkout-title">
+                <div class="checkout-row header">
+                    <h6>SẢN PHẨM</h6>
+                    <h6>THÀNH TIỀN</h6>
+                </div>
+            </div>
+            <div class="shop-checkout-body">
+                @php
+                    $subtotal = 0;
+                    $items = Auth::check() ? $items : $cart;
+                @endphp
 
-                                        foreach ($items as $item) {
-                                            if (Auth::check()) {
-                                                $product = $item->product;
-                                                if (!$product) continue;
+                @foreach ($items as $item)
+                    @php
+                        if (Auth::check()) {
+                            $product = $item->product;
+                            if (!$product) continue;
 
-                                                $productPrice = $product->price ?? 0;
-                                                $sizePrice = $item->size ? ($item->size->price ?? 0) : 0;
+                            $productName = $product->name ?? 'Sản phẩm không tên';
+                            $productPrice = $product->price ?? 0;
+                            $sizePrice = $item->size ? ($item->size->price ?? 0) : 0;
 
-                                                $toppingPrice = 0;
-                                                if (!empty($item->topping_id)) {
-                                                    $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id)));
-                                                    if (!empty($toppingIds)) {
-                                                        $toppingPrice = \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price');
-                                                    }
-                                                }
+                            $toppingPrice = 0;
+                            $toppingText = '';
 
-                                                $unitPrice = $productPrice + $sizePrice + $toppingPrice;
-                                                $totalItem = $unitPrice * $item->quantity;
-                                                $subtotal += $totalItem;
+                            if (!empty($item->topping_id)) {
+                                $toppingIds = array_filter(array_map('intval', explode(',', $item->topping_id)));
+                                if (!empty($toppingIds)) {
+                                    $toppings = \App\Models\Topping::whereIn('id', $toppingIds)->get();
+                                    $toppingText = $toppings->pluck('name')->implode(', ');
+                                    $toppingPrice = $toppings->sum('price');
+                                }
+                            }
 
-                                            } else {
-                                                $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
-                                                $totalItem = $unitPrice * ($item['quantity'] ?? 1);
-                                                $subtotal += $totalItem;
-                                            }
-                                        }
-
-                                        // Lấy coupon từ session
-                                        $coupons = session('coupons', []);
-                                        $discount = 0;
-                                        foreach ($coupons as $coupon) {
-                                            if ($coupon['type'] === 'percent') {
-                                                $discount += $subtotal * $coupon['discount'] / 100;
-                                            } else {
-                                                $discount += $coupon['discount'];
-                                            }
-                                        }
-
-                                        // Tính tổng sau giảm giá
-                                        $total = max(0, $subtotal - $discount);
-                                        $shippingFee = 0;
-                                        if (old('district')) {
-                                            $districtShippingFees = [
-                                                'An Lao' => 20000,
-                                                'Kien An' => 25000,
-                                                'Hai An' => 30000,
-                                                'Ngo Quyen' => 35000,   
-                                                // Thêm các huyện khác nếu có
-                                            ];
-                                            $shippingFee = $districtShippingFees[old('district')] ?? 0;
-}
-
-                                        $totalWithShipping = $total + $shippingFee;
-                                    @endphp
-                                    <div>
-                                        <h6>Tạm tính: <span>{{ number_format($subtotal) }} đ</span> </h6>
-                                    </div>
-
-                                    @if($discount > 0)
-                                    <div class="checkout-total">
-                                        <h6>Giảm giá: <span>{{ number_format($discount) }}</span> đ</h6>
-                                    </div>
-                                    @endif
-
-                                    <div class="checkout-total">
-                                        <h6>Phí vận chuyển: 
-                                            <span id="shipping-fee-display-right">
-                                                {{ $shippingFee > 0 ? number_format($shippingFee) . ' đ' : '0 đ' }}
-                                            </span>
-                                        </h6>
-                                    </div>
-                                    <div>
-                                        <h6>
-                                            Tổng cộng: 
-                                            <span class="price-big" id="total-with-shipping">
-                                                {{ number_format($totalWithShipping) }} đ
-                                            </span>
-                                        </h6>
-                                    </div>
-                            </div>
+                            $unitPrice = $productPrice + $sizePrice + $toppingPrice;
+                            $totalItem = $unitPrice * $item->quantity;
+                            $subtotal += $totalItem;
+                        } else {
+                            $productName = $item['name'] ?? 'Sản phẩm không tên';
+                            $quantity = $item['quantity'] ?? 1;
+                            $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
+                            $totalItem = $unitPrice * $quantity;
+                            $subtotal += $totalItem;
+                        }
+                    @endphp
+                    <div class="checkout-row">
+                        <div>
+                            <strong>{{ $productName }}</strong> x {{ Auth::check() ? $item->quantity : $quantity }}
+                            @if (($toppingText ?? false) || (!empty($item['topping_names'] ?? [])))
+                                <div class="topping-text">Topping: {{ $toppingText ?? implode(', ', $item['topping_names']) }}</div>
+                            @endif
                         </div>
+                        <div>{{ number_format($totalItem) }} đ</div>
+                    </div>
+                @endforeach
+
+                @php
+                    $coupons = session('coupons', []);
+                    $discount = 0;
+                    foreach ($coupons as $coupon) {
+                        $discount += $coupon['type'] === 'percent'
+                            ? $subtotal * $coupon['discount'] / 100
+                            : $coupon['discount'];
+                    }
+                    $total = max(0, $subtotal - $discount);
+
+                    $shippingFee = 0;
+                    if (old('district')) {
+                        $shippingFees = [
+                            'Lê Chân' => 10000,
+                            'Ngô Quyền' => 12000,
+                            'Hồng Bàng' => 15000,
+                            'Kiến An' => 18000,
+                            'Dương Kinh' => 20000,
+                        ];
+                        $shippingFee = $shippingFees[old('district')] ?? 0;
+                    }
+
+                    $totalWithShipping = $total + $shippingFee;
+                @endphp
+
+                <hr>
+                <div class="checkout-row">
+                    <div>Tạm tính</div>
+                    <div>{{ number_format($subtotal) }} đ</div>
+                </div>
+                @if ($discount > 0)
+                    <div class="checkout-row">
+                        <div>Giảm giá</div>
+                        <div>-{{ number_format($discount) }} đ</div>
+                    </div>
+                @endif
+                <div class="checkout-row">
+                    <div>Phí vận chuyển</div>
+                    <div id="shipping-fee-display-right">
+                        {{ $shippingFee > 0 ? number_format($shippingFee) . ' đ' : '0 đ' }}
                     </div>
                 </div>
+                <hr>
+                <div class="checkout-row total">
+                    <div><strong>Tổng cộng</strong></div>
+                    <div class="price-big" id="total-with-shipping">{{ number_format($totalWithShipping) }} đ</div>
+                </div>
+            </div>
+        </div>
+    </div>
+                </div>
+
             </div>
         </section>
     </div>
 </main>
-
-<style>
-.text-danger {
-    color: #dc3545;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-.mt-4 {
-    margin-top: 2rem;
-}
-
-.payment-methods {
-    margin: 1rem 0;
-}
-
-.payment-method {
-    margin: 1rem 0;
-}
-
-.payment-method label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-}
-
-.payment-method input[type="radio"] {
-    margin-right: 0.5rem;
-}
-
-.terms-conditions {
-    margin: 1rem 0;
-}
-
-.terms-conditions label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-}
-
-.terms-conditions input[type="checkbox"] {
-    margin-right: 0.5rem;
-}
-
-.shop-checkout-row p {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 0.5rem 0;
-}
-
-.shop-checkout-row p small {
-    margin: 0 0.5rem;
-    color: #666;
-}
-
-.shop-checkout-row p strong {
-    color: #000;
-}
-
-.checkout-total h6 {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 1rem 0;
-}
-
-.price-big {
-    font-size: 1.25rem;
-    color: #c7a17a;
-}
-</style>
 <script>
     const districtSelect = document.getElementById("district-select");
     const shippingCostElement = document.getElementById("shipping-fee-display");
     const shippingFeeDisplayRight = document.getElementById("shipping-fee-display-right");
     const totalWithShippingElement = document.getElementById("total-with-shipping");
-
     const totalBeforeShipping = {{ $total }};
-
-
     function formatCurrency(amount) {
         return amount.toLocaleString('vi-VN') + " đ";
     }
-
     districtSelect.addEventListener("change", function () {
         const selectedOption = this.options[this.selectedIndex];
         const shippingCost = parseInt(selectedOption.getAttribute("data-ship")) || 0;
-
-        // Cập nhật phí vận chuyển ở 2 nơi
         shippingCostElement.textContent = formatCurrency(shippingCost);
         shippingFeeDisplayRight.textContent = formatCurrency(shippingCost);
-
-        // Cập nhật tổng tiền
         const total = totalBeforeShipping + shippingCost;
         totalWithShippingElement.textContent = formatCurrency(total);
     });
 </script>
-
-
-
-
-
 @endsection
