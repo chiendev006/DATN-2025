@@ -102,7 +102,7 @@ use App\Http\Controllers\VNPayController;
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
         // Đơn hàng
-        Route::get('/order', [\App\Http\Controllers\admin\OrderController::class, 'index'])->name('admin.order.index');
+        Route::get('/order', [\App\Http\Controllers\admin\OrderController::class, 'ordersIndex'])->name('admin.order.index');
         Route::post('/order/update/{id}', [\App\Http\Controllers\admin\OrderController::class, 'update'])->name('admin.order.update');
         Route::get('/order/{id}/delete', [\App\Http\Controllers\admin\OrderController::class, 'delete'])->name('admin.order.delete');
         Route::get('/order/json/{id}', [\App\Http\Controllers\admin\OrderController::class, 'showJson'])->name('admin.order.json');

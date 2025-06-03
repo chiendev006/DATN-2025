@@ -27,6 +27,21 @@
                                 <button type="button" id="btn-add-staff" class="btn-success">Thêm nhân viên</button>
                                     <div class="card-body">
 
+                                        <div style="margin-bottom: 10px;">
+                                            <form method="GET" style="display:inline-block;">
+                                                <label for="per_page">Hiển thị</label>
+                                                <select name="per_page" id="per_page" class="form-control" style="width: 80px; display:inline-block;" onchange="this.form.submit()">
+                                                    <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
+                                                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                                                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                                                </select> bản ghi/trang
+                                                @foreach(request()->except(['per_page','page']) as $key => $val)
+                                                    <input type="hidden" name="{{ $key }}" value="{{ $val }}">
+                                                @endforeach
+                                            </form>
+                                        </div>
+
                                         <div class="table-responsive">
                                             <table id="copy-print-csv" class="table v-middle">
                                                 <thead>
@@ -296,4 +311,19 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </form>
     </div>
+</div>
+
+<div class="text-muted mb-2" style="font-size:13px;">
+    @php
+        $from = $staffs->firstItem();
+        $to = $staffs->lastItem();
+        $total = $staffs->total();
+        $currentPage = $staffs->currentPage();
+        $lastPage = $staffs->lastPage();
+    @endphp
+    Trang {{ $currentPage }}/{{ $lastPage }},
+    Hiển thị {{ $from }}-{{ $to }}/{{ $total }} bản ghi
+</div>
+<div style="margin-top: 10px;">
+    {{ $staffs->appends(request()->except('page'))->links() }}
 </div>

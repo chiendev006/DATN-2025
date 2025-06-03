@@ -11,9 +11,10 @@ class OrderController extends Controller
     /**
      * Hiển thị danh sách đơn hàng.
      */
-    public function index()
+    public function ordersIndex(Request $request)
     {
-        $orders = Order::paginate(10);
+        $perPage = $request->input('per_page', 10);
+        $orders = Order::paginate($perPage);
         return view('admin.order.index', ['orders' => $orders]);
     }
 
@@ -77,6 +78,7 @@ class OrderController extends Controller
      */
     public function filterOrders(Request $request)
     {
+        $perPage = $request->input('per_page', 10);
         $query = Order::query();
         $hasPayStatus = $request->filled('pay_status');
         $hasStatus = $request->filled('status');
@@ -90,7 +92,7 @@ class OrderController extends Controller
             $query->where('status', $request->input('status'));
         }
         // Nếu cả hai đều không có thì không where gì, trả về toàn bộ
-        $orders = $query->paginate(10);
+        $orders = $query->paginate($perPage);
         return view('admin.order.index', ['orders' => $orders]);
     }
 
@@ -100,9 +102,10 @@ class OrderController extends Controller
      */
     public function searchByTransactionId(Request $request)
     {
+        $perPage = $request->input('per_page', 10);
         $transactionId = $request->input('transaction_id');
         $orders = Order::where('transaction_id', 'like', "%$transactionId%")
-            ->paginate(10);
+            ->paginate($perPage);
         return view('admin.order.index', ['orders' => $orders]);
     }
 }
