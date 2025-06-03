@@ -69,6 +69,7 @@
                                     </label><br>
                                 @endforeach
                             </div>
+                            @if($sanpham->danhmuc->role == 1)
                             <div class="form-group">
                                 <label><strong>Chọn topping:</strong></label><br>
                                 @php
@@ -85,6 +86,11 @@
                                     </label><br>
                                 @endforeach
                             </div>
+                            @else
+                            <div class="form-group">
+                                <p class="text-muted">Sản phẩm này không sử dụng topping</p>
+                            </div>
+                            @endif
                             <div class="price-textbox">
                                 <span class="minus-text"><i class="icon-minus"></i></span>
                                 <input type="text" name="qty" id="quantity" placeholder="1" pattern="[0-9]" value="1" readonly>

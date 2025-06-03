@@ -15,7 +15,7 @@ class ProductAttributeSeeder extends Seeder
             ['size' => 'L', 'price' => 40000],
         ];
         $attributes = [];
-        for ($productId = 1; $productId <= 9; $productId++) {
+        for ($productId = 1; $productId <= 100; $productId++) {
             foreach ($sizes as $size) {
                 $attributes[] = [
                     'product_id' => $productId,

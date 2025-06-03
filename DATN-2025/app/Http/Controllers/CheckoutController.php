@@ -134,8 +134,8 @@ public function process(Request $request)
                     ->where('id', $cartItem['size_id'])
                     ->value('price') ?? 0;
 
-                $toppingTotal = isset($cartItem['topping_prices']) && is_array($cartItem['topping_prices']) 
-                    ? array_sum(array_map('floatval', $cartItem['topping_prices'])) 
+                $toppingTotal = isset($cartItem['topping_prices']) && is_array($cartItem['topping_prices'])
+                    ? array_sum(array_map('floatval', $cartItem['topping_prices']))
                     : 0;
 
                 $unitPrice = $basePrice + $toppingTotal;
@@ -168,8 +168,8 @@ public function process(Request $request)
         $coupons = session()->get('coupons', []);
         $discount = 0;
         foreach ($coupons as $coupon) {
-            $discount += ($coupon['type'] === 'percent') 
-                ? round($total * $coupon['discount'] / 100) 
+            $discount += ($coupon['type'] === 'percent')
+                ? round($total * $coupon['discount'] / 100)
                 : round($coupon['discount']);
         }
 
@@ -278,7 +278,7 @@ public function process(Request $request)
 }
 
 
-    
+
   public function success($orderId)
 {
     try {
@@ -292,5 +292,5 @@ public function process(Request $request)
         return redirect()->route('home')->with('error', 'Không tìm thấy đơn hàng');
     }
 }
-    
+
 }
