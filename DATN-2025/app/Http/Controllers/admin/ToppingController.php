@@ -8,8 +8,9 @@ use Illuminate\Http\Request;
 
 class ToppingController extends Controller
 {
-    public function index() {
-        $topping = Topping::paginate(5);
+    public function index(Request $request) {
+        $perPage = $request->input('per_page', 5);
+        $topping = Topping::paginate($perPage);
         return view('admin.topping.index', compact('topping'));
     }
     public function create() {

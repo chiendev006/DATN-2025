@@ -19,9 +19,10 @@ class SanphamController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $sanpham = Sanpham::with('danhmuc')->paginate(10);
+        $perPage = $request->input('per_page', 10);
+        $sanpham = Sanpham::with('danhmuc')->paginate($perPage);
         $danhmucs = Danhmuc::all();
         return view('admin.sanpham.index', ['sanpham' => $sanpham, 'danhmucs' => $danhmucs]);
     }
