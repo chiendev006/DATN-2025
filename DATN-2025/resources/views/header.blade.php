@@ -108,6 +108,9 @@
 										<li>
 											<a href="{{ route('topping.index') }}">Topping</a>
 										</li>
+                                        <li>
+											<a href="{{ route('admin.order.index') }}">Đơn hàng</a>
+										</li>
 										<li>
 											<a href="crm.html">Bình luận</a>
 										</li>
@@ -159,39 +162,13 @@
 										<li>
 											<a href="signup.html">Logout</a>
 										</li>
-										<li>
-											<a href="forgot-password.html">Forgot Password</a>
-										</li>
-										<li>
-											<a href="reset-password.html">Reset Password</a>
-										</li>
-										<li>
-											<a href="lock-screen.html">Lock Screen</a>
-										</li>
-										<li>
-											<a href="subscribe.html">Subscribe</a>
-										</li>
-										<li>
-											<a href="maintenance.html">Maintenance</a>
-										</li>
-										<li>
-											<a href="error.html">404</a>
-										</li>
-										<li>
-											<a href="error-option2.html">Error</a>
-										</li>
+
 									</ul>
 								</div>
 							</div>
 							<!-- Sidebar menu ends -->
 
-							<!-- Sidebar actions starts -->
-							<div class="sidebar-actions">
-								<div class="support-tile blue">
-									<a href="pricing.html" class="btn btn-light m-auto">Upgrade Account</a>
-								</div>
-							</div>
-							<!-- Sidebar actions ends -->
+
 
 						</div>
 

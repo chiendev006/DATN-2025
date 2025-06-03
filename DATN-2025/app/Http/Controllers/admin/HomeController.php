@@ -57,6 +57,7 @@ class HomeController extends Controller
             return !is_null($order->user_id) && !in_array($order->user_id, $role21Ids);
         })->count();
 
+        $recentOrders = Order::orderBy('created_at', 'desc')->limit(5)->get();
         return view('admin.home', [
             'months' => $months,
             'ordersPerMonth' => $ordersPerMonth,
@@ -68,6 +69,7 @@ class HomeController extends Controller
             ],
             'muaThang' => $muaThang,
             'muaTaiKhoan' => $muaTaiKhoan,
+            'recentOrders' => $recentOrders,
         ]);
     }
 }

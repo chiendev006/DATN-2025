@@ -144,7 +144,7 @@ use App\Http\Controllers\VNPayController;
 
           // Staff
         Route::prefix('staff')->group(function () {
-        Route::get('/', [AdminStaffController::class, 'index'])->name('admin.staff.index');
+        Route::get('/', [AdminStaffController::class, 'staffIndex'])->name('admin.staff.index');
         Route::post('/store', [AdminStaffController::class, 'store'])->name('admin.staff.store');
         Route::post('/update/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
         Route::get('/delete/{id}', [AdminStaffController::class, 'delete'])->name('admin.staff.delete');
