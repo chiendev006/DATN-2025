@@ -21,13 +21,12 @@ class Order extends Model
         'total',
         'transaction_id',
     ];
-    public function details()
-    {
-        return $this->hasMany(Orderdetail::class);
-    }
     public function orderDetails()
 {
     return $this->hasMany(OrderDetail::class, 'order_id');
 }
-
+public function details()
+{
+    return $this->hasMany(OrderDetail::class, 'order_id');
+}
 }

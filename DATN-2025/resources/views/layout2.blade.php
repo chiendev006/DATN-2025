@@ -380,23 +380,25 @@
                         </ul>
                       </li>
                      @auth
-    <li class="has-child">
-        <a href="#" class="nav-link dropdown-toggle" id="userDropdown">
-            Xin chào, {{ Auth::user()->name }}
-        </a>
-        <ul class="drop-nav">
-            <li>
-                <a class="dropdown-item" href="{{ route('logout') }}"
-                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    Đăng xuất
-                </a>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
-            </li>
-        </ul>
-    </li>
-@else
+      <li class="has-child">
+          <a href="#" class="nav-link dropdown-toggle" id="userDropdown">
+              Xin chào, {{ Auth::user()->name }}
+          </a>
+          <ul class="drop-nav">
+              <li>
+                  <a class="dropdown-item" href="{{ route('logout') }}"
+                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                      Đăng xuất
+                  </a>
+                  <a href="{{ route('client.myaccount') }}">Tài khoản của tôi</a>
+
+                  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                      @csrf
+                  </form>
+              </li>
+          </ul>
+      </li>
+  @else
     <li class="has-child">
         <a href="#" class="nav-link">Tài khoản</a>
         <ul class="drop-nav">
