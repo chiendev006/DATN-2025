@@ -56,11 +56,31 @@
                                         @enderror
                                     </div>
 
-                                    <div class="col-md-12">
-                                        <textarea name="address" placeholder="Địa chỉ giao hàng" required>{{ old('address') }}</textarea>
-                                        @error('address')
+                                      <div class="col-md-12">
+                                        <label>Chọn huyện (tỉnh Hải Phòng) <span class="text-danger">*</span></label>
+                                        <select name="district" id="district-select" class="form-control" required>
+                                            <option value="" disabled selected>-- Chọn huyện --</option>
+                                            <option value="Lê Chân" data-ship="10000" {{ old('district') == 'Lê Chân' ? 'selected' : '' }}>An Lão</option>
+                                            <option value="Ngô Quyền" data-ship="12000" {{ old('district') == 'Ngô Quyền' ? 'selected' : '' }}>Kiến An</option>
+                                            <option value="Hồng Bàng" data-ship="15000" {{ old('district') == 'Hồng Bàng' ? 'selected' : '' }}>Hải An</option>
+                                            <option value="Kiến An" data-ship="18000" {{ old('district') == 'Kiến An' ? 'selected' : '' }}>Ngô Quyền</option>
+                                            <option value="Dương Kinh" data-ship="20000" {{ old('district') == 'Dương Kinh' ? 'selected' : '' }}>Ngô Quyền</option>
+                                        </select>
+                                        @error('district')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
+                                    </div>
+
+                                    <div class="col-md-12 mt-3">
+                                        <label>Địa chỉ chi tiết (Số nhà, tên đường, ngõ,...) <span class="text-danger">*</span></label>
+                                        <input type="text" name="address_detail" value="{{ old('address_detail') }}" placeholder="Nhập số nhà, tên đường..." required class="form-control">
+                                        @error('address_detail')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <div class="col-md-12 mt-3">
+                                        <p>Phí vận chuyển hiện tại: <strong id="shipping-fee-display">Chưa chọn huyện</strong></p>
                                     </div>
                                 </div>
 
@@ -201,7 +221,19 @@
                                             ? ($subtotal * $coupon['discount'] / 100)
                                             : $coupon['discount'];
                                     }
-                                    $total = max(0, $subtotal - $discount);
+                                      $shippingFee = 0;
+                    if (old('district')) {
+                        $shippingFees = [
+                            'Lê Chân' => 10000,
+                            'Ngô Quyền' => 12000,
+                            'Hồng Bàng' => 15000,
+                            'Kiến An' => 18000,
+                            'Dương Kinh' => 20000,
+                        ];
+                        $shippingFee = $shippingFees[old('district')] ?? 0;
+                    }
+
+                                    $total = max(0, $subtotal + $shippingFee - $discount);
                                 @endphp
 
                                 @if($discount > 0)
@@ -211,11 +243,11 @@
                                 @endif
 
                                 <div class="checkout-total">
-                                    <h6>Phí vận chuyển: <span>Miễn phí</span></h6>
+                                    <h6>Phí vận chuyển: <span id="shipping-fee-display-right">{{ $shippingFee > 0 ? number_format($shippingFee) . ' đ' : '0 đ' }}</span></h6>
                                 </div>
 
                                 <div class="checkout-total">
-                                    <h6>Tổng cộng: <span class="price-big">{{ number_format($total) }} VND</span></h6>
+                                    <h6>Tổng cộng: <span class="price-big" id="total-with-shipping">{{ number_format($total) }} VND</span></h6>
                                 </div>
                             </div>
                         </div>
@@ -298,69 +330,42 @@
 }
 </style>
 <script>
-let provinces = {};
-let districts = {};
-
-fetch('/data/tinh_tp.json')
-    .then(res => res.json())
-    .then(data => {
-        provinces = data;
-        const provinceSelect = document.getElementById('province');
-        Object.entries(data).forEach(([code, info]) => {
-            const opt = document.createElement('option');
-            opt.value = info.name;
-            opt.text = info.name;
-            provinceSelect.appendChild(opt);
-        });
-    });
-
-document.getElementById('province').addEventListener('change', function () {
-    const provinceCode = Object.keys(provinces).find(k => provinces[k].name === this.value);
-    fetch('/data/quan_huyen.json')
-        .then(res => res.json())
-        .then(data => {
-            districts = data;
-            const districtSelect = document.getElementById('district');
-            districtSelect.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
-            Object.entries(data)
-                .filter(([code, info]) => info.parent_code === provinceCode)
-                .forEach(([code, info]) => {
-                    const opt = document.createElement('option');
-                    opt.value = info.name;
-                    opt.text = info.name;
-                    districtSelect.appendChild(opt);
-                });
-            fetchShippingFee(); // cập nhật phí khi tỉnh thay đổi
-        });
-});
-
-document.getElementById('district').addEventListener('change', fetchShippingFee);
-document.getElementById('address').addEventListener('input', fetchShippingFee);
-
-function fetchShippingFee() {
-    const province = document.getElementById('province').value;
-    const district = document.getElementById('district').value;
-    const address = document.getElementById('address').value;
-
-    if (!province || !district || !address) {
-        document.getElementById('shipping-fee').innerText = 'Vui lòng chọn đầy đủ địa chỉ';
-        return;
+document.addEventListener("DOMContentLoaded", function () {
+    const districtSelect = document.getElementById("district-select");
+    const shippingCostElement = document.getElementById("shipping-fee-display");
+    const shippingFeeDisplayRight = document.getElementById("shipping-fee-display-right");
+    const totalWithShippingElement = document.getElementById("total-with-shipping");
+    const totalBeforeShipping = {{ $subtotal }} - {{ $discount }};
+    function formatCurrency(amount) {
+        return amount.toLocaleString('vi-VN') + " đ";
     }
-
-    fetch(`/calculate-fee?province=${province}&district=${district}&address=${encodeURIComponent(address)}&weight=1000&value=300000&transport=road&deliver_option=none`)
-        .then(res => res.json())
-        .then(data => {
-            if (data.success && data.fee) {
-                document.getElementById('shipping-fee').innerText = data.fee.fee.toLocaleString() + ' VND';
-            } else {
-                document.getElementById('shipping-fee').innerText = 'Không hỗ trợ giao';
-            }
-        })
-        .catch(() => {
-            document.getElementById('shipping-fee').innerText = 'Lỗi tính phí giao hàng';
-        });
-}
+    districtSelect.addEventListener("change", function () {
+        const selectedOption = this.options[this.selectedIndex];
+        const shippingCost = parseInt(selectedOption.getAttribute("data-ship")) || 0;
+        shippingCostElement.textContent = formatCurrency(shippingCost);
+        if (shippingFeeDisplayRight) shippingFeeDisplayRight.textContent = formatCurrency(shippingCost);
+        if (totalWithShippingElement) totalWithShippingElement.textContent = formatCurrency(totalBeforeShipping + shippingCost);
+    });
+    // Gọi khi load trang nếu đã có huyện được chọn
+    const selectedOption = districtSelect.options[districtSelect.selectedIndex];
+    const shippingCost = selectedOption ? parseInt(selectedOption.getAttribute("data-ship")) || 0 : 0;
+    shippingCostElement.textContent = formatCurrency(shippingCost);
+    if (shippingFeeDisplayRight) shippingFeeDisplayRight.textContent = formatCurrency(shippingCost);
+    if (totalWithShippingElement) totalWithShippingElement.textContent = formatCurrency(totalBeforeShipping + shippingCost);
+});
 </script>
 
-
 @endsection
+
+
+
+
+
+
+
+
+
+
+
+
+

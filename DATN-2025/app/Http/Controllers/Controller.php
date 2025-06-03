@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Auth;
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
-    public function index(){
+    public function home(){
         return view('client.home');
     }
 public function  danhmuc()
