@@ -185,7 +185,9 @@
     <h3>Thông tin hóa đơn</h3>
     <form id="orderForm" method="POST" action="{{ route('admin.order.update', ['id' => 0]) }}">
       @csrf
-        <div class="field-wrapper ">
+      <div class="row">
+
+        <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
         <input type="hidden" name="id" id="modal_id">
       <div style="margin-bottom:10px;">
         <div class="field-placeholder">Tên khách hàng</div>
@@ -193,28 +195,28 @@
       </div>
       </div>
 
-      <div class="field-wrapper ">
+      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
       <div style="margin-bottom:10px;">
         <div class="field-placeholder">Trạng thái</div>
         <input type="text" class="form-control" name="status" id="modal_status" readonly />
       </div>
       </div>
 
-      <div class="field-wrapper ">
+      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
       <div style="margin-bottom:10px;">
         <div class="field-placeholder">Tổng tiền</div>
         <input type="text" class="form-control" name="total" id="modal_total" readonly />
       </div>
       </div>
 
-      <div class="field-wrapper ">
+      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
       <div style="margin-bottom:10px;">
         <div class="field-placeholder">Mã giao dịch</div>
         <input type="text" class="form-control" name="transaction_id" id="modal_transaction_id" readonly />
       </div>
       </div>
 
-      <div class="field-wrapper ">
+      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
       <div style="margin-bottom:10px;">
         <div class="field-placeholder">Trạng thái thanh toán</div>
         <select class="form-control" name="pay_status" id="modal_pay_status">
@@ -225,21 +227,35 @@
       </div>
       </div>
 
-      <div class="field-wrapper ">
+      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
       <div style="margin-bottom:10px;">
         <div class="field-placeholder">Ngày tạo</div>
         <input type="text" class="form-control" name="created_at" id="modal_created_at" readonly />
       </div>
       </div>
 
-      <div class="field-wrapper ">
+      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
       <div style="margin-bottom:10px;">
         <div class="field-placeholder">Ngày cập nhật</div>
         <input type="text" class="form-control" name="updated_at" id="modal_updated_at" readonly />
       </div>
       </div>
+
+        <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Tiền ship</div>
+        <input type="text" class="form-control" name="updated_at" id="modal_updated_at" readonly />
+      </div>
+      </div>
+
+        <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Tiền sản phẩm</div>
+        <input type="text" class="form-control" name="updated_at" id="modal_updated_at" readonly />
+      </div>
+      </div>
       <!-- Bảng sản phẩm -->
-      <div class="field-wrapper">
+      <div class="field-wrapper col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12  ">
         <div style="margin-bottom:10px;">
           <div class="field-placeholder">Danh sách sản phẩm</div>
           <div id="order_products_container">
@@ -297,7 +313,12 @@ function openOrderModal(btn) {
             <td>${product.product_name ?? ''}</td>
             <td>${product.product_image ? `<img src='/storage/uploads/${product.product_image}' width='50'>` : ''}</td>
             <td>${product.size ?? ''}</td>
-            <td>${product.topping ?? ''}</td>
+            <td>
+            ${product.topping ?
+                product.topping :
+                `<span style="color: red;">Không chọn</span>`
+            }
+            </td>
             <td>${product.quantity ?? ''}</td>
             <td>${product.total !== undefined ? parseInt(product.total).toLocaleString('vi-VN') + ' đ' : ''}</td>
             <td>${product.note ?? ''}</td>
