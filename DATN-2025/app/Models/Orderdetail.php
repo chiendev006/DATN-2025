@@ -22,10 +22,6 @@ class Orderdetail extends Model
         'note',
         'status'
     ];
-    public function order()
-    {
-        return $this->belongsTo(Order::class);
-    }
     public function size()
 {
     return $this->belongsTo(Size::class, 'size_id');
@@ -34,8 +30,18 @@ class Orderdetail extends Model
 {
     return $this->belongsTo(sanpham::class, 'product_id');
 }
-public function product()
+public function order()
+    {
+        return $this->belongsTo(Order::class, 'order_id');
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Sanpham::class, 'product_id');
+    }
+    
+public function toppings()
 {
-    return $this->belongsTo(sanpham::class);
+    return $this->belongsToMany(Topping::class, 'order_detail_topping', 'order_detail_id', 'topping_id');
 }
 }

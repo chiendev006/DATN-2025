@@ -38,11 +38,13 @@ class CheckoutController extends Controller
     }
 
 
-  public function process(Request $request)
+
+public function process(Request $request)
 {
     $request->merge([
-    'address' => ($request->address_detail ?? '') . ', ' . ($request->district ?? '')
-]);
+        'address' => ($request->address_detail ?? '') . ', ' . ($request->district ?? '')
+    ]);
+
     try {
         Log::info('Starting checkout process', [
             'is_logged_in' => Auth::check(),
@@ -80,17 +82,19 @@ class CheckoutController extends Controller
                 ->where('cart_id', $userCart->id)
                 ->get();
 
-            foreach ($cartDetails as $item) {
+           foreach ($cartDetails as $item) {
                 if (!$item->product) continue;
 
                 $productPrice = $item->product->price ?? 0;
                 $sizePrice = $item->size ? ($item->size->price ?? 0) : 0;
-
                 $toppingPrice = 0;
+                $toppingIds = [];
+
                 if (!empty($item->topping_id)) {
-                    $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id)));
+                    $toppingIds = array_map('intval', explode(',', str_replace(' ', '', $item->topping_id)));
+
                     if (!empty($toppingIds)) {
-                        $toppingPrice = \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price');
+                        $toppingPrice = \App\Models\Topping::whereIn('id', $toppingIds)->sum('price');
                     }
                 }
 
@@ -105,11 +109,12 @@ class CheckoutController extends Controller
                     'quantity' => $item->quantity,
                     'total' => $itemTotal,
                     'size_id' => $item->size_id ?? null,
-                    'topping_id' => $item->topping_id ?? null,
+                    'topping_id' => implode(',', $toppingIds),
                     'note' => $request->note ?? null,
                     'status' => 'pending',
                 ];
             }
+
         } else {
             $sessionCart = session()->get('cart', []);
             if (empty($sessionCart)) {
@@ -164,23 +169,25 @@ class CheckoutController extends Controller
         $discount = 0;
         foreach ($coupons as $coupon) {
             $discount += ($coupon['type'] === 'percent') 
-                ? ($total * $coupon['discount'] / 100) 
-                : $coupon['discount'];
+                ? round($total * $coupon['discount'] / 100) 
+                : round($coupon['discount']);
         }
 
-        $total = max(0, $total - $discount);
+        $total = max(0, round($total - $discount));
+
 
         $address = $request->address;
+        $normalizedAddress = Str::ascii(mb_strtolower($address));
         $district = null;
 
         foreach ($shippingFees as $name => $fee) {
-            if (stripos($address, $name) !== false) {
+            if (Str::contains($normalizedAddress, Str::ascii(mb_strtolower($name)))) {
                 $district = $name;
                 break;
             }
         }
 
-        $shippingFee = $district ? $shippingFees[$district] : 20000; 
+        $shippingFee = $district ? $shippingFees[$district] : 20000;
         $total += $shippingFee;
 
         Log::debug('Shipping Fee Info', [
@@ -205,7 +212,6 @@ class CheckoutController extends Controller
                     'user_id' => Auth::check() ? Auth::id() : null,
                     'note' => $request->note ?? null,
                     'status' => 'completed',
-
                 ]
             ]);
 
@@ -219,6 +225,7 @@ class CheckoutController extends Controller
         $order->address = $request->address;
         $order->payment_method = $request->payment_method;
         $order->status = 'pending';
+        $order->shipping_fee = $shippingFee;
         $order->total = $total;
 
         if (!$order->save()) {
@@ -234,9 +241,7 @@ class CheckoutController extends Controller
             $orderDetail->quantity = $detail['quantity'];
             $orderDetail->total = $detail['total'];
             $orderDetail->size_id = $detail['size_id'] ?? null;
-
-            $topping = $detail['topping_id'] ?? null;
-            $orderDetail->topping_id = is_array($topping) ? implode(',', $topping) : $topping;
+            $orderDetail->topping_id = $detail['topping_id'];
             $orderDetail->note = $detail['note'] ?? null;
             $orderDetail->status = $detail['status'] ?? 'pending';
 
@@ -271,6 +276,7 @@ class CheckoutController extends Controller
             ->withInput();
     }
 }
+
 
     
   public function success($orderId)
