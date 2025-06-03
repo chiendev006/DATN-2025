@@ -55,7 +55,7 @@
                             </li>
                         @endforeach
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('staff.orderdetailtoday') ? 'active' : '' }}" 
+                                <a class="nav-link {{ request()->routeIs('staff.orderdetailtoday') ? 'active' : '' }}"
                                 href="{{ route('staff.orderdetailtoday') }}">
                                     <i class="fa fa-fw fa-file-invoice-dollar"></i> Hóa đơn hôm nay
                                 </a>
@@ -129,7 +129,7 @@
                                 <!-- BEGIN pos-order -->
                                 <div class="pos-order">
                                     <div class="pos-order-product">
-                                       
+
                                             <div class="small">$12.99</div>
                                             <div class="small mb-2">- size: large</div>
                                             <div class="d-flex">
@@ -146,8 +146,8 @@
                                                     ></a>
                                             </div>
                                         </div>
-                                        
-                                        
+
+
                                     </div>
                                     <div class="pos-order-price d-flex flex-column">
                                         <div class="flex-1">$12.99</div>
@@ -703,7 +703,7 @@
                                         </div>
                 </div>
                 <div class="modal-pos-product-info">
-                    
+
                     <div class="fs-4 fw-semibold">{{ $item->name }}</div>
                     <div class="text-body text-opacity-50 mb-2">
                         {{ $item->title }}
@@ -779,7 +779,7 @@
                         </div>
                     </div>
                     @endforeach
-                    
+
                 </div>
             </div>
         </div>

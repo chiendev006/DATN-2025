@@ -115,6 +115,6 @@ public function postComment(Request $request)
         'rating' => $request->rating,
     ]);
 
-    return back()->with('success', 'Bình luận của mày đã được phọt ra, ngon lành!');
+    return back();
 }
 }

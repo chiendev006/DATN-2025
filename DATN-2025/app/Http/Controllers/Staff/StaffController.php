@@ -15,11 +15,6 @@ use Illuminate\Http\Request;
 
 class StaffController extends Controller
 {
-    public function login()
-    {
-        return view('staff.login');
-    }
-
     public function index()
     {
         return redirect()->route('staff.products'); // chuyển thẳng về trang sản phẩm

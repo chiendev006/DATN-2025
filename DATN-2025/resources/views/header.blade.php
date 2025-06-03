@@ -160,7 +160,7 @@
 											<a href="{{ route('admin.staff.index') }}">Nhân viên</a>
 										</li>
 										<li>
-											<a href="signup.html">Logout</a>
+											<a href="{{ route('admin.logout') }}">Logout</a>
 										</li>
 
 									</ul>

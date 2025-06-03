@@ -25,6 +25,7 @@ use App\Http\Controllers\MyaccountController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\VNPayController;
+use App\Http\Controllers\Staff\AuthenController;
 
         Route::get('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
@@ -205,9 +206,11 @@ use App\Http\Controllers\VNPayController;
         Route::get('/checkout/success', [App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 
         // Staff
-        Route::get('staff/login', [StaffController::class, 'login'])->name('staff.login');
+        Route::get('staff/login', [AuthenController::class, 'login'])->name('staff.login');
+        Route::post('staff/postlogin', [AuthenController::class, 'postlogin'])->name('staff.postlogin');
+        Route::get('staff/logout', [AuthenController::class, 'logout'])->name('staff.logout');
 
-        Route::prefix('staff')->group(function () {
+        Route::prefix('staff')->middleware('checkStaff')->group(function () {
         Route::get('/', [StaffController::class, 'index'])->name('staff.index');
         Route::get('/product/{id}/options', [StaffController::class, 'getOptions'])->name('staff.options');
         Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
