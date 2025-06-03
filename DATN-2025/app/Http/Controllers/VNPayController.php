@@ -142,8 +142,9 @@ class VNPayController extends Controller
                     $order->phone = $vnpOrder['phone'];
                     $order->address = $vnpOrder['address'];
                     $order->payment_method = 'banking';
-                    $order->status = $vnpOrder['status'] ?? 'completed';
+                    $order->status =  'pending';
                     $order->total = $vnpOrder['total'];
+                    $order->pay_status=1;
                     $order->transaction_id = $vnpData['vnp_TransactionNo'];
 
                     if (!$order->save()) {

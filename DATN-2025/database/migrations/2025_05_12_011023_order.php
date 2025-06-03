@@ -35,7 +35,7 @@ return new class extends Migration
             $table->uuid('transaction_id')->nullable(); // ID giao dịch cho thanh toán (nếu có), có thể null
 
             // Trạng thái thanh toán: 1 (đã thanh toán), 0 (chưa thanh toán) - hoặc các giá trị khác tùy định nghĩa của bạn
-            $table->string('pay_status', 10)->default('1');
+            $table->string('pay_status', 10)->default('0');
 
             $table->timestamps(); // Tạo cột 'created_at' và 'updated_at' tự động
         });
