@@ -27,6 +27,13 @@
         background: #e74c3c;
         color: #fff;
     }
+    .pagination {
+        font-size: 12px;
+    }
+    .pagination .page-link {
+        padding: 0.25rem 0.5rem;
+        min-width: 28px;
+    }
 </style>
   <div class="content-wrapper-scroll">
 
@@ -38,7 +45,7 @@
 
                                     <div class="card-body">
 
-                                        <div class="row" style="margin-bottom: 20px;">
+                                        <div class="row" style="margin-bottom: 20px; display:flex; justify-content: space-between;" >
                                             <div class="col-md-6">
                                                 <form method="GET" action="{{ route('admin.order.filter') }}" class="form-inline">
                                                   <div style="display: flex; align-items: center;">
@@ -59,6 +66,18 @@
                                                         <option value="cancelled" {{ request('status')==='cancelled' ? 'selected' : '' }}>Đã hủy</option>
                                                     </select></div>
                                                     <button style="margin-top: -8px;" type="submit" class="btn btn-primary">Lọc</button>
+                                                   <div  class="field-wrapper">
+                                                   <div class="field-placeholder">Đơn/trang</div>
+                                                    <select name="per_page" class="form-control" style="width: 80px; margin-left: 12px;" onchange="this.form.submit()">
+                                                        <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 bản </option>
+                                                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản  </option>
+                                                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
+                                                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
+                                                    </select>
+                                                    @foreach(request()->except(['per_page','page','pay_status','status']) as $key => $val)
+                                                        <input type="hidden" name="{{ $key }}" value="{{ $val }}">
+                                                    @endforeach
+                                                    </div>
                                                     </div>
                                                 </form>
                                             </div>
@@ -136,6 +155,20 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                        @php
+                            $from = $orders->firstItem();
+                            $to = $orders->lastItem();
+                            $total = $orders->total();
+                            $currentPage = $orders->currentPage();
+                            $lastPage = $orders->lastPage();
+                        @endphp
+                        <div class="text-muted mb-2" style="font-size:13px;">
+                            Trang {{ $currentPage }}/{{ $lastPage }},
+                            Hiển thị {{ $from }}-{{ $to }}/{{ $total }} bản ghi
+                        </div>
+                        <div class="d-flex justify-content-center mt-3">
+                            {{ $orders->appends(request()->except('page'))->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
                 </div>

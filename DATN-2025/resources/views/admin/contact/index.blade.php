@@ -17,6 +17,18 @@
 					{{ session('success') }}
 				</div>
 			@endif
+        <form method="GET" style="display:inline-block; margin-bottom: 10px;">
+            <label for="per_page">Hiển thị</label>
+            <select name="per_page" id="per_page" class="form-control" style="width: 80px; display:inline-block;" onchange="this.form.submit()">
+                <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
+                <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+            </select> bản ghi/trang
+            @foreach(request()->except(['per_page','page']) as $key => $val)
+                <input type="hidden" name="{{ $key }}" value="{{ $val }}">
+            @endforeach
+        </form>
         <table>
           <thead>
           <tr>
@@ -56,16 +68,21 @@
             @endforeach
           </tbody>
         </table>
-         <div class="table-pagination mt-4">
+        @php
+            $from = $contact->firstItem();
+            $to = $contact->lastItem();
+            $total = $contact->total();
+            $currentPage = $contact->currentPage();
+            $lastPage = $contact->lastPage();
+        @endphp
+        <div class="text-muted mb-2" style="font-size:13px;">
+            Trang {{ $currentPage }}/{{ $lastPage }},
+            Hiển thị {{ $from }}-{{ $to }}/{{ $total }} bản ghi
+        </div>
+        <div class="table-pagination mt-4">
           <div class="flex items-center justify-between">
             <div class="buttons">
-              @for ($i = 1; $i <= $contact->lastPage(); $i++)
-                <a href="{{ $contact->url($i) }}">
-                  <button type="button" class="button {{ $i == $contact->currentPage() ? 'active' : '' }}">
-                    {{ $i }}
-                  </button>
-                </a>
-              @endfor
+              {{ $contact->appends(request()->except('page'))->links() }}
             </div>
             <small>Page {{ $contact->currentPage() }} of {{ $contact->lastPage() }}</small>
          </div>
