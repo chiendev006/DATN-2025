@@ -12,13 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('order', function (Blueprint $table) {
-            $table->id(); 
-            $table->foreignId('user_id') 
-                  ->nullable() 
-                  ->constrained('users') 
-                  ->onDelete('set null'); 
-            $table->string('name', 255); 
-            $table->string('address', 255); 
+            $table->id();
+            $table->foreignId('user_id')
+                  ->nullable()
+                  ->constrained('users')
+                  ->onDelete('set null');
+            $table->string('name', 255);
+            $table->decimal('shipping_fee')->default(0);
+            $table->string('address', 255);
             $table->string('phone', 15);
             $table->enum('payment_method', ['cash', 'banking'])->default('cash');
             $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
@@ -35,7 +36,7 @@ return new class extends Migration
 
             $table->timestamps(); // Tạo cột 'created_at' và 'updated_at' tự động
 
-        
+
         });
     }
     /**

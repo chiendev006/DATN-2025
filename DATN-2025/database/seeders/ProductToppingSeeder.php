@@ -16,7 +16,7 @@ class ProductToppingSeeder extends Seeder
             ['topping' => 'Pudding trứng', 'price' => 7000],
         ];
         $data = [];
-        for ($productId = 1; $productId <= 3; $productId++) {
+        for ($productId = 1; $productId <= 100; $productId++) {
             foreach ($toppings as $topping) {
                 $data[] = [
                     'product_id' => $productId,
