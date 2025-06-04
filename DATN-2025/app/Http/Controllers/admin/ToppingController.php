@@ -48,7 +48,9 @@ class ToppingController extends Controller
         return redirect()->route('topping.index')->with('success', 'Sửa thành công!');
     }
     public function delete($id) {
-        Topping::destroy($id);
+        $topping=Topping::find($id);
+          \App\Models\Product_topping::where('topping', $topping->name)->delete();
+           Topping::destroy($id);
         return redirect()->route('topping.index')->with('success', 'Xóa thành công!');
     }
 }

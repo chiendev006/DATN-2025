@@ -72,7 +72,7 @@ class SanphamController extends Controller
         foreach ($request->sizes as $size) {
             Size::create([
                 'product_id' => $sanpham->id,
-                'size' => $size['name'],
+                'size' => $size['size'],
                 'price' => $size['price'],
             ]);
         }

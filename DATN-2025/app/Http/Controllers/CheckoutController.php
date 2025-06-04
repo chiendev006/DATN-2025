@@ -85,7 +85,6 @@ public function process(Request $request)
            foreach ($cartDetails as $item) {
                 if (!$item->product) continue;
 
-                $productPrice = $item->product->price ?? 0;
                 $sizePrice = $item->size ? ($item->size->price ?? 0) : 0;
                 $toppingPrice = 0;
                 $toppingIds = [];
@@ -94,20 +93,21 @@ public function process(Request $request)
                     $toppingIds = array_map('intval', explode(',', str_replace(' ', '', $item->topping_id)));
 
                     if (!empty($toppingIds)) {
-                        $toppingPrice = \App\Models\Topping::whereIn('id', $toppingIds)->sum('price');
+                        $toppingPrice = \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price');
                     }
                 }
 
-                $unitPrice = $productPrice + $sizePrice + $toppingPrice;
+                $unitPrice = $sizePrice + $toppingPrice;
                 $itemTotal = $unitPrice * $item->quantity;
+
                 $total += $itemTotal;
 
                 $orderDetails[] = [
                     'product_id' => $item->product->id,
                     'product_name' => $item->product->name,
-                    'product_price' => $unitPrice,
+                    'product_price' => $sizePrice,
                     'quantity' => $item->quantity,
-                    'total' => $itemTotal,
+                    'total' => ($sizePrice+$toppingPrice)*$item->quantity,
                     'size_id' => $item->size_id ?? null,
                     'topping_id' => implode(',', $toppingIds),
                     'note' => $request->note ?? null,
