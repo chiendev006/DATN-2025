@@ -13,6 +13,7 @@ use App\Http\Controllers\admin\ProductImageController;
 use App\Http\Controllers\admin\ContactAdminController;
 use App\Http\Controllers\admin\SizeController;
 use App\Http\Controllers\admin\ToppingController;
+use App\Http\Controllers\admin\BlogsController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
@@ -27,6 +28,7 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\VNPayController;
 use App\Http\Controllers\Staff\AuthenController;
+
 
         Route::get('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
@@ -203,6 +205,15 @@ use App\Http\Controllers\Staff\AuthenController;
         Route::get('/delete/{id}', [Product_attributesController::class, 'delete'])->name('size.delete');
          });
 
+          // Blogs
+        Route::prefix('blogs')->group(function () {
+                Route::get('/', [BlogsController::class, 'index'])->name('blogs.index');
+                Route::get('/create', [BlogsController::class, 'create'])->name('blogs.create');
+                Route::post('/store', [BlogsController::class, 'store'])->name('blogs.store');
+                Route::get('/edit/{id}', [BlogsController::class, 'edit'])->name('blogs.edit');
+                Route::post('/update/{id}', [BlogsController::class, 'update'])->name('blogs.update');
+                Route::get('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
+        });
 
         });
         Route::get('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->name('product_img.delete');
