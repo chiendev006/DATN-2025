@@ -29,7 +29,7 @@ return new class extends Migration
 
             // Trạng thái tài khoản
             $table->tinyInteger('status')->default(1)->comment('0: Vô hiệu hóa, 1: Hoạt động, 2: Bị khóa');
-
+            $table->decimal('salary_per_day', 15, 2)->default(0);
             $table->timestamps(); // created_at, updated_at
         });
 

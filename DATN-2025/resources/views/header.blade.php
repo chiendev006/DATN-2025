@@ -42,6 +42,10 @@
 
 	</head>
 	<body>
+@php
+    $isHomeTab = request()->is('admin') || request()->is('admin/danhmuc*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*');
+    $isAuthTab = request()->is('admin/staff*') || request()->is('admin/payroll*');
+@endphp
 
 		<!-- Loading wrapper start -->
 		<div id="loading-wrapper">
@@ -64,12 +68,12 @@
 						<a href="#" class="logo">
 							<img src="img/logo.svg" alt="Uni Pro Admin">
 						</a>
-						<a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#tab-home" role="tab" aria-controls="tab-home" aria-selected="true">
+						<a class="nav-link {{ $isHomeTab ? 'active' : '' }}" id="home-tab" data-bs-toggle="tab" href="#tab-home" role="tab" aria-controls="tab-home" aria-selected="true">
 							<i class="icon-home2"></i>
 							<span class="nav-link-text">Thống kê - Quản lí</span>
 						</a>
 
-						<a class="nav-link" id="authentication-tab" data-bs-toggle="tab" href="#tab-authentication" role="tab" aria-controls="tab-authentication" aria-selected="false">
+						<a class="nav-link {{ $isAuthTab ? 'active' : '' }}" id="authentication-tab" data-bs-toggle="tab" href="#tab-authentication" role="tab" aria-controls="tab-authentication" aria-selected="false">
 							<i class="icon-unlock"></i>
 							<span class="nav-link-text">Tài khoản</span>
 						</a>
@@ -84,7 +88,7 @@
 					<div class="tab-content">
 
 						<!-- Chat tab -->
-						<div class="tab-pane fade show active" id="tab-home" role="tabpanel" aria-labelledby="home-tab">
+						<div class="tab-pane fade {{ $isHomeTab ? 'show active' : '' }}" id="tab-home" role="tabpanel" aria-labelledby="home-tab">
 
 							<!-- Tab content header start -->
 							<div class="tab-pane-header">
@@ -97,19 +101,19 @@
 								<div class="sidebar-menu">
 									<ul>
 										<li>
-											<a href="/admin" class="current-page">Thống kê</a>
-										</li>
-                                        <li>
-											<a href="{{ route('danhmuc.index') }}">Danh mục</a>
+											<a href="/admin" class="{{ request()->is('admin') ? 'current-page' : '' }}">Thống kê</a>
 										</li>
 										<li>
-											<a href="{{ route('sanpham.index') }}">Sản phẩm</a>
+											<a href="{{ route('danhmuc.index') }}" class="{{ request()->is('admin/danhmuc*') ? 'current-page' : '' }}">Danh mục</a>
 										</li>
 										<li>
-											<a href="{{ route('topping.index') }}">Topping</a>
+											<a href="{{ route('sanpham.index') }}" class="{{ request()->is('admin/sanpham*') ? 'current-page' : '' }}">Sản phẩm</a>
 										</li>
-                                        <li>
-											<a href="{{ route('admin.order.index') }}">Đơn hàng</a>
+										<li>
+											<a href="{{ route('topping.index') }}" class="{{ request()->is('admin/topping*') ? 'current-page' : '' }}">Topping</a>
+										</li>
+										<li>
+											<a href="{{ route('admin.order.index') }}" class="{{ request()->is('admin/order*') ? 'current-page' : '' }}">Đơn hàng</a>
 										</li>
 										<li>
 											<a href="crm.html">Bình luận</a>
@@ -144,7 +148,7 @@
 
 
 						<!-- Authentication tab -->
-						<div class="tab-pane fade" id="tab-authentication" role="tabpanel" aria-labelledby="authentication-tab">
+						<div class="tab-pane fade {{ $isAuthTab ? 'show active' : '' }}" id="tab-authentication" role="tabpanel" aria-labelledby="authentication-tab">
 
 							<!-- Tab content header start -->
 							<div class="tab-pane-header">
@@ -157,7 +161,10 @@
 								<div class="sidebar-menu">
 									<ul>
 										<li>
-											<a href="{{ route('admin.staff.index') }}">Nhân viên</a>
+											<a href="{{ route('admin.staff.index') }}" class="{{ request()->is('admin/staff*') ? 'current-page' : '' }}">Nhân viên</a>
+										</li>
+										<li>
+											<a href="{{ route('payroll.index') }}" class="{{ request()->is('admin/payroll*') ? 'current-page' : '' }}">Bảng lương</a>
 										</li>
 										<li>
 											<a href="{{ route('admin.logout') }}">Logout</a>
