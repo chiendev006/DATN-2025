@@ -372,13 +372,6 @@
                           <li><a href="contact_2.html">Contact 2</a></li>
                         </ul>
                       </li>
-                       <li class="has-child">
-                        <a href="/contact">Contact</a>
-                        <ul class="drop-nav">
-                          <li><a href="contact_1.html">Contact 1</a></li>
-                          <li><a href="contact_2.html">Contact 2</a></li>
-                        </ul>
-                      </li>
                      @auth
       <li class="has-child">
           <a href="#" class="nav-link dropdown-toggle" id="userDropdown">

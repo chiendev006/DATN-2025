@@ -22,10 +22,7 @@ class Orderdetail extends Model
         'note',
         'status'
     ];
-    public function size()
-{
-    return $this->belongsTo(Size::class, 'size_id');
-}
+
    public function sanpham()
 {
     return $this->belongsTo(sanpham::class, 'product_id');
@@ -44,4 +41,9 @@ public function toppings()
 {
     return $this->belongsToMany(Topping::class, 'order_detail_topping', 'order_detail_id', 'topping_id');
 }
+public function size()
+{
+    return $this->belongsTo(Size::class, 'size_id');
+}
+
 }
