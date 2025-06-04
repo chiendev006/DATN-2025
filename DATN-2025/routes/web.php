@@ -247,3 +247,7 @@ use App\Http\Controllers\Staff\AuthenController;
 
         // My account
         Route::get('/myaccount',[MyaccountController::class, 'index'])->name('client.myaccount');
+        Route::patch('/cancel-order/{id}', [MyaccountController::class, 'cancelOrder'])->name('client.order.cancel');
+
+
+

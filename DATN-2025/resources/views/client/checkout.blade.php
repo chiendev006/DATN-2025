@@ -197,8 +197,14 @@
                                           <hr style="margin-top: 0px ">
                                         <div class="row" style="display: flex; justify-content: space-between; align-items: center;">
                                         <div> <p><Strong>{{ $name }}</Strong></p>
-                                         <p style="color: #666; font-size: 0.8em; font-weight: bold; ">{{ $desc[1] }}</p>
-                                         <p style="color: #666; font-size: 0.8em; font-weight: bold; ">{{ $desc[2] }}</p></div>
+                                        @if(isset($desc[1]))
+                                            <p style="color: #666; font-size: 0.8em; font-weight: bold;">{{ $desc[1] }}</p>
+                                        @endif
+
+                                        @if(isset($desc[2]))
+                                            <p style="color: #666; font-size: 0.8em; font-weight: bold;">{{ $desc[2] }}</p>
+                                        @endif
+
                                        <div> <p style="justify-self: end;">
                                             <small>x{{ $quantity }}</small>
                                             <strong>{{ number_format($total) }} VND</strong>
