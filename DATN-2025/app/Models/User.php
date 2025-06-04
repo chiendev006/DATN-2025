@@ -20,6 +20,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
+        'image',
+        'role',
+        'employee_id',
+        'status',
         'password',
     ];
 
@@ -41,4 +46,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function payrollDetails()
+    {
+        return $this->hasMany(PayrollDetail::class, 'user_id');
+    }
 }

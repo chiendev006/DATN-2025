@@ -19,10 +19,12 @@ class SanphamController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $sanpham = Sanpham::with('danhmuc')->paginate(10);
-        return view('admin.sanpham.index', ['sanpham' => $sanpham]);
+        $perPage = $request->input('per_page', 10);
+        $sanpham = Sanpham::with('danhmuc')->paginate($perPage);
+        $danhmucs = Danhmuc::all();
+        return view('admin.sanpham.index', ['sanpham' => $sanpham, 'danhmucs' => $danhmucs]);
     }
 
 
@@ -70,7 +72,7 @@ class SanphamController extends Controller
         foreach ($request->sizes as $size) {
             Size::create([
                 'product_id' => $sanpham->id,
-                'size' => $size['name'],
+                'size' => $size['size'],
                 'price' => $size['price'],
             ]);
         }
@@ -196,4 +198,41 @@ class SanphamController extends Controller
 
     return redirect()->route('sanpham.index')->with('success', 'Đã xóa sản phẩm!');
 }
+
+    /**
+     * Search sản phẩm theo tên.
+     */
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+        $sanpham = Sanpham::with('danhmuc')
+            ->where('name', 'like', '%' . $query . '%')
+            ->paginate(10);
+        $danhmucs = Danhmuc::all();
+        return view('admin.sanpham.index', ['sanpham' => $sanpham, 'search' => $query, 'danhmucs' => $danhmucs]);
+    }
+
+    /**
+     * Lọc sản phẩm theo danh mục.
+     */
+    public function filterByCategory(Request $request)
+    {
+        $categoryId = $request->input('category_id');
+        if($categoryId == 'allproduct'){
+            return redirect()->route('sanpham.index');
+        }else{
+            $sanpham = Sanpham::with('danhmuc')
+            ->where('id_danhmuc', $categoryId)
+            ->paginate(10);
+        $search = null;
+        $danhmucs = Danhmuc::all();
+        return view('admin.sanpham.index', [
+            'sanpham' => $sanpham,
+            'selectedCategory' => $categoryId,
+            'search' => $search,
+            'danhmucs' => $danhmucs
+        ]);
+        }
+    }
+
 }

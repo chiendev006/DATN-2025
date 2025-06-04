@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Sanpham; 
+use App\Models\Sanpham;
 use App\Models\Size;
-use App\Models\Topping; 
+use App\Models\Topping;
 use App\Models\Product_topping;
 use App\Models\Cart;
 use App\Models\Cartdetail;
@@ -14,7 +14,7 @@ use App\Models\Cartdetail;
 class CartController extends Controller
 {
     /**
-     * 
+     *
      */
     public function index()
     {
@@ -22,18 +22,18 @@ class CartController extends Controller
         $discount = 0;
         $subtotal = 0;
         $total = 0;
-        $items = collect([]); 
+        $items = collect([]);
 
         if (Auth::check()) {
             $cart = Cart::where('user_id', Auth::id())->first();
-            
+
             if (!$cart) {
                 $cart = Cart::create([
                     'user_id' => Auth::id(),
                     'total' => 0
                 ]);
             }
-            
+
             $cart->load(['cartdetails.product', 'cartdetails.size']);
             $items = $cart->cartdetails;
 
@@ -43,7 +43,7 @@ class CartController extends Controller
 
                     $size = $item->size;
                     $basePrice = $size ? $size->price : $item->product->price;
-                    
+
                     $toppingPrice = 0;
                     if (!empty($item->topping_id)) {
                         $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id)));
@@ -85,7 +85,7 @@ class CartController extends Controller
     }
 
     /**
-     * 
+     *
      */
     public function addToCart(Request $request, $id)
     {
@@ -102,7 +102,7 @@ class CartController extends Controller
 
         $qty = max(1, (int)$request->input('qty', 1));
 
-        $basePrice = $size ? $size->price : ($sanpham->price ?? 0); 
+        $basePrice = $size ? $size->price : ($sanpham->price ?? 0);
         $toppingPrice = $productToppings->sum('price');
         $unitPrice = $basePrice + $toppingPrice;
 
@@ -111,7 +111,7 @@ class CartController extends Controller
         if (Auth::check()) {
             $cart = Cart::firstOrCreate(
                 ['user_id' => Auth::id()],
-                ['session_id' => null, 'total' => 0] 
+                ['session_id' => null]
             );
 
             $existingItem = Cartdetail::where('cart_id', $cart->id)
@@ -152,10 +152,10 @@ class CartController extends Controller
                     'topping_ids'   => $toppingIds,
                     'quantity'      => $qty,
                     'unit_price'    => $unitPrice,
-                    'price'         => $unitPrice * $qty, 
+                    'price'         => $unitPrice * $qty,
                     'image'         => $sanpham->image,
                     'topping_names' => [],
-                    'topping_prices' => [] 
+                    'topping_prices' => []
                 ];
 
                 foreach ($productToppings as $productTopping) {
@@ -167,7 +167,7 @@ class CartController extends Controller
             session(['cart' => $cartSession]);
         }
 
-        return redirect()->route('cart.index')->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
+        return redirect()->route('shop.index')->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
     }
 
     /**
@@ -184,14 +184,14 @@ class CartController extends Controller
     public function updateCart(Request $request)
     {
         \Log::info('Update Cart Request:', $request->all());
-        
+
         try {
             $key = $request->input('key');
             $newQuantity = max(1, (int)$request->input('quantity', 1));
             $productId = $request->input('product_id');
             $sizeId = $request->input('size_id');
             $toppingIds = $request->input('topping_ids', []);
-            
+
             $toppingIds = array_map('intval', (array)$toppingIds);
             sort($toppingIds);
             $toppingIdsString = implode(',', $toppingIds);
@@ -238,7 +238,7 @@ class CartController extends Controller
                     $tids = isset($parts[2]) ? explode(',', $parts[2]) : [];
                     sort($tids);
                     $tidsString = implode(',', $tids);
-                    
+
                     $cartDetail = Cartdetail::where('cart_id', $cart->id)
                         ->where('product_id', $pid)
                         ->where('size_id', $sid)
@@ -257,7 +257,7 @@ class CartController extends Controller
 
                 $cartDetail->quantity = $newQuantity;
                 $cartDetail->save();
-                
+
                 $this->_updateCartTotal($cart);
                 $subtotal = $cart->total;
                 $total = $cart->total;
@@ -299,21 +299,21 @@ class CartController extends Controller
                 $sanpham = Sanpham::find($cartSession[$key]['sanpham_id']);
                 $size = Size::find($cartSession[$key]['size_id']);
                 $productToppings = Product_topping::whereIn('id', (array)$cartSession[$key]['topping_ids'])->get();
-                
+
                 $basePrice = $size ? $size->price : ($sanpham->price ?? 0);
                 $toppingPrice = $productToppings->sum('price');
                 $unitPrice = $basePrice + $toppingPrice;
-                
+
                 $cartSession[$key]['quantity'] = $newQuantity;
                 $cartSession[$key]['price'] = $unitPrice * $newQuantity;
-                
+
                 session(['cart' => $cartSession]);
-                
+
                 $subtotal = collect($cartSession)->sum(function($item) {
                     $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
                     return $unitPrice * $item['quantity'];
                 });
-                
+
                 $coupons = session('coupons', []);
                 $discount = 0;
                 foreach ($coupons as $c) {
@@ -394,7 +394,7 @@ class CartController extends Controller
                     $tids = isset($parts[2]) ? explode(',', $parts[2]) : [];
                     sort($tids);
                     $tidsString = implode(',', $tids);
-                    
+
                     $cartDetail = Cartdetail::where('cart_id', $cart->id)
                         ->where('product_id', $pid)
                         ->where('size_id', $sid)
@@ -434,7 +434,7 @@ class CartController extends Controller
                         $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
                         return $unitPrice * $item['quantity'];
                     });
-                    
+
                     $coupons = session('coupons', []);
                     $discount = 0;
                     foreach ($coupons as $c) {
@@ -481,7 +481,7 @@ class CartController extends Controller
 
             $size = $detail->size;
             $basePrice = $size ? $size->price : $detail->product->price;
-            
+
             $toppingPrice = 0;
             if (!empty($detail->topping_id)) {
                 $toppingIds = array_filter(array_map('trim', explode(',', $detail->topping_id)));
@@ -489,13 +489,15 @@ class CartController extends Controller
                     $toppingPrice = Product_topping::whereIn('id', $toppingIds)->sum('price');
                 }
             }
-            
+
             $total += ($basePrice + $toppingPrice) * $detail->quantity;
         }
-        
+
         $cart->total = $total;
         $cart->save();
-        
+
         return $total;
     }
+
+
 }

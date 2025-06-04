@@ -14,9 +14,10 @@ class DanhmucController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-       $danhmuc = Danhmuc::paginate(5);
+       $perPage = $request->input('per_page', 5);
+       $danhmuc = Danhmuc::paginate($perPage);
        return view('admin.danhmuc.index',['danhmuc'=>$danhmuc]);
     }
 

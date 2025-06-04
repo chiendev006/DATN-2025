@@ -26,7 +26,18 @@
                                 <div class="card">
                                 <button type="button" id="btn-add-danhmuc" class="btn-success">Thêm danh mục</button>
                                     <div class="card-body">
-
+                                        <form method="GET" action="" style="margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                                            <label for="per_page" style="margin-bottom:0;">Bản/trang:</label>
+                                            <select name="per_page" id="per_page" class="form-control" style="width: 80px;" onchange="this.form.submit()">
+                                                <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản</option>
+                                                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 bản</option>
+                                                <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản</option>
+                                                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
+                                            </select>
+                                            @foreach(request()->except(['per_page','page']) as $key => $val)
+                                                <input type="hidden" name="{{ $key }}" value="{{ $val }}">
+                                            @endforeach
+                                        </form>
                                         <div class="table-responsive">
                                             <table id="copy-print-csv" class="table v-middle">
                                                 <thead>
@@ -65,7 +76,13 @@
                                                 </tbody>
                                             </table>
                                         </div>
-
+                                        <div class="text-muted mb-2" style="font-size:13px;">
+                                            Trang {{ $danhmuc->currentPage() }}/{{ $danhmuc->lastPage() }},
+                                            Hiển thị {{ $danhmuc->firstItem() }}-{{ $danhmuc->lastItem() }}/{{ $danhmuc->total() }} bản ghi
+                                        </div>
+                                        <div class="d-flex justify-content-center mt-3">
+                                            {{ $danhmuc->appends(request()->except('page'))->links('pagination::bootstrap-4') }}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -164,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const itemHasTopping = this.dataset.role ;
 
             // Cập nhật action của form trong modal
-            editForm.action = `/danhmuc/update/${itemId}`;
+            editForm.action = `danhmuc/update/${itemId}`;
             document.getElementById('edit-id').value = itemId;
 
             // Điền dữ liệu vào các trường input trong modal

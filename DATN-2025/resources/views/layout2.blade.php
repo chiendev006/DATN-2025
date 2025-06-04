@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -32,6 +33,12 @@
     <link href="{{ url('asset') }}/css/responsive.css" rel="stylesheet" />
   <!-- Bootstrap Slider CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/css/bootstrap-slider.min.css">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
    
     <!--[if lt IE 9]>
@@ -130,7 +137,7 @@
     <div id="pre-loader">
       <div class="loader-holder">
         <div class="frame">
-          <img src="{{ url('asset') }}/{{ url('asset') }}/images/Preloader.gif" alt="Despına" />
+          <img src="{{ url('asset') }}/images/Preloader.gif" alt="Despına" />
         </div>
       </div>
     </div>
@@ -366,59 +373,100 @@
                         </ul>
                       </li>
                        <li class="has-child">
-                        <a href="/login">Login</a>
+                        <a href="/contact">Contact</a>
+                        <ul class="drop-nav">
+                          <li><a href="contact_1.html">Contact 1</a></li>
+                          <li><a href="contact_2.html">Contact 2</a></li>
+                        </ul>
                       </li>
-                    </ul>
+                     @auth
+      <li class="has-child">
+          <a href="#" class="nav-link dropdown-toggle" id="userDropdown">
+              Xin chào, {{ Auth::user()->name }}
+          </a>
+          <ul class="drop-nav">
+              <li>
+                  <a class="dropdown-item" href="{{ route('logout') }}"
+                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                      Đăng xuất
+                  </a>
+                  <a href="{{ route('client.myaccount') }}">Tài khoản của tôi</a>
+
+                  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                      @csrf
+                  </form>
+              </li>
+          </ul>
+      </li>
+  @else
+    <li class="has-child">
+        <a href="#" class="nav-link">Tài khoản</a>
+        <ul class="drop-nav">
+            <li><a href="{{ route('login') }}">Đăng nhập</a></li>
+            <li><a href="{{ route('register') }}">Đăng ký</a></li>
+        </ul>
+    </li>
+@endauth
+
                   </div>
-                  <div class="cell-part">
-                    <a href="tel:123-456-7890"
-                      ><span class="icon-phone fontello"></span>123-456-7890</a
-                    >
-                  </div>
+                 
                   <div class="cart animated">
                     <span class="icon-basket fontello"></span
                     ><span>2 items - $ 10.89</span>
                     <div class="cart-wrap">
                       <div class="cart-blog">
-                        <div class="cart-item">
-                          <div class="cart-item-left">
-                            <img src="{{ url('asset') }}/images/img21.png" alt="" />
-                          </div>
-                          <div class="cart-item-right">
-                            <h6>Caramel Chesse Cake</h6>
-                            <span>$ 14.00</span>
-                          </div>
-                          <span class="delete-icon"></span>
-                        </div>
-                        <div class="cart-item">
-                          <div class="cart-item-left">
-                            <img src="{{ url('asset') }}/images/img21.png" alt="" />
-                          </div>
-                          <div class="cart-item-right">
-                            <h6>Caramel Chesse Cake</h6>
-                            <span>$ 14.00</span>
-                          </div>
-                          <span class="delete-icon"></span>
-                        </div>
-                        <div class="subtotal">
-                          <div class="row">
-                            <div class="col-md-6 col-sm-6 col-xs-6">
-                              <h6>Subtotal :</h6>
+                            @forelse ($items as $item)
+                                @php
+                                    $productName = $item->product->name ?? $item->name;
+                                    $productImage = isset($item->product->image) 
+                                                    ? asset('storage/uploads/' . $item->product->image)
+                                                    : asset('asset/images/img21.png');
+                                    $quantity = $item->quantity ?? 1;
+                                    $price = 0;
+
+                                    if (isset($item->product)) {
+                                        $basePrice = $item->size->price ?? $item->product->price;
+                                        $toppingIds = array_filter(explode(',', $item->topping_id ?? ''));
+                                        $toppingPrice = $toppingIds ? \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price') : 0;
+                                        $price = ($basePrice + $toppingPrice) * $quantity;
+                                    } else {
+                                        $basePrice = $item->size_price ?? 0;
+                                        $toppingPrice = array_sum($item->topping_prices ?? []);
+                                        $price = ($basePrice + $toppingPrice) * $quantity;
+                                    }
+                                @endphp
+
+                                <div class="cart-item">
+                                    <div class="cart-item-left">
+                                        <img src="{{ url('storage/uploads/'.$item->image) }}" alt="" />
+                                    </div>
+                                    <div class="cart-item-right">
+                                        <h6>{{ $productName }}</h6>
+                                        <span>{{ number_format($price, 0, ',', '.') }}₫</span>
+                                    </div>
+                                    <span class="delete-icon"></span> 
+                                </div>
+                            @empty
+                                <div class="cart-item">
+                                    <p>Không có sản phẩm nào trong giỏ hàng.</p>
+                                </div>
+                            @endforelse
+
+                            <div class="subtotal">
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-6 col-xs-6">
+                                        <h6>Tạm tính :</h6>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-xs-6">
+                                        <span>{{ number_format($subtotal, 0, ',', '.') }}₫</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6 col-sm-6 col-xs-6">
-                              <span>$ 140.00</span>
+
+                            <div class="cart-btn">
+                                <a href="{{ route('cart.index') }}" class="button-default view">XEM GIỎ HÀNG</a>
+                                <a href="{{ route('checkout.index') }}" class="button-default checkout">THANH TOÁN</a>
                             </div>
-                          </div>
-                        </div>
-                        <div class="cart-btn">
-                          <a href="{{ route('cart.index') }}" class="button-default view"
-                            >VIEW ALL</a
-                          >
-                          <a
-                            href="shop_checkout.html"
-                            class="button-default checkout"
-                            >CHECK OUT</a
-                          >
                         </div>
                       </div>
                     </div>
@@ -573,5 +621,7 @@
 <!-- Summernote JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
 
-  
+
 </html>
+
+

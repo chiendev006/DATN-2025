@@ -14,9 +14,10 @@ class Danhmuc extends Seeder
     public function run(): void
     {
         DB::table('danhmucs')->insert([
-            ['name' => 'Trà sửa'],
-            ['name' => 'Caffee'],
-            ['name' => 'Nước ngọt'],
+            ['name' => 'Trà sửa','role'=>1],
+            ['name' => 'Caffee','role'=>0],
+            ['name' => 'Nước ngọt','role'=>0],
+            ['name' => 'Sinh tố','role'=>1],
         ]);
     }
 }

@@ -18,22 +18,21 @@ var options = {
 				},
 				total: {
 					show: true,
-					label: 'Orders',
+					label: 'Tổng đơn',
 					formatter: function (w) {
-						// By default this function returns the average of all series. The below is just an example to show the use of custom formatter function
-						return '250'
+						return unpaid + paid + cancelled;
 					}
 				}
 			},
 			track: {
         show: true,
-        margin: 7, 
+        margin: 7,
     	},
 		}
 	},
-	series: [75, 25],
-	labels: ['New', 'Delivered'],
-	colors: ['#1273eb', '#f16a5d'],
+	series: [unpaid, paid, cancelled],
+	labels: ['Chưa thanh toán', 'Đã thanh toán', 'Đã hủy'],
+	colors: ['#f39c12', '#27ae60', '#e74c3c'],
 }
 
 var chart = new ApexCharts(
