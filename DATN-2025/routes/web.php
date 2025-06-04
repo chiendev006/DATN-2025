@@ -20,6 +20,7 @@ use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\ShowproductController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\admin\AuthController;
+use App\Http\Controllers\admin\PayrollController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\MyaccountController;
 use App\Http\Controllers\ShopController;
@@ -144,6 +145,17 @@ use App\Http\Controllers\Staff\AuthenController;
         Route::get('/delete/{id}', [SanphamController::class, 'delete'])->name('sanpham.delete');
         });
 
+        // payroll
+          Route::prefix('payroll')->group(function () {
+            Route::get('/', [PayrollController::class, 'index'])->name('payroll.index');
+            Route::get('/create', [PayrollController::class, 'create'])->name('payroll.create');
+            Route::post('/store', [PayrollController::class, 'store'])->name('payroll.store');
+            Route::get('/show/{id}', [PayrollController::class, 'show'])->name('payroll.show');
+            Route::post('/toggle-workday', [PayrollController::class, 'toggleWorkDay'])->name('payroll.toggleWorkDay');
+            Route::get('/attendance/form', [\App\Http\Controllers\admin\PayrollController::class, 'getAttendanceForm'])->name('attendance.form');
+            Route::post('admin/attendance/store', [\App\Http\Controllers\admin\PayrollController::class, 'storeAttendance'])->name('attendance.store');
+            Route::get('/pay/{id}', [PayrollController::class, 'pay'])->name('payroll.pay');
+        });
           // Staff
         Route::prefix('staff')->group(function () {
         Route::get('/', [AdminStaffController::class, 'staffIndex'])->name('admin.staff.index');
