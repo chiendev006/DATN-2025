@@ -48,6 +48,11 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    @if($topping->isEmpty())
+                                                    <tr>
+                                                        <td colspan="3" class="text-center">Không có dữ liệu</td>
+                                                    </tr>
+                                                    @else
                                                     @foreach ($topping as $item)
                                                     <tr>
                                                         <td>
@@ -74,6 +79,7 @@
                                                         </td>
                                                     </tr>
                                                     @endforeach
+                                                    @endif
                                                 </tbody>
                                             </table>
                                         </div>

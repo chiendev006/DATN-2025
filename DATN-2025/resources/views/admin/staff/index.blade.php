@@ -1,6 +1,12 @@
 @include('header')
 
 <style>
+       th{
+            text-align: center;
+        }
+        td{
+            text-align: center;
+        }
     .btn-success {
         width: 180px;
         border: none;
@@ -116,6 +122,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @if($staffs->isEmpty())
+                                        <tr>
+                                            <td colspan="7" class="text-center">Không có dữ liệu</td>
+                                        </tr>
+                                    @else
                                     @foreach ($staffs as $staff)
                                     <tr>
                                         <td>{{ $staff->name }}</td>
@@ -158,6 +169,7 @@
                                         </td>
                                     </tr>
                                     @endforeach
+                                    @endif
                                 </tbody>
                             </table>
                         </div>

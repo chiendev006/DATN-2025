@@ -1,6 +1,12 @@
 @include('header')
 
 <style>
+       th{
+            text-align: center;
+        }
+        td{
+            text-align: center;
+        }
     .btn-success,.btn-success1 {
         width: 130px;
         border: none;
@@ -117,7 +123,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                @foreach ($blogs as $item)
+                               @if($blogs->isEmpty())
+                               <tr>
+                                <td colspan="6" class="text-center">Không có dữ liệu</td>
+                               </tr>
+                               @else
+                               @foreach ($blogs as $item)
     <tr>
        <td>{{ $item->title }}</td>
        <td style="max-width:400px; word-break:break-word;">{!!  $item->content !!}</td>
@@ -130,6 +141,7 @@
         </td>
     </tr>
 @endforeach
+                               @endif
                                 </tbody>
                             </table>
                         </div>

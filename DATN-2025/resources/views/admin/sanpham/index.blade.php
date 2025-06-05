@@ -132,6 +132,12 @@
 
 					</div>
 <style>
+       th{
+            text-align: center;
+        }
+        td{
+            text-align: center;
+        }
     button {
         background-color:rgb(76, 106, 175); /* Màu nền */
         color: white; /* Màu chữ */
