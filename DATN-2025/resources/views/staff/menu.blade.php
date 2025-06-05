@@ -71,38 +71,47 @@
 
                 <!-- BEGIN pos-content -->
                 <div class="pos-content">
-                    <div class="pos-content-container h-100">
-                        @if($sanpham->isEmpty())
-                            <div class="text-center text-danger fs-4 mt-4">
-                                Không có sản phẩm nào trong danh mục này.
-                            </div>
-                        @else
-                            <div class="row gx-4">
-                                @foreach ($sanpham as $item)
-                                    <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-4 col-sm-6 pb-4" data-type="meat">
-                                        <a href="#" class="pos-product" data-bs-toggle="modal"
-                                           data-bs-target="#modalPosItem"
-                                           data-id="{{ $item->id }}"
-                                           data-name="{{ $item->name }}"
-                                           data-image="{{ url("/storage/uploads/$item->image") }}"
-                                           data-description="{{ $item->mota }}">
-                                            <div class="img">
-                                                <img src="{{ url("/storage/uploads/$item->image") }}" width="100%"
-                                                     alt="{{ $item->name }}">
-                                            </div>
-                                            <div class="info">
-                                                <div class="title">{{ $item->name }}</div>
-                                                <div class="desc">{{ $item->mota }}</div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
-                    </div>
-                </div>
+    <div class="pos-content-container h-100">
+        <div class="search-bar-container text-center my-4">
+            <form action="{{ route('staff.products.search') }}" method="GET" class="d-flex mb-3">
+                <input type="text" name="keyword" class="form-control me-2" placeholder="Tìm sản phẩm..." value="{{ request('keyword') }}">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Tìm
+                </button>
+            </form>
+        </div>
 
-            </div>
+        @if (isset($sanpham))
+            @if($sanpham->isEmpty())
+                <div class="text-center text-danger fs-4 mt-4">
+                    Không có sản phẩm nào trong danh mục này.
+                </div>
+            @else
+                <div class="row gx-4">
+                    @foreach ($sanpham as $item)
+                        <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-4 col-sm-6 pb-4" data-type="meat">
+                            <a href="#" class="pos-product" data-bs-toggle="modal"
+                               data-bs-target="#modalPosItem"
+                               data-id="{{ $item->id }}"
+                               data-name="{{ $item->name }}"
+                               data-image="{{ url("/storage/uploads/$item->image") }}"
+                               data-description="{{ $item->mota }}">
+                                <div class="img">
+                                    <img src="{{ url("/storage/uploads/$item->image") }}" width="100%" alt="{{ $item->name }}">
+                                </div>
+                                <div class="info">
+                                    <div class="title">{{ $item->name }}</div>
+                                    <div class="desc">{{ $item->mota }}</div>
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        @endif
+    </div>
+</div>
+
             <!-- END pos-content -->
 
             <!-- BEGIN pos-sidebar -->

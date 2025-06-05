@@ -61,4 +61,19 @@ class StaffController extends Controller
         return view('staff.orderdetail', compact('donhangs', 'danhmuc', 'sanpham'));
 
     }
+    public function searchProducts(Request $request)
+    {
+        $danhmuc = DanhMuc::all();
+        $keyword = trim($request->input('keyword'));
+
+        if (!empty($keyword)) {
+            $sanpham = Sanpham::where('name', 'like', "%$keyword%")
+                        ->orWhere('mota', 'like', "%$keyword%")
+                        ->get();
+        } else {
+            $sanpham = collect(); // hoặc Sanpham::all() nếu muốn hiện tất cả
+        }
+
+        return view('staff.menu', compact('sanpham', 'keyword' , 'danhmuc'));
+    }
 }
