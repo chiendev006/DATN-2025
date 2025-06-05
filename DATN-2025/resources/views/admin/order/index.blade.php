@@ -1,5 +1,11 @@
 @include('header')
 <style>
+       th{
+            text-align: center;
+        }
+        td{
+            text-align: center;
+        }
     .order-table {
         width: 100%;
         border-collapse: collapse;
@@ -34,6 +40,7 @@
         padding: 0.25rem 0.5rem;
         min-width: 28px;
     }
+
 </style>
   <div class="content-wrapper-scroll">
 
@@ -105,7 +112,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($orders as $order)
+                                  @if($orders->isEmpty())
+                                  <tr>
+                                    <td colspan="10" class="text-center">Không có dữ liệu</td>
+                                  </tr>
+                                  @else
+                                  @foreach ($orders as $order)
                                     <tr>
                                         <td>{{ $order->id }}</td>
                                         <td>{{ $order->name }}</td>
@@ -153,6 +165,7 @@
                                         </td>
                                     </tr>
                                     @endforeach
+                                  @endif
                                 </tbody>
                             </table>
                         </div>

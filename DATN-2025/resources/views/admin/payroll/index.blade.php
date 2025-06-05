@@ -1,6 +1,12 @@
 @include('header')
 
 <style>
+       th{
+            text-align: center;
+        }
+        td{
+            text-align: center;
+        }
     .btn-success {
         width: 130px;
         border: none;
@@ -42,6 +48,7 @@
         box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08),0 1.5px 4px 0 rgba(0,0,0,0.03);
         position: relative;
     }
+
     .custom-modal-close {
         position: absolute;
         top: 12px;
@@ -112,7 +119,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                @foreach ($payroll as $item)
+                              @if($payroll->isEmpty())
+                              <tr>
+                                <td colspan="4" class="text-center">Không có dữ liệu</td>
+                              </tr>
+                              @else
+                              @foreach ($payroll as $item)
     <tr>
         <td>{{ $item->month }}</td>
         <td>{{ number_format($item->total) }} VND</td>
@@ -130,6 +142,7 @@
         </td>
     </tr>
 @endforeach
+                              @endif
                                 </tbody>
                             </table>
                         </div>

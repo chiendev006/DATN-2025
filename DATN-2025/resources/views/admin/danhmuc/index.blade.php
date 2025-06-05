@@ -1,5 +1,11 @@
 @include('header')
 <style>
+       th{
+            text-align: center;
+        }
+        td{
+            text-align: center;
+        }
     .btn-success {
     width: 180px;
     border: none;
@@ -42,13 +48,18 @@
                                             <table id="copy-print-csv" class="table v-middle">
                                                 <thead>
                                                     <tr>
-                                                        <th>Tên sản phẩm</th>
+                                                        <th>Tên danh mục</th>
                                                         <th>Loại danh mục</th>
                                                         <th>Hành động</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach ($danhmuc as $item)
+                                                  @if($danhmuc->isEmpty())
+                                                  <tr>
+                                                    <td colspan="3" class="text-center">Không có dữ liệu</td>
+                                                  </tr>
+                                                  @else
+                                                  @foreach ($danhmuc as $item)
                                                     <tr>
                                                         <td>
                                                          {{ $item['name'] }}
@@ -73,6 +84,7 @@
                                                         </td>
                                                     </tr>
                                                     @endforeach
+                                                  @endif
                                                 </tbody>
                                             </table>
                                         </div>
