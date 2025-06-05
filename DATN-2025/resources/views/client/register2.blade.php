@@ -29,6 +29,11 @@
                                 <form class="register-form" method="post" name="register" action="{{ route('post-register') }}">
                                     @csrf
                                     <div class="row">
+                                        @if(session('message'))
+                                            <div class="alert alert-danger">
+                                                <p>{{ session('message') }}</p>
+                                            </div>
+                                        @endif
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <input type="text" name="name" placeholder="Name" class="input-fields">
                                             @error('name')
