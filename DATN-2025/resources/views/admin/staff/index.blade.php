@@ -81,6 +81,7 @@
 
 <div class="content-wrapper-scroll">
     <div class="content-wrapper">
+
         <div class="row gutters">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                 <div class="card">
@@ -109,6 +110,7 @@
                                         <th>Ảnh nhân viên</th>
                                         <th>Số điện thoại</th>
                                         <th>Email</th>
+                                        <th>Lương/ngày</th>
                                         <th>Chức vụ</th>
                                         <th>Hành động</th>
                                     </tr>
@@ -127,18 +129,23 @@
                                             {{ $staff->email }}
                                         </td>
                                         <td>
+                                            {{ number_format($staff->salary_per_day, 0, ',', '.') }}
+                                        </td>
+                                        <td>
                                             @if ($staff->role == 21)
                                                 Thu ngân
                                             @elseif ($staff->role == 22)
                                                 Pha chế
                                             @endif
                                         </td>
+
                                         <td>
                                             <div class="actions">
                                                 <button type="button" class="btn-edit-staff"
                                                     data-id="{{ $staff->id }}"
                                                     data-name="{{ $staff->name }}"
                                                     data-email="{{ $staff->email }}"
+                                                    data-salary_per_day="{{ number_format($staff->salary_per_day, 0, ',', '.') }}"
                                                     data-role="{{ $staff->role }}" {{-- Đã thêm data-role ở đây --}}
                                                     style="background:none;border:none;cursor:pointer;">
                                                     <i class="icon-edit1 text-info"></i>
@@ -157,6 +164,20 @@
                     </div>
                 </div>
             </div>
+            <div class="text-muted mb-2" style="font-size:13px;">
+    @php
+        $from = $staffs->firstItem();
+        $to = $staffs->lastItem();
+        $total = $staffs->total();
+        $currentPage = $staffs->currentPage();
+        $lastPage = $staffs->lastPage();
+    @endphp
+    Trang {{ $currentPage }}/{{ $lastPage }},
+    Hiển thị {{ $from }}-{{ $to }}/{{ $total }} bản ghi
+</div>
+<div style="margin-top: 10px;">
+    {{ $staffs->appends(request()->except('page'))->links() }}
+</div>
         </div>
 
         @include('footer')
@@ -210,6 +231,18 @@
                     </div>
                     <br>
                     <div class="field-wrapper">
+                        <div class="field-placeholder">Lương/ngày</div>
+                        <div class="field-body">
+                            <div class="field">
+                                <div class="control icons-left">
+                                    <input class="input" type="number" id="edit-salary_per_day" name="salary_per_day" placeholder="Lương/ngày">
+                                    <span class="icon left"><i class="mdi mdi-email"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="field-wrapper">
                         <div class="field-placeholder">Mật khẩu mới (bỏ trống nếu không đổi)</div>
                         <div class="field-body">
                             <div class="field">
@@ -243,8 +276,47 @@
     </div>
 </div>
 
+<div id="alert-popup" style="display:none; position: fixed; top: 40px; left: 50%; transform: translateX(-50%); z-index: 99999; min-width: 320px;">
+    <div id="alert-popup-content" style="padding: 16px 24px; border-radius: 8px; font-size: 16px; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"></div>
+</div>
+
+{{-- Tạo biến JS từ PHP để truyền thông báo --}}
+@if ($errors->any())
+    <script>
+        var popupErrorMsg = `{!! '<ul style="margin:0;padding-left:20px;">' . collect($errors->all())->map(function($e){return '<li>'.$e.'</li>'; })->implode('') . '</ul>' !!}`;
+    </script>
+@else
+    <script>var popupErrorMsg = null;</script>
+@endif
+@if (session('success'))
+    <script>var popupSuccessMsg = @json(session('success'));</script>
+@else
+    <script>var popupSuccessMsg = null;</script>
+@endif
+
 <script>
+function showAlertPopup(message, type = 'success') {
+    const popup = document.getElementById('alert-popup');
+    const content = document.getElementById('alert-popup-content');
+    popup.style.display = 'block';
+    content.innerHTML = message;
+    if (type === 'success') {
+        content.style.background = '#28a745';
+    } else {
+        content.style.background = '#dc3545';
+    }
+    setTimeout(() => {
+        popup.style.display = 'none';
+    }, 3500);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    if (typeof popupErrorMsg !== 'undefined' && popupErrorMsg) {
+        showAlertPopup(popupErrorMsg, 'error');
+    }
+    if (typeof popupSuccessMsg !== 'undefined' && popupSuccessMsg) {
+        showAlertPopup(popupSuccessMsg, 'success');
+    }
     // Modal Thêm
     const addModal = document.getElementById('addStaffModal');
     const closeAddBtn = document.getElementById('close-add-staff-modal');
@@ -260,6 +332,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeEditBtn = document.getElementById('close-edit-staff-modal');
     const editNameInput = document.getElementById('edit-name');
     const editEmailInput = document.getElementById('edit-email');
+    const editSalary = document.getElementById('edit-salary_per_day');
     const editPasswordInput = document.getElementById('edit-password');
     const editPasswordConfirmationInput = document.getElementById('edit-password_confirmation');
     const editRoleSelect = document.getElementById('edit-role'); // Lấy thẻ select role của modal SỬA
@@ -304,6 +377,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const itemId = this.dataset.id;
             const itemName = this.dataset.name;
             const itemEmail = this.dataset.email;
+            const itemSalary = this.dataset.salary_per_day;
             const itemRole = this.dataset.role; // Lấy giá trị role từ data-attribute
 
             // Cập nhật action của form trong modal
@@ -313,6 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Điền dữ liệu vào các trường input trong modal
             if (editNameInput) editNameInput.value = itemName;
             if (editEmailInput) editEmailInput.value = itemEmail;
+            if (editSalary) editSalary.value = itemSalary;
             if (editPasswordInput) editPasswordInput.value = ''; // Luôn xóa mật khẩu cũ
             if (editPasswordConfirmationInput) editPasswordConfirmationInput.value = ''; // Luôn xóa mật khẩu cũ
 
@@ -380,6 +455,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     </select>
                 </div>
             </div>
+            <br> <div class="field-wrapper">
+                <div class="field-placeholder">Lương/ngày</div>
+                <div class="field-body">
+                <div class="field">
+                        <div class="control icons-left">
+                            <input class="input" type="number" id="add-name" name="salary_per_day" placeholder="Lương/ngày" required>
+                            <span class="icon left"><i class="mdi mdi-account"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <br>
             <div class="field-wrapper ">
                 <div class="field-placeholder">Mật khẩu</div>
@@ -411,19 +497,4 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </form>
     </div>
-</div>
-
-<div class="text-muted mb-2" style="font-size:13px;">
-    @php
-        $from = $staffs->firstItem();
-        $to = $staffs->lastItem();
-        $total = $staffs->total();
-        $currentPage = $staffs->currentPage();
-        $lastPage = $staffs->lastPage();
-    @endphp
-    Trang {{ $currentPage }}/{{ $lastPage }},
-    Hiển thị {{ $from }}-{{ $to }}/{{ $total }} bản ghi
-</div>
-<div style="margin-top: 10px;">
-    {{ $staffs->appends(request()->except('page'))->links() }}
 </div>
