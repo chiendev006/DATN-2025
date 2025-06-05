@@ -44,6 +44,7 @@ class AuthenticationController extends Controller
     public function postRegister(Request $request)
     {
         $hasEmail = User::whereEmail($request->email)->exists();
+
         if ($hasEmail) {
             return redirect()->back()->with([
                 'message' => 'Email da ton tai'
@@ -52,18 +53,22 @@ class AuthenticationController extends Controller
             $data = $request->validate([
                 'name' => 'required',
                 'email' => 'required|email|unique:users',
-                'password' => 'required|min:6'
+                'password' => 'required|min:6',
+                'phone' => 'required|numeric|min:10',
             ], [
-                'name.required' => 'Ten tai khoan khong duoc de trong',
+                'name.required' => 'Ten khong duoc de trong',
                 'email.required' => 'Email khong duoc de trong',
                 'password.required' => 'Mat khau khong duoc de trong',
                 'password.min' => 'Mat khau phai it nhat 6 ki tu',
+                'phone.required' => 'So dien thoai khong duoc de trong',
+                'phone.phone' =>  'So dien thoai khong dung dinh dang'
             ]);
         }
         $data['password'] = Hash::make($data['password']);
+        $data['image'] = 'default.jpg';
         User::create($data);
         return redirect()->route('login')->with([
-            'message' => 'Dang ki thanh cong'
+            'success' => 'Dang ki thanh cong'
         ]);
     }
     public function forgotPassword()

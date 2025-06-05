@@ -20,28 +20,49 @@
 
             <section class="default-section login-register bg-grey">
                 <div class="container">
-                    <div class="row">
-                        <div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                    <div class="row justify-content-center">
+                        <div class="col-md-6 col-sm-8 col-xs-12 mx-auto wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                             <div class="register-wrap form-common">
                                 <div class="title text-center">
                                     <h3 class="text-coffee">Register</h3>
                                 </div>
-                                <form class="register-form" method="post" name="register">
+                                <form class="register-form" method="post" name="register" action="{{ route('post-register') }}">
+                                    @csrf
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <input type="text" name="name" placeholder="Name" class="input-fields">
+                                            @error('name')
+                                            <div class="alert alert-danger">
+                                                <p>{{ $message }}</p>
+                                            </div>
+                                            @enderror
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <input type="text" name="email" placeholder="Your email" class="input-fields">
+                                            @error('email')
+                                            <div class="alert alert-danger">
+                                                <p>{{ $message }}</p>
+                                            </div>
+                                            @enderror
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <input type="text" name="phone" placeholder="Phone number" class="input-fields">
+                                            @error('phone')
+                                            <div class="alert alert-danger">
+                                                <p>{{ $message }}</p>
+                                            </div>
+                                            @enderror
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <input type="password" name="password" placeholder="Password" class="input-fields">
+                                            @error('password')
+                                            <div class="alert alert-danger">
+                                                <p>{{ $message }}</p>
+                                            </div>
+                                            @enderror
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <input type="submit" name="submit" class="button-default button-default-submit" value="RegIster now">
+                                            <input type="submit" name="submit" class="button-default button-default-submit" value="Register now">
                                         </div>
                                     </div>
                                 </form>

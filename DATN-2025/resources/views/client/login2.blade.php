@@ -28,16 +28,41 @@
                                 </div>
                                 <form class="login-form" method="post" name="login" action="{{ route('post-login') }}">
                                     @csrf
+                                    @if(session('message'))
+                                        <div class="alert alert-danger">
+                                            <p>{{ session('message') }}</p>
+                                        </div>
+                                    @endif
+                                    @if(session('success'))
+                                        <div class="alert alert-success">
+                                            <p>{{ session('success') }}</p>
+                                        </div>
+                                    @endif
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <input type="text" name="email" placeholder="Username or email address" class="input-fields">
+                                            @error('email')
+                                            <div class="alert alert-danger">
+                                                <p>{{ $message }}</p>
+                                            </div>
+                                            @enderror
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <input type="password" name="password" placeholder="********" class="input-fields">
+                                            @error('password')
+                                            <div class="alert alert-danger">
+                                                <p>{{ $message }}</p>
+                                            </div>
+                                            @enderror
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <div class="row">
-                                                    <a href="#" class="pull-right">Lost your password</a>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    <a href="{{ route('forgot-password') }}" class="pull-right">Quên mật khẩu</a>
+                                                </div>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    <a href="{{ route('register') }}" class="pull-right">Đăng kí</a>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
