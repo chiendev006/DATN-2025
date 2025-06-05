@@ -30,19 +30,31 @@ class AdminStaffController extends Controller
      */
     public function store(Request $request)
     {
+
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
-
+            'salary_per_day' => 'required|numeric|min:0',
+        ], [
+            'email.unique' => 'Email này đã tồn tại trong hệ thống!',
+            'password.confirmed' => 'Mật khẩu không khớp!',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự!',
+            'salary_per_day.required' => 'Lương hàng ngày là bắt buộc!',
+            'salary_per_day.numeric' => 'Lương hàng ngày phải là số!',
+            'salary_per_day.min' => 'Lương hàng ngày phải lớn hơn 0!',
+            'name.required' => 'Tên nhân viên là bắt buộc!',
         ]);
-
+        $salaryPerDay = str_replace(',', '', $request->salary_per_day);
+        $salaryPerDay = str_replace('.', '', $request->salary_per_day); // loại bỏ dấu phẩy nếu có
+        $salaryPerDay = floatval($salaryPerDay);
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'role' => $request->role,
+            'salary_per_day' => $salaryPerDay,
         ]);
         return redirect()->route('admin.staff.index')->with('success', 'Thêm nhân viên thành công!');
     }
@@ -51,32 +63,47 @@ class AdminStaffController extends Controller
      * Cập nhật thông tin nhân viên.
      */
     public function update(Request $request, $id)
-{
-    $request->validate([
-        'name' => 'required|string|max:255', // Added max length for good practice
-        'email' => 'required|email|unique:users,email,' . $id, // Corrected unique rule
-        'password' => 'nullable|string|min:6|confirmed',
-    ]);
+    {
 
-    // Find the user first
-    $user = User::findOrFail($id); // Ensures user exists, or throws a 404
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:6|confirmed',
+            'salary_per_day' => 'required|numeric|min:0',
+        ], [
+            'email.unique' => 'Email này đã tồn tại trong hệ thống!',
+            'password.confirmed' => 'Mật khẩu không khớp!',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự!',
+            'salary_per_day.required' => 'Lương hàng ngày là bắt buộc!',
+            'salary_per_day.numeric' => 'Lương hàng ngày phải là số!',
+            'salary_per_day.min' => 'Lương hàng ngày phải lớn hơn 0!',
+            'name.required' => 'Tên nhân viên là bắt buộc!',
+        ]);
 
-    // Prepare data for updating
-    $updateData = [
-        'name' => $request->name,
-        'email' => $request->email,
-    ];
+        // Find the user first
+        $user = User::findOrFail($id); // Ensures user exists, or throws a 404
 
-    // If a new password is provided, hash and add it to the update data
-    if ($request->filled('password')) {
-        $updateData['password'] = bcrypt($request->password);
+        // Prepare data for updating
+        $salaryPerDay = str_replace(',', '', $request->salary_per_day);
+        $salaryPerDay = str_replace('.', '', $request->salary_per_day); // loại bỏ dấu phẩy nếu có
+        $salaryPerDay = floatval($salaryPerDay);
+
+        $updateData = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'salary_per_day' => $salaryPerDay,
+        ];
+
+        // If a new password is provided, hash and add it to the update data
+        if ($request->filled('password')) {
+            $updateData['password'] = bcrypt($request->password);
+        }
+
+        // Update the user
+        $user->update($updateData);
+
+        return redirect()->route('admin.staff.index')->with('success', 'Cập nhật nhân viên thành công!');
     }
-
-    // Update the user
-    $user->update($updateData);
-
-    return redirect()->route('admin.staff.index')->with('success', 'Cập nhật nhân viên thành công!');
-}
 
     /**
      * Xóa nhân viên.

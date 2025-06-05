@@ -24,6 +24,7 @@ class User extends Authenticatable
         'image',
         'role',
         'employee_id',
+        'salary_per_day',
         'status',
         'password',
     ];
