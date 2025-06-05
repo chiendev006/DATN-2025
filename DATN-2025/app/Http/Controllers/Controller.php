@@ -30,21 +30,53 @@ public function  danhmuc()
     }
     return view('client.home', compact('danhmucs', 'sanpham'));
 }
-public function show(Request $request)
-{
-    $danhmucs = Danhmuc::with(['sanphams' => function($query) {
-        $query->withMin('sizes', 'price');
-    }])->get();
-    $categoryId = $request->query('category');
-    $firstDanhmuc = $categoryId
-        ? $danhmucs->firstWhere('id', $categoryId)
-        : $danhmucs->first();
-    $firstProducts = $firstDanhmuc ? $firstDanhmuc->sanphams : [];
-    foreach ($firstProducts as $sp) {
-        $sp->min_price = $sp->sizes_min_price ?? 0;
+ public function show(Request $request)
+    {
+        $danhmucs = Danhmuc::with(['sanphams' => function($query) {
+            $query->withMin('sizes', 'price');
+        }])->get();
+
+        $categoryId = $request->query('category');
+        $firstDanhmuc = $categoryId
+            ? $danhmucs->firstWhere('id', $categoryId)
+            : $danhmucs->first();
+
+        // Paginate products for the selected category
+        $perPage = 8; // Number of products per page
+        $firstProducts = $firstDanhmuc
+            ? $firstDanhmuc->sanphams()->withMin('sizes', 'price')->paginate($perPage)
+            : collect([])->paginate($perPage);
+
+        foreach ($firstProducts as $sp) {
+            $sp->min_price = $sp->sizes_min_price ?? 0;
+        }
+
+        return view('client.menu', compact('danhmucs', 'firstDanhmuc', 'firstProducts'));
     }
-    return view('client.menu', compact('danhmucs', 'firstDanhmuc', 'firstProducts'));
-}
+
+    // New method to handle AJAX pagination
+    public function getCategoryProducts(Request $request, $categoryId)
+    {
+        $danhmuc = Danhmuc::findOrFail($categoryId);
+        $perPage = 8; // Match with show method
+        $products = $danhmuc->sanphams()->withMin('sizes', 'price')->paginate($perPage);
+
+        foreach ($products as $product) {
+            $product->min_price = $product->sizes_min_price ?? 0;
+        }
+
+        return response()->json([
+            'category_name' => $danhmuc->name,
+            'category_description' => $danhmuc->description,
+            'products' => $products->items(),
+            'pagination' => [
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'total' => $products->total(),
+                'per_page' => $products->perPage(),
+            ]
+        ]);
+    }
     public function getProductsByCategory($id)
     {
         $danhmuc = Danhmuc::with('sanphams')->findOrFail($id);

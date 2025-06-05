@@ -1,34 +1,34 @@
 <?php
 
-use App\Http\Controllers\AboutController;
-use App\Http\Controllers\admin\AdminStaffController;
-use App\Http\Controllers\admin\Product_attributesController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\admin\HomeController;
-use App\Http\Controllers\admin\DanhmucController;
-use App\Http\Controllers\admin\SanphamController;
-use App\Http\Controllers\admin\ProductImageController;
-use App\Http\Controllers\admin\ContactAdminController;
-use App\Http\Controllers\admin\SizeController;
-use App\Http\Controllers\admin\ToppingController;
-use App\Http\Controllers\admin\BlogsController;
-use App\Http\Controllers\AuthenticationController;
-use App\Http\Controllers\BlogController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\ServicesController;
-use App\Http\Controllers\ShowproductController;
-use App\Http\Controllers\ResetPasswordController;
-use App\Http\Controllers\admin\AuthController;
-use App\Http\Controllers\admin\PayrollController;
-use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\MyaccountController;
-use App\Http\Controllers\ShopController;
-use App\Http\Controllers\Staff\StaffController;
-use App\Http\Controllers\VNPayController;
-use App\Http\Controllers\Staff\AuthenController;
-
+        use App\Http\Controllers\AboutController;
+        use App\Http\Controllers\admin\AdminStaffController;
+        use App\Http\Controllers\admin\Product_attributesController;
+        use Illuminate\Support\Facades\Route;
+        use App\Http\Controllers\Controller;
+        use App\Http\Controllers\ContactController;
+        use App\Http\Controllers\admin\HomeController;
+        use App\Http\Controllers\admin\DanhmucController;
+        use App\Http\Controllers\admin\SanphamController;
+        use App\Http\Controllers\admin\ProductImageController;
+        use App\Http\Controllers\admin\ContactAdminController;
+        use App\Http\Controllers\admin\SizeController;
+        use App\Http\Controllers\admin\ToppingController;
+        use App\Http\Controllers\admin\BlogsController;
+        use App\Http\Controllers\AuthenticationController;
+        use App\Http\Controllers\BlogController;
+        use App\Http\Controllers\CartController;
+        use App\Http\Controllers\ServicesController;
+        use App\Http\Controllers\ShowproductController;
+        use App\Http\Controllers\ResetPasswordController;
+        use App\Http\Controllers\admin\AuthController;
+        use App\Http\Controllers\admin\PayrollController;
+        use App\Http\Controllers\CheckoutController;
+        use App\Http\Controllers\MyaccountController;
+        use App\Http\Controllers\ShopController;
+        use App\Http\Controllers\Staff\StaffController;
+        use App\Http\Controllers\VNPayController;
+        use App\Http\Controllers\Staff\AuthenController;
+use App\Http\ViewComposers\CartComposer;
 
         Route::get('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
@@ -58,8 +58,8 @@ use App\Http\Controllers\Staff\AuthenController;
         Route::get('/',         [Controller::class, 'danhmuc'])->name('danhmuc1.index');
         Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp');
         // routes/web.php
-        Route::get('/menu', [Controller::class, 'show'])->name('client.menu');
-        Route::get('/menu/category/{id}', [Controller::class, 'getProductsByCategory']);
+        Route::get('/menu', [Controller::class, 'show'])->name('menu.show');
+        Route::get('/menu/category/{categoryId}', [Controller::class, 'getCategoryProducts'])->name('menu.category');
 
         Route::post('comment', [Controller::class, 'postComment'])->name('comment.store');
 
@@ -73,8 +73,8 @@ use App\Http\Controllers\Staff\AuthenController;
 
         // Search
         // web.php
-              Route::get('/ajax-search', [App\Http\Controllers\Controller::class, 'ajaxSearch'])->name('ajax.search');
-                Route::get('/ajax-filter-price', [Controller::class, 'filterByPrice'])->name('ajax.filter.price');
+        Route::get('/ajax-search', [App\Http\Controllers\Controller::class, 'ajaxSearch'])->name('ajax.search');
+        Route::get('/ajax-filter-price', [Controller::class, 'filterByPrice'])->name('ajax.filter.price');
 
 
         // Liên hệ từ Client
@@ -148,15 +148,15 @@ use App\Http\Controllers\Staff\AuthenController;
         });
 
         // payroll
-          Route::prefix('payroll')->group(function () {
-            Route::get('/', [PayrollController::class, 'index'])->name('payroll.index');
-            Route::get('/create', [PayrollController::class, 'create'])->name('payroll.create');
-            Route::post('/store', [PayrollController::class, 'store'])->name('payroll.store');
-            Route::get('/show/{id}', [PayrollController::class, 'show'])->name('payroll.show');
-            Route::post('/toggle-workday', [PayrollController::class, 'toggleWorkDay'])->name('payroll.toggleWorkDay');
-            Route::get('/attendance/form', [\App\Http\Controllers\admin\PayrollController::class, 'getAttendanceForm'])->name('attendance.form');
-            Route::post('admin/attendance/store', [\App\Http\Controllers\admin\PayrollController::class, 'storeAttendance'])->name('attendance.store');
-            Route::get('/pay/{id}', [PayrollController::class, 'pay'])->name('payroll.pay');
+        Route::prefix('payroll')->group(function () {
+        Route::get('/', [PayrollController::class, 'index'])->name('payroll.index');
+        Route::get('/create', [PayrollController::class, 'create'])->name('payroll.create');
+        Route::post('/store', [PayrollController::class, 'store'])->name('payroll.store');
+        Route::get('/show/{id}', [PayrollController::class, 'show'])->name('payroll.show');
+        Route::post('/toggle-workday', [PayrollController::class, 'toggleWorkDay'])->name('payroll.toggleWorkDay');
+        Route::get('/attendance/form', [\App\Http\Controllers\admin\PayrollController::class, 'getAttendanceForm'])->name('attendance.form');
+        Route::post('admin/attendance/store', [\App\Http\Controllers\admin\PayrollController::class, 'storeAttendance'])->name('attendance.store');
+        Route::get('/pay/{id}', [PayrollController::class, 'pay'])->name('payroll.pay');
         });
           // Staff
         Route::prefix('staff')->group(function () {
@@ -207,12 +207,12 @@ use App\Http\Controllers\Staff\AuthenController;
 
           // Blogs
         Route::prefix('blogs')->group(function () {
-                Route::get('/', [BlogsController::class, 'index'])->name('blogs.index');
-                Route::get('/create', [BlogsController::class, 'create'])->name('blogs.create');
-                Route::post('/store', [BlogsController::class, 'store'])->name('blogs.store');
-                Route::get('/edit/{id}', [BlogsController::class, 'edit'])->name('blogs.edit');
-                Route::post('/update/{id}', [BlogsController::class, 'update'])->name('blogs.update');
-                Route::get('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
+        Route::get('/', [BlogsController::class, 'index'])->name('blogs.index');
+        Route::get('/create', [BlogsController::class, 'create'])->name('blogs.create');
+        Route::post('/store', [BlogsController::class, 'store'])->name('blogs.store');
+        Route::get('/edit/{id}', [BlogsController::class, 'edit'])->name('blogs.edit');
+        Route::post('/update/{id}', [BlogsController::class, 'update'])->name('blogs.update');
+        Route::get('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
         });
 
         });
@@ -248,6 +248,8 @@ use App\Http\Controllers\Staff\AuthenController;
         // My account
         Route::get('/myaccount',[MyaccountController::class, 'index'])->name('client.myaccount');
         Route::patch('/account/order/cancel/{id}', [MyaccountController::class, 'cancelOrder'])->name('client.order.cancel');
+
+        Route::patch('/order/cancel-multiple', [MyaccountController::class, 'cancelMultiple'])->name('client.order.cancelMultiple');
 
 
 

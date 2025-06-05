@@ -138,10 +138,10 @@
                     </div>
                     <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                         <div class="shop-checkout-right">
-                            <div class="shop-checkout-box">
-                                <h5>ĐƠN HÀNG CỦA BẠN</h5>
+                            <div  class="shop-checkout-box">
+                                <h5 style="color: #959393;">ĐƠN HÀNG CỦA BẠN</h5>
                                 <div class="shop-checkout-title">
-                                    <h6>SẢN PHẨM <span>THÀNH TIỀN</span></h6>
+                                    <h6 style="color: #959393;">SẢN PHẨM <span>THÀNH TIỀN</span></h6>
                                 </div>
                                 <div class="shop-checkout-row">
                                     @php
@@ -195,7 +195,8 @@
                                             if (!empty($toppingNames)) $desc[2] = 'Topping: ' . implode(', ', $toppingNames);
                                         @endphp
                                           <hr style="margin-top: 0px ">
-                                        <div class="row" style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div class="row" ></div>
+                                            <small>x{{ $quantity }}</small>
                                         <div> <p><Strong>{{ $name }}</Strong></p>
                                         @if(isset($desc[1]))
                                             <p style="color: #666; font-size: 0.8em; font-weight: bold;">{{ $desc[1] }}</p>
@@ -206,7 +207,6 @@
                                         @endif
 
                                        <div> <p style="justify-self: end;">
-                                            <small>x{{ $quantity }}</small>
                                             <strong>{{ number_format($total) }} VND</strong>
                                         </p></div>
 

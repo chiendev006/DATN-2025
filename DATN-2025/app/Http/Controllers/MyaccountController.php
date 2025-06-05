@@ -57,4 +57,27 @@ public function cancelOrder($id)
             'message' => 'Đơn hàng đã được hủy thành công.'
         ]);
     }
+    public function cancelMultiple(Request $request)
+{
+    $orderIds = $request->input('order_ids', []);
+
+    if (empty($orderIds)) {
+        return back()->with('error', 'Vui lòng chọn ít nhất một đơn hàng để hủy.');
+    }
+
+    foreach ($orderIds as $id) {
+        $order = Order::where('id', $id)
+                      ->where('user_id', Auth::id())
+                      ->where('status', 'pending')
+                      ->first();
+
+        if ($order) {
+            $order->status = 'cancelled';
+            $order->save();
+        }
+    }
+
+    return back()->with('success', 'Đã hủy các đơn hàng đã chọn thành công.');
+}
+
 }
