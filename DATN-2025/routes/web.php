@@ -90,8 +90,7 @@ use App\Http\Controllers\Staff\AuthenController;
         Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
         Route::get('/order/complete/{orderId}', [CheckoutController::class, 'success'])->name('order.complete');
 
-        // Blog
-        Route::get('/blog',[BlogController::class, 'index'])->name('blog.index');
+
 
         // Services
         Route::get('/services',[ServicesController::class, 'index'])->name('services.index');

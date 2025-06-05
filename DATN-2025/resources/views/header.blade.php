@@ -48,7 +48,7 @@
 	</head>
 	<body>
 @php
-    $isHomeTab = request()->is('admin') || request()->is('admin/danhmuc*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*');
+    $isHomeTab = request()->is('admin') ||request()->is('admin/contact') || request()->is('admin/danhmuc*')|| request()->is('admin/blogs*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*');
     $isAuthTab = request()->is('admin/staff*') || request()->is('admin/payroll*');
 @endphp
 
@@ -121,10 +121,10 @@
 											<a href="{{ route('admin.order.index') }}" class="{{ request()->is('admin/order*') ? 'current-page' : '' }}">Đơn hàng</a>
 										</li>
 										<li>
-											<a href="crm.html">Bình luận</a>
+                                        <a href="{{ route('contact.index') }}" class="{{ request()->is('admin/contact*') ? 'current-page' : '' }}">Bình luận</a>
 										</li>
 										<li>
-											<a href="reports.html">Blog</a>
+											<a href="{{ route('blogs.index') }}" class="{{ request()->is('admin/blogs*') ? 'current-page' : '' }}">Bài viết</a>
 										</li>
 
 
