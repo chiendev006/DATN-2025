@@ -153,7 +153,7 @@
             <div class="container">
               <div class="header-nav-inside">
                 <div class="logo">
-                  <a href="index.html"
+                  <a href="/"
                     ><span>Despına</span><small>1991</small></a
                   >
                 </div>
@@ -493,7 +493,7 @@
               <div class="row">
                 <div class="col-md-3 col-sm-3 col-xs-12">
                   <div class="logo">
-                    <a href="index.html"
+                    <a href="/"
                       ><span>Despına</span><small>1991</small></a
                     >
                   </div>
@@ -555,7 +555,7 @@
                 <div class="col-md-3 col-sm-3 col-xs-12">
                   <h5>Despina Video</h5>
                   <a
-                    href="https://www.youtube.com/watch?v=uZ0aQMXkiV4"
+                    href="https://www.youtube.com/watch?v=bnQ5BwLCH3U"
                     class="magnific-youtube"
                     ><img src="{{ url('asset') }}/images/video-bg.png" alt=""
                   /></a>
@@ -613,7 +613,85 @@
 
 <!-- Summernote JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Handle quantity changes
+    $(document).on('click', '.qty-btn', function() {
+        var $button = $(this);
+        var $cartItem = $button.closest('.cart-item');
+        var itemId = $cartItem.data('item-id');
+        var action = $button.data('action');
+        var $quantityInput = $cartItem.find('input[type="number"]');
+        var currentQuantity = parseInt($quantityInput.val());
 
+        var newQuantity = action === 'increase' ? currentQuantity + 1 : currentQuantity - 1;
+        if (newQuantity < 1) return;
+
+        updateCartItem(itemId, newQuantity, $cartItem);
+    });
+
+    // Handle item removal
+    $(document).on('click', '.delete-icon', function() {
+        var $cartItem = $(this).closest('.cart-item');
+        var itemId = $cartItem.data('item-id');
+        console.log('Attempting to remove item:', itemId); // Debugging
+        if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?')) {
+            removeCartItem(itemId, $cartItem);
+        }
+    });
+
+    function updateCartItem(itemId, quantity, $cartItem) {
+        $.ajax({
+            url: '/cart/update',
+            method: 'POST',
+            data: {
+                item_id: itemId,
+                quantity: quantity,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    $cartItem.find('input[type="number"]').val(quantity);
+                    $cartItem.find('.cart-item-right span').text(
+                        Number(response.item_price).toLocaleString() + '₫'
+                    );
+                    $('#cart-subtotal').text(Number(response.subtotal).toLocaleString() + '₫');
+                    $('#cart-summary').text(response.item_count + ' items - ' + Number(response.subtotal).toLocaleString() + '₫');
+                }
+            },
+            error: function(xhr) {
+                console.error('Update error:', xhr.responseText);
+                alert('Không thể cập nhật giỏ hàng, vui lòng thử lại.');
+            }
+        });
+    }
+
+    function removeCartItem(itemId, $cartItem) {
+        $.ajax({
+            url: '/cart/remove',
+            method: 'POST',
+            data: {
+                item_id: itemId,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    $cartItem.remove();
+                    $('#cart-subtotal').text(Number(response.subtotal).toLocaleString() + '₫');
+                    $('#cart-summary').text(response.item_count + ' items - ' + Number(response.subtotal).toLocaleString() + '₫');
+                    if (response.item_count === 0) {
+                        $('.cart-items-scrollable').html('<div class="cart-item"><p>Không có sản phẩm nào trong giỏ hàng.</p></div>');
+                    }
+                }
+            },
+            error: function(xhr) {
+                console.error('Remove error:', xhr.responseText);
+                alert('Không thể xóa sản phẩm, vui lòng thử lại.');
+            }
+        });
+    }
+});
+</script>
 
 </html>
 

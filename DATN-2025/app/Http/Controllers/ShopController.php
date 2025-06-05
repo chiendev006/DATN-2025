@@ -8,22 +8,36 @@ use Illuminate\Http\Request;
 
 class ShopController extends Controller
 {
-  public function index()
+ public function index(Request $request)
     {
         $danhmucs = Danhmuc::with(['sanphams' => function($query) {
             $query->withMin('sizes', 'price');
         }])->get();
 
-        $firstDanhmuc = $danhmucs->first();
-        $firstProducts = $firstDanhmuc ? $firstDanhmuc->sanphams : [];
+        $danhmucId = $request->input('danhmuc_id', $danhmucs->first()->id ?? null);
+        $page = $request->input('page', 1);
+        $perPage = 12;
+
+        $firstDanhmuc = $danhmucs->where('id', $danhmucId)->first();
+        $firstProducts = $firstDanhmuc ? $firstDanhmuc->sanphams()->withMin('sizes', 'price')->paginate($perPage) : [];
 
         foreach ($firstProducts as $sp) {
             $sp->min_price = $sp->sizes_min_price ?? 0;
         }
 
+        if ($request->ajax()) {
+            return response()->json([
+                'products' => $firstProducts->items(),
+                'current_page' => $firstProducts->currentPage(),
+                'last_page' => $firstProducts->lastPage(),
+                'total' => $firstProducts->total(),
+                'per_page' => $firstProducts->perPage(),
+                'danhmuc_id' => $danhmucId
+            ]);
+        }
+
         return view('client.shop', compact('danhmucs', 'firstDanhmuc', 'firstProducts'));
     }
-
     public function getByCategory($id)
     {
         $danhmuc = Danhmuc::with('sanphams')->findOrFail($id);

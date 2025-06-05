@@ -1,161 +1,159 @@
-    @extends('layout2')
-    @section('main')
-         <div class="header-category" style="background-color: #c19942; margin-top: 0px">
-            <div class="container">
-              <div class="category-icon">
-                <div class="category-icon-menu">
-                  <a href="#" class="hambarger-icon">
+@extends('layout2')
+
+@section('main')
+<div class="header-category" style="background-color: #c19942; margin-top: 0px">
+    <div class="container">
+        <div class="category-icon">
+            <div class="category-icon-menu">
+                <a href="#" class="hambarger-icon">
                     <span class="bar-1"></span>
                     <span class="bar-2"></span>
                     <span class="bar-3"></span>
-                  </a>
+                </a>
+            </div>
+            <ul id="category-list">
+                @foreach ($danhmucs as $index => $danhmuc)
+                    <li class="{{ $index == 0 ? 'current' : '' }}">
+                        <a href="#" data-id="{{ $danhmuc->id }}">
+                            <span class="custom-icon {{ strtolower($danhmuc->name) }}"></span>
+                            <strong>{{ strtoupper($danhmuc->name) }}</strong>
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+</div>
+
+<main>
+    <div class="main-part">
+        <section class="breadcrumb-nav">
+            <div class="container">
+                <div class="breadcrumb-nav-inner">
+                    <ul>
+                        <li><a href="index-2.html">Home</a></li>
+                        <li class="active"><a href="#">Menu</a></li>
+                    </ul>
+                    <label class="now">MENU</label>
                 </div>
-               <ul id="category-list">
-                  @foreach ($danhmucs as $index => $danhmuc)
-                      <li class="{{ $index == 0 ? 'current' : '' }}">
-                          <a href="#" data-id="{{ $danhmuc->id }}">
-                              <span class="custom-icon {{ strtolower($danhmuc->name) }}"></span>
-                              <strong>{{ strtoupper($danhmuc->name) }}</strong>
-                          </a>
-                      </li>
-                  @endforeach
-              </ul>
-              </div>
             </div>
-          </div>
-        <main>
-            <div class="main-part">
-                <section class="breadcrumb-nav">
-                    <div class="container">
-                        <div class="breadcrumb-nav-inner">
+        </section>
+        <section class="default-section menu-fix bg-grey">
+            <div class="container">
+                <div class="menu-fix-main-list menu-fix-with-item">
+                    <div class="title text-center">
+                        <h2 class="text-dark" id="category-name">{{ $firstDanhmuc->name ?? 'Danh mục' }}</h2>
+                        <h6 id="category-description">{{ $firstDanhmuc->description ?? 'Mô tả danh mục' }}</h6>
+                    </div>
+
+                    <div class="row" id="product-display">
+                        @foreach ($firstProducts as $product)
+                            <div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="700ms">
+                                <div class="menu-fix-list">
+                                    <span class="menu-fix-product">
+                                        <img src="{{ url('storage/uploads/' . $product->image) }}" style="width: 100px; height: 100px; border-radius: 100px;" alt="{{ $product->name }}">
+                                    </span>
+                                    <h5>{{ strtoupper($product->name) }} <span> {{ number_format($product->min_price) }} VND</span></h5>
+                                    <p>{{ $product->mota ?? 'Không có mô tả.' }}</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div style="text-align: center;" class="gallery-pagination">
+                        <div class="gallery-pagination-inner">
                             <ul>
-                                <li><a href="index-2.html">Home</a></li>
-                                <li class="active"><a href="#">Menu</a></li>
+                                <li>
+                                    <a href="#" class="pagination-prev {{ $firstProducts->onFirstPage() ? 'disabled' : '' }}" data-page="{{ $firstProducts->currentPage() - 1 }}">
+                                        <i class="icon-left-4"></i> <span>PREV page</span>
+                                    </a>
+                                </li>
+                                @for ($i = 1; $i <= $firstProducts->lastPage(); $i++)
+                                    <li class="{{ $i == $firstProducts->currentPage() ? 'active' : '' }}">
+                                        <a href="#" data-page="{{ $i }}"><span>{{ $i }}</span></a>
+                                    </li>
+                                @endfor
+                                <li>
+                                    <a href="#" class="pagination-next {{ $firstProducts->hasMorePages() ? '' : 'disabled' }}" data-page="{{ $firstProducts->currentPage() + 1 }}">
+                                        <span>next page</span> <i class="icon-right-4"></i>
+                                    </a>
+                                </li>
                             </ul>
-                            <label class="now">MENU</label>
                         </div>
                     </div>
-                </section>
-               <section class="default-section menu-fix bg-grey">
-                    <div class="container">
-                        <div class="menu-fix-main-list menu-fix-with-item">
-                            <div class="title text-center">
-                                <h2 class="text-dark" id="category-name">{{ $firstDanhmuc->name ?? 'Danh mục' }}</h2>
-                                <h6 id="category-description">{{ $firstDanhmuc->description ?? 'Mô tả danh mục' }}</h6>
-                            </div>
-
-                            <div class="row" id="product-display">
-                                @foreach ($firstProducts as $product)
-                                    <div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="700ms">
-                                        <div class="menu-fix-list">
-                                            <span class="menu-fix-product">
-                                                <img src="{{ url('storage/uploads/' . $product->image) }}" style="width: 100px; height: 100px; border-radius: 100px;" alt="{{ $product->name }}">
-                                            </span>
-                                            <h5>{{ strtoupper($product->name) }} <span> {{ number_format($product->min_price) }} VND</span></h5>
-                                            <p>{{ $product->mota ?? 'Không có mô tả.' }}</p>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <section class="default-section">
-                    <div class="container">
-                        <div class="discount-part">
-                            <div class="row">
-                                <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="700ms">
-                                    <h6>HAPPY CUSTOMER EVENT</h6>
-                                    <h2 class="text-coffee">DISCOUNT <span>50%</span></h2>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor int et lamp dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</p>
-                                    <a href="#" class="button-default buttone-text-dark">LEARN MORE</a>
-                                </div>
-                                <div class="col-md-7 col-sm-7 col-xs-12">
-                                    <div class="discount-right">
-                                        <img src="{{ url('asset') }}/images/item7.png" alt="">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="on-flow">
-                        <img src="{{ url('asset') }}/images/item8.png" alt="">
-                    </div>
-                </section>
+                </div>
             </div>
-        </main>
+        </section>
+        <section class="default-section">
+            <div class="container">
+                <div class="discount-part">
+                    <div class="row">
+                        <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="700ms">
+                            <h6>HAPPY CUSTOMER EVENT</h6>
+                            <h2 class="text-coffee">DISCOUNT <span>50%</span></h2>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor int et lamp dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</p>
+                            <a href="#" class="button-default buttone-text-dark">LEARN MORE</a>
+                        </div>
+                        <div class="col-md-7 col-sm-7 col-xs-12">
+                            <div class="discount-right">
+                                <img src="{{ url('asset') }}/images/item7.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="on-flow">
+                <img src="{{ url('asset') }}/images/item8.png" alt="">
+            </div>
+        </section>
+    </div>
+</main>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
-
 <script>
-$(document).ready(function(){
-    $('#category-list a').click(function(e){
+$(document).ready(function() {
+    // Category click handler
+    $('#category-list a').click(function(e) {
         e.preventDefault();
-
         var categoryId = $(this).data('id');
-
-        // Đổi active class
+        
+        // Update active class
         $('#category-list li').removeClass('current');
         $(this).parent().addClass('current');
 
-        $.ajax({
-            url: '/menu/category/' + categoryId,
-            type: 'GET',
-            dataType: 'json',
-            success: function(response){
-                // Cập nhật tên, mô tả danh mục
-                $('#category-name').text(response.category_name);
-                $('#category-description').text(response.category_description);
-
-                // Xóa hết sản phẩm cũ
-                $('#product-display').empty();
-
-                // Thêm sản phẩm mới
-                $.each(response.products, function(index, product){
-                    var productHtml = `
-                        <div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="700ms">
-                            <div class="menu-fix-list">
-                                <span class="menu-fix-product">
-                                    <img src="/storage/${product.image.replace(/^\/+/, '')}" alt="${product.name}">
-                                </span>
-                                <h5>${product.name.toUpperCase()} <span>$ ${parseFloat(product.min_price).toFixed(2)}</span></h5>
-                                <p>${product.description || 'Không có mô tả.'}</p>
-                            </div>
-                        </div>
-                    `;
-                    $('#product-display').append(productHtml);
-                });
-            },
-            error: function(){
-                alert('Không thể tải sản phẩm, vui lòng thử lại.');
-            }
-        });
+        // Load first page of products
+        loadProducts(categoryId, 1);
     });
-});
-$(document).ready(function() {
-    $('#category-list li a').click(function(e) {
+
+    // Pagination click handler
+    $(document).on('click', '.gallery-pagination a', function(e) {
         e.preventDefault();
+        if ($(this).hasClass('disabled')) return;
 
-        var categoryId = $(this).data('id');
+        var page = $(this).data('page');
+        var categoryId = $('#category-list li.current a').data('id');
+        
+        loadProducts(categoryId, page);
+    });
 
+    function loadProducts(categoryId, page) {
         $.ajax({
-            url: '/menu/category/' + categoryId,
+            url: '/menu/category/' + categoryId + '?page=' + page,
             method: 'GET',
+            dataType: 'json',
             success: function(response) {
-                // Cập nhật tên, mô tả danh mục
+                // Update category name and description
                 $('#category-name').text(response.category_name);
                 $('#category-description').text(response.category_description);
 
-                // Xóa hết sản phẩm cũ
+                // Clear existing products
                 $('#product-display').empty();
 
-                // Thêm sản phẩm mới với style giống Blade
+                // Add new products
                 $.each(response.products, function(index, product) {
-                    // Xử lý đường dẫn ảnh
                     let imageUrl = product.image;
                     if (!imageUrl.startsWith('http')) {
-                        imageUrl = '/storage/' + product.image.replace(/^\/+/, '');
+                        imageUrl = '/storage/uploads/' + product.image.replace(/^\/+/, '');
                     }
 
                     let productHtml = `
@@ -169,18 +167,55 @@ $(document).ready(function() {
                             </div>
                         </div>
                     `;
-
                     $('#product-display').append(productHtml);
                 });
 
-                // Nếu bạn dùng wow.js thì gọi lại init:
+                // Update pagination
+                updatePagination(response.pagination);
+
+                // Re-initialize WOW.js if used
                 if (typeof WOW === 'function') {
                     new WOW().init();
                 }
+            },
+            error: function() {
+                alert('Không thể tải sản phẩm, vui lòng thử lại.');
             }
         });
-    });
-});
+    }
 
+    function updatePagination(pagination) {
+        var paginationHtml = `
+            <div class="gallery-pagination-inner">
+                <ul>
+                    <li>
+                        <a href="#" class="pagination-prev ${pagination.current_page === 1 ? 'disabled' : ''}" data-page="${pagination.current_page - 1}">
+                            <i class="icon-left-4"></i> <span>PREV page</span>
+                        </a>
+                    </li>
+        `;
+
+        // Generate page numbers
+        for (let i = 1; i <= pagination.last_page; i++) {
+            paginationHtml += `
+                <li class="${i === pagination.current_page ? 'active' : ''}">
+                    <a href="#" data-page="${i}"><span>${i}</span></a>
+                </li>
+            `;
+        }
+
+        paginationHtml += `
+                    <li>
+                        <a href="#" class="pagination-next ${pagination.current_page === pagination.last_page ? 'disabled' : ''}" data-page="${pagination.current_page + 1}">
+                            <span>next page</span> <i class="icon-right-4"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        `;
+
+        $('.gallery-pagination').html(paginationHtml);
+    }
+});
 </script>
 @endsection
