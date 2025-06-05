@@ -28,12 +28,12 @@
 
     <hr>
 
-    <div class="field">
+    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-9">
       <label class="label">Nội dung Blog</label>
       <div class="field-body">
         <div class="field">
           <div class="control icons-left">
-            <textarea class="input" name="content" rows="5" placeholder="Nhập nội dung">{{ $blogs->content }}</textarea>
+            <textarea class="summernote" name="content" rows="5" placeholder="Nhập nội dung">{{ $blogs->content }}</textarea>
             <span class="icon left"><i class="mdi mdi-text"></i></span>
             @error('content')
               <p style="color: red;">{{ $message }}</p>
@@ -42,7 +42,7 @@
         </div>
       </div>
     </div>
-
+   
     <hr>
 
     <div class="field grouped">
@@ -54,5 +54,12 @@
     </div>
   </form>
 </div>
-
+<script>
+      $(document).ready(function() {
+        $('.summernote').summernote({
+          height: 300,
+          placeholder: 'Nhập nội dung blog tại đây...',
+        });
+      });
+</script>
 @include('footer')

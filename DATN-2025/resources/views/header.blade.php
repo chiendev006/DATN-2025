@@ -39,6 +39,11 @@
 		<!-- Search Filter JS -->
 		<link rel="stylesheet" href="{{ url('assetadmin') }}/vendor/search-filter/search-filter.css">
 		<link rel="stylesheet" href="{{ url('assetadmin') }}/vendor/search-filter/custom-search-filter.css">
+	<!-- Summernote CSS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+<!-- Summernote JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
 
 	</head>
 	<body>
