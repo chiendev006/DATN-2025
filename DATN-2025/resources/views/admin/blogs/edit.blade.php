@@ -1,65 +1,94 @@
 @include('header')
 
-<section class="is-hero-bar">
+<div class="content-wrapper-scroll">
+    <div class="content-wrapper">
+
+
+
+                <section class="is-hero-bar">
   <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
     <h1 class="title">
-      Blog
+      Sửa blogs
     </h1>
   </div>
 </section>
 
-<div class="card-content">
-  <form action="{{ route('blogs.update', ['id' => $blogs->id]) }}" method="post">
+<section class="section main-section">
+  <div class="card mb-6">
+    <div  class="card-content">
+    <form style="margin-left: 40px;" action="{{ route('blogs.update', ['id' => $blogs->id]) }}" method="post" enctype="multipart/form-data">
     @csrf
-    <div class="field">
-      <label class="label">Tiêu đề Blog</label>
-      <div class="field-body">
-        <div class="field">
+
+
+        <div style="display: flex; margin-top: 20px; justify-content: space-around;" class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-9">
+                <div class="field-wrapper col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5">
+         <div class="field-placeholder">Tên bài viết</div>
           <div class="control icons-left">
-            <input class="input" type="text" value="{{ $blogs->title }}" name="title" placeholder="Nhập tiêu đề">
+            <input class="input" type="text" name="title" placeholder="Nhập tên bài viết" required value="{{ $blogs->title }}">
             <span class="icon left"><i class="mdi mdi-note-text"></i></span>
             @error('title')
               <p style="color: red;">{{ $message }}</p>
             @enderror
           </div>
         </div>
-      </div>
-    </div>
 
-    <hr>
+        <div class="field-wrapper col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5">
+            <div class="field-placeholder">Ảnh bìa</div>
+          <div class="control">
+            <input class="input" type="file" name="image" accept="image/*" value="{{ $blogs->image }}">
+            @error('image')
+              <p style="color: red;">{{ $message }}</p>
+            @enderror
+          </div>
+        </div>
+        </div>
 
-    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-9">
-      <label class="label">Nội dung Blog</label>
-      <div class="field-body">
-        <div class="field">
+        <div class="field-wrapper col-xl-9 col-lg-9 col-md-9 col-sm-9 col-9">
+        <div class="field-placeholder">Nội dung</div>
           <div class="control icons-left">
-            <textarea class="summernote" name="content" rows="5" placeholder="Nhập nội dung">{{ $blogs->content }}</textarea>
+            <textarea class="summernote" name="content" rows="5" placeholder="Nhập nội dung" required>{{ $blogs->content }}</textarea>
             <span class="icon left"><i class="mdi mdi-text"></i></span>
             @error('content')
               <p style="color: red;">{{ $message }}</p>
             @enderror
           </div>
         </div>
-      </div>
-    </div>
-   
-    <hr>
 
-    <div class="field grouped">
-      <div class="control">
-        <button type="submit" class="button green">
-          Cập nhật
-        </button>
-      </div>
+
+
+
+        <div style="margin-top: 20px; margin-bottom: 20px; display: flex; justify-content: space-around;" class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
+          <div class="control">
+            <button style="border-radius: 10px; width: 120px; padding: 10px;" type="submit" class="btn-success">
+              Sửa bài viết
+            </button>
+          </div>
+          <div class="control">
+            <a href="{{ route('blogs.index') }}" style="color: white; text-decoration: none;">
+                <button style="border-radius: 10px; width: 120px; padding: 10px;" type="button" class="btn-danger">
+                  Hủy
+                </button>
+              </a>
+          </div>
+        </div>
+      </form>
     </div>
-  </form>
-</div>
+  </div>
+</section>
 <script>
       $(document).ready(function() {
         $('.summernote').summernote({
-          height: 300,
-          placeholder: 'Nhập nội dung blog tại đây...',
+          height: 180,
+          placeholder: 'Nhập nội dung blogs tại đây...',
         });
       });
 </script>
+
+
 @include('footer')
+
+
+
+
+    </div>
+</div>
