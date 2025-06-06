@@ -13,33 +13,48 @@
         {{ session('error') }}
     </div>
   @endif
-
-    <div class="max-w-8xl mx-auto px-10 py-10">
+<div class="container mx-auto px-6 py-10">
         <!-- User Header -->
         <div class="bg-white rounded-lg shadow p-6 flex flex-col md:flex-row items-center md:items-start gap-6">
-            <div class="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-3xl text-gray-400">
-                <i class="fas fa-user"></i>
+ 
+        <div class="mb-4">
+             <img id="displayAvatar" src="{{ $user->image ? asset('storage/' . $user->image) : '' }}" class="mt-2 w-24 h-24 object-cover rounded-full {{ $user->image ? '' : 'hidden' }}"><br>
+                       <button id="editProfileBtn" class="text-blue-600 hover:underline mt-2">Chỉnh sửa thông tin</button>
+<div id="editProfileModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-xl w-full max-w-lg">
+        <h3 class="text-xl font-bold mb-4">Chỉnh sửa thông tin</h3>
+        <form id="editProfileForm" enctype="multipart/form-data">
+            @csrf
+            <div class="mb-3">
+                <label class="block">Họ tên:</label>
+                <input type="text" name="name" value="{{ $user->name }}" class="w-full border rounded p-2" required>
             </div>
-            <div class="flex-1 space-y-2">
-               @php
-                    $user = Auth::user();
-                @endphp
+            <div class="mb-3">
+                <label class="block">Số điện thoại:</label>
+                <input type="text" name="phone" value="{{ $user->phone }}" class="w-full border rounded p-2">
+            </div>
+            <div class="mb-3">
+                <label class="block">Địa chỉ:</label>
+                <input type="text" name="address" value="{{ $user->address }}" class="w-full border rounded p-2">
+            </div>
+            <div class="mb-3">
+                <label class="block">Ảnh đại diện:</label>
+                <input type="file" name="image" accept="image/*" class="w-full" id="previewImageInput">
+                <img id="previewImage" src="{{ $user->image ? asset('storage/' . $user->image) : '' }}" class="mt-2 w-24 h-24 object-cover rounded-full {{ $user->image ? '' : 'hidden' }}">
+            </div>
+            <div class="text-right">
+                <button type="button" id="cancelEdit" class="px-4 py-2 bg-gray-300 rounded">Hủy</button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Lưu</button>
+            </div>
+        </form>
+    </div>
+</div>
+            <p><strong>Họ tên:</strong> <span id="displayName">{{ $user->name }}</span></p>
+            <p><strong>SĐT:</strong> <span id="displayPhone">{{ $user->phone }}</span></p>
+            <p><strong>Địa chỉ:</strong> <span id="displayAddress">{{ $user->address }}</span></p>
+        </div>
 
-                <h2 class="text-2xl font-bold">{{ $user->name }}</h2>
-                <div class="text-gray-600 flex items-center gap-2">
-                    <i class="fas fa-map-marker-alt text-gray-500"></i>
-                    {{ $user->address ?? 'Chưa cập nhật địa chỉ' }}
-                </div>
-                <div class="text-gray-600 flex items-center gap-2">
-                    <i class="fas fa-phone text-gray-500"></i>
-                    {{ $user->phone ?? 'Chưa cập nhật số điện thoại' }}
-                </div>
-                <div class="text-gray-600 flex items-center gap-2">
-                    <i class="fas fa-envelope text-gray-500"></i>
-                    {{ $user->email }}
-                </div>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-auto mt-4 md:mt-0">
+           <div class="ml-auto grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-auto mt-4 md:mt-0">
                 <div class="bg-green-100 text-green-800 p-4 rounded-lg text-center">
                     <div class="text-2xl font-bold" id="stat-all">{{ $orderStats['all'] }}</div>
                     <div class="text-base">Tổng đơn</div>
@@ -132,7 +147,7 @@
 
             <div class="product-item flex border p-4 rounded-lg items-center gap-4 bg-white shadow-sm" data-status="{{ $status }}" data-pay-status="{{ $payStatus }}">
                 <input type="checkbox" name="order_ids[]" value="{{ $item->order_id }}"
-                    class="mt-2 h-5 w-5 text-red-500 focus:ring-red-500"
+                    class="mt-2 h-10 w-10 text-red-500 focus:ring-red-500"
                     {{ $status !== 'pending' ? 'disabled' : '' }}>
                 
                 <img src="{{ $image }}" alt="{{ $item->product_name }}" class="w-32 h-32 rounded object-cover">
@@ -140,7 +155,7 @@
                 <div class="flex-1 space-y-1">
                     <div class="flex justify-between items-center">
                         <h1 class="font-semibold text-lg">{{ $item->product_name }}</h1>
-                        <span class="status-badge inline-block {{ $badgeColor }} text-sm font-semibold px-3 py-1 rounded-full">
+                        <span class="status-badge inline-block {{ $badgeColor }} text-sm font-semibold px-3 py-2 rounded-full">
                             {{ ucfirst($status) }}
                         </span>
                     </div>
@@ -174,7 +189,6 @@
 </main>
 
 <script>
-    // Tab switching logic
     document.querySelectorAll('.order-tab').forEach(button => {
         button.addEventListener('click', function () {
             document.querySelectorAll('.order-tab').forEach(btn => {
@@ -199,7 +213,6 @@
         });
     });
 
-    // Cancel order logic
     document.querySelectorAll('.cancel-order').forEach(button => {
         button.addEventListener('click', function () {
             const orderId = this.getAttribute('data-id');
@@ -226,17 +239,14 @@
                 if (data.success) {
                     alert(data.message);
 
-                    // Update the order item status in DOM
                     const orderItem = button.closest('.product-item');
                     orderItem.setAttribute('data-status', 'cancelled');
                     const badge = orderItem.querySelector('.status-badge');
                     badge.textContent = 'Cancelled';
                     badge.className = 'status-badge inline-block bg-red-100 text-red-700 text-sm font-semibold px-3 py-1 rounded-full';
 
-                    // Remove cancel button
                     button.remove();
 
-                    // Update order stats
                     const statAll = document.getElementById('stat-all');
                     const statPending = document.getElementById('stat-pending');
                     const statCancelled = document.getElementById('stat-cancelled');
@@ -244,7 +254,6 @@
                     statPending.textContent = parseInt(statPending.textContent) - 1;
                     statCancelled.textContent = parseInt(statCancelled.textContent) + 1;
 
-                    // If current tab is not 'all' or 'cancelled', hide the item
                     const activeTab = document.querySelector('.order-tab.active-tab').getAttribute('data-status');
                     if (activeTab !== 'all' && activeTab !== 'cancelled') {
                         orderItem.style.display = 'none';
@@ -257,6 +266,62 @@
                 console.error('Lỗi:', error);
                 alert('Có lỗi xảy ra: ' + error.message);
             });
+        });
+    });
+</script>
+<script>
+    document.getElementById('editProfileBtn').addEventListener('click', function () {
+        document.getElementById('editProfileModal').classList.remove('hidden');
+    });
+
+    document.getElementById('cancelEdit').addEventListener('click', function () {
+        document.getElementById('editProfileModal').classList.add('hidden');
+    });
+
+    document.getElementById('previewImageInput').addEventListener('change', function (e) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = document.getElementById('previewImage');
+            img.src = e.target.result;
+            img.classList.remove('hidden');
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    });
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $('#editProfileForm').on('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('myaccount.ajax-update') }}",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+              alert(res.message);
+
+            $('#displayName').text(res.data.name);
+            $('#displayPhone').text(res.data.phone);
+            $('#displayAddress').text(res.data.address);
+
+            if (res.data.image_url) {
+                $('#displayAvatar').attr('src', res.data.image_url).removeClass('hidden');
+            }
+
+            $('#editProfileModal').addClass('hidden');
+
+            },
+            error: function (err) {
+                alert('Lỗi khi cập nhật thông tin.');
+                console.error(err.responseJSON);
+            }
         });
     });
 </script>

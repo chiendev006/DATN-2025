@@ -373,34 +373,33 @@
                         </ul>
                       </li>
                      @auth
-      <li class="has-child">
-          <a href="#" class="nav-link dropdown-toggle" id="userDropdown">
-              Xin chào, {{ Auth::user()->name }}
-          </a>
-          <ul class="drop-nav">
-              <li>
-                  <a class="dropdown-item" href="{{ route('logout') }}"
-                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                      Đăng xuất
-                  </a>
-                  <a href="{{ route('client.myaccount') }}">Tài khoản của tôi</a>
+                          <li class="has-child">
+                              <a href="#" class="nav-link dropdown-toggle" id="userDropdown">
+                                  Xin chào, {{ Auth::user()->name }}
+                              </a>
+                              <ul class="drop-nav">
+                                  <li>
+                                      <a class="dropdown-item" href="{{ route('logout') }}"
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                          Đăng xuất
+                                      </a>
+                                      <a href="{{ route('client.myaccount') }}">Tài khoản của tôi</a>
 
-                  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                      @csrf
-                  </form>
-              </li>
-          </ul>
-      </li>
-  @else
-    <li class="has-child">
-        <a href="#" class="nav-link">Tài khoản</a>
-        <ul class="drop-nav">
-            <li><a href="{{ route('login') }}">Đăng nhập</a></li>
-            <li><a href="{{ route('register') }}">Đăng ký</a></li>
-        </ul>
-    </li>
-@endauth
-
+                                      <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                          @csrf
+                                      </form>
+                                  </li>
+                              </ul>
+                          </li>
+                      @else
+                        <li class="has-child">
+                            <a href="#" class="nav-link">Tài khoản</a>
+                            <ul class="drop-nav">
+                                <li><a href="{{ route('login') }}">Đăng nhập</a></li>
+                                <li><a href="{{ route('register') }}">Đăng ký</a></li>
+                            </ul>
+                        </li>
+                    @endauth
                   </div>
 
                   <div class="cart animated">
@@ -431,7 +430,11 @@
 
                                 <div class="cart-item">
                                     <div class="cart-item-left">
-                                        <img src="{{ url('storage/uploads/'.$item->image) }}" alt="" />
+                                       @php
+                                          $productImage = $item->product->image ?? $item->image ?? 'asset/images/img21.png';
+                                      @endphp
+                                      <img src="{{ asset('storage/uploads/' . $productImage) }}" alt="" />
+
                                     </div>
                                     <div class="cart-item-right">
                                         <h6>{{ $productName }}</h6>
