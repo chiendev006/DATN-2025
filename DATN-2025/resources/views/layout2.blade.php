@@ -40,7 +40,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
-   
+
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -68,7 +68,7 @@
 
 .search-input-wrapper input[type="text"] {
     width: 100%;
-    padding: 10px 40px 10px 15px; 
+    padding: 10px 40px 10px 15px;
     border: 1px solid #ccc;
     border-radius: 100px;
     font-size: 14px;
@@ -402,7 +402,7 @@
 @endauth
 
                   </div>
-                 
+
                   <div class="cart animated">
                     <span class="icon-basket fontello"></span
                     ><span>2 items - $ 10.89</span>
@@ -411,7 +411,7 @@
                             @forelse ($items as $item)
                                 @php
                                     $productName = $item->product->name ?? $item->name;
-                                    $productImage = isset($item->product->image) 
+                                    $productImage = isset($item->product->image)
                                                     ? asset('storage/uploads/' . $item->product->image)
                                                     : asset('asset/images/img21.png');
                                     $quantity = $item->quantity ?? 1;
@@ -437,7 +437,7 @@
                                         <h6>{{ $productName }}</h6>
                                         <span>{{ number_format($price, 0, ',', '.') }}₫</span>
                                     </div>
-                                    <span class="delete-icon"></span> 
+                                    <span class="delete-icon"></span>
                                 </div>
                             @empty
                                 <div class="cart-item">
@@ -475,7 +475,7 @@
               </div>
             </div>
           </div>
-         
+
         </div>
       </header>
     @yield('main')
@@ -580,7 +580,11 @@
 
     <!-- Back To Top Arrow -->
 
-    <a href="#" class="top-arrow"></a>
+
+
+<!-- Elfsight AI Chatbot | Untitled AI Chatbot -->
+<script src="https://static.elfsight.com/platform/platform.js" async></script>
+<div class="elfsight-app-36d5930f-53fe-4eb3-9cfb-7853aecba54c" data-elfsight-app-lazy></div>
 
     <script src="{{ url('asset') }}/js/jquery.min.js"></script>
     <script src="{{ url('asset') }}/js/bootstrap/bootstrap.min.js"></script>
