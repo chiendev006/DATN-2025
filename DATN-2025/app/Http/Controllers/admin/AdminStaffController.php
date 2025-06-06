@@ -36,6 +36,8 @@ class AdminStaffController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
             'salary_per_day' => 'required|numeric|min:0',
+            'role' => 'required|in:21,22',
+
         ], [
             'email.unique' => 'Email này đã tồn tại trong hệ thống!',
             'password.confirmed' => 'Mật khẩu không khớp!',
@@ -44,6 +46,9 @@ class AdminStaffController extends Controller
             'salary_per_day.numeric' => 'Lương hàng ngày phải là số!',
             'salary_per_day.min' => 'Lương hàng ngày phải lớn hơn 0!',
             'name.required' => 'Tên nhân viên là bắt buộc!',
+            'role.required' => 'Chức vụ là bắt buộc!',
+            'role.in' => 'Chức vụ không hợp lệ!',
+
         ]);
         $salaryPerDay = str_replace(',', '', $request->salary_per_day);
         $salaryPerDay = str_replace('.', '', $request->salary_per_day); // loại bỏ dấu phẩy nếu có
@@ -55,6 +60,8 @@ class AdminStaffController extends Controller
             'password' => bcrypt($request->password),
             'role' => $request->role,
             'salary_per_day' => $salaryPerDay,
+            'phone' => $request->phone,
+            'image' => $request->image,
         ]);
         return redirect()->route('admin.staff.index')->with('success', 'Thêm nhân viên thành công!');
     }
@@ -70,6 +77,9 @@ class AdminStaffController extends Controller
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:6|confirmed',
             'salary_per_day' => 'required|numeric|min:0',
+            'role' => 'required|in:21,22',
+            'phone' => 'string|max:111',
+
         ], [
             'email.unique' => 'Email này đã tồn tại trong hệ thống!',
             'password.confirmed' => 'Mật khẩu không khớp!',
@@ -78,6 +88,10 @@ class AdminStaffController extends Controller
             'salary_per_day.numeric' => 'Lương hàng ngày phải là số!',
             'salary_per_day.min' => 'Lương hàng ngày phải lớn hơn 0!',
             'name.required' => 'Tên nhân viên là bắt buộc!',
+            'role.required' => 'Chức vụ là bắt buộc!',
+            'role.in' => 'Chức vụ không hợp lệ!',
+            'phone.max' => 'Số điện thoại không hợp lệ!',
+
         ]);
 
         // Find the user first
@@ -92,7 +106,17 @@ class AdminStaffController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'salary_per_day' => $salaryPerDay,
+            'role' => $request->role,
+            'phone' => $request->phone,
         ];
+
+        // Nếu có file upload mới thì xử lý
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('storage/uploads'), $imageName);
+            $updateData['image'] = $imageName;
+        }
 
         // If a new password is provided, hash and add it to the update data
         if ($request->filled('password')) {

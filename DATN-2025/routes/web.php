@@ -101,7 +101,7 @@ use App\Http\Controllers\Staff\AuthenController;
         Route::get('admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
         // Group Admin Route
-        Route::prefix('admin')->middleware(['auth', 'check.valid.id'])->group(function () {
+        Route::prefix('admin')->middleware(['checkAdmin', 'check.valid.id'])->group(function () {
         // Trang chủ Admin
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
 

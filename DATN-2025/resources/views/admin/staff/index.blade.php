@@ -44,7 +44,7 @@
         border-radius: 10px;
         padding: 32px 24px 24px 24px;
         min-width: 320px;
-        max-width: 90vw;
+        width: 700px;
         box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08),0 1.5px 4px 0 rgba(0,0,0,0.03);
         position: relative;
     }
@@ -155,6 +155,8 @@
                                                 <button type="button" class="btn-edit-staff"
                                                     data-id="{{ $staff->id }}"
                                                     data-name="{{ $staff->name }}"
+                                                    data-phone="{{ $staff->phone ?? '' }}"
+                                                    data-image="{{ $staff->image ?? '' }}"
                                                     data-email="{{ $staff->email }}"
                                                     data-salary_per_day="{{ number_format($staff->salary_per_day, 0, ',', '.') }}"
                                                     data-role="{{ $staff->role }}" {{-- Đã thêm data-role ở đây --}}
@@ -198,62 +200,88 @@
             <div class="custom-modal-content">
                 <span class="custom-modal-close" id="close-edit-staff-modal">&times;</span>
                 <h3>Chỉnh sửa nhân viên</h3>
-                <form id="editStaffForm" method="post">
+                <form id="editStaffForm" method="post" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="id" id="edit-id">
-                    <div class="field-wrapper">
-                        <div class="field-placeholder">Tên nhân viên</div>
-                        <div class="field-body">
-                            <div class="field">
-                                <div class="control icons-left">
-                                    <input class="input" type="text" id="edit-name" name="name" placeholder="Name">
-                                    <span class="icon left"><i class="mdi mdi-account"></i></span>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="field-wrapper">
+                                <div class="field-placeholder">Tên nhân viên</div>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <div class="control icons-left">
+                                            <input class="input" type="text" id="edit-name" name="name" placeholder="Name">
+                                            <span class="icon left"><i class="mdi mdi-account"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field-wrapper">
+                                <div class="field-placeholder">Ảnh nhân viên</div>
+                                <div class="field-body">
+                                    <div class="field" style="display: flex; align-items: center; gap: 12px;">
+                                        <div class="control icons-left">
+                                            <input class="input" type="file" id="edit-image" name="image" placeholder="Ảnh nhân viên" required>
+                                            <span class="icon left"><i class="mdi mdi-image"></i></span>
+                                        </div>
+                                        <img id="edit-image-preview" src="{{ url("/storage/uploads/$staff->image") }}" alt="Ảnh hiện tại" style="max-width: 60px; max-height: 60px; display: none; border-radius: 6px; border: 1px solid #ccc;" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-wrapper">
+                                <div class="field-placeholder">Số điện thoại</div>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <div class="control icons-left">
+                                            <input class="input" type="text" id="edit-phone" name="phone" placeholder="Số điện thoại" required>
+                                            <span class="icon left"><i class="mdi mdi-phone"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="field-wrapper">
+                                <div class="field-placeholder">Email</div>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <div class="control icons-left">
+                                            <input class="input" type="email" id="edit-email" name="email" placeholder="Email">
+                                            <span class="icon left"><i class="mdi mdi-email"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field-wrapper">
+                                <div class="field-placeholder">Chức vụ</div>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <div class="control icons-left">
+                                            <select name="role" class="input" id="edit-role-select">
+                                                <option value="21">Thu ngân</option>
+                                                <option value="22">Pha chế</option>
+                                            </select>
+                                            <span class="icon left"><i class="mdi mdi-account"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field-wrapper">
+                                <div class="field-placeholder">Lương/ngày</div>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <div class="control icons-left">
+                                            <input class="input" type="number" id="edit-salary_per_day" name="salary_per_day" placeholder="Lương/ngày">
+                                            <span class="icon left"><i class="mdi mdi-account"></i></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <br>
-                    <div class="field-wrapper">
-                        <div class="field-placeholder">Email</div>
-                        <div class="field-body">
-                            <div class="field">
-                                <div class="control icons-left">
-                                    <input class="input" type="email" id="edit-email" name="email" placeholder="Email">
-                                    <span class="icon left"><i class="mdi mdi-email"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="field-wrapper">
-                        <div class="field-placeholder">Chức vụ</div>
-                        <div class="field-body">
-                            <div class="field">
-                                <div class="control icons-left">
-                                    {{-- Đây là phần select box cần được cập nhật JavaScript --}}
-                                    <select class="input" id="edit-role" name="role" placeholder="Role">
-                                        <option value="21">Thu ngân</option>
-                                        <option value="22">Pha chế</option>
-                                    </select>
-                                    {{-- Icon này có vẻ không phù hợp với select box, có thể bỏ nếu không cần --}}
-                                    <span class="icon left"><i class="mdi mdi-account-card-details"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="field-wrapper">
-                        <div class="field-placeholder">Lương/ngày</div>
-                        <div class="field-body">
-                            <div class="field">
-                                <div class="control icons-left">
-                                    <input class="input" type="number" id="edit-salary_per_day" name="salary_per_day" placeholder="Lương/ngày">
-                                    <span class="icon left"><i class="mdi mdi-email"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
+
                     <div class="field-wrapper">
                         <div class="field-placeholder">Mật khẩu mới (bỏ trống nếu không đổi)</div>
                         <div class="field-body">
@@ -344,10 +372,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeEditBtn = document.getElementById('close-edit-staff-modal');
     const editNameInput = document.getElementById('edit-name');
     const editEmailInput = document.getElementById('edit-email');
+    const editPhoneInput = document.getElementById('edit-phone');
+    const editImageInput = document.getElementById('edit-image');
     const editSalary = document.getElementById('edit-salary_per_day');
     const editPasswordInput = document.getElementById('edit-password');
     const editPasswordConfirmationInput = document.getElementById('edit-password_confirmation');
-    const editRoleSelect = document.getElementById('edit-role'); // Lấy thẻ select role của modal SỬA
+    const editRoleSelect = document.getElementById('edit-role-select'); // Lấy thẻ select role của modal SỬA
     const editForm = document.getElementById('editStaffForm');
 
     // --- Xử lý Modal Thêm nhân viên ---
@@ -390,6 +420,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const itemName = this.dataset.name;
             const itemEmail = this.dataset.email;
             const itemSalary = this.dataset.salary_per_day;
+            const itemPhone = this.dataset.phone;
+            const itemImage = this.dataset.image;
             const itemRole = this.dataset.role; // Lấy giá trị role từ data-attribute
 
             // Cập nhật action của form trong modal
@@ -399,6 +431,19 @@ document.addEventListener('DOMContentLoaded', function() {
             // Điền dữ liệu vào các trường input trong modal
             if (editNameInput) editNameInput.value = itemName;
             if (editEmailInput) editEmailInput.value = itemEmail;
+            if (editPhoneInput) editPhoneInput.value = itemPhone;
+            if (editImageInput) editImageInput.value = '';
+            // Hiển thị ảnh preview nếu có
+            const imagePreview = document.getElementById('edit-image-preview');
+            if (imagePreview) {
+                if (itemImage) {
+                    imagePreview.src = '/storage/uploads/' + itemImage;
+                    imagePreview.style.display = 'block';
+                } else {
+                    imagePreview.src = '';
+                    imagePreview.style.display = 'none';
+                }
+            }
             if (editSalary) editSalary.value = itemSalary;
             if (editPasswordInput) editPasswordInput.value = ''; // Luôn xóa mật khẩu cũ
             if (editPasswordConfirmationInput) editPasswordConfirmationInput.value = ''; // Luôn xóa mật khẩu cũ
