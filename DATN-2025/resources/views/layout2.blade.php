@@ -404,7 +404,7 @@
 
                   <div class="cart animated">
                     <span class="icon-basket fontello"></span
-                    ><span>2 items - $ 10.89</span>
+                    ><span>Giỏ hàng</span>
                     <div class="cart-wrap">
                       <div class="cart-blog">
                             @forelse ($items as $item)
