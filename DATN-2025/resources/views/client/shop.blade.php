@@ -1,151 +1,151 @@
 @extends('layout2')
 @section('main')
 <main>
-            <div class="main-part">
+    <div class="main-part">
+        <section class="breadcrumb-nav">
+            <div class="container">
+                <div class="breadcrumb-nav-inner">
+                    <ul>
+                        <li><a href="index-2.html">Home</a></li>
+                        <li class="active"><a href="#">Shop</a></li>
+                    </ul>
+                    <label class="now">SHOP</label>
+                </div>
+            </div>
+        </section>
 
-                <section class="breadcrumb-nav">
-                    <div class="container">
-                        <div class="breadcrumb-nav-inner">
-                            <ul>
-                                <li><a href="index-2.html">Home</a></li>
-                                <li class="active"><a href="#">Shop</a></li>
-                            </ul>
-                            <label class="now">SHOP</label>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Start Blog List -->   
-                <section class="default-section shop-page">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-3 col-sm-4 col-xs-12">
-                                <div class="blog-left-section">
-                                   <div class="blog-left-search blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <div class="search-input-wrapper">
-                                            <input type="text" id="search" name="search" placeholder="Search">
-                                            <i class="fa fa-search" id="btn-search"></i>
-                                        </div>
+        <!-- Start Blog List -->   
+        <section class="default-section shop-page">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3 col-sm-4 col-xs-12">
+                        <div class="blog-left-section">
+                            <div class="blog-left-search blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                <div class="search-input-wrapper">
+                                    <input type="text" id="search" name="search" placeholder="Search">
+                                    <i class="fa fa-search" id="btn-search"></i>
+                                </div>
+                            </div>
+                            <div class="blog-left-categories blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                <h5>Categories</h5>
+                                <ul id="category-list">
+                                    @foreach ($danhmucs as $index => $danhmuc)
+                                        <li class="{{ $index == 0 ? 'current' : '' }}">
+                                            <a href="#" data-id="{{ $danhmuc->id }}">{{ strtoupper($danhmuc->name) }}</a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            <div class="blog-left-filter blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                <h5>Filter</h5>
+                                <p>Price: <span id="price-range-label">50.000₫ — 10.000.000₫</span></p>
+                                <div class="slider-wrapper">
+                                    <input id="price-range" type="text" class="span2" value="" 
+                                        data-slider-min="50000" 
+                                        data-slider-max="10000000" 
+                                        data-slider-step="50000" 
+                                        data-slider-value="[50000,2000000]"
+                                        data-slider-tooltip="hide"
+                                    />
+                                </div>
+                                <a href="#" id="btn-filter" class="filter-btn">FILTER</a>
+                            </div>
+                            <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                <h5>Best Deals</h5>
+                                <div class="best-deal-blog">
+                                    <div class="best-deal-left">
+                                        <img src="{{ url('asset') }}/images/img20.png" alt="">
                                     </div>
-                                    <div class="blog-left-categories blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <h5>Categories</h5>
-                                        <ul id="category-list">
-                                            @foreach ($danhmucs as $index => $danhmuc)
-                                                <li class="{{ $index == 0 ? 'current' : '' }}">
-                                                    <a href="#" data-id="{{ $danhmuc->id }}">{{ strtoupper($danhmuc->name) }}</a>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                       </div>
-                                    <div class="blog-left-filter blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <h5>Filter</h5>
-                                        <p>Price: <span id="price-range-label">50.000₫ — 10.000.000₫</span></p>
-                                        <div class="slider-wrapper">
-                                            <input id="price-range" type="text" class="span2" value="" 
-                                                data-slider-min="50000" 
-                                                data-slider-max="10000000" 
-                                                data-slider-step="50000" 
-                                                data-slider-value="[50000,2000000]"
-                                                data-slider-tooltip="hide"
-                                            />
-                                        </div>
-                                        <a href="#" id="btn-filter" class="filter-btn">FILTER</a>
+                                    <div class="best-deal-right">
+                                        <p>Lasal Cheese</p>
+                                        <p><strong>$ 15</strong></p>
                                     </div>
-                                    <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <h5>Best Deals</h5>
-                                        <div class="best-deal-blog">
-                                            <div class="best-deal-left">
-                                                <img src="{{ url('asset') }}/images/img20.png" alt="">
-                                            </div>
-                                            <div class="best-deal-right">
-                                                <p>Lasal Cheese</p>
-                                                <p><strong>$ 15</strong></p>
-                                            </div>
-                                        </div>
-                                        <div class="best-deal-blog">
-                                            <div class="best-deal-left">
-                                                <img src="{{ url('asset') }}/images/img21.png" alt="">
-                                            </div>
-                                            <div class="best-deal-right">
-                                                <p>Lasal Cheese</p>
-                                                <p><strong>$ 15</strong></p>
-                                            </div>
-                                        </div>
-                                        <div class="best-deal-blog">
-                                            <div class="best-deal-left">
-                                                <img src="{{ url('asset') }}/images/img22.png" alt="">
-                                            </div>
-                                            <div class="best-deal-right">
-                                                <p>Lasal Cheese</p>
-                                                <p><strong>$ 15</strong></p>
-                                            </div>
-                                        </div>
+                                </div>
+                                <div class="best-deal-blog">
+                                    <div class="best-deal-left">
+                                        <img src="{{ url('asset') }}/images/img21.png" alt="">
                                     </div>
-                                    <div class="popular-tag blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <h5>Popular Tags</h5>
-                                        <a href="#">Audio</a> <a href="#">Service</a> <a href="#">Online Order</a> <a href="#">Contact</a> <a href="#">Cupcake</a>
+                                    <div class="best-deal-right">
+                                        <p>Lasal Cheese</p>
+                                        <p><strong>$ 15</strong></p>
+                                    </div>
+                                </div>
+                                <div class="best-deal-blog">
+                                    <div class="best-deal-left">
+                                        <img src="{{ url('asset') }}/images/img22.png" alt="">
+                                    </div>
+                                    <div class="best-deal-right">
+                                        <p>Lasal Cheese</p>
+                                        <p><strong>$ 15</strong></p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-9 col-sm-8 col-xs-12">
-                                <div class="blog-right-section">
-                                    <div class="shop-search wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <div class="row">
-                                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                                <h6>Showing all 12 results</h6>
-                                            </div>
-                                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                                <select class="select-dropbox">
-                                                    <option>Sort by newness</option>
-                                                    <option>Sort</option>
-                                                    <option>Sort newness</option>
-                                                    <option>Sort by newness</option>
-                                                    <option>newness</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div> 
-                                   <div class="row" id="product-list">
-                                        @foreach ($firstProducts as $product)
-                                            <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                                <div class="shop-main-list">
-                                                    <div class="shop-product">
-                                                        <a href="">
-                                                        <img class="" src="{{ url('storage/uploads/'.$product->image) }}"  alt="{{ $product->name }}" style="border-radius: 20px;">
-                                                        </a>
-                                                         <div class="cart-overlay-wrap">
-                                                        <div class="cart-overlay">
-                                                            <a href="{{ route('client.product.detail', $product->id) }}" class="shop-cart-btn">ADD TO CART</a>
-                                                        </div> 
-                                                    </div>
-                                                    </div>
-                                                      <a href="shop_single.html"><h5>{{ $product->name }}</h5></a>
-                                                    <h5><strong>{{ number_format($product->min_price) }} VND</strong></h5>
+                            <div class="popular-tag blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                <h5>Popular Tags</h5>
+                                <a href="#">Audio</a> <a href="#">Service</a> <a href="#">Online Order</a> <a href="#">Contact</a> <a href="#">Cupcake</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-9 col-sm-8 col-xs-12">
+                        <div class="blog-right-section">
+                            <div class="shop-search wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <h6>Showing {{ $firstProducts->firstItem() }}–{{ $firstProducts->lastItem() }} of {{ $firstProducts->total() }} results</h6>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <select class="select-dropbox">
+                                            <option>Sort by newness</option>
+                                            <option>Sort</option>
+                                            <option>Sort newness</option>
+                                            <option>Sort by newness</option>
+                                            <option>newness</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div> 
+                            <div class="row" id="product-list">
+                                @foreach ($firstProducts as $product)
+                                    <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                        <div class="shop-main-list">
+                                            <div class="shop-product">
+                                                <a href="{{ route('client.product.detail', $product->id) }}">
+                                                    <img class="" src="{{ url('storage/uploads/'.$product->image) }}" alt="{{ $product->name }}" style="border-radius: 20px;">
+                                                </a>
+                                                <div class="cart-overlay-wrap">
+                                                    <div class="cart-overlay">
+                                                        <a href="{{ route('client.product.detail', $product->id) }}" class="shop-cart-btn">ADD TO CART</a>
+                                                    </div> 
                                                 </div>
                                             </div>
-                                        @endforeach
-                                    </div>
-                                    <div class="gallery-pagination">
-                                        <div class="gallery-pagination-inner">
-                                            <ul>
-                                                <li><a href="#" class="pagination-prev"><i class="icon-left-4"></i> <span>PREV page</span></a></li>
-                                                <li class="active"><a href="#"><span>1</span></a></li>
-                                                <li><a href="#"><span>2</span></a></li>
-                                                <li><a href="#"><span>3</span></a></li>
-                                                <li><a href="#" class="pagination-next"><span>next page</span> <i class="icon-right-4"></i></a></li>
-                                            </ul>
+                                            <a href="{{ route('client.product.detail', $product->id) }}"><h5>{{ $product->name }}</h5></a>
+                                            <h5><strong>{{ number_format($product->min_price) }} VND</strong></h5>
                                         </div>
                                     </div>
+                                @endforeach
+                            </div>
+                            <div style="text-align: center;" class="gallery-pagination">
+                                <div class="gallery-pagination-inner">
+                                    <ul>
+                                        <li><a href="#" class="pagination-prev {{ $firstProducts->onFirstPage() ? 'disabled' : '' }}" data-page="{{ $firstProducts->currentPage() - 1 }}"><i class="icon-left-4"></i> <span>PREV page</span></a></li>
+                                        @for ($i = 1; $i <= $firstProducts->lastPage(); $i++)
+                                            <li class="{{ $i == $firstProducts->currentPage() ? 'active' : '' }}">
+                                                <a href="#" data-page="{{ $i }}"><span>{{ $i }}</span></a>
+                                            </li>
+                                        @endfor
+                                        <li><a href="#" class="pagination-next {{ $firstProducts->hasMorePages() ? '' : 'disabled' }}" data-page="{{ $firstProducts->currentPage() + 1 }}"><span>next page</span> <i class="icon-right-4"></i></a></li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </section>
-
-                <!-- End Blog List -->
-
+                </div>
             </div>
-        </main>
+        </section>
+        <!-- End Blog List -->
+    </div>
+</main>
+
      <script>
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#category-list a').forEach(function (link) {
@@ -341,6 +341,94 @@ $(document).ready(function () {
     });
 });
 
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const productList = document.getElementById('product-list');
+    const paginationContainer = document.querySelector('.gallery-pagination-inner ul');
+    const resultText = document.querySelector('.shop-search h6');
+    let currentDanhmucId = '{{ $firstDanhmuc->id ?? "" }}';
+
+    // Function to fetch products
+    function fetchProducts(page, danhmucId) {
+        const url = `/shop?page=${page}&danhmuc_id=${danhmucId}`;
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update product list
+            productList.innerHTML = data.products.map(product => `
+                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                    <div class="shop-main-list">
+                        <div class="shop-product">
+                            <a href="/shop/product/${product.id}">
+                                <img src="/storage/uploads/${product.image}" alt="${product.name}" style="border-radius: 20px;">
+                            </a>
+                            <div class="cart-overlay-wrap">
+                                <div class="cart-overlay">
+                                    <a href="/shop/product/${product.id}" class="shop-cart-btn">ADD TO CART</a>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="/shop/product/${product.id}"><h5>${product.name}</h5></a>
+                        <h5><strong>${new Intl.NumberFormat('vi-VN').format(product.min_price)} VND</strong></h5>
+                    </div>
+                </div>
+            `).join('');
+
+            // Update pagination
+            let paginationHtml = `
+                <li><a href="#" class="pagination-prev ${data.current_page === 1 ? 'disabled' : ''}" data-page="${data.current_page - 1}"><i class="icon-left-4"></i> <span>PREV page</span></a></li>
+            `;
+            for (let i = 1; i <= data.last_page; i++) {
+                paginationHtml += `
+                    <li class="${i === data.current_page ? 'active' : ''}">
+                        <a href="#" data-page="${i}"><span>${i}</span></a>
+                    </li>
+                `;
+            }
+            paginationHtml += `
+                <li><a href="#" class="pagination-next ${data.current_page === data.last_page ? 'disabled' : ''}" data-page="${data.current_page + 1}"><span>next page</span> <i class="icon-right-4"></i></a></li>
+            `;
+            paginationContainer.innerHTML = paginationHtml;
+
+            // Update result count
+            resultText.textContent = `Showing ${data.products.length > 0 ? (data.current_page - 1) * data.per_page + 1 : 0}–${(data.current_page - 1) * data.per_page + data.products.length} of ${data.total} results`;
+
+            // Update current danh muc id
+            currentDanhmucId = data.danhmuc_id;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi tải sản phẩm.');
+        });
+    }
+
+    // Handle category clicks
+    document.querySelectorAll('#category-list a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('#category-list li').forEach(li => li.classList.remove('current'));
+            this.parentElement.classList.add('current');
+            currentDanhmucId = this.getAttribute('data-id');
+            fetchProducts(1, currentDanhmucId); // Load page 1 of the selected category
+        });
+    });
+
+    // Handle pagination clicks
+    paginationContainer.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = e.target.closest('a');
+        if (!target || target.classList.contains('disabled')) return;
+
+        const page = target.getAttribute('data-page');
+        fetchProducts(page, currentDanhmucId);
+    });
+});
 </script>
 <style>
 .slider-wrapper {

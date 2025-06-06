@@ -100,64 +100,74 @@
             <!-- Order Filter & Product Display -->
             <div class="md:col-span-2 bg-white rounded-lg shadow p-4">
                 <!-- Product List -->
-                <div id="product-list" class="grid md:grid-cols-2 gap-6 text-gray-700">
-                    @foreach($orders as $item)
-                        @php
-                            $status = $item->order->status;
-                            $payStatus = $item->order->pay_status;
-                            $badgeColor = match($status) {
-                                'completed' => 'bg-green-100 text-green-700',
-                                'processing' => 'bg-yellow-100 text-yellow-700',
-                                'cancelled' => 'bg-red-100 text-red-700',
-                                default => 'bg-gray-100 text-gray-700',
-                            };
-                            $image = $item->product->image
-                                ? asset('storage/uploads/' . $item->product->image)
-                                : 'https://via.placeholder.com/150x150.png?text=Product';
-                            $toppingNames = [];
-                            if (!empty($item->topping_id)) {
-                                $toppingIds = explode(',', trim($item->topping_id));
-                                foreach ($toppingIds as $id) {
-                                    $id = (int)$id;
-                                    if (isset($toppings[$id])) {
-                                        $toppingNames[] = $toppings[$id]->topping;
-                                    }
-                                }
-                            }
-                        @endphp
-                        <div class="product-item" data-status="{{ $status }}" data-pay-status="{{ $payStatus }}">
-                            <div class="border p-4 rounded-lg hover:shadow-lg transition duration-300 bg-white">
-                                <div class="flex items-center gap-4">
-                                    <img src="{{ $image }}" alt="{{ $item->product_name }}" class="w-50 h-50 rounded object-cover">
-                                    <div class="flex-1 space-y-1">
-                                        <div class="flex justify-between items-center">
-                                            <h1 class="font-semibold text-lg">{{ $item->product_name }}</h1>
-                                            <span class="status-badge inline-block {{ $badgeColor }} text-sm font-semibold px-3 py-1 rounded-full">
-                                                {{ ucfirst($status) }}
-                                            </span>
-                                        </div>
-                                        <p>Số lượng: {{ $item->quantity }}</p>
-                                        <p>Giá: {{ number_format($item->product_price, 0, ',', '.') }}đ</p>
-                                        <p><strong>Tổng giá:</strong> {{ number_format($item->total, 0, ',', '.') }}đ</p>
-                                        <p>Size: {{ $item->size->size ?? 'Không có' }}</p>
-                                        <p>Topping: {{ !empty($toppingNames) ? implode(', ', $toppingNames) : 'Không có' }}</p>
-                                        <div class="mt-2 flex items-center gap-2">
-                                            <button class="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600">
-                                                <a href="{{ route('client.product.detail', $item->product_id) }}">Mua lại</a>
-                                            </button>
-                                            @if ($status === 'pending')
-                                                <button class="cancel-order px-4 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                                                        data-id="{{ $item->order_id }}">
-                                                    Hủy đơn
-                                                </button>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
+             <form id="bulk-cancel-form" action="{{ route('client.order.cancelMultiple') }}" method="POST">
+    @csrf
+    @method('PATCH')
+
+    <div id="product-list" class="grid grid-cols-1 gap-6 text-gray-700">
+        @foreach($orders as $item)
+            @php
+                $status = $item->order->status;
+                $payStatus = $item->order->pay_status;
+                $badgeColor = match($status) {
+                    'completed' => 'bg-green-100 text-green-700',
+                    'processing' => 'bg-yellow-100 text-yellow-700',
+                    'cancelled' => 'bg-red-100 text-red-700',
+                    default => 'bg-gray-100 text-gray-700',
+                };
+                $image = $item->product->image
+                    ? asset('storage/uploads/' . $item->product->image)
+                    : 'https://via.placeholder.com/150x150.png?text=Product';
+                $toppingNames = [];
+                if (!empty($item->topping_id)) {
+                    $toppingIds = explode(',', trim($item->topping_id));
+                    foreach ($toppingIds as $id) {
+                        $id = (int)$id;
+                        if (isset($toppings[$id])) {
+                            $toppingNames[] = $toppings[$id]->topping;
+                        }
+                    }
+                }
+            @endphp
+
+            <div class="product-item flex border p-4 rounded-lg items-center gap-4 bg-white shadow-sm" data-status="{{ $status }}" data-pay-status="{{ $payStatus }}">
+                <input type="checkbox" name="order_ids[]" value="{{ $item->order_id }}"
+                    class="mt-2 h-5 w-5 text-red-500 focus:ring-red-500"
+                    {{ $status !== 'pending' ? 'disabled' : '' }}>
+                
+                <img src="{{ $image }}" alt="{{ $item->product_name }}" class="w-32 h-32 rounded object-cover">
+
+                <div class="flex-1 space-y-1">
+                    <div class="flex justify-between items-center">
+                        <h1 class="font-semibold text-lg">{{ $item->product_name }}</h1>
+                        <span class="status-badge inline-block {{ $badgeColor }} text-sm font-semibold px-3 py-1 rounded-full">
+                            {{ ucfirst($status) }}
+                        </span>
+                    </div>
+                    <p>Số lượng: {{ $item->quantity }}</p>
+                    <p>Giá: {{ number_format($item->product_price, 0, ',', '.') }}đ</p>
+                    <p><strong>Tổng giá:</strong> {{ number_format($item->total, 0, ',', '.') }}đ</p>
+                    <p>Size: {{ $item->size->size ?? 'Không có' }}</p>
+                    <p>Topping: {{ !empty($toppingNames) ? implode(', ', $toppingNames) : 'Không có' }}</p>
+                    <div class="mt-2 flex items-center gap-2">
+                        <a href="{{ route('client.product.detail', $item->product_id) }}"
+                           class="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600">Mua lại</a>
+                    </div>
                 </div>
+            </div>
+        @endforeach
+    </div>
+
+    <div class="mt-6 text-right">
+        <button type="submit"
+                onclick="return confirm('Bạn có chắc muốn hủy tất cả các đơn đã chọn?')"
+                class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600 disabled:opacity-50"
+                id="bulk-cancel-btn">
+            Hủy các đơn đã chọn
+        </button>
+    </div>
+</form>
+
             </div>
         </div>
     </div>

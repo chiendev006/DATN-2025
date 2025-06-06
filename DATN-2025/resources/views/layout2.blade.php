@@ -40,7 +40,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
-   
+
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -68,7 +68,7 @@
 
 .search-input-wrapper input[type="text"] {
     width: 100%;
-    padding: 10px 40px 10px 15px; 
+    padding: 10px 40px 10px 15px;
     border: 1px solid #ccc;
     border-radius: 100px;
     font-size: 14px;
@@ -153,7 +153,7 @@
             <div class="container">
               <div class="header-nav-inside">
                 <div class="logo">
-                  <a href="index.html"
+                  <a href="/"
                     ><span>Despına</span><small>1991</small></a
                   >
                 </div>
@@ -402,7 +402,7 @@
 @endauth
 
                   </div>
-                 
+
                   <div class="cart animated">
                     <span class="icon-basket fontello"></span
                     ><span>2 items - $ 10.89</span>
@@ -411,7 +411,7 @@
                             @forelse ($items as $item)
                                 @php
                                     $productName = $item->product->name ?? $item->name;
-                                    $productImage = isset($item->product->image) 
+                                    $productImage = isset($item->product->image)
                                                     ? asset('storage/uploads/' . $item->product->image)
                                                     : asset('asset/images/img21.png');
                                     $quantity = $item->quantity ?? 1;
@@ -437,7 +437,7 @@
                                         <h6>{{ $productName }}</h6>
                                         <span>{{ number_format($price, 0, ',', '.') }}₫</span>
                                     </div>
-                                    <span class="delete-icon"></span> 
+                                    <span class="delete-icon"></span>
                                 </div>
                             @empty
                                 <div class="cart-item">
@@ -475,7 +475,7 @@
               </div>
             </div>
           </div>
-         
+
         </div>
       </header>
     @yield('main')
@@ -493,7 +493,7 @@
               <div class="row">
                 <div class="col-md-3 col-sm-3 col-xs-12">
                   <div class="logo">
-                    <a href="index.html"
+                    <a href="/"
                       ><span>Despına</span><small>1991</small></a
                     >
                   </div>
@@ -555,7 +555,7 @@
                 <div class="col-md-3 col-sm-3 col-xs-12">
                   <h5>Despina Video</h5>
                   <a
-                    href="https://www.youtube.com/watch?v=uZ0aQMXkiV4"
+                    href="https://www.youtube.com/watch?v=bnQ5BwLCH3U"
                     class="magnific-youtube"
                     ><img src="{{ url('asset') }}/images/video-bg.png" alt=""
                   /></a>
@@ -580,7 +580,11 @@
 
     <!-- Back To Top Arrow -->
 
-    <a href="#" class="top-arrow"></a>
+
+
+<!-- Elfsight AI Chatbot | Untitled AI Chatbot -->
+<script src="https://static.elfsight.com/platform/platform.js" async></script>
+<div class="elfsight-app-36d5930f-53fe-4eb3-9cfb-7853aecba54c" data-elfsight-app-lazy></div>
 
     <script src="{{ url('asset') }}/js/jquery.min.js"></script>
     <script src="{{ url('asset') }}/js/bootstrap/bootstrap.min.js"></script>
@@ -613,7 +617,85 @@
 
 <!-- Summernote JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Handle quantity changes
+    $(document).on('click', '.qty-btn', function() {
+        var $button = $(this);
+        var $cartItem = $button.closest('.cart-item');
+        var itemId = $cartItem.data('item-id');
+        var action = $button.data('action');
+        var $quantityInput = $cartItem.find('input[type="number"]');
+        var currentQuantity = parseInt($quantityInput.val());
 
+        var newQuantity = action === 'increase' ? currentQuantity + 1 : currentQuantity - 1;
+        if (newQuantity < 1) return;
+
+        updateCartItem(itemId, newQuantity, $cartItem);
+    });
+
+    // Handle item removal
+    $(document).on('click', '.delete-icon', function() {
+        var $cartItem = $(this).closest('.cart-item');
+        var itemId = $cartItem.data('item-id');
+        console.log('Attempting to remove item:', itemId); // Debugging
+        if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?')) {
+            removeCartItem(itemId, $cartItem);
+        }
+    });
+
+    function updateCartItem(itemId, quantity, $cartItem) {
+        $.ajax({
+            url: '/cart/update',
+            method: 'POST',
+            data: {
+                item_id: itemId,
+                quantity: quantity,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    $cartItem.find('input[type="number"]').val(quantity);
+                    $cartItem.find('.cart-item-right span').text(
+                        Number(response.item_price).toLocaleString() + '₫'
+                    );
+                    $('#cart-subtotal').text(Number(response.subtotal).toLocaleString() + '₫');
+                    $('#cart-summary').text(response.item_count + ' items - ' + Number(response.subtotal).toLocaleString() + '₫');
+                }
+            },
+            error: function(xhr) {
+                console.error('Update error:', xhr.responseText);
+                alert('Không thể cập nhật giỏ hàng, vui lòng thử lại.');
+            }
+        });
+    }
+
+    function removeCartItem(itemId, $cartItem) {
+        $.ajax({
+            url: '/cart/remove',
+            method: 'POST',
+            data: {
+                item_id: itemId,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    $cartItem.remove();
+                    $('#cart-subtotal').text(Number(response.subtotal).toLocaleString() + '₫');
+                    $('#cart-summary').text(response.item_count + ' items - ' + Number(response.subtotal).toLocaleString() + '₫');
+                    if (response.item_count === 0) {
+                        $('.cart-items-scrollable').html('<div class="cart-item"><p>Không có sản phẩm nào trong giỏ hàng.</p></div>');
+                    }
+                }
+            },
+            error: function(xhr) {
+                console.error('Remove error:', xhr.responseText);
+                alert('Không thể xóa sản phẩm, vui lòng thử lại.');
+            }
+        });
+    }
+});
+</script>
 
 </html>
 

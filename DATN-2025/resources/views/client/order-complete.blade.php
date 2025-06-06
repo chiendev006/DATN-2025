@@ -95,7 +95,9 @@
                                     @endif
                                 </tbody>
                             </table>
-
+                                 <div style="color: red;" class="text-right mt-3">
+                                <h5>Tiền ship: <strong>{{ number_format($order->shipping_fee, 0) }}đ</strong></h5>
+                            </div>
                             <div style="color: red;" class="text-right mt-3">
                                 <h5>Tổng tiền: <strong>{{ number_format($order->total, 0) }}đ</strong></h5>
                             </div>
