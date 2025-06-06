@@ -28,7 +28,7 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\VNPayController;
 use App\Http\Controllers\Staff\AuthenController;
-
+use App\Http\Controllers\Staff\PosOrderController;
 
         Route::get('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
@@ -101,7 +101,7 @@ use App\Http\Controllers\Staff\AuthenController;
         Route::get('admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
         // Group Admin Route
-        Route::prefix('admin')->middleware(['auth', 'check.valid.id'])->group(function () {
+        Route::prefix('admin')->middleware(['checkAdmin', 'check.valid.id'])->group(function () {
         // Trang chủ Admin
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
@@ -234,6 +234,7 @@ use App\Http\Controllers\Staff\AuthenController;
 
         Route::prefix('staff')->middleware('checkStaff')->group(function () {
         Route::get('/', [StaffController::class, 'index'])->name('staff.index');
+        Route::post('/store', [StaffController::class, 'store'])->name('staff.store');
         Route::get('/product/{id}/options', [StaffController::class, 'getOptions'])->name('staff.options');
         Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
         Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');

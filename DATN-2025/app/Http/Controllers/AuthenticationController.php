@@ -53,13 +53,14 @@ class AuthenticationController extends Controller
             $data = $request->validate([
                 'name' => 'required',
                 'email' => 'required|email|unique:users',
-                'password' => 'required|min:6',
+                'password' => 'required|min:6|confirmed',
                 'phone' => 'required|numeric|min:10',
             ], [
                 'name.required' => 'Ten khong duoc de trong',
                 'email.required' => 'Email khong duoc de trong',
                 'password.required' => 'Mat khau khong duoc de trong',
                 'password.min' => 'Mat khau phai it nhat 6 ki tu',
+                'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
                 'phone.required' => 'So dien thoai khong duoc de trong',
                 'phone.phone' =>  'So dien thoai khong dung dinh dang'
             ]);

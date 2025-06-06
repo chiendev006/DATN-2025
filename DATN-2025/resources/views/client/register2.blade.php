@@ -66,6 +66,14 @@
                                             </div>
                                             @enderror
                                         </div>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <input type="password" name="password_confirmation" placeholder="Confirm password" class="input-fields">
+                                                @error('password')
+                                                <div class="alert alert-danger">
+                                                    <p>{{ $message }}</p>
+                                                </div>
+                                                @enderror
+                                            </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <input type="submit" name="submit" class="button-default button-default-submit" value="Register now">
                                         </div>
