@@ -101,7 +101,7 @@ use App\Http\ViewComposers\CartComposer;
         Route::get('admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
         // Group Admin Route
-        Route::prefix('admin')->middleware(['checkAdmin', 'check.valid.id'])->group(function () {
+        Route::prefix('admin')->middleware(['auth', 'check.valid.id'])->group(function () {
         // Trang chủ Admin
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
@@ -250,6 +250,5 @@ use App\Http\ViewComposers\CartComposer;
         Route::patch('/account/order/cancel/{id}', [MyaccountController::class, 'cancelOrder'])->name('client.order.cancel');
 
         Route::patch('/order/cancel-multiple', [MyaccountController::class, 'cancelMultiple'])->name('client.order.cancelMultiple');
-
-
-
+Route::post('/myaccount/ajax-update', [MyAccountController::class, 'ajaxUpdate'])
+    ->name('myaccount.ajax-update');
