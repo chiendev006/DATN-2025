@@ -86,84 +86,27 @@
                                     </div>
                                 </div>
                             </div>
+                                                      
                             <div class="col-md-8 col-sm-8 col-xs-12">
                                 <div class="blog-right-section">
+                                  @foreach ($blog as $item)
                                     <div class="blog-right-listing wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <div class="feature-img">
-                                            <img src="{{ url('asset') }}/images/img35.png" alt="">
-                                            <div class="date-feature">27 <br> <small>may</small></div>
+                                            <a href="{{route('client.blogsingle',$item->id)}}">
+                                                 <img src="{{ asset('storage/'.$item->image) }} " width="300" height="350" alt="">
+                                            </a>
+                                          
+                                            <div class="date-feature">{{ \Carbon\Carbon::parse($item->created_at)->diffInDays(now()) }}<br> <small>Ngày</small></div>
                                         </div>
                                         <div class="feature-info">
-                                            <span><i class="icon-user-1"></i> By Ali TUFAN</span>
+                                            <span><i class="icon-user-1"></i> Admin</span>
                                             <span><i class="icon-comment-5"></i> 5 Comments</span>
-                                            <h5>How Do You Like Your Sausage?</h5>
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tincidunt, erat in malesuada aliquam, est erat faucibus purus, eget viverra nulla sem vitae neque. Quisque id sodales libero. In nec enim nisi, in ultricies quam. Sed lacinia feugiat velit, cursus molestie lectus.</p>
+                                            <h5>{{$item->title}}</h5>
+                                            <p>{!!$item->content!!}</p>
                                             <a href="blog_single.html">Read More <i class="icon-right-4"></i></a>
                                         </div>
                                     </div>
-                                    <div class="blog-right-listing wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <div class="feature-img">
-                                            <img src="{{ url('asset') }}/images/img36.png" alt="">
-                                            <div class="date-feature">27 <br> <small>may</small></div>
-                                        </div>
-                                        <div class="feature-info">
-                                            <span><i class="icon-user-1"></i> By Ali TUFAN</span>
-                                            <span><i class="icon-comment-5"></i> 5 Comments</span>
-                                            <h5>There are many variations of passages</h5>
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tincidunt, erat in malesuada aliquam, est erat faucibus purus, eget viverra nulla sem vitae neque. Quisque id sodales libero. In nec enim nisi, in ultricies quam. Sed lacinia feugiat velit, cursus molestie lectus.</p>
-                                            <a href="blog_single.html">Read More <i class="icon-right-4"></i></a>
-                                        </div>
-                                    </div>
-                                    <div class="blog-right-listing wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <div class="feature-img">
-                                            <img src="{{ url('asset') }}/images/img37.png" alt="">
-                                            <div class="date-feature">27 <br> <small>may</small></div>
-                                        </div>
-                                        <div class="feature-info">
-                                            <span><i class="icon-user-1"></i> By Ali TUFAN</span>
-                                            <span><i class="icon-comment-5"></i> 5 Comments</span>
-                                            <h5>There are many variations of passages</h5>
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tincidunt, erat in malesuada aliquam, est erat faucibus purus, eget viverra nulla sem vitae neque. Quisque id sodales libero. In nec enim nisi, in ultricies quam. Sed lacinia feugiat velit, cursus molestie lectus.</p>
-                                            <a href="blog_single.html">Read More <i class="icon-right-4"></i></a>
-                                        </div>
-                                    </div>
-                                    <div class="blog-right-listing wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <div class="feature-img">
-                                            <img src="{{ url('asset') }}/images/img38.png" alt="">
-                                            <div class="date-feature">27 <br> <small>may</small></div>
-                                        </div>
-                                        <div class="feature-info">
-                                            <span><i class="icon-user-1"></i> By Ali TUFAN</span>
-                                            <span><i class="icon-comment-5"></i> 5 Comments</span>
-                                            <h5>How Do You Like Your Sausage?</h5>
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tincidunt, erat in malesuada aliquam, est erat faucibus purus, eget viverra nulla sem vitae neque. Quisque id sodales libero. In nec enim nisi, in ultricies quam. Sed lacinia feugiat velit, cursus molestie lectus.</p>
-                                            <a href="blog_single.html">Read More <i class="icon-right-4"></i></a>
-                                        </div>
-                                    </div>
-                                    <div class="blog-right-listing wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <div class="feature-img">
-                                            <img src="{{ url('asset') }}/images/img35.png" alt="">
-                                            <div class="date-feature">27 <br> <small>may</small></div>
-                                        </div>
-                                        <div class="feature-info">
-                                            <span><i class="icon-user-1"></i> By Ali TUFAN</span>
-                                            <span><i class="icon-comment-5"></i> 5 Comments</span>
-                                            <h5>How Do You Like Your Sausage?</h5>
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tincidunt, erat in malesuada aliquam, est erat faucibus purus, eget viverra nulla sem vitae neque. Quisque id sodales libero. In nec enim nisi, in ultricies quam. Sed lacinia feugiat velit, cursus molestie lectus.</p>
-                                            <a href="blog_single.html">Read More <i class="icon-right-4"></i></a>
-                                        </div>
-                                    </div>
-                                    <div class="gallery-pagination">
-                                        <div class="gallery-pagination-inner">
-                                            <ul>
-                                                <li><a href="#" class="pagination-prev"><i class="icon-left-4"></i> <span>PREV page</span></a></li>
-                                                <li class="active"><a href="#"><span>1</span></a></li>
-                                                <li><a href="#"><span>2</span></a></li>
-                                                <li><a href="#"><span>3</span></a></li>
-                                                <li><a href="#" class="pagination-next"><span>next page</span> <i class="icon-right-4"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
