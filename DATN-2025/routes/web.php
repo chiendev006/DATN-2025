@@ -21,6 +21,7 @@
         use App\Http\Controllers\ShowproductController;
         use App\Http\Controllers\ResetPasswordController;
         use App\Http\Controllers\admin\AuthController;
+        use App\Http\Controllers\OrderController;
         use App\Http\Controllers\admin\PayrollController;
         use App\Http\Controllers\CheckoutController;
         use App\Http\Controllers\MyaccountController;
@@ -28,7 +29,7 @@
         use App\Http\Controllers\Staff\StaffController;
         use App\Http\Controllers\VNPayController;
         use App\Http\Controllers\Staff\AuthenController;
-use App\Http\ViewComposers\CartComposer;
+        use App\Http\ViewComposers\CartComposer;
 
         Route::get('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
@@ -248,7 +249,9 @@ use App\Http\ViewComposers\CartComposer;
         // My account
         Route::get('/myaccount',[MyaccountController::class, 'index'])->name('client.myaccount');
         Route::patch('/account/order/cancel/{id}', [MyaccountController::class, 'cancelOrder'])->name('client.order.cancel');
-
         Route::patch('/order/cancel-multiple', [MyaccountController::class, 'cancelMultiple'])->name('client.order.cancelMultiple');
-Route::post('/myaccount/ajax-update', [MyAccountController::class, 'ajaxUpdate'])
-    ->name('myaccount.ajax-update');
+        Route::post('/myaccount/ajax-update', [MyAccountController::class, 'ajaxUpdate'])->name('myaccount.ajax-update');
+        Route::get('/check-order-status/{id}', [MyaccountController::class, 'checkOrderStatus'])->name('client.order.checkStatus');
+
+
+        Route::post('/order/reorder/{orderId}', [OrderController::class, 'reorder'])->name('client.order.reorder');

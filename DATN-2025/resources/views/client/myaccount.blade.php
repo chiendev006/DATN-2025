@@ -2,17 +2,6 @@
 @section('main')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <main>
-  @if (session('success'))
-    <div class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">
-        {{ session('success') }}
-    </div>
-  @endif
-
-  @if (session('error'))
-    <div class="bg-red-100 text-red-800 px-4 py-2 rounded mb-4">
-        {{ session('error') }}
-    </div>
-  @endif
 <div class="container mx-auto px-6 py-10">
         <!-- User Header -->
         <div class="bg-white rounded-lg shadow p-6 flex flex-col md:flex-row items-center md:items-start gap-6">
@@ -116,76 +105,103 @@
             <div class="md:col-span-2 bg-white rounded-lg shadow p-4">
                 <!-- Product List -->
              <form id="bulk-cancel-form" action="{{ route('client.order.cancelMultiple') }}" method="POST">
-    @csrf
+                 @csrf
     @method('PATCH')
+  @foreach($orders as $orderId => $items)
+    @php
+        $firstItem = $items->first(); // dùng để lấy thông tin đơn hàng chung
+        $status = $firstItem->order->status;
+        $payStatus = $firstItem->order->pay_status;
+        $badgeColor = match($status) {
+            'completed' => 'bg-green-100 text-green-700',
+            'processing' => 'bg-yellow-100 text-yellow-700',
+            'cancelled' => 'bg-red-100 text-red-700',
+            default => 'bg-gray-100 text-gray-700',
+        };
+    @endphp
 
-    <div id="product-list" class="grid grid-cols-1 gap-6 text-gray-700">
-        @foreach($orders as $item)
-            @php
-                $status = $item->order->status;
-                $payStatus = $item->order->pay_status;
-                $badgeColor = match($status) {
-                    'completed' => 'bg-green-100 text-green-700',
-                    'processing' => 'bg-yellow-100 text-yellow-700',
-                    'cancelled' => 'bg-red-100 text-red-700',
-                    default => 'bg-gray-100 text-gray-700',
-                };
-                $image = $item->product->image
-                    ? asset('storage/uploads/' . $item->product->image)
-                    : 'https://via.placeholder.com/150x150.png?text=Product';
-                $toppingNames = [];
-                if (!empty($item->topping_id)) {
-                    $toppingIds = explode(',', trim($item->topping_id));
-                    foreach ($toppingIds as $id) {
-                        $id = (int)$id;
-                        if (isset($toppings[$id])) {
-                            $toppingNames[] = $toppings[$id]->topping;
+    <div class="product-item flex flex-col border p-4 rounded-lg bg-white shadow-sm gap-4" data-status="{{ $status }}" data-pay-status="{{ $payStatus }}">
+       <div class="flex justify-between items-center">
+            <h2 class="text-lg font-semibold">Mã đơn hàng: {{ $orderId }}</h2>
+            <span class="status-badge inline-block {{ $badgeColor }} text-sm font-semibold px-3 py-2 rounded-full">
+                {{ ucfirst($status) }}
+            </span>
+        </div>
+
+        @if ($status === 'cancelled' && $firstItem->order->cancel_reason)
+            <p class="text-sm text-red-700 mt-2"><strong>Lý do hủy:</strong> {{ $firstItem->order->cancel_reason }}</p>
+        @endif
+
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            @foreach($items as $item)
+                @php
+                    $image = $item->product->image
+                        ? asset('storage/uploads/' . $item->product->image)
+                        : 'https://via.placeholder.com/150x150.png?text=Product';
+                    $toppingNames = [];
+                    if (!empty($item->topping_id)) {
+                        $toppingIds = explode(',', trim($item->topping_id));
+                        foreach ($toppingIds as $id) {
+                            $id = (int)$id;
+                            if (isset($toppings[$id])) {
+                                $toppingNames[] = $toppings[$id]->topping;
+                            }
                         }
                     }
-                }
-            @endphp
+                @endphp
 
-            <div class="product-item flex border p-4 rounded-lg items-center gap-4 bg-white shadow-sm" data-status="{{ $status }}" data-pay-status="{{ $payStatus }}">
-                <input type="checkbox" name="order_ids[]" value="{{ $item->order_id }}"
-                    class="mt-2 h-10 w-10 text-red-500 focus:ring-red-500"
-                    {{ $status !== 'pending' ? 'disabled' : '' }}>
-                
-                <img src="{{ $image }}" alt="{{ $item->product_name }}" class="w-32 h-32 rounded object-cover">
-
-                <div class="flex-1 space-y-1">
-                    <div class="flex justify-between items-center">
-                        <h1 class="font-semibold text-lg">{{ $item->product_name }}</h1>
-                        <span class="status-badge inline-block {{ $badgeColor }} text-sm font-semibold px-3 py-2 rounded-full">
-                            {{ ucfirst($status) }}
-                        </span>
-                    </div>
-                    <p>Số lượng: {{ $item->quantity }}</p>
-                    <p>Giá: {{ number_format($item->product_price, 0, ',', '.') }}đ</p>
-                    <p><strong>Tổng giá:</strong> {{ number_format($item->total, 0, ',', '.') }}đ</p>
-                    <p>Size: {{ $item->size->size ?? 'Không có' }}</p>
-                    <p>Topping: {{ !empty($toppingNames) ? implode(', ', $toppingNames) : 'Không có' }}</p>
-                    <div class="mt-2 flex items-center gap-2">
-                        <a href="{{ route('client.product.detail', $item->product_id) }}"
-                           class="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600">Mua lại</a>
+                <div class="flex gap-4 border rounded p-3">
+                    <img src="{{ $image }}" alt="{{ $item->product_name }}" class="w-24 h-24 rounded object-cover">
+                    <div class="flex-1 space-y-1">
+                        <h3 class="font-semibold">{{ $item->product_name }}</h3>
+                        <p>Số lượng: {{ $item->quantity }}</p>
+                        <p>Giá: {{ number_format($item->product_price, 0, ',', '.') }}đ</p>
+                        <p>Tổng: {{ number_format($item->total, 0, ',', '.') }}đ</p>
+                        <p>Size: {{ $item->size->size ?? 'Không có' }}</p>
+                        <p>Topping: {{ !empty($toppingNames) ? implode(', ', $toppingNames) : 'Không có' }}</p>
                     </div>
                 </div>
-            </div>
-        @endforeach
-    </div>
+            @endforeach
+        </div>
 
-    <div class="mt-6 text-right">
-        <button type="submit"
-                onclick="return confirm('Bạn có chắc muốn hủy tất cả các đơn đã chọn?')"
-                class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600 disabled:opacity-50"
-                id="bulk-cancel-btn">
-            Hủy các đơn đã chọn
-        </button>
+        <div class="mt-4 flex justify-end gap-2">
+           <form method="POST" action="{{ route('client.order.reorder', $firstItem->order_id) }}">
+                @csrf
+                <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                    Mua lại
+                </button>
+            </form>
+             @if($status === 'pending')
+              <button type="button" class="cancel-order bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                    data-id="{{ $orderId }}">
+                Hủy đơn
+              </button>
+
+            @endif
+        </div>
+    </div>
+@endforeach
+
+
     </div>
 </form>
 
             </div>
         </div>
     </div>
+<div id="cancelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-xl w-full max-w-md">
+        <h2 class="text-lg font-semibold mb-4 text-red-600">Xác nhận hủy đơn</h2>
+        <p class="mb-2 text-gray-700">Vui lòng nhập lý do hủy đơn hàng:</p>
+        <textarea id="cancelReasonInput" rows="3" class="w-full border rounded p-2 mb-4" placeholder="Nhập lý do..."></textarea>
+        <div class="flex justify-end gap-2">
+            <button id="cancelModalClose" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Hủy</button>
+            <button id="confirmCancelBtn" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Xác nhận hủy</button>
+        </div>
+    </div>
+</div>
+
 </main>
 
 <script>
@@ -204,71 +220,109 @@
             document.querySelectorAll('.product-item').forEach(item => {
                 const itemStatus = item.getAttribute('data-status');
 
-                if (selectedStatus === 'all' || itemStatus === selectedStatus) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
+                item.style.display = (selectedStatus === 'all' || itemStatus === selectedStatus) ? 'block' : 'none';
             });
         });
     });
 
-    document.querySelectorAll('.cancel-order').forEach(button => {
-        button.addEventListener('click', function () {
-            const orderId = this.getAttribute('data-id');
-            if (!confirm('Bạn có chắc muốn hủy đơn hàng này không?')) return;
+document.querySelectorAll('.cancel-order').forEach(button => {
+    button.addEventListener('click', function () {
+        const orderId = this.getAttribute('data-id');
+
+        fetch(`/check-order-status/${orderId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || data.status !== 'pending') {
+                    const statusLabel = {
+                        'processing': 'Đang xử lý',
+                        'completed': 'Đã hoàn thành',
+                        'cancelled': 'Đã hủy',
+                        'not_found': 'Không tồn tại',
+                        'delivering': 'Đang giao'
+                    };
+                    const statusText = statusLabel[data.status] || data.status;
+
+                    alert(`❌ Đơn hàng này đã được cập nhật sang trạng thái "${statusText}". Không thể hủy nữa.`);
+                    location.reload(); 
+                    return;
+                }
+
+                document.getElementById('cancelModal').classList.remove('hidden');
+                document.getElementById('cancelReasonInput').value = '';
+                document.getElementById('confirmCancelBtn').setAttribute('data-id', orderId);
+            })
+            .catch(error => {
+                console.error('Lỗi kiểm tra trạng thái:', error);
+                alert('Không thể kiểm tra trạng thái đơn hàng.');
+            });
+    });
+});
+
+
+    document.getElementById('cancelModalClose').addEventListener('click', () => {
+        document.getElementById('cancelModal').classList.add('hidden');
+    });
+
+   document.getElementById('confirmCancelBtn').addEventListener('click', () => {
+    const reason = document.getElementById('cancelReasonInput').value.trim();
+    const orderId = document.getElementById('confirmCancelBtn').getAttribute('data-id');
+
+    if (!reason) {
+        alert("Vui lòng nhập lý do hủy đơn.");
+        return;
+    }
+
+    const checkUrl = `/check-order-status/${orderId}`;
+    fetch(checkUrl)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success || data.status !== 'pending') {
+                const statusLabel = {
+                    'processing': 'Đang xử lý',
+                    'completed': 'Đã hoàn thành',
+                    'cancelled': 'Đã hủy',
+                    'not_found': 'Không tồn tại',
+                    'delivering': 'Đang giao'
+                };
+
+                const statusText = statusLabel[data.status] || data.status;
+                alert(`❌ Đơn hàng này đang ở trạng thái "${statusText}". Không thể hủy.`);
+                document.getElementById('cancelModal').classList.add('hidden');
+                return;
+            }
 
             const url = "{{ route('client.order.cancel', ['id' => ':id']) }}".replace(':id', orderId);
 
-            fetch(url, {
+            return fetch(url, {
                 method: 'PATCH',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ _method: 'PATCH' })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-
-                    const orderItem = button.closest('.product-item');
-                    orderItem.setAttribute('data-status', 'cancelled');
-                    const badge = orderItem.querySelector('.status-badge');
-                    badge.textContent = 'Cancelled';
-                    badge.className = 'status-badge inline-block bg-red-100 text-red-700 text-sm font-semibold px-3 py-1 rounded-full';
-
-                    button.remove();
-
-                    const statAll = document.getElementById('stat-all');
-                    const statPending = document.getElementById('stat-pending');
-                    const statCancelled = document.getElementById('stat-cancelled');
-
-                    statPending.textContent = parseInt(statPending.textContent) - 1;
-                    statCancelled.textContent = parseInt(statCancelled.textContent) + 1;
-
-                    const activeTab = document.querySelector('.order-tab.active-tab').getAttribute('data-status');
-                    if (activeTab !== 'all' && activeTab !== 'cancelled') {
-                        orderItem.style.display = 'none';
-                    }
-                } else {
-                    alert(data.message || 'Hủy đơn hàng thất bại.');
-                }
-            })
-            .catch(error => {
-                console.error('Lỗi:', error);
-                alert('Có lỗi xảy ra: ' + error.message);
+                body: JSON.stringify({ _method: 'PATCH', cancel_reason: reason })
             });
+        })
+        .then(response => response?.json?.())
+        .then(data => {
+            if (data?.success) {
+                alert(data.message);
+                document.getElementById('cancelModal').classList.add('hidden');
+                location.reload(); 
+            } else if (data) {
+                alert(data.message || 'Hủy đơn hàng thất bại.');
+                document.getElementById('cancelModal').classList.add('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi:', error);
+            alert('Có lỗi xảy ra: ' + error.message);
+            document.getElementById('cancelModal').classList.add('hidden');
         });
-    });
+});
+
 </script>
+
 <script>
     document.getElementById('editProfileBtn').addEventListener('click', function () {
         document.getElementById('editProfileModal').classList.remove('hidden');
