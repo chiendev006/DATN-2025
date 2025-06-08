@@ -346,24 +346,8 @@
                           <li><a href="404.html">404 Error</a></li>
                         </ul>
                       </li>
-                      <li class="has-child">
+                      <li >
                         <a href="/blog">Blog</a>
-                        <ul class="drop-nav">
-                          <li><a href="/blog">Blog List</a></li>
-                          <li><a href="blog_2col.html">Blog 2 Columns</a></li>
-                          <li><a href="blog_full.html">Blog Full Width</a></li>
-                          <li>
-                            <a href="blog_left_sidebar.html"
-                              >Blog Left Sidebar</a
-                            >
-                          </li>
-                          <li>
-                            <a href="blog_right_sidebar.html"
-                              >Blog Right Sidebar</a
-                            >
-                          </li>
-                          <li><a href="blog_single.html">Blog Single</a></li>
-                        </ul>
                       </li>
                       <li class="has-child">
                         <a href="/contact">Contact</a>
