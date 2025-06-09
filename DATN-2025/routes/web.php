@@ -258,3 +258,8 @@ Route::get('/vnpay/redirect', [App\Http\Controllers\VNPayController::class, 'red
 //
 Route::get('/blog', [BlogController::class, 'index'])->name('client.blog');
 Route::get('/blog/{id}', [BlogController::class, 'show'])->name('client.blogsingle');
+// Discout
+Route::post('/cart/apply-coupon', [CartController::class, 'applyCoupon'])->name('cart.applyCoupon');
+Route::post('/cart/remove-coupon', [CartController::class, 'removeCoupon'])->name('cart.removeCoupon');
+
+

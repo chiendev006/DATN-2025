@@ -16,10 +16,9 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('name', 255);
             $table->string('phone', 15);
-            $table->foreignId('address_id')->constrained('address')->onDelete('cascade'); // Link to the address table
-            // You might still want to store these for detailed order history or display if needed
-            $table->string('address_detail')->nullable(); // e.g., house number, street
-            $table->string('district_name')->nullable(); // To store the district name at the time of order
+            $table->foreignId('address_id')->constrained('address')->onDelete('cascade');
+            $table->string('address_detail')->nullable();
+            $table->string('district_name')->nullable();
             $table->decimal('shipping_fee')->default(0);
             $table->enum('payment_method', ['cash', 'banking'])->default('cash');
             $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
@@ -27,6 +26,8 @@ return new class extends Migration
             $table->decimal('total', 10, 2);
             $table->uuid('transaction_id')->nullable();
             $table->string('pay_status', 10)->default('0');
+            $table->text('coupon_summary')->nullable();
+            $table->decimal('coupon_total_discount', 10, 2)->default(0);
             $table->timestamps();
         });
     }
