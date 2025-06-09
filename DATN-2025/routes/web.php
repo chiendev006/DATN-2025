@@ -247,7 +247,7 @@
         Route::get('/vnpay/redirect', [App\Http\Controllers\VNPayController::class, 'redirectToVnpay'])->name('vnpay.redirect');
 
         // My account
-        Route::get('/myaccount',[MyaccountController::class, 'index'])->name('client.myaccount');
+        Route::get('/myaccount', [MyaccountController::class, 'index'])->middleware('auth')->name('client.myaccount');
         Route::patch('/account/order/cancel/{id}', [MyaccountController::class, 'cancelOrder'])->name('client.order.cancel');
         Route::patch('/order/cancel-multiple', [MyaccountController::class, 'cancelMultiple'])->name('client.order.cancelMultiple');
         Route::post('/myaccount/ajax-update', [MyAccountController::class, 'ajaxUpdate'])->name('myaccount.ajax-update');

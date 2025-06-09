@@ -46,115 +46,129 @@
                                 <th>XÓA</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach($items as $item)
-                            @php
-                                if (Auth::check()) {
-                                    $product = $item->product;
-                                    if (!$product) continue;
-                                    $size = $item->size;
-                                    $basePrice = $size ? $size->price : $product->price;
-                                    $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id ?? '')));
-                                    $toppings = \App\Models\Product_topping::whereIn('id', $toppingIds)->get();
-                                    $toppingPrice = $toppings->sum('price');
-                                    $unitPrice = $basePrice + $toppingPrice;
-                                    $total = $unitPrice * $item->quantity;
-                                    $rowKey = $item->product_id . '-' . ($item->size_id ?? '0') . '-' . implode(',', $toppingIds);
-                                    $image = $product->image;
-                                    $name = $product->name;
-                                    $quantity = $item->quantity;
-                                } else {
-                                    $basePrice = $item->size_price ?? 0;
-                                    $toppingPrice = array_sum($item->topping_prices ?? []);
-                                    $unitPrice = $basePrice + $toppingPrice;
-                                    $total = $unitPrice * $item->quantity;
-                                    $rowKey = $item->sanpham_id . '-' . $item->size_id . '-' . implode(',', $item->topping_ids ?? []);
-                                    $image = $item->image;
-                                    $name = $item->name;
-                                    $quantity = $item->quantity;
-                                }
-                            @endphp
-                            <tr data-key="{{ $rowKey }}">
-                                <td>
-                                    <div class="product-cart">
-                                        <img src="{{ url('storage/uploads/' . $image) }}" alt="" style="width: 100px; height: 100px; object-fit: cover;">
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="product-cart-title">
-                                        <span>{{ $name }}</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="size-info text-center">
-                                        @if(Auth::check())
-                                            @if($size)
-                                                <div>{{ $size->size ?? 'Không rõ' }}</div>
-                                                <div class="size-price">{{ number_format($size->price) }} VND</div>
-                                            @else
-                                                <div>Không rõ</div>
-                                            @endif
-                                        @else
-                                            @if(isset($item->size_name) && isset($item->size_price))
-                                                <div>{{ $item->size_name }}</div>
-                                                <div class="size-price">{{ number_format($item->size_price) }} VND</div>
-                                            @else
-                                                <div>{{ $item->size_name ?? 'Không rõ' }}</div>
-                                            @endif
-                                        @endif
-                                    </div>
-                                </td>
-                                <td>
-                                    @if(Auth::check())
-                                        @if($toppings->count())
-                                            <ul class="topping-list" style="list-style: none; padding: 0;">
-                                                @foreach($toppings as $top)
-                                                    <li class="text-center">
-                                                        <div>{{ $top->topping }}</div>
-                                                        <div class="topping-price">{{ number_format($top->price) }} VND</div>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        @else
-                                            <span>Không có</span>
-                                        @endif
-                                    @else
-                                        @if(!empty($item->topping_names))
-                                            <ul class="topping-list" style="list-style: none; padding: 0;">
-                                                @foreach($item->topping_names as $index => $topping)
-                                                    <li class="text-center">
-                                                        <div>{{ $topping }}</div>
-                                                        @if(isset($item->topping_prices[$index]))
-                                                            <div class="topping-price">{{ number_format($item->topping_prices[$index]) }} VND</div>
-                                                        @endif
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        @else
-                                            <span>Không có</span>
-                                        @endif
-                                    @endif
-                                </td>
-                                <td><strong>{{ number_format($unitPrice) }} VND</strong></td>
-                                <td>
-                                    <div class="price-textbox">
-                                        <span class="minus-text decrement-btn"><i class="icon-minus"></i></span>
-                                        <input type="number" name="quantity" value="{{ $quantity }}"
-                                            class="quantity-input" min="1" readonly
-                                            data-key="{{ $rowKey }}"
-                                            data-product_id="{{ Auth::check() ? $item->product_id : $item->sanpham_id }}"
-                                            data-size_id="{{ Auth::check() ? ($item->size_id ?? '0') : $item->size_id }}"
-                                            data-topping_ids="{{ Auth::check() ? implode(',', $toppingIds) : implode(',', $item->topping_ids ?? []) }}">
-                                        <span class="plus-text increment-btn"><i class="icon-plus"></i></span>
-                                    </div>
-                                </td>
-                                <td class="line-total">{{ number_format($total) }} VND</td>
-                                <td class="shop-cart-close">
-                                    <i class="icon-cancel-5 remove-item" data-key="{{ $rowKey }}"></i>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
+                       <tbody>
+    @foreach($items as $item)
+    @php
+        if (Auth::check()) {
+            $product = $item->product;
+            if (!$product) continue;
+            $size = $item->size;
+            $basePrice = $size ? $size->price : $product->price;
+            // Đảm bảo $item->topping_id là chuỗi trước khi explode
+            $toppingIdString = (string) ($item->topping_id ?? '');
+            $toppingIds = array_filter(array_map('trim', explode(',', $toppingIdString)));
+            $toppings = \App\Models\Product_topping::whereIn('id', $toppingIds)->get();
+            $toppingPrice = $toppings->sum('price');
+            $unitPrice = $basePrice + $toppingPrice;
+            $total = $unitPrice * $item->quantity;
+            $rowKey = $item->product_id . '-' . ($item->size_id ?? '0') . '-' . implode(',', $toppingIds);
+            $image = $product->image;
+            $name = $product->name;
+            $quantity = $item->quantity;
+        } else {
+            $basePrice = $item->size_price ?? 0;
+            $toppingPrice = array_sum($item->topping_prices ?? []);
+            $unitPrice = $basePrice + $toppingPrice;
+            $total = $unitPrice * $item->quantity;
+
+            // **ĐIỂM SỬA LỖI TRONG BLADE VIEW:**
+            // Đảm bảo $item->topping_ids là một mảng trước khi implode
+            $toppingIdsForImplode = [];
+            if (isset($item->topping_ids)) {
+                if (is_array($item->topping_ids)) {
+                    $toppingIdsForImplode = $item->topping_ids;
+                } elseif (is_string($item->topping_ids) && $item->topping_ids !== '') {
+                    $toppingIdsForImplode = array_map('intval', array_filter(array_map('trim', explode(',', (string) $item->topping_ids))));
+                }
+            }
+            $rowKey = $item->sanpham_id . '-' . ($item->size_id ?? '0') . '-' . implode(',', $toppingIdsForImplode);
+
+            $image = $item->image;
+            $name = $item->name;
+            $quantity = $item->quantity;
+        }
+    @endphp
+    <tr data-key="{{ $rowKey }}">
+        <td>
+            <div class="product-cart">
+                <img src="{{ url('storage/uploads/' . $image) }}" alt="" style="width: 100px; height: 100px; object-fit: cover;">
+            </div>
+        </td>
+        <td>
+            <div class="product-cart-title">
+                <span>{{ $name }}</span>
+            </div>
+        </td>
+        <td>
+            <div class="size-info text-center">
+                @if(Auth::check())
+                    @if($size)
+                        <div>{{ $size->size ?? 'Không rõ' }}</div>
+                        <div class="size-price">{{ number_format($size->price) }} VND</div>
+                    @else
+                        <div>Không rõ</div>
+                    @endif
+                @else
+                    @if(isset($item->size_name) && isset($item->size_price))
+                        <div>{{ $item->size_name }}</div>
+                        <div class="size-price">{{ number_format($item->size_price) }} VND</div>
+                    @else
+                        <div>{{ $item->size_name ?? 'Không rõ' }}</div>
+                    @endif
+                @endif
+            </div>
+        </td>
+        <td>
+            @if(Auth::check())
+                @if($toppings->count())
+                    <ul class="topping-list" style="list-style: none; padding: 0;">
+                        @foreach($toppings as $top)
+                            <li class="text-center">
+                                <div>{{ $top->topping }}</div>
+                                <div class="topping-price">{{ number_format($top->price) }} VND</div>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <span>Không có</span>
+                @endif
+            @else
+                @if(!empty($item->topping_names))
+                    <ul class="topping-list" style="list-style: none; padding: 0;">
+                        @foreach($item->topping_names as $index => $topping)
+                            <li class="text-center">
+                                <div>{{ $topping }}</div>
+                                @if(isset($item->topping_prices[$index]))
+                                    <div class="topping-price">{{ number_format($item->topping_prices[$index]) }} VND</div>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <span>Không có</span>
+                @endif
+            @endif
+        </td>
+        <td><strong>{{ number_format($unitPrice) }} VND</strong></td>
+        <td>
+            <div class="price-textbox">
+                <span class="minus-text decrement-btn"><i class="icon-minus"></i></span>
+                <input type="number" name="quantity" value="{{ $quantity }}"
+                    class="quantity-input" min="1" readonly
+                    data-key="{{ $rowKey }}"
+                    data-product_id="{{ Auth::check() ? $item->product_id : $item->sanpham_id }}"
+                    data-size_id="{{ Auth::check() ? ($item->size_id ?? '0') : ($item->size_id ?? '0') }}"
+                    data-topping_ids="{{ Auth::check() ? implode(',', $toppingIds) : implode(',', $toppingIdsForImplode) }}">
+                <span class="plus-text increment-btn"><i class="icon-plus"></i></span>
+            </div>
+        </td>
+        <td class="line-total">{{ number_format($total) }} VND</td>
+        <td class="shop-cart-close">
+            <i class="icon-cancel-5 remove-item" data-key="{{ $rowKey }}"></i>
+        </td>
+    </tr>
+    @endforeach
+</tbody>
                     </table>
                     <div class="product-cart-detail">
                         <div class="cupon-part">

@@ -9,13 +9,15 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
-    protected $table = 'order';
+    protected $table = 'orders';
     
     protected $fillable = [
         'user_id',
         'name',
-        'address',
         'phone',
+        'address_id',
+        'address_detail',
+        'district_name',
         'payment_method',
         'status',
         'cancel_reason',

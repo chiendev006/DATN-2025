@@ -16,78 +16,91 @@ class CartController extends Controller
     /**
      *
      */
-    public function index()
-    {
-        $coupons = session('coupons', []);
-        $discount = 0;
-        $subtotal = 0;
-        $total = 0;
-        $items = collect([]);
+  public function index()
+{
+    $coupons = session('coupons', []);
+    $discount = 0;
+    $subtotal = 0;
+    $total = 0;
+    $items = collect([]);
 
-        if (Auth::check()) {
-            $cart = Cart::where('user_id', Auth::id())->first();
+    if (Auth::check()) {
+        $cart = Cart::where('user_id', Auth::id())->first();
 
-            if (!$cart) {
-                $cart = Cart::create([
-                    'user_id' => Auth::id(),
-                    'total' => 0
-                ]);
-            }
+        if (!$cart) {
+            $cart = Cart::create([
+                'user_id' => Auth::id(),
+                'total' => 0
+            ]);
+        }
 
-            $cart->load(['cartdetails.product', 'cartdetails.size']);
-            $items = $cart->cartdetails;
+        $cart->load(['cartdetails.product', 'cartdetails.size']);
+        $items = $cart->cartdetails;
 
-            if ($items) {
-                foreach ($items as $item) {
-                    if (!$item->product) continue;
+        if ($items) {
+            foreach ($items as $item) {
+                if (!$item->product) continue;
 
-                    $size = $item->size;
-                    $basePrice = $size ? $size->price : $item->product->price;
+                $size = $item->size;
+                $basePrice = $size ? $size->price : $item->product->price;
 
-                    $toppingPrice = 0;
-                    if (!empty($item->topping_id)) {
-                        $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id)));
-                        if (!empty($toppingIds)) {
-                            $toppingPrice = Product_topping::whereIn('id', $toppingIds)->sum('price');
-                        }
+                $toppingPrice = 0;
+                if (!empty($item->topping_id)) {
+                    $toppingIdString = (string) $item->topping_id;
+                    $toppingIds = array_filter(array_map('trim', explode(',', $toppingIdString)));
+                    if (!empty($toppingIds)) {
+                        $toppingPrice = Product_topping::whereIn('id', $toppingIds)->sum('price');
                     }
+                }
 
-                    $subtotal += ($basePrice + $toppingPrice) * $item->quantity;
+                $subtotal += ($basePrice + $toppingPrice) * $item->quantity;
+            }
+        }
+    } else { 
+        $cartSession = session('cart', []);
+        foreach ($cartSession as $key => $item) {
+            $items->push((object) $item); 
+
+            $basePrice = $item['size_price'] ?? 0;
+            $toppingPrice = 0;
+
+            if (isset($item['topping_ids'])) {
+                $sessionToppingIdsString = (string) $item['topping_ids']; 
+                if ($sessionToppingIdsString !== '') { 
+                    $sessionToppingIdsArray = array_map('intval', array_filter(array_map('trim', explode(',', $sessionToppingIdsString))));
+
+                    if (!empty($sessionToppingIdsArray)) {
+                        $toppingPrice = Product_topping::whereIn('id', $sessionToppingIdsArray)->sum('price');
+                    }
                 }
             }
-        } else {
-            $cartSession = session('cart', []);
-            foreach ($cartSession as $key => $item) {
-                $items->push((object) $item);
-                $basePrice = $item['size_price'] ?? 0;
-                $toppingPrice = array_sum($item['topping_prices'] ?? []);
-                $subtotal += ($basePrice + $toppingPrice) * ($item['quantity'] ?? 1);
-            }
+            $subtotal += ($basePrice + $toppingPrice) * ($item['quantity'] ?? 1);
         }
-
-        foreach ($coupons as $coupon) {
-            if ($coupon['type'] === 'percent') {
-                $discount += ($subtotal * $coupon['discount']) / 100;
-            } elseif ($coupon['type'] === 'fixed') {
-                $discount += $coupon['discount'];
-            }
-        }
-
-        $total = max(0, $subtotal - $discount);
-
-        return view('client.cart', compact(
-            'items',
-            'subtotal',
-            'discount',
-            'total',
-            'coupons'
-        ));
     }
+
+    foreach ($coupons as $coupon) {
+        if ($coupon['type'] === 'percent') {
+            $discount += ($subtotal * $coupon['discount']) / 100;
+        } elseif ($coupon['type'] === 'fixed') {
+            $discount += $coupon['discount'];
+        }
+    }
+
+    $total = max(0, $subtotal - $discount);
+
+    return view('client.cart', compact(
+        'items',
+        'subtotal',
+        'discount',
+        'total',
+        'coupons'
+    ));
+}
 
     /**
      *
      */
-    public function addToCart(Request $request, $id)
+   public function addToCart(Request $request, $id)
     {
         $sanpham = Sanpham::findOrFail($id);
 
@@ -97,17 +110,13 @@ class CartController extends Controller
         $toppingIds = $request->input('topping_ids', []);
         $toppingIds = array_map('intval', (array)$toppingIds);
         sort($toppingIds);
-
+        $toppingIdsString = implode(',', $toppingIds);
         $productToppings = Product_topping::whereIn('id', $toppingIds)->get();
-
         $qty = max(1, (int)$request->input('qty', 1));
-
         $basePrice = $size ? $size->price : ($sanpham->price ?? 0);
         $toppingPrice = $productToppings->sum('price');
         $unitPrice = $basePrice + $toppingPrice;
-
-        $key = $sanpham->id . '-' . $sizeId . '-' . implode(',', $toppingIds);
-
+        $key = $sanpham->id . '-' . $sizeId . '-' . $toppingIdsString;
         if (Auth::check()) {
             $cart = Cart::firstOrCreate(
                 ['user_id' => Auth::id()],
@@ -117,7 +126,7 @@ class CartController extends Controller
             $existingItem = Cartdetail::where('cart_id', $cart->id)
                 ->where('product_id', $sanpham->id)
                 ->where('size_id', $sizeId)
-                ->where('topping_id', implode(',', $toppingIds))
+                ->where('topping_id', $toppingIdsString)
                 ->first();
 
             if ($existingItem) {
@@ -128,7 +137,7 @@ class CartController extends Controller
                     'cart_id' => $cart->id,
                     'product_id' => $sanpham->id,
                     'size_id' => $sizeId,
-                    'topping_id' => implode(',', $toppingIds),
+                    'topping_id' => $toppingIdsString, 
                     'quantity' => $qty
                 ]);
                 $cartDetail->save();
@@ -136,36 +145,36 @@ class CartController extends Controller
 
             $this->_updateCartTotal($cart);
 
+        } else { 
+        $cartSession = session('cart', []);
+
+        if (isset($cartSession[$key])) {
+            $cartSession[$key]['quantity'] += $qty;
+            $cartSession[$key]['price'] = $unitPrice * $cartSession[$key]['quantity'];
         } else {
-            $cartSession = session('cart', []);
+            $cartSession[$key] = [
+                'sanpham_id'    => $sanpham->id,
+                'name'          => $sanpham->name,
+                'size_id'       => $sizeId,
+                'size_name'     => $size ? $size->size : null,
+                'size_price'    => $size ? $size->price : ($sanpham->price ?? 0),
+                'topping_ids'   => $toppingIdsString, 
+                'quantity'      => $qty,
+                'unit_price'    => $unitPrice,
+                'price'         => $unitPrice * $qty,
+                'image'         => $sanpham->image,
+                'topping_names' => [],
+                'topping_prices' => []
+            ];
 
-            if (isset($cartSession[$key])) {
-                $cartSession[$key]['quantity'] += $qty;
-                $cartSession[$key]['price'] = $unitPrice * $cartSession[$key]['quantity'];
-            } else {
-                $cartSession[$key] = [
-                    'sanpham_id'    => $sanpham->id,
-                    'name'          => $sanpham->name,
-                    'size_id'       => $sizeId,
-                    'size_name'     => $size ? $size->size : null,
-                    'size_price'    => $size ? $size->price : ($sanpham->price ?? 0),
-                    'topping_ids'   => $toppingIds,
-                    'quantity'      => $qty,
-                    'unit_price'    => $unitPrice,
-                    'price'         => $unitPrice * $qty,
-                    'image'         => $sanpham->image,
-                    'topping_names' => [],
-                    'topping_prices' => []
-                ];
-
-                foreach ($productToppings as $productTopping) {
-                    $cartSession[$key]['topping_names'][] = $productTopping->topping;
-                    $cartSession[$key]['topping_prices'][] = $productTopping->price;
-                }
+            foreach ($productToppings as $productTopping) {
+                $cartSession[$key]['topping_names'][] = $productTopping->topping;
+                $cartSession[$key]['topping_prices'][] = $productTopping->price;
             }
-
-            session(['cart' => $cartSession]);
         }
+
+        session(['cart' => $cartSession]); 
+    }
 
         return redirect()->route('shop.index')->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
     }
@@ -183,7 +192,6 @@ class CartController extends Controller
      */
     public function updateCart(Request $request)
     {
-        \Log::info('Update Cart Request:', $request->all());
 
         try {
             $key = $request->input('key');
@@ -196,22 +204,14 @@ class CartController extends Controller
             sort($toppingIds);
             $toppingIdsString = implode(',', $toppingIds);
 
-            \Log::info('Normalized Data:', [
-                'key' => $key,
-                'productId' => $productId,
-                'sizeId' => $sizeId,
-                'toppingIds' => $toppingIds,
-                'toppingIdsString' => $toppingIdsString
-            ]);
+         
 
             if (!$key && $productId && $sizeId !== null) {
                 $key = $this->_makeCartKey($productId, $sizeId, $toppingIds);
-                \Log::info('Generated Key:', ['key' => $key]);
             }
 
             if (Auth::check()) {
                 $cart = Cart::where('user_id', Auth::id())->first();
-                \Log::info('Found Cart:', ['cart_id' => $cart?->id]);
 
                 if (!$cart) {
                     return response()->json(['success' => false, 'message' => 'Giỏ hàng không tồn tại.']);
@@ -224,13 +224,6 @@ class CartController extends Controller
                         ->where('size_id', $sizeId)
                         ->where('topping_id', $toppingIdsString)
                         ->first();
-                    \Log::info('Finding CartDetail by IDs:', [
-                        'found' => !!$cartDetail,
-                        'cart_id' => $cart->id,
-                        'product_id' => $productId,
-                        'size_id' => $sizeId,
-                        'topping_id' => $toppingIdsString
-                    ]);
                 } else if ($key) {
                     $parts = explode('-', $key);
                     $pid = $parts[0] ?? null;
@@ -244,11 +237,6 @@ class CartController extends Controller
                         ->where('size_id', $sid)
                         ->where('topping_id', $tidsString)
                         ->first();
-                    \Log::info('Finding CartDetail by Key:', [
-                        'found' => !!$cartDetail,
-                        'key_parts' => ['pid' => $pid, 'sid' => $sid, 'tids' => $tidsString],
-                        'cart_id' => $cart->id
-                    ]);
                 }
 
                 if (!$cartDetail) {
@@ -271,15 +259,6 @@ class CartController extends Controller
                 }
                 $unitPrice = ($size ? $size->price : ($product->price ?? 0)) + $toppingPrice;
                 $lineTotal = $unitPrice * $cartDetail->quantity;
-
-                \Log::info('Updated CartDetail:', [
-                    'quantity' => $cartDetail->quantity,
-                    'unit_price' => $unitPrice,
-                    'line_total' => $lineTotal,
-                    'subtotal' => $subtotal,
-                    'total' => $total
-                ]);
-
                 return response()->json([
                     'success' => true,
                     'message' => 'Đã cập nhật số lượng sản phẩm.',
@@ -291,8 +270,6 @@ class CartController extends Controller
                 ]);
             } else {
                 $cartSession = session('cart', []);
-                \Log::info('Guest Cart Session:', ['key_exists' => isset($cartSession[$key])]);
-
                 if (!isset($cartSession[$key])) {
                     return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
                 }
@@ -320,15 +297,6 @@ class CartController extends Controller
                     $discount += ($c['type'] === 'percent') ? ($subtotal * $c['discount'] / 100) : $c['discount'];
                 }
                 $total = max(0, $subtotal - $discount);
-
-                \Log::info('Updated Guest Cart:', [
-                    'key' => $key,
-                    'quantity' => $cartSession[$key]['quantity'],
-                    'price' => $cartSession[$key]['price'],
-                    'subtotal' => $subtotal,
-                    'total' => $total
-                ]);
-
                 return response()->json([
                     'success' => true,
                     'message' => 'Đã cập nhật số lượng sản phẩm.',
@@ -340,10 +308,6 @@ class CartController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
-            \Log::error('Cart Update Error:', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi khi cập nhật giỏ hàng: ' . $e->getMessage()
@@ -356,10 +320,6 @@ class CartController extends Controller
     public function removeItem(Request $request, $key = null)
     {
         try {
-            \Log::info('Remove Cart Item Request:', [
-                'key' => $key,
-                'request_data' => $request->all()
-            ]);
 
             $key = $key ?? $request->input('key');
             $productId = $request->input('product_id');
@@ -407,13 +367,6 @@ class CartController extends Controller
                     $this->_updateCartTotal($cart);
                     $subtotal = $cart->total;
                     $total = $cart->total;
-
-                    \Log::info('Removed Cart Item:', [
-                        'cart_id' => $cart->id,
-                        'subtotal' => $subtotal,
-                        'total' => $total
-                    ]);
-
                     return response()->json([
                         'success' => true,
                         'message' => 'Đã xóa sản phẩm khỏi giỏ hàng.',
@@ -441,13 +394,6 @@ class CartController extends Controller
                         $discount += ($c['type'] === 'percent') ? ($subtotal * $c['discount'] / 100) : $c['discount'];
                     }
                     $total = max(0, $subtotal - $discount);
-
-                    \Log::info('Removed Guest Cart Item:', [
-                        'key' => $key,
-                        'subtotal' => $subtotal,
-                        'total' => $total
-                    ]);
-
                     return response()->json([
                         'success' => true,
                         'message' => 'Đã xóa sản phẩm khỏi giỏ hàng.',
@@ -460,10 +406,6 @@ class CartController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            \Log::error('Remove Cart Item Error:', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi khi xóa sản phẩm: ' . $e->getMessage()

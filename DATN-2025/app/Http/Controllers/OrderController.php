@@ -29,12 +29,10 @@ class OrderController extends Controller
             ];
 
             if (Auth::check()) {
-                // ✅ Đã đăng nhập: lấy hoặc tạo cart
                 $cart = Cart::firstOrCreate([
                     'user_id' => Auth::id()
                 ]);
 
-                // ✅ Thêm hoặc cập nhật cart detail
                 Cartdetail::updateOrCreate(
                     [
                         'cart_id' => $cart->id,
@@ -47,7 +45,6 @@ class OrderController extends Controller
                     ]
                 );
             } else {
-                // ❌ Chưa đăng nhập: dùng session
                 $sessionCart = Session::get('cart', []);
 
                 $key = $cartItem['product_id'] . '-' . $cartItem['size_id'] . '-' . $cartItem['topping_id'];
