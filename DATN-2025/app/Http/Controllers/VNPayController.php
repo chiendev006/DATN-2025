@@ -136,15 +136,18 @@ class VNPayController extends Controller
                         return redirect()->route('checkout.index')->with('error', 'Giao dịch này đã được xử lý trước đó');
                     }
 
-                    $order = new \App\Models\Order();
+                   $order = new \App\Models\Order();
                     $order->user_id = $vnpOrder['user_id'];
                     $order->name = $vnpOrder['name'];
                     $order->phone = $vnpOrder['phone'];
-                    $order->address = $vnpOrder['address'];
+                    $order->address_id = $vnpOrder['address_id']; 
+                    $order->address_detail = $vnpOrder['address_detail'];
+                    $order->district_name = $vnpOrder['district_name'];
                     $order->payment_method = 'banking';
                     $order->status =  'pending';
                     $order->total = $vnpOrder['total'];
-                    $order->pay_status=1;
+                    $order->shipping_fee = $vnpOrder['shipping_fee'];
+                    $order->pay_status = 1;
                     $order->transaction_id = $vnpData['vnp_TransactionNo'];
 
                     if (!$order->save()) {

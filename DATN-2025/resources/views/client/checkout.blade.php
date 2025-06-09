@@ -1,8 +1,18 @@
+
 @extends('layout2')
 @section('main')
 @php
     use Illuminate\Support\Facades\Auth;
+    use Illuminate\Support\Facades\Log;
     $isLoggedIn = Auth::check();
+    Log::info('Rendering checkout page', [
+        'is_logged_in' => $isLoggedIn,
+        'session_cart' => session()->get('cart', []),
+        'session_coupons' => session()->get('coupons', []),
+        'items' => $items,
+        'cart' => $cart,
+        'districts_count' => count($districts)
+    ]);
 @endphp
 <main>
     <div class="main-part">
@@ -14,6 +24,7 @@
                         <li><a href="/shop">Shop</a></li>
                         <li class="active"><a href="#">Shop Checkout</a></li>
                     </ul>
+                    <label class=" ASCENDANTS
                     <label class="now">SHOP CHECKOUT</label>
                 </div>
             </div>
@@ -43,28 +54,28 @@
                                     </div>
 
                                     <div class="col-md-12">
-                                        <input type="text" name="name" value="{{ old('name') }}" placeholder="Họ và tên" required>
+                                        <input type="text" name="name" value="{{ old('name', Auth::check() ? Auth::user()->name : '') }}" placeholder="Họ và tên" required>
                                         @error('name')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
 
                                     <div class="col-md-12">
-                                        <input type="text" name="phone" value="{{ old('phone') }}" placeholder="Số điện thoại" required>
-                                        @error('phone')
+                                        <input type="text" name="phone_raw" value="{{ old('phone_raw', Auth::check() ? Auth::user()->phone : '') }}" placeholder="Số điện thoại" required>
+                                        @error('phone_raw')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
 
-                                      <div class="col-md-12">
+                                    <div class="col-md-12">
                                         <label>Chọn huyện (tỉnh Hải Phòng) <span class="text-danger">*</span></label>
                                         <select name="district" id="district-select" class="form-control" required>
                                             <option value="" disabled selected>-- Chọn huyện --</option>
-                                            <option value="Lê Chân" data-ship="10000" {{ old('district') == 'Lê Chân' ? 'selected' : '' }}>An Lão</option>
-                                            <option value="Ngô Quyền" data-ship="12000" {{ old('district') == 'Ngô Quyền' ? 'selected' : '' }}>Kiến An</option>
-                                            <option value="Hồng Bàng" data-ship="15000" {{ old('district') == 'Hồng Bàng' ? 'selected' : '' }}>Hải An</option>
-                                            <option value="Kiến An" data-ship="18000" {{ old('district') == 'Kiến An' ? 'selected' : '' }}>Ngô Quyền</option>
-                                            <option value="Dương Kinh" data-ship="20000" {{ old('district') == 'Dương Kinh' ? 'selected' : '' }}>Ngô Quyền</option>
+                                            @foreach($districts as $districtOption)
+                                                <option value="{{ $districtOption->id }}" data-ship="{{ $districtOption->shipping_fee }}" {{ old('district') == $districtOption->id ? 'selected' : '' }}>
+                                                    {{ $districtOption->name }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                         @error('district')
                                             <span class="text-danger">{{ $message }}</span>
@@ -88,9 +99,9 @@
                                     <div class="col-md-12">
                                         <h5>Phương thức thanh toán</h5>
                                         <div class="payment-methods">
-                                           <div class="payment-method" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                            <div class="payment-method" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
                                                 <label style="display: flex; align-items: center; gap: 10px;">
-                                                    <input type="radio" name="payment_method" value="cash" required>
+                                                    <input type="radio" name="payment_method" value="cash" required {{ old('payment_method') === 'cash' ? 'checked' : '' }}>
                                                     <img src="{{ url('asset') }}/images/cod.png" alt="COD" style="height: 24px;">
                                                     <span>Thanh toán khi nhận hàng (COD)</span>
                                                 </label>
@@ -114,7 +125,7 @@
                                     <div class="col-md-12">
                                         <div class="terms-conditions">
                                             <label>
-                                                <input type="checkbox" name="terms" required>
+                                                <input type="checkbox" name="terms" required {{ old('terms') ? 'checked' : '' }}>
                                                 <span>Tôi đồng ý với các điều khoản và điều kiện *</span>
                                             </label>
                                             @error('terms')
@@ -124,7 +135,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Hidden input để xác định redirect (nếu dùng JS cũng có thể xử lý redirect này tự động sau khi form gửi) -->
                                 <input type="hidden" name="redirect" value="1">
 
                                 <div class="row mt-4">
@@ -133,12 +143,11 @@
                                     </div>
                                 </div>
                             </form>
-
                         </div>
                     </div>
                     <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                         <div class="shop-checkout-right">
-                            <div  class="shop-checkout-box">
+                            <div class="shop-checkout-box">
                                 <h5 style="color: #959393;">ĐƠN HÀNG CỦA BẠN</h5>
                                 <div class="shop-checkout-title">
                                     <h6 style="color: #959393;">SẢN PHẨM <span>THÀNH TIỀN</span></h6>
@@ -146,73 +155,109 @@
                                 <div class="shop-checkout-row">
                                     @php
                                         $subtotal = 0;
-                                        $items = Auth::check() ? $items : $cart;
+                                        $displayItems = Auth::check() ? $items : $cart;
+                                        Log::info('Displaying cart items in Blade', [
+                                            'is_logged_in' => Auth::check(),
+                                            'display_items' => $displayItems
+                                        ]);
                                     @endphp
 
-                                    @foreach($items as $item)
-                                        @php
-                                            if (Auth::check()) {
-                                                $product = $item->product;
-                                                if (!$product) continue;
-
-                                                $productPrice = $product->price ?? 0;
-                                                $sizePrice = $item->size ? ($item->size->price ?? 0) : 0;
-
-                                                $sizeName = $item->size ? $item->size->size : null;
-
+                                    @if(empty($displayItems))
+                                        <p>Giỏ hàng của bạn đang trống. <a href="{{ route('shop') }}">Quay lại cửa hàng</a></p>
+                                    @else
+                                        @foreach($displayItems as $item)
+                                            @php
+                                                $name = '';
+                                                $quantity = 0;
+                                                $sizeName = null;
                                                 $toppingNames = [];
-                                                if (!empty($item->topping_id)) {
-                                                    $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id)));
-                                                    if (!empty($toppingIds)) {
-                                                        $toppingNames = \App\Models\Product_topping::whereIn('id', $toppingIds)->pluck('topping')->toArray();
+                                                $itemTotal = 0;
+                                                $unitPrice = 0;
+
+                                                if (Auth::check()) {
+                                                    $product = $item->product;
+                                                    if (!$product) {
+                                                        Log::warning('Skipping display item due to missing product', ['item_id' => $item->id]);
+                                                        continue;
                                                     }
+
+                                                    $productPrice = $product->price ?? 0;
+                                                    $sizePrice = $item->size ? ($item->size->price ?? 0) : 0;
+                                                    $sizeName = $item->size ? $item->size->size : null;
+
+                                                    $toppingIds = !empty($item->topping_id) ? array_filter(array_map('trim', explode(',', $item->topping_id))) : [];
+                                                    $toppingPrice = 0;
+
+                                                    if (!empty($toppingIds)) {
+                                                        $toppingsData = \App\Models\Product_topping::whereIn('id', $toppingIds)->get();
+                                                        $toppingPrice = $toppingsData->sum('price');
+                                                        $toppingNames = $toppingsData->pluck('topping')->toArray();
+                                                    }
+
+                                                    $unitPrice = $productPrice + $sizePrice + $toppingPrice;
+                                                    $itemTotal = $unitPrice * $item->quantity;
+                                                    $subtotal += $itemTotal;
+
+                                                    $name = $product->name;
+                                                    $quantity = $item->quantity;
+                                                } else {
+                                                    $productModel = \App\Models\Sanpham::find($item['sanpham_id']);
+                                                    if (!$productModel) {
+                                                        Log::warning('Skipping guest cart item due to missing product', ['sanpham_id' => $item['sanpham_id']]);
+                                                        continue;
+                                                    }
+
+                                                    $basePrice = $productModel->price ?? 0;
+                                                    $sizePrice = isset($item['size_id']) ? (DB::table('product_attributes')
+                                                        ->where('product_id', $productModel->id)
+                                                        ->where('id', $item['size_id'])
+                                                        ->value('price') ?? 0) : 0;
+                                                    $toppingIds = !empty($item['topping_ids']) ? array_filter(array_map('trim', explode(',', $item['topping_ids']))) : [];
+                                                    $toppingTotal = !empty($toppingIds) ? \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price') : 0;
+
+                                                    $unitPrice = $basePrice + $sizePrice + $toppingTotal;
+                                                    $itemTotal = $unitPrice * ($item['quantity'] ?? 1);
+                                                    $subtotal += $itemTotal;
+
+                                                    $name = $item['name'] ?? $productModel->name;
+                                                    $quantity = $item['quantity'] ?? 1;
+                                                    $sizeName = $item['size_name'] ?? null;
+                                                    $toppingNames = !empty($toppingIds) ? \App\Models\Product_topping::whereIn('id', $toppingIds)->pluck('topping')->toArray() : [];
                                                 }
 
-                                                $toppingPrice = 0;
-                                                if (!empty($toppingIds)) {
-                                                    $toppingPrice = \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price');
-                                                }
+                                                $desc = [];
+                                                if (!empty($sizeName)) $desc[1] = 'Size: ' . $sizeName;
+                                                if (!empty($toppingNames)) $desc[2] = 'Topping: ' . implode(', ', $toppingNames);
 
-                                                $unitPrice = $productPrice + $sizePrice + $toppingPrice;
-                                                $total = $unitPrice * $item->quantity;
-                                                $subtotal += $total;
-
-                                                $name = $product->name;
-                                                $quantity = $item->quantity;
-                                            } else {
-                                                $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
-                                                $total = $unitPrice * ($item['quantity'] ?? 1);
-                                                $subtotal += $total;
-
-                                                $name = $item['name'];
-                                                $quantity = $item['quantity'] ?? 1;
-                                                $sizeName = $item['size_name'] ?? null;
-                                                $toppingNames = $item['topping_names'] ?? [];
-                                            }
-                                            // Tạo chuỗi mô tả size và topping
-                                            $desc = [];
-                                            if (!empty($sizeName)) $desc[1] = 'Size: ' . $sizeName;
-                                            if (!empty($toppingNames)) $desc[2] = 'Topping: ' . implode(', ', $toppingNames);
-                                        @endphp
-                                          <hr style="margin-top: 0px ">
-                                        <div class="row" ></div>
-                                            <small>x{{ $quantity }}</small>
-                                        <div> <p><Strong>{{ $name }}</Strong></p>
-                                        @if(isset($desc[1]))
-                                            <p style="color: #666; font-size: 0.8em; font-weight: bold;">{{ $desc[1] }}</p>
-                                        @endif
-
-                                        @if(isset($desc[2]))
-                                            <p style="color: #666; font-size: 0.8em; font-weight: bold;">{{ $desc[2] }}</p>
-                                        @endif
-
-                                       <div> <p style="justify-self: end;">
-                                            <strong>{{ number_format($total) }} VND</strong>
-                                        </p></div>
-
-                                        </div>
-
-                                    @endforeach
+                                                Log::debug('Displaying cart item', [
+                                                    'name' => $name,
+                                                    'quantity' => $quantity,
+                                                    'unit_price' => $unitPrice,
+                                                    'item_total' => $itemTotal,
+                                                    'size_name' => $sizeName,
+                                                    'topping_names' => $toppingNames
+                                                ]);
+                                            @endphp
+                                            <hr style="margin-top: 0px ">
+                                            <div class="row" >
+                                                <div class="col-xs-2">
+                                                    <small>x{{ $quantity }}</small>
+                                                </div>
+                                                <div class="col-xs-7">
+                                                    <p><strong>{{ $name }}</strong></p>
+                                                    @if(isset($desc[1]))
+                                                        <p style="color: #666; font-size: 0.8em; font-weight: bold;">{{ $desc[1] }}</p>
+                                                    @endif
+                                                    @if(isset($desc[2]))
+                                                        <p style="color: #666; font-size: 0.8em; font-weight: bold;">{{ $desc[2] }}</p>
+                                                    @endif
+                                                </div>
+                                                <div class="col-xs-3 text-right">
+                                                    <p><strong>{{ number_format($itemTotal) }} VND</strong></p>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @endif
                                 </div>
 
                                 <div class="checkout-total">
@@ -227,19 +272,20 @@
                                             ? ($subtotal * $coupon['discount'] / 100)
                                             : $coupon['discount'];
                                     }
-                                      $shippingFee = 0;
-                    if (old('district')) {
-                        $shippingFees = [
-                            'Lê Chân' => 10000,
-                            'Ngô Quyền' => 12000,
-                            'Hồng Bàng' => 15000,
-                            'Kiến An' => 18000,
-                            'Dương Kinh' => 20000,
-                        ];
-                        $shippingFee = $shippingFees[old('district')] ?? 0;
-                    }
-
+                                    $shippingFee = 0;
+                                    if (old('district')) {
+                                        $selectedDistrict = $districts->firstWhere('id', old('district'));
+                                        if ($selectedDistrict) {
+                                            $shippingFee = $selectedDistrict->shipping_fee;
+                                        }
+                                    }
                                     $total = max(0, $subtotal + $shippingFee - $discount);
+                                    Log::info('Checkout totals calculated', [
+                                        'subtotal' => $subtotal,
+                                        'discount' => $discount,
+                                        'shipping_fee' => $shippingFee,
+                                        'total' => $total
+                                    ]);
                                 @endphp
 
                                 @if($discount > 0)
@@ -341,37 +387,42 @@ document.addEventListener("DOMContentLoaded", function () {
     const shippingCostElement = document.getElementById("shipping-fee-display");
     const shippingFeeDisplayRight = document.getElementById("shipping-fee-display-right");
     const totalWithShippingElement = document.getElementById("total-with-shipping");
-    const totalBeforeShipping = {{ $subtotal }} - {{ $discount }};
+    const subtotal = parseFloat({{ $subtotal }});
+    const discount = parseFloat({{ $discount }});
+
     function formatCurrency(amount) {
         return amount.toLocaleString('vi-VN') + " đ";
     }
-    districtSelect.addEventListener("change", function () {
-        const selectedOption = this.options[this.selectedIndex];
+
+    function updateShippingAndTotal() {
+        const selectedOption = districtSelect.options[districtSelect.selectedIndex];
         const shippingCost = parseInt(selectedOption.getAttribute("data-ship")) || 0;
+
         shippingCostElement.textContent = formatCurrency(shippingCost);
-        if (shippingFeeDisplayRight) shippingFeeDisplayRight.textContent = formatCurrency(shippingCost);
-        if (totalWithShippingElement) totalWithShippingElement.textContent = formatCurrency(totalBeforeShipping + shippingCost);
+        if (shippingFeeDisplayRight) {
+            shippingFeeDisplayRight.textContent = formatCurrency(shippingCost);
+        }
+
+        const newTotal = subtotal + shippingCost - discount;
+        if (totalWithShippingElement) {
+            totalWithShippingElement.textContent = formatCurrency(Math.max(0, newTotal));
+        }
+
+        console.log('Shipping and total updated:', {
+            shipping_cost: shippingCost,
+            new_total: newTotal
+        });
+    }
+
+    districtSelect.addEventListener("change", updateShippingAndTotal);
+    updateShippingAndTotal();
+
+    document.getElementById("checkout-form").addEventListener("submit", function (event) {
+        if (!districtSelect.value) {
+            event.preventDefault();
+            alert("Vui lòng chọn huyện.");
+        }
     });
-    // Gọi khi load trang nếu đã có huyện được chọn
-    const selectedOption = districtSelect.options[districtSelect.selectedIndex];
-    const shippingCost = selectedOption ? parseInt(selectedOption.getAttribute("data-ship")) || 0 : 0;
-    shippingCostElement.textContent = formatCurrency(shippingCost);
-    if (shippingFeeDisplayRight) shippingFeeDisplayRight.textContent = formatCurrency(shippingCost);
-    if (totalWithShippingElement) totalWithShippingElement.textContent = formatCurrency(totalBeforeShipping + shippingCost);
 });
 </script>
-
 @endsection
-
-
-
-
-
-
-
-
-
-
-
-
-
