@@ -1,4 +1,3 @@
-
 @extends('layout2')
 @section('main')
 @php
@@ -24,7 +23,6 @@
                         <li><a href="/shop">Shop</a></li>
                         <li class="active"><a href="#">Shop Checkout</a></li>
                     </ul>
-                    <label class=" ASCENDANTS
                     <label class="now">SHOP CHECKOUT</label>
                 </div>
             </div>
@@ -154,12 +152,8 @@
                                 </div>
                                 <div class="shop-checkout-row">
                                     @php
-                                        $subtotal = 0;
+                                        // subtotal được tính từ controller
                                         $displayItems = Auth::check() ? $items : $cart;
-                                        Log::info('Displaying cart items in Blade', [
-                                            'is_logged_in' => Auth::check(),
-                                            'display_items' => $displayItems
-                                        ]);
                                     @endphp
 
                                     @if(empty($displayItems))
@@ -194,9 +188,8 @@
                                                         $toppingNames = $toppingsData->pluck('topping')->toArray();
                                                     }
 
-                                                    $unitPrice = $productPrice + $sizePrice + $toppingPrice;
+                                                    $unitPrice = $sizePrice + $toppingPrice;
                                                     $itemTotal = $unitPrice * $item->quantity;
-                                                    $subtotal += $itemTotal;
 
                                                     $name = $product->name;
                                                     $quantity = $item->quantity;
@@ -207,17 +200,17 @@
                                                         continue;
                                                     }
 
-                                                    $basePrice = $productModel->price ?? 0;
-                                                    $sizePrice = isset($item['size_id']) ? (DB::table('product_attributes')
-                                                        ->where('product_id', $productModel->id)
-                                                        ->where('id', $item['size_id'])
-                                                        ->value('price') ?? 0) : 0;
+                                                    $basePrice = 0;
+                                                    if(isset($item['size_id'])) {
+                                                        $sizeAttr = DB::table('product_attributes')->where('id', $item['size_id'])->first();
+                                                        $basePrice = $sizeAttr->price ?? 0;
+                                                    }
+
                                                     $toppingIds = !empty($item['topping_ids']) ? array_filter(array_map('trim', explode(',', $item['topping_ids']))) : [];
                                                     $toppingTotal = !empty($toppingIds) ? \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price') : 0;
 
-                                                    $unitPrice = $basePrice + $sizePrice + $toppingTotal;
+                                                    $unitPrice = $basePrice + $toppingTotal;
                                                     $itemTotal = $unitPrice * ($item['quantity'] ?? 1);
-                                                    $subtotal += $itemTotal;
 
                                                     $name = $item['name'] ?? $productModel->name;
                                                     $quantity = $item['quantity'] ?? 1;
@@ -228,15 +221,6 @@
                                                 $desc = [];
                                                 if (!empty($sizeName)) $desc[1] = 'Size: ' . $sizeName;
                                                 if (!empty($toppingNames)) $desc[2] = 'Topping: ' . implode(', ', $toppingNames);
-
-                                                Log::debug('Displaying cart item', [
-                                                    'name' => $name,
-                                                    'quantity' => $quantity,
-                                                    'unit_price' => $unitPrice,
-                                                    'item_total' => $itemTotal,
-                                                    'size_name' => $sizeName,
-                                                    'topping_names' => $toppingNames
-                                                ]);
                                             @endphp
                                             <hr style="margin-top: 0px ">
                                             <div class="row" >
@@ -265,13 +249,7 @@
                                 </div>
 
                                 @php
-                                    $coupons = session('coupons', []);
-                                    $discount = 0;
-                                    foreach ($coupons as $coupon) {
-                                        $discount += ($coupon['type'] === 'percent')
-                                            ? ($subtotal * $coupon['discount'] / 100)
-                                            : $coupon['discount'];
-                                    }
+                                    // $discount và $appliedCoupons được truyền từ controller
                                     $shippingFee = 0;
                                     if (old('district')) {
                                         $selectedDistrict = $districts->firstWhere('id', old('district'));
@@ -279,20 +257,25 @@
                                             $shippingFee = $selectedDistrict->shipping_fee;
                                         }
                                     }
+                                    // $total được tính bằng tổng tạm tính + phí ship - tổng giảm giá
                                     $total = max(0, $subtotal + $shippingFee - $discount);
-                                    Log::info('Checkout totals calculated', [
-                                        'subtotal' => $subtotal,
-                                        'discount' => $discount,
-                                        'shipping_fee' => $shippingFee,
-                                        'total' => $total
-                                    ]);
                                 @endphp
 
-                                @if($discount > 0)
-                                    <div class="checkout-total">
-                                        <h6>Giảm giá: <span>-{{ number_format($discount) }} VND</span></h6>
-                                    </div>
+                                {{-- === THAY ĐỔI TẠI ĐÂY: HIỂN THỊ CHI TIẾT MÃ GIẢM GIÁ === --}}
+                                @if(!empty($appliedCoupons))
+                                    @foreach($appliedCoupons as $coupon)
+                                        @php
+                                            // Tính toán lại giá trị của từng coupon để hiển thị
+                                            $couponValue = ($coupon['type'] === 'percent')
+                                                ? ($subtotal * $coupon['discount'] / 100)
+                                                : $coupon['discount'];
+                                        @endphp
+                                        <div class="checkout-total">
+                                            <h6>Mã giảm giá ({{ $coupon['code'] }}): <span>-{{ number_format($couponValue) }} VND</span></h6>
+                                        </div>
+                                    @endforeach
                                 @endif
+                                {{-- === KẾT THÚC THAY ĐỔI === --}}
 
                                 <div class="checkout-total">
                                     <h6>Phí vận chuyển: <span id="shipping-fee-display-right">{{ $shippingFee > 0 ? number_format($shippingFee) . ' đ' : '0 đ' }}</span></h6>
@@ -387,8 +370,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const shippingCostElement = document.getElementById("shipping-fee-display");
     const shippingFeeDisplayRight = document.getElementById("shipping-fee-display-right");
     const totalWithShippingElement = document.getElementById("total-with-shipping");
+    
+    // Các giá trị này được truyền từ PHP vào Javascript
     const subtotal = parseFloat({{ $subtotal }});
-    const discount = parseFloat({{ $discount }});
+    const discount = parseFloat({{ $discount }}); // Tổng số tiền giảm giá
 
     function formatCurrency(amount) {
         return amount.toLocaleString('vi-VN') + " đ";
@@ -403,6 +388,7 @@ document.addEventListener("DOMContentLoaded", function () {
             shippingFeeDisplayRight.textContent = formatCurrency(shippingCost);
         }
 
+        // Tổng cuối cùng = Tạm tính + Phí vận chuyển - Tổng giảm giá
         const newTotal = subtotal + shippingCost - discount;
         if (totalWithShippingElement) {
             totalWithShippingElement.textContent = formatCurrency(Math.max(0, newTotal));
@@ -415,6 +401,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     districtSelect.addEventListener("change", updateShippingAndTotal);
+    // Chạy lần đầu khi tải trang để cập nhật giá trị ban đầu nếu có old('district')
     updateShippingAndTotal();
 
     document.getElementById("checkout-form").addEventListener("submit", function (event) {
