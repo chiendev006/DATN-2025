@@ -1,7 +1,8 @@
 <?php
 
         use App\Http\Controllers\AboutController;
-        use App\Http\Controllers\admin\AdminStaffController;
+use App\Http\Controllers\admin\AddressController;
+use App\Http\Controllers\admin\AdminStaffController;
         use App\Http\Controllers\admin\Product_attributesController;
         use Illuminate\Support\Facades\Route;
         use App\Http\Controllers\Controller;
@@ -146,6 +147,16 @@ Route::prefix('admin')->middleware(['auth', 'check.valid.id'  ])->group(function
                 Route::get('/edit/{id}', [CouponController::class, 'edit'])->name('coupon.edit');
                 Route::post('/update/{id}', [CouponController::class, 'update'])->name('coupon.update');
                 Route::get('/delete/{id}', [CouponController::class, 'delete'])->name('coupon.delete');
+        });
+
+        // địa chỉ
+        Route::prefix('address')->group(function () {
+                Route::get('/', [AddressController  ::class, 'index'])->name('address.index');
+                Route::get('/create', [AddressController::class, 'create'])->name('address.create');
+                Route::post('/store', [AddressController::class, 'store'])->name('address.store');
+                Route::get('/edit/{id}', [AddressController::class, 'edit'])->name('address.edit');
+                Route::post('/update/{id}', [AddressController::class, 'update'])->name('address.update');
+                Route::get('/delete/{id}', [AddressController::class, 'delete'])->name('address.delete');
         });
 
         // Sản phẩm
