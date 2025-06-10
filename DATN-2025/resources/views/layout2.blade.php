@@ -474,8 +474,7 @@
         <div class="footer-part">
           <div
             class="footer-inner-info Banner-Bg"
-            data-background="{{ url('asset') }}/images/footer-bg.jpg"
-          >
+            data-background="{{ url('asset') }}/images/footer-bg.jpg">
             <div class="container">
               <div class="row">
                 <div class="col-md-3 col-sm-3 col-xs-12">

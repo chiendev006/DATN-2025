@@ -9,7 +9,7 @@ use App\Models\Cartdetail;
 use App\Models\sanpham;
 use App\Models\Product_topping; 
 use App\Models\Address; 
-use App\Models\Coupon; // ADDED THIS LINE
+use App\Models\Coupon; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -22,8 +22,8 @@ class CheckoutController extends Controller
     {
         $items = [];
         $cart = [];
-        $subtotal = 0; // Khởi tạo subtotal
-        $discount = 0; // Khởi tạo discount
+        $subtotal = 0; 
+        $discount = 0; 
 
         if (Auth::check()) {
             $userCart = Cart::where('user_id', Auth::id())->first();
@@ -31,7 +31,6 @@ class CheckoutController extends Controller
                 $items = Cartdetail::with(['product', 'size'])
                     ->where('cart_id', $userCart->id)
                     ->get();
-                // Tính subtotal cho user cart
                 foreach ($items as $item) {
                     if (!$item->product) continue;
 
@@ -65,7 +64,6 @@ class CheckoutController extends Controller
             ]);
         } else {
             $cart = session()->get('cart', []);
-            // Tính subtotal cho guest cart
             foreach ($cart as $cartItem) {
                 if (!isset($cartItem['sanpham_id']) || !isset($cartItem['quantity'])) {
                     continue;
@@ -105,21 +103,19 @@ class CheckoutController extends Controller
             ]);
         }
 
-        // Lấy coupons từ session và tính discount
         $appliedCoupons = session()->get('coupons', []);
         foreach ($appliedCoupons as $coupon) {
             $discount += ($coupon['type'] === 'percent')
                 ? round($subtotal * $coupon['discount'] / 100)
                 : round($coupon['discount']);
         }
-        $totalAfterDiscount = max(0, round($subtotal - $discount)); // Tổng sau giảm giá, chưa bao gồm ship
+        $totalAfterDiscount = max(0, round($subtotal - $discount));
 
         $districts = Address::all(); 
         Log::info('Districts fetched', ['districts_count' => $districts->count()]);
 
         session()->forget('_old_input');
 
-        // Truyền các biến mới sang view
         return view('client.checkout', compact('items', 'cart', 'districts', 'subtotal', 'discount', 'appliedCoupons', 'totalAfterDiscount'));
     }
 
@@ -188,7 +184,7 @@ class CheckoutController extends Controller
                     $toppingIds = [];
 
                     if (!empty($item->topping_id)) {
-                        $toppingIdString = (string) $item->topping_id; // Explicitly cast to string
+                        $toppingIdString = (string) $item->topping_id;
                         $toppingIds = array_map('intval', array_filter(array_map('trim', explode(',', $toppingIdString)))); // Sanitize input
                         Log::debug('Processing topping IDs for user cart item', [
                             'cart_detail_id' => $item->id,
@@ -273,7 +269,7 @@ class CheckoutController extends Controller
                         $minSizeAttribute = DB::table('product_attributes')
                             ->where('product_id', $product->id)
                             ->orderBy('price')
-                            ->first(); // Get the smallest size price by default
+                            ->first(); 
                         $basePrice = $minSizeAttribute->price ?? 0;
                     }
 
@@ -332,20 +328,17 @@ class CheckoutController extends Controller
 
             $appliedCouponsData = session()->get('coupons', []);
             $couponSummaryArray = [];
-            $couponTotalDiscount = 0; // Initialize total discount for the new field
+            $couponTotalDiscount = 0; 
 
             foreach ($appliedCouponsData as $couponData) {
-                // Accumulate coupon summary data
                 $couponSummaryArray[] = [
                     'code' => $couponData['code'],
                     'discount_value' => $couponData['discount'],
                     'type' => $couponData['type']
                 ];
-                // Accumulate discount value (already done by $discount variable, but re-calculate here for clarity)
             }
             $couponSummaryJson = json_encode($couponSummaryArray);
             
-            // Calculate total discount from coupons as before
             $discount = 0;
             foreach ($appliedCouponsData as $coupon) {
                 $discount += ($coupon['type'] === 'percent')
@@ -361,7 +354,7 @@ class CheckoutController extends Controller
                 'coupon_total_discount' => $couponTotalDiscount
             ]);
 
-            $total = max(0, round($total - $discount)); // $total here is subtotal - discount, before shipping
+            $total = max(0, round($total - $discount)); 
 
             $selectedAddress = Address::find($request->district);
             if (!$selectedAddress) {
@@ -369,7 +362,7 @@ class CheckoutController extends Controller
             }
             $shippingFee = $selectedAddress->shipping_fee;
             $districtName = $selectedAddress->name;
-            $total += $shippingFee; // Final total after shipping
+            $total += $shippingFee; 
 
             Log::debug('Shipping Fee Info', [
                 'selected_district_id' => $request->district,
@@ -388,13 +381,13 @@ class CheckoutController extends Controller
                         'district_name' => $districtName,
                         'total' => $total,
                         'details' => $orderDetails,
-                        'discount' => $discount, // This is coupon_total_discount
+                        'discount' => $discount,
                         'shipping_fee' => $shippingFee,
                         'user_id' => Auth::check() ? Auth::id() : null,
                         'note' => $request->note ?? null,
                         'status' => 'pending_payment',
-                        'coupon_summary' => $couponSummaryJson, // ADDED
-                        'coupon_total_discount' => $couponTotalDiscount, // ADDED
+                        'coupon_summary' => $couponSummaryJson, 
+                        'coupon_total_discount' => $couponTotalDiscount,
                     ]
                 ]);
                 Log::info('Stored vnp_order in session', [
@@ -416,8 +409,8 @@ class CheckoutController extends Controller
             $order->status = 'pending';
             $order->shipping_fee = $shippingFee;
             $order->total = $total;
-            $order->coupon_summary = $couponSummaryJson; // ADDED
-            $order->coupon_total_discount = $couponTotalDiscount; // ADDED
+            $order->coupon_summary = $couponSummaryJson; 
+            $order->coupon_total_discount = $couponTotalDiscount; 
 
             if (!$order->save()) {
                 Log::error('Failed to save order', [
@@ -456,14 +449,11 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            // Save applied coupons to coupon_order pivot table and increment usage
             if (!empty($appliedCouponsData)) {
                 foreach ($appliedCouponsData as $couponData) {
                     $couponModel = Coupon::where('code', $couponData['code'])->first();
                     if ($couponModel) {
-                        // Attach coupon to order via the pivot table
-                        // This assumes you have a many-to-many relationship defined in your Order model:
-                        // public function coupons() { return $this->belongsToMany(Coupon::class, 'coupon_order'); }
+
                         $order->coupons()->attach($couponModel->id);
                         Log::debug('Attached coupon to order', [
                             'order_id' => $order->id,
@@ -471,7 +461,6 @@ class CheckoutController extends Controller
                             'coupon_code' => $couponModel->code
                         ]);
 
-                        // Increment used count for the coupon
                         $couponModel->increment('used');
                         Log::debug('Incremented coupon usage', [
                             'coupon_id' => $couponModel->id,
