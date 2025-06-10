@@ -98,87 +98,96 @@
             </ul>
         </div>
         
-        <div class="md:col-span-2 bg-white rounded-lg shadow p-4">
-            {{-- ĐÃ XÓA FORM BỌC NGOÀI GÂY LỖI --}}
+       <div class="md:col-span-2 bg-white rounded-lg shadow p-4">
 
-            @foreach($orders as $orderId => $items)
-                @php
-                    $firstItem = $items->first(); // dùng để lấy thông tin đơn hàng chung
-                    $status = $firstItem->order->status;
-                    $payStatus = $firstItem->order->pay_status;
-                    $badgeColor = match($status) {
-                        'completed' => 'bg-green-100 text-green-700',
-                        'processing' => 'bg-yellow-100 text-yellow-700',
-                        'cancelled' => 'bg-red-100 text-red-700',
-                        default => 'bg-gray-100 text-gray-700',
-                    };
-                @endphp
+    @foreach($orders as $orderId => $items)
+        @php
+            $firstItem = $items->first();
+            $order = $firstItem ? $firstItem->order : null;
 
-                <div class="product-item flex flex-col border p-4 rounded-lg bg-white shadow-sm gap-4 mb-4" data-status="{{ $status }}" data-pay-status="{{ $payStatus }}">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-lg font-semibold">Mã đơn hàng: {{ $orderId }}</h2>
-                        <span class="status-badge inline-block {{ $badgeColor }} text-sm font-semibold px-3 py-2 rounded-full">
-                            {{ ucfirst($status) }}
-                        </span>
-                    </div>
+            $status = $order ? $order->status : 'unknown'; 
+            $payStatus = $order ? $order->pay_status : 'unknown'; 
+            $badgeColor = match($status) {
+                'completed' => 'bg-green-100 text-green-700',
+                'processing' => 'bg-yellow-100 text-yellow-700',
+                'cancelled' => 'bg-red-100 text-red-700',
+                default => 'bg-gray-100 text-gray-700',
+            };
+        @endphp
 
-                    @if ($status === 'cancelled' && $firstItem->order->cancel_reason)
-                        <p class="text-sm text-red-700 mt-2"><strong>Lý do hủy:</strong> {{ $firstItem->order->cancel_reason }}</p>
-                    @endif
+        <div class="product-item flex flex-col border p-4 rounded-lg bg-white shadow-sm gap-4 mb-4" data-status="{{ $status }}" data-pay-status="{{ $payStatus }}">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-semibold">Mã đơn hàng: {{ $orderId }}</h2>
+                <span class="status-badge inline-block {{ $badgeColor }} text-sm font-semibold px-3 py-2 rounded-full">
+                    {{ ucfirst($status) }}
+                </span>
+            </div>
 
+            @if ($status === 'cancelled' && $order && $order->cancel_reason)
+                <p class="text-sm text-red-700 mt-2"><strong>Lý do hủy:</strong> {{ $order->cancel_reason }}</p>
+            @endif
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        @foreach($items as $item)
-                            @php
-                                $image = $item->product->image
-                                    ? asset('storage/uploads/' . $item->product->image)
-                                    : 'https://via.placeholder.com/150x150.png?text=Product';
-                                $toppingNames = [];
-                                if (!empty($item->topping_id)) {
-                                    $toppingIds = explode(',', trim($item->topping_id));
-                                    foreach ($toppingIds as $id) {
-                                        $id = (int)$id;
-                                        if (isset($toppings[$id])) {
-                                            $toppingNames[] = $toppings[$id]->topping;
-                                        }
-                                    }
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                @foreach($items as $item)
+                    @php
+                        $image = $item->product->image
+                            ? asset('storage/uploads/' . $item->product->image)
+                            : 'https://via.placeholder.com/150x150.png?text=Product';
+                        $toppingNames = [];
+                        if (!empty($item->topping_id)) {
+                            $toppingIds = explode(',', trim($item->topping_id));
+                            foreach ($toppingIds as $id) {
+                                $id = (int)$id;
+                                if (isset($toppings[$id])) {
+                                    $toppingNames[] = $toppings[$id]->topping;
                                 }
-                            @endphp
+                            }
+                        }
+                    @endphp
 
-                            <div class="flex gap-4 border rounded p-3">
-                                <img src="{{ $image }}" alt="{{ $item->product_name }}" class="w-24 h-24 rounded object-cover">
-                                <div class="flex-1 space-y-1">
-                                    <h3 class="font-semibold">{{ $item->product_name }}</h3>
-                                    <p>Số lượng: {{ $item->quantity }}</p>
-                                    <p>Giá: {{ number_format($item->product_price, 0, ',', '.') }}đ</p>
-                                    <p>Tổng: {{ number_format($item->total, 0, ',', '.') }}đ</p>
-                                    <p>Size: {{ $item->size->size ?? 'Không có' }}</p>
-                                    <p>Topping: {{ !empty($toppingNames) ? implode(', ', $toppingNames) : 'Không có' }}</p>
-                                </div>
-                            </div>
-                        @endforeach
+                    <div class="flex gap-4 border rounded p-3">
+                        <img src="{{ $image }}" alt="{{ $item->product_name }}" class="w-24 h-24 rounded object-cover">
+                        <div class="flex-1 space-y-1">
+                            <h3 class="font-semibold">{{ $item->product_name }}</h3>
+                            <p>Số lượng: {{ $item->quantity }}</p>
+                            <p>Giá: {{ number_format($item->product_price, 0, ',', '.') }}đ</p>
+                            <p>Tổng: {{ number_format($item->total, 0, ',', '.') }}đ</p> 
+                            <p>Size: {{ $item->size->size ?? 'Không có' }}</p>
+                            <p>Topping: {{ !empty($toppingNames) ? implode(', ', $toppingNames) : 'Không có' }}</p>
+                        </div>
                     </div>
+                @endforeach
 
-                    <div class="mt-4 flex justify-end gap-2">
-                    @if($status === 'completed' || $status === 'cancelled')
-                    <form method="POST" action="{{ route('client.order.reorder', $firstItem->order_id) }}">
-                        @csrf
-                        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-                            Mua lại
-                        </button>
-                    </form>
-                    @endif
+            </div>
 
-                    @if($status === 'pending')
-                    <button type="button" class="cancel-order bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                            data-id="{{ $orderId }}">
-                        Hủy đơn
+            @if($order)
+                <div class="mt-4 pt-4 border-t">
+                    <h2 class="text-right text-base">Phí vận chuyển: {{ number_format($order->shipping_fee, 0, ',', '.') }}đ</h2>
+                    <h2 class="text-right text-base">Giảm giá mã: -{{ number_format($order->coupon_total_discount, 0, ',', '.') }}đ</h2>
+                    <h2 class="text-right font-bold text-xl text-red-600">Tổng cộng: {{ number_format($order->total, 0, ',', '.') }}đ</h2>
+                </div>
+            @endif
+
+            <div class="mt-4 flex justify-end gap-2">
+                @if($status === 'completed' || $status === 'cancelled')
+                <form method="POST" action="{{ route('client.order.reorder', $orderId) }}"> 
+                    @csrf
+                    <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                        Mua lại
                     </button>
-                    @endif
-                </div>
-                </div>
-            @endforeach
+                </form>
+                @endif
+
+                @if($status === 'pending')
+                <button type="button" class="cancel-order bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                            data-id="{{ $orderId }}">
+                    Hủy đơn
+                </button>
+                @endif
+            </div>
         </div>
+    @endforeach
+</div>
     </div>
 </div>
 <div id="cancelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">

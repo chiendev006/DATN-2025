@@ -18,11 +18,17 @@ class Order extends Model
         'address_id',
         'address_detail',
         'district_name',
+        'shipping_fee',
         'payment_method',
         'status',
         'cancel_reason',
         'total',
         'transaction_id',
+        'pay_status',
+        'coupon_summary',
+        'coupon_total_discount',
+        'created_at',
+        'updated_at',
     ];
     public function orderDetails()
 {

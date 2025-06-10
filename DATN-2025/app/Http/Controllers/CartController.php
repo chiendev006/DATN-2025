@@ -79,12 +79,10 @@ class CartController extends Controller
             }
         }
 
-        // Apply coupons and calculate discount
-        $this->applyCouponsToCart($subtotal, $discount, $coupons); // Refactored to a helper method
+        $this->applyCouponsToCart($subtotal, $discount, $coupons);
 
         $total = max(0, $subtotal - $discount);
 
-        // THÊM: Danh sách mã giảm giá
         $now = now();
 
         $availableCoupons = \App\Models\Coupon::where('is_active', true)
@@ -236,13 +234,12 @@ class CartController extends Controller
             sort($toppingIds);
             $toppingIdsString = implode(',', $toppingIds);
 
-            // Ensure key is derived from product_id, size_id, topping_ids if not directly provided
             if (!$key && $productId && $sizeId !== null) {
                 $key = $this->_makeCartKey($productId, $sizeId, $toppingIds);
             }
 
-            $subtotal = 0; // Initialize subtotal
-            $lineTotal = 0; // Initialize lineTotal
+            $subtotal = 0;
+            $lineTotal = 0; 
 
             if (Auth::check()) {
                 $cart = Cart::where('user_id', Auth::id())->first();
@@ -280,8 +277,7 @@ class CartController extends Controller
                 $cartDetail->quantity = $newQuantity;
                 $cartDetail->save();
 
-                // Recalculate subtotal for authenticated user
-                $subtotal = $this->_updateCartTotal($cart); // This method should calculate and update cart->total
+                $subtotal = $this->_updateCartTotal($cart); 
 
                 $product = $cartDetail->product;
                 $size = $cartDetail->size;
@@ -311,7 +307,6 @@ class CartController extends Controller
 
                 session(['cart' => $cartSession]);
 
-                // Recalculate subtotal for session cart
                 $subtotal = collect($cartSession)->sum(function($item) {
                     $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
                     return $unitPrice * $item['quantity'];
@@ -319,14 +314,12 @@ class CartController extends Controller
                 $lineTotal = $cartSession[$key]['price'];
             }
 
-            // --- Logic kiểm tra và gỡ bỏ mã giảm giá nếu không còn đủ điều kiện ---
             $coupons = session('coupons', []);
             $discount = 0;
             $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons); // Re-evaluate and update coupons
 
             $total = max(0, $subtotal - $discount);
 
-            // Cập nhật lại tổng trong DB nếu là người dùng đăng nhập (đảm bảo đồng bộ)
             if (Auth::check()) {
                 $cart->total = $total;
                 $cart->save();
@@ -336,12 +329,12 @@ class CartController extends Controller
                 'success' => true,
                 'message' => 'Đã cập nhật số lượng sản phẩm.',
                 'key' => $key,
-                'quantity' => $newQuantity, // Sử dụng $newQuantity hoặc $cartDetail->quantity
+                'quantity' => $newQuantity,
                 'line_total' => $lineTotal,
                 'subtotal' => $subtotal,
-                'discount' => $discount, // Pass discount
+                'discount' => $discount, 
                 'total' => $total,
-                'applied_coupons' => $updatedCoupons // Pass updated coupons (only valid ones)
+                'applied_coupons' => $updatedCoupons
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -374,7 +367,7 @@ class CartController extends Controller
             sort($toppingIds);
             $toppingIdsString = implode(',', $toppingIds);
 
-            $subtotal = 0; // Initialize subtotal
+            $subtotal = 0; 
 
             if (Auth::check()) {
                 $cart = Cart::where('user_id', Auth::id())->first();
@@ -406,7 +399,7 @@ class CartController extends Controller
 
                 if ($cartDetail) {
                     $cartDetail->delete();
-                    $subtotal = $this->_updateCartTotal($cart); // Get updated subtotal
+                    $subtotal = $this->_updateCartTotal($cart); 
                 } else {
                     return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
                 }
@@ -425,14 +418,12 @@ class CartController extends Controller
                 }
             }
 
-            // --- Logic kiểm tra và gỡ bỏ mã giảm giá nếu không còn đủ điều kiện (sau khi xóa item) ---
             $coupons = session('coupons', []);
             $discount = 0;
-            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons); // Re-evaluate and update coupons
+            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons); 
 
             $total = max(0, $subtotal - $discount);
 
-            // Cập nhật lại tổng trong DB nếu là người dùng đăng nhập
             if (Auth::check()) {
                 $cart->total = $total;
                 $cart->save();
@@ -443,9 +434,9 @@ class CartController extends Controller
                 'message' => 'Đã xóa sản phẩm khỏi giỏ hàng.',
                 'key' => $key,
                 'subtotal' => $subtotal,
-                'discount' => $discount, // Pass discount
+                'discount' => $discount, 
                 'total' => $total,
-                'applied_coupons' => $updatedCoupons // Pass updated coupons (only valid ones)
+                'applied_coupons' => $updatedCoupons
             ]);
 
         } catch (\Exception $e) {
@@ -465,7 +456,7 @@ class CartController extends Controller
     {
         $total = 0;
         foreach ($cart->cartdetails as $detail) {
-            if (!$detail->product) continue; // Skip if product doesn't exist
+            if (!$detail->product) continue; 
 
             $size = $detail->size;
             $basePrice = $size ? $size->price : $detail->product->price;
@@ -481,10 +472,10 @@ class CartController extends Controller
             $total += ($basePrice + $toppingPrice) * $detail->quantity;
         }
 
-        $cart->total = $total; // Update cart total (subtotal)
+        $cart->total = $total; 
         $cart->save();
 
-        return $total; // Return the calculated subtotal
+        return $total; 
     }
 
     /**
@@ -497,7 +488,7 @@ class CartController extends Controller
      */
     private function applyCouponsToCart(float $subtotal, float &$discount, array $currentCoupons)
     {
-        $discount = 0; // Reset discount for recalculation
+        $discount = 0; 
         $updatedCoupons = [];
         $now = now();
 
@@ -509,36 +500,34 @@ class CartController extends Controller
                 })
                 ->first();
 
-            // Check if coupon is still valid based on all conditions
             $isValid = true;
             if (!$coupon) {
-                $isValid = false; // Coupon not found or inactive/expired in DB
+                $isValid = false; 
             } elseif ($coupon->usage_limit && $coupon->used >= $coupon->usage_limit) {
-                $isValid = false; // Coupon usage limit reached
+                $isValid = false; 
             } elseif ($coupon->user_id && Auth::check() && Auth::id() !== $coupon->user_id) {
-                $isValid = false; // Coupon is specific to another user
+                $isValid = false; 
             } elseif ($coupon->user_id && !Auth::check()) {
-                $isValid = false; // Coupon is for a logged-in user, but current user is guest
+                $isValid = false; 
             } elseif ($coupon->min_order_value && $subtotal < $coupon->min_order_value) {
-                $isValid = false; // Cart subtotal doesn't meet minimum order value
+                $isValid = false; 
             }
 
             if ($isValid) {
-                // If valid, add to updated list and calculate discount
                 if ($coupon->type === 'percent') {
                     $discount += ($subtotal * $coupon->discount) / 100;
                 } elseif ($coupon->type === 'fixed') {
                     $discount += $coupon->discount;
                 }
-                $updatedCoupons[$coupon->code] = [ // Store coupon data from session (or fresh from DB if needed, but session data is usually enough if 'discount' and 'type' are consistent)
+                $updatedCoupons[$coupon->code] = [
                     'code' => $coupon->code,
                     'discount' => $coupon->discount,
                     'type' => $coupon->type
                 ];
             }
         }
-        session(['coupons' => $updatedCoupons]); // Update session with only valid coupons
-        return $updatedCoupons; // Return the list of valid coupons
+        session(['coupons' => $updatedCoupons]);
+        return $updatedCoupons;
     }
 
 
@@ -551,7 +540,7 @@ class CartController extends Controller
     public function applyCoupon(Request $request)
     {
         $code = $request->input('code');
-        $cartSubtotal = $request->input('subtotal', 0); // Get subtotal from frontend for initial check
+        $cartSubtotal = $request->input('subtotal', 0); 
 
         $coupon = Coupon::where('code', $code)
             ->where('is_active', true)
@@ -582,7 +571,7 @@ class CartController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Đơn hàng cần tối thiểu ' . number_format($coupon->min_order_value) . 'đ để áp dụng mã.',
-                'subtotal' => $cartSubtotal // Return current subtotal
+                'subtotal' => $cartSubtotal 
             ]);
         }
 
@@ -593,17 +582,15 @@ class CartController extends Controller
         ];
 
         $coupons = session('coupons', []);
-        $coupons[$coupon->code] = $couponData; // Add new coupon to session
+        $coupons[$coupon->code] = $couponData;
         session(['coupons' => $coupons]);
 
-        // Recalculate total after applying the new coupon (and re-validating all existing ones)
         $discount = 0;
-        // Re-calculate the actual subtotal from backend data for accurate coupon application
         $actualSubtotal = 0;
         if (Auth::check()) {
             $cart = Cart::where('user_id', Auth::id())->first();
             if ($cart) {
-                $actualSubtotal = $this->_updateCartTotal($cart); // Get current subtotal from DB
+                $actualSubtotal = $this->_updateCartTotal($cart); 
             }
         } else {
             $cartSession = session('cart', []);
@@ -612,18 +599,18 @@ class CartController extends Controller
                 return $unitPrice * $item['quantity'];
             });
         }
-        $updatedCoupons = $this->applyCouponsToCart($actualSubtotal, $discount, $coupons); // Update discount based on new coupon and re-validate all
+        $updatedCoupons = $this->applyCouponsToCart($actualSubtotal, $discount, $coupons);
 
         $total = max(0, $actualSubtotal - $discount);
 
         return response()->json([
             'success' => true,
             'message' => 'Áp dụng mã thành công.',
-            'coupon' => $couponData, // The newly applied coupon
-            'subtotal' => $actualSubtotal, // Current subtotal
-            'discount' => $discount,     // Total discount with the new coupon
-            'total' => $total,           // New total
-            'applied_coupons' => $updatedCoupons // Return all currently applied and valid coupons
+            'coupon' => $couponData,
+            'subtotal' => $actualSubtotal, 
+            'discount' => $discount,     
+            'total' => $total,           
+            'applied_coupons' => $updatedCoupons 
         ]);
     }
 
@@ -640,14 +627,12 @@ class CartController extends Controller
 
         if (isset($coupons[$code])) {
             unset($coupons[$code]);
-            session(['coupons' => $coupons]); // Update session after removal
-
-            // Re-calculate cart totals
+            session(['coupons' => $coupons]);
             $subtotal = 0;
             if (Auth::check()) {
                 $cart = Cart::where('user_id', Auth::id())->first();
                 if ($cart) {
-                    $subtotal = $this->_updateCartTotal($cart); // Get updated subtotal from DB
+                    $subtotal = $this->_updateCartTotal($cart); 
                 }
             } else {
                 $cartSession = session('cart', []);
@@ -658,7 +643,7 @@ class CartController extends Controller
             }
 
             $discount = 0;
-            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons); // Re-evaluate all remaining coupons
+            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons); 
             $total = max(0, $subtotal - $discount);
 
             return response()->json([
@@ -667,7 +652,7 @@ class CartController extends Controller
                 'subtotal' => $subtotal,
                 'discount' => $discount,
                 'total' => $total,
-                'applied_coupons' => $updatedCoupons // Return the updated list of applied coupons
+                'applied_coupons' => $updatedCoupons 
             ]);
         }
 

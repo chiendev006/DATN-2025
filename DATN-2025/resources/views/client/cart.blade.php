@@ -183,7 +183,7 @@
                                         <p class="coupon-expiry">HSD: {{ \Carbon\Carbon::parse($coupon->expires_at)->format('d/m/Y') }}</p>
                                     @endif
                                     @if(!is_null($coupon->used) && !is_null($coupon->usage_limit))
-                                        <p class="coupon-usage">Đã dùng {{ $coupon->used }} / {{ $coupon->usage_limit }} lần</p>
+                                        <p class="coupon-usage">Còn lại: {{ $coupon->used }} / {{ $coupon->usage_limit }} lần</p>
                                     @endif
                                 </div>
                                 <button type="button" class="apply-coupon-btn" data-code="{{ $coupon->code }}">Áp dụng</button>

@@ -152,12 +152,11 @@
                                 </div>
                                 <div class="shop-checkout-row">
                                     @php
-                                        // subtotal được tính từ controller
                                         $displayItems = Auth::check() ? $items : $cart;
                                     @endphp
 
                                     @if(empty($displayItems))
-                                        <p>Giỏ hàng của bạn đang trống. <a href="{{ route('shop') }}">Quay lại cửa hàng</a></p>
+                                        <p>Giỏ hàng của bạn đang trống. <a href="{{ route('shop.index') }}">Quay lại cửa hàng</a></p>
                                     @else
                                         @foreach($displayItems as $item)
                                             @php
