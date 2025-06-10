@@ -30,7 +30,9 @@ use App\Http\Controllers\OrderController;
         use App\Http\Controllers\Staff\StaffController;
         use App\Http\Controllers\VNPayController;
         use App\Http\Controllers\Staff\AuthenController;
-        use App\Http\ViewComposers\CartComposer;
+use App\Http\Controllers\Staff\BartenderController;
+use App\Http\ViewComposers\CartComposer;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('login', [AuthenticationController::class, 'login'])->name('login');
 Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
@@ -103,7 +105,7 @@ Route::post('admin/login', [AuthController::class, 'postLogin'])->name('admin.po
 Route::get('admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
 // Group Admin Route
-Route::prefix('admin')->middleware(['auth', 'check.valid.id', 'checkAdmin'])->group(function () {
+Route::prefix('admin')->middleware(['auth', 'check.valid.id'  ])->group(function () {
         // Trang chủ Admin
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
@@ -175,6 +177,7 @@ Route::prefix('admin')->middleware(['auth', 'check.valid.id', 'checkAdmin'])->gr
                 Route::post('/update/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
                 Route::get('/delete/{id}', [AdminStaffController::class, 'delete'])->name('admin.staff.delete');
         });
+
 
         // Ảnh sản phẩm
         Route::prefix('product-images')->group(function () {
@@ -250,6 +253,25 @@ Route::prefix('staff')->middleware('checkStaff')->group(function () {
         Route::get('/orderdetailtoday', [StaffController::class, 'orderdetailtoday'])->name('staff.orderdetailtoday');
         Route::get('/staff/products/search', [StaffController::class, 'searchProducts'])->name('staff.products.search');
 });
+
+Route::prefix('bartender')->middleware('checkStaff')->group(function () {
+    Route::get('/', [BartenderController::class, 'index'])->name('bartender.index');
+    Route::get('/create', [BartenderController::class, 'create'])->name('bartender.create');
+    Route::post('/store', [BartenderController::class, 'store'])->name('bartender.store');
+    Route::get('/edit/{id}', [BartenderController::class, 'edit'])->name('bartender.edit');
+    Route::post('/update/{id}', [BartenderController::class, 'update'])->name('bartender.update');
+    Route::get('/delete/{id}', [BartenderController::class, 'delete'])->name('bartender.delete');
+});
+
+// Test route for middleware
+Route::get('/test-middleware', function() {
+    $guard = Auth::guard('staff');
+    if ($guard->check()) {
+        $user = $guard->user();
+        return "Logged in as: " . $user->name . " (Role: " . $user->role . ")";
+    }
+    return "Not logged in";
+})->middleware('checkStaff');
 
 // VNPAY
 Route::get('/vnpay/return', [App\Http\Controllers\VNPayController::class, 'vnpayReturn'])->name('vnpay.return');

@@ -102,6 +102,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Tên khách hàng</th>
+                                        <th>Số điện thoại</th>
                                         <th>Trạng thái</th>
                                         <th>Tổng tiền</th>
                                         <th>Trạng thái thanh toán</th>
@@ -120,6 +121,7 @@
                                     <tr>
                                         <td>{{ $order->id }}</td>
                                         <td>{{ $order->name }}</td>
+                                        <td>{{ $order->phone }}</td>
                                         <td>
                                             @if ($order->status == 'pending' || $order->status == 0)
                                                 <span style="color: orange;">Chờ xử lý</span>
@@ -146,6 +148,11 @@
                                             @endif
                                         </td>
                                         <td>{{ $order->created_at }}</td>
+                                     @if($order->status == 'cancelled' || $order->pay_status == 2)
+                                     <td>{{ $order->cancel_reason }}</td>
+                                     @else
+                                     <td></td>
+                                     @endif
                                         <td>
                                             <button type="button" class="btn-action btn-view"
                                                 onclick="openOrderModal(this)"
@@ -159,6 +166,7 @@
                                                 data-coupon_total_discount="{{ number_format($order->coupon_total_discount ?? 0, 0, ',', '.') }} đ"
                                                 data-address_detail="{{ $order->district_name ? $order->district_name . ', ' : '' }}{{ $order->address_detail }}"
                                                 data-product_total="{{ number_format(($order->total ?? 0) - ($order->shipping_fee ?? 0) - ($order->coupon_total_discount ?? 0), 0, ',', '.') }} đ"
+                                                data-cancel_reason="{{ $order->cancel_reason }}"
                                             >Xem</button>
                                             <a href="{{ route('admin.order.delete', $order->id) }}" class="btn-action btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</a>
                                         </td>
@@ -195,7 +203,7 @@
   <div  style="background:#fff; margin:2% auto; padding:20px; border-radius:8px; width:800px; position:relative;">
     <span onclick="closeOrderModal()" style="position:absolute; top:10px; right:20px; font-size:24px; cursor:pointer;">&times;</span>
     <h3>Thông tin hóa đơn</h3>
-    <form id="orderForm" method="POST" action="{{ route('admin.order.update', ['id' => 0]) }}">
+    <form id="orderForm" method="POST" action="{{ route('admin.order.update', ['id' => 0]) }}" onsubmit="return validateForm()">
       @csrf
       <div class="row">
 
@@ -299,6 +307,14 @@
         <input type="text" class="form-control" name="coupon_total_discount" id="modal_coupon_total_discount" readonly />
       </div>
       </div>
+
+      <div class="field-wrapper col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" id="cancel_reason_container" style="display:none;">
+        <div style="margin-bottom:10px;">
+          <div class="field-placeholder">Lý do hủy <span style="color:red;">*</span></div>
+          <input type="text" class="form-control" name="cancel_reason" id="modal_cancel_reason" />
+        </div>
+      </div>
+
       <button type="submit" class="btn-action btn-view">Cập nhật đơn hàng</button>
         </div>
 
@@ -327,6 +343,7 @@ function openOrderModal(btn) {
   document.getElementById('modal_total').value = btn.getAttribute('data-total');
   document.getElementById('modal_transaction_id').value = btn.getAttribute('data-transaction_id');
   document.getElementById('modal_pay_status').value = btn.getAttribute('data-pay_status');
+  document.getElementById('modal_cancel_reason').value = btn.getAttribute('data-cancel_reason') || '';
 
   // Thêm các trường mới
   document.getElementById('modal_shipping_fee').value = btn.getAttribute('data-shipping_fee') || '0 đ';
@@ -335,6 +352,13 @@ function openOrderModal(btn) {
   document.getElementById('modal_product_total').value = btn.getAttribute('data-product_total') || '0 đ';
 
   document.getElementById('orderForm').action = "{{ url('admin/order/update') }}/" + btn.getAttribute('data-id');
+
+  // Kiểm tra trạng thái để hiển thị ô lí do hủy
+  checkCancelFields();
+
+  // Thêm event listeners cho các select
+  document.getElementById('modal_status').addEventListener('change', checkCancelFields);
+  document.getElementById('modal_pay_status').addEventListener('change', checkCancelFields);
 
   // Lấy sản phẩm của đơn hàng
   var orderId = btn.getAttribute('data-id');
@@ -373,5 +397,34 @@ function openOrderModal(btn) {
 }
 function closeOrderModal() {
   document.getElementById('orderModal').style.display = 'none';
+}
+
+// Kiểm tra và hiển thị ô lí do hủy
+function checkCancelFields() {
+  const status = document.getElementById('modal_status').value;
+  const payStatus = document.getElementById('modal_pay_status').value;
+  const cancelReasonContainer = document.getElementById('cancel_reason_container');
+
+  if (status === 'cancelled' || payStatus === '2') {
+    cancelReasonContainer.style.display = 'block';
+    document.getElementById('modal_cancel_reason').required = true;
+  } else {
+    cancelReasonContainer.style.display = 'none';
+    document.getElementById('modal_cancel_reason').required = false;
+  }
+}
+
+// Validate form trước khi submit
+function validateForm() {
+  const status = document.getElementById('modal_status').value;
+  const payStatus = document.getElementById('modal_pay_status').value;
+  const cancelReason = document.getElementById('modal_cancel_reason').value;
+
+  if ((status === 'cancelled' || payStatus === '2') && !cancelReason.trim()) {
+    alert('Vui lòng nhập lý do hủy đơn hàng');
+    document.getElementById('modal_cancel_reason').focus();
+    return false;
+  }
+  return true;
 }
 </script>

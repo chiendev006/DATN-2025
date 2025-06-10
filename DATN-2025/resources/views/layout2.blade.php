@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -148,6 +147,35 @@
       <!-- Start Header Part -->
 
       <header>
+        <!-- Flash Message Display -->
+        @if(session('message'))
+        <div class="alert-container" style="position: fixed; top: 80px; right: 20px; z-index: 9999; max-width: 350px;">
+          <div class="alert alert-warning alert-dismissible fade show" role="alert" style="background-color: #fff3cd; color: #856404; border-color: #ffeeba; padding: 12px 20px; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            <strong>Thông báo!</strong> {{ session('message') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="position: absolute; top: 0; right: 0; padding: 12px 20px; background: none; border: none; cursor: pointer;">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        </div>
+        <script>
+          // Auto close alert after 5 seconds
+          setTimeout(function() {
+            document.querySelector('.alert').classList.remove('show');
+            setTimeout(function() {
+              document.querySelector('.alert-container').remove();
+            }, 500);
+          }, 5000);
+
+          // Close on click
+          document.querySelector('.close').addEventListener('click', function() {
+            document.querySelector('.alert').classList.remove('show');
+            setTimeout(function() {
+              document.querySelector('.alert-container').remove();
+            }, 500);
+          });
+        </script>
+        @endif
+
         <div class="header-part header-reduce sticky">
           <div class="header-nav">
             <div class="container">
