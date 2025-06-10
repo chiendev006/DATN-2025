@@ -26,6 +26,7 @@ class OrderController extends Controller
         $order = \App\Models\Order::findOrFail($id);
         $order->pay_status = $request->input('pay_status');
         $order->status = $request->input('status');
+        $order->cancel_reason = $request->input('cancel_reason');
         $order->save();
         return redirect()->route('admin.order.index')->with('success', 'Cập nhật đơn hàng thành công!');
     }
@@ -113,7 +114,8 @@ class OrderController extends Controller
         $perPage = $request->input('per_page', 10);
         $transactionId = $request->input('transaction_id');
         $orders = Order::select('orders.*')
-            ->where('transaction_id', 'like', "%$transactionId%")
+            ->where('name', 'like', "%$transactionId%")
+            ->orWhere('phone', 'like', "%$transactionId%")
             ->paginate($perPage);
         return view('admin.order.index', ['orders' => $orders]);
     }

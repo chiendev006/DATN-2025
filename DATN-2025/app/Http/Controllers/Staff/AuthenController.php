@@ -19,12 +19,29 @@ class AuthenController extends Controller
             'password' => $request->password,
         ];
         if (Auth::guard('staff')->attempt($data)) {
-            if (Auth::guard('staff')->user()->role == 0 || Auth::guard('staff')->user()->role == 21) {
+            $role = Auth::guard('staff')->user()->role;
+
+            // Admin role (1) can access any route
+            if ($role == 1) {
+                // Redirect to staff dashboard by default
                 return redirect()->route('staff.index');
-            }else{
-                return redirect()->route('danhmuc1.index');
             }
-        }else{
+            // Staff role (21) goes to staff dashboard
+            else if ($role == 21) {
+                return redirect()->route('staff.index');
+            }
+            // Bartender role (22) goes to bartender dashboard
+            else if ($role == 22) {
+                return redirect()->route('bartender.index');
+            }
+            // Other roles redirect to login with message
+            else {
+                Auth::guard('staff')->logout();
+                return redirect()->route('staff.login')->with([
+                    'message' => 'Tài khoản của bạn không có quyền truy cập.',
+                ]);
+            }
+        } else {
             return redirect()->back()->with([
                 'message' => 'Tài khoản hoặc mật khẩu không đúng',
             ]);

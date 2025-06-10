@@ -373,12 +373,12 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!confirm('Xóa sản phẩm này khỏi giỏ hàng?')) return;
 
             const row = this.closest('tr');
-            const key = this.dataset.key; 
+            const key = this.dataset.key;
             const productId = row.querySelector('.quantity-input').dataset.product_id;
             const sizeId = row.querySelector('.quantity-input').dataset.size_id;
             const toppingIds = row.querySelector('.quantity-input').dataset.topping_ids;
 
-            if (!key && (!productId || sizeId === undefined)) { 
+            if (!key && (!productId || sizeId === undefined)) {
                 console.error('Missing key or product identifiers for remove item');
                 return;
             }
@@ -426,7 +426,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             document.querySelector('section.shop-cart .container').appendChild(emptyCart);
                         }
                     }
-                    updateUIElements(data); 
+                    updateUIElements(data);
                 } else {
                     alert(data.message || "Không thể xóa sản phẩm.");
                 }
@@ -480,7 +480,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (data.success) {
                 input.value = data.quantity;
-                updateUIElements(data); 
+                updateUIElements(data);
                 return true;
             } else {
                 input.value = oldQuantity;
@@ -509,7 +509,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const input = this.parentElement.querySelector('.quantity-input');
             if (!input) return;
             const oldValue = parseInt(input.value) || 1;
-            const minValue = parseInt(input.min) || 1; 
+            const minValue = parseInt(input.min) || 1;
             if (oldValue > minValue) {
                 updateQuantity(input, oldValue - 1);
             }

@@ -12,6 +12,10 @@ class AuthenticationController extends Controller
 {
     public function login()
     {
+        // Check if user is already logged in
+        if (Auth::check()) {
+            return redirect('/')->with('message', 'Bạn đã đăng nhập. Vui lòng đăng xuất trước khi đăng nhập tài khoản khác.');
+        }
         return view('client.login2');
     }
     public function postLogin(Request $request)
@@ -25,6 +29,7 @@ class AuthenticationController extends Controller
             'password.min' => 'Mat khau phai it nhat 6 ki tu',
         ]);
         if (Auth::guard('web')->attempt($data)) {
+
             return redirect()->intended('/');
         }else{
             return redirect()->back()->with([
