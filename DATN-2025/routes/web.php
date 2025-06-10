@@ -21,7 +21,8 @@
         use App\Http\Controllers\ShowproductController;
         use App\Http\Controllers\ResetPasswordController;
         use App\Http\Controllers\admin\AuthController;
-        use App\Http\Controllers\OrderController;
+use App\Http\Controllers\admin\CouponController;
+use App\Http\Controllers\OrderController;
         use App\Http\Controllers\admin\PayrollController;
         use App\Http\Controllers\CheckoutController;
         use App\Http\Controllers\MyaccountController;
@@ -102,7 +103,7 @@ Route::post('admin/login', [AuthController::class, 'postLogin'])->name('admin.po
 Route::get('admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
 // Group Admin Route
-Route::prefix('admin')->middleware(['auth', 'check.valid.id'])->group(function () {
+Route::prefix('admin')->middleware(['auth', 'check.valid.id', 'checkAdmin'])->group(function () {
         // Trang chủ Admin
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
@@ -135,6 +136,15 @@ Route::prefix('admin')->middleware(['auth', 'check.valid.id'])->group(function (
                 Route::get('/filter-category', [SanphamController::class, 'filterByCategory'])->name('filterCategory');
         });
 
+        // Coupon
+        Route::prefix('coupon')->group(function () {
+                Route::get('/', [CouponController::class, 'index'])->name('coupon.index');
+                Route::get('/create', [CouponController::class, 'create'])->name('coupon.create');
+                Route::post('/store', [CouponController::class, 'store'])->name('coupon.store');
+                Route::get('/edit/{id}', [CouponController::class, 'edit'])->name('coupon.edit');
+                Route::post('/update/{id}', [CouponController::class, 'update'])->name('coupon.update');
+                Route::get('/delete/{id}', [CouponController::class, 'delete'])->name('coupon.delete');
+        });
 
         // Sản phẩm
         Route::prefix('sanpham')->group(function () {

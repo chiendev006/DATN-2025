@@ -104,10 +104,9 @@
                                         <th>Tên khách hàng</th>
                                         <th>Trạng thái</th>
                                         <th>Tổng tiền</th>
-                                        <th>Mã giao dịch</th>
                                         <th>Trạng thái thanh toán</th>
                                         <th>Ngày tạo</th>
-                                        <th>Ngày cập nhật</th>
+                                        <th>Lí do hủy</th>
                                         <th>Hành động</th>
                                     </tr>
                                 </thead>
@@ -135,7 +134,6 @@
                                             @endif
                                         </td>
                                         <td>{{ number_format($order->total, 0, ',', '.') }} đ</td>
-                                        <td>{{ $order->transaction_id }}</td>
                                         <td>
                                             @if ($order->pay_status == 0)
                                                 <span style="color: orange;">Chờ thanh toán</span>
@@ -148,7 +146,6 @@
                                             @endif
                                         </td>
                                         <td>{{ $order->created_at }}</td>
-                                        <td>{{ $order->updated_at }}</td>
                                         <td>
                                             <button type="button" class="btn-action btn-view"
                                                 onclick="openOrderModal(this)"
@@ -156,10 +153,8 @@
                                                 data-name="{{ $order->name }}"
                                                 data-status="@if ($order->status == 'pending' || $order->status == 0)Chờ xử lý@elseif ($order->status == 'processing' || $order->status == 1)Đã xác nhận @elseif ($order->status == 'completed' || $order->status == 3)Hoàn thành @elseif ($order->status == 'cancelled' || $order->status == 4)Đã hủy @else{{ $order->status }}@endif"
                                                 data-total="{{ number_format($order->total, 0, ',', '.') }} đ"
-                                                data-transaction_id="{{ $order->transaction_id }}"
                                                 data-pay_status="{{ $order->pay_status }}"
                                                 data-created_at="{{ $order->created_at }}"
-                                                data-updated_at="{{ $order->updated_at }}"
                                                 data-shipping_fee="{{ number_format($order->shipping_fee ?? 0, 0, ',', '.') }} đ"
                                                 data-coupon_total_discount="{{ number_format($order->coupon_total_discount ?? 0, 0, ',', '.') }} đ"
                                                 data-address_detail="{{ $order->district_name ? $order->district_name . ', ' : '' }}{{ $order->address_detail }}"
