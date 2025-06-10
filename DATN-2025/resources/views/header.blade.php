@@ -48,7 +48,7 @@
 	</head>
 	<body>
 @php
-    $isHomeTab = request()->is('admin') ||request()->is('admin/contact') ||request()->is('admin/coupon') || request()->is('admin/danhmuc*')|| request()->is('admin/blogs*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*');
+    $isHomeTab = request()->is('admin') ||request()->is('admin/contact') ||request()->is('admin/address') ||request()->is('admin/coupon') || request()->is('admin/danhmuc*')|| request()->is('admin/blogs*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*');
     $isAuthTab = request()->is('admin/staff*') || request()->is('admin/payroll*');
 @endphp
 
@@ -128,6 +128,9 @@
 										</li>
 										<li>
 											<a href="{{ route('blogs.index') }}" class="{{ request()->is('admin/blogs*') ? 'current-page' : '' }}">Bài viết</a>
+										</li>
+                                        <li>
+											<a href="{{ route('address.index') }}" class="{{ request()->is('admin/address*') ? 'current-page' : '' }}">Ship</a>
 										</li>
 
 
