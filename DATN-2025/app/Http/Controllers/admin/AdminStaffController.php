@@ -13,11 +13,10 @@ class AdminStaffController extends Controller
     }
 
     /**
-     * Hiển thị danh sách nhân viên (user có role staff).
      */
     public function staffIndex(Request $request)
     {
-        $per_page = $request->input('per_page', 10); // Default to 10 items per page
+        $per_page = $request->input('per_page', 10); 
         $staffs = User::where('role', '21')
                      ->orWhere('role', '22')
                      ->paginate($per_page);

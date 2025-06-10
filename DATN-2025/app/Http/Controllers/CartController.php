@@ -296,13 +296,12 @@ class CartController extends Controller
                 }
                 $sanpham = Sanpham::find($cartSession[$key]['sanpham_id']);
                 $size = Size::find($cartSession[$key]['size_id']);
-                $productToppings = Product_topping::whereIn('id', (array)$cartSession[$key]['topping_ids'])->get();
-
                 $basePrice = $size ? $size->price : ($sanpham->price ?? 0);
-                $toppingPrice = $productToppings->sum('price');
+                $toppingPrice = array_sum($cartSession[$key]['topping_prices'] ?? []);
                 $unitPrice = $basePrice + $toppingPrice;
 
                 $cartSession[$key]['quantity'] = $newQuantity;
+                $cartSession[$key]['unit_price'] = $unitPrice;
                 $cartSession[$key]['price'] = $unitPrice * $newQuantity;
 
                 session(['cart' => $cartSession]);

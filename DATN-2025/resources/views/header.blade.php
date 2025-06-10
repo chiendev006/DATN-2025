@@ -121,7 +121,7 @@
 											<a href="{{ route('admin.order.index') }}" class="{{ request()->is('admin/order*') ? 'current-page' : '' }}">Đơn hàng</a>
 										</li>
 										<li>
-                                        <a href="{{ route('contact.index') }}" class="{{ request()->is('admin/contact*') ? 'current-page' : '' }}">Bình luận</a>
+                                        <a href="{{ route('contact.index') }}" class="{{ request()->is('admin/contact*') ? 'current-page' : '' }}">Hỗ trợ</a>
 										</li>
                                         <li>
                                         <a href="{{ route('coupon.index') }}" class="{{ request()->is('admin/coupon*') ? 'current-page' : '' }}">Mã giảm giá</a>
