@@ -122,12 +122,6 @@ class CheckoutController extends Controller
     public function process(Request $request)
     {
         try {
-            Log::info('Starting checkout process', [
-                'is_logged_in' => Auth::check(),
-                'request_data' => $request->all(),
-                'session_cart' => session()->get('cart', [])
-            ]);
-
             $request->validate([
                 'name' => 'required|string|max:255',
                 'phone_raw' => 'required|string|max:15', 
@@ -144,12 +138,6 @@ class CheckoutController extends Controller
 
             if (Auth::check()) {
                 $userCart = Cart::where('user_id', Auth::id())->first();
-                Log::info('Checking user cart', [
-                    'user_id' => Auth::id(),
-                    'cart_exists' => !is_null($userCart),
-                    'cart_id' => $userCart ? $userCart->id : null
-                ]);
-
                 if (!$userCart) {
                     throw new \Exception('Giỏ hàng không tồn tại');
                 }
@@ -157,15 +145,8 @@ class CheckoutController extends Controller
                 $cartDetails = Cartdetail::with(['product', 'size'])
                     ->where('cart_id', $userCart->id)
                     ->get();
-                Log::info('User cart details', [
-                    'cart_id' => $userCart->id,
-                    'cart_details_count' => $cartDetails->count(),
-                    'cart_details' => $cartDetails->toArray()
-                ]);
-
                 foreach ($cartDetails as $item) {
                     if (!$item->product) {
-                        Log::warning('Skipping cart item due to missing product', ['cart_detail_id' => $item->id]);
                         continue;
                     }
                     $productBasePrice = 0;
@@ -178,29 +159,18 @@ class CheckoutController extends Controller
                             ->first();
                         $productBasePrice = $minSizeAttribute->price ?? 0;
                     }
-
-
                     $toppingPrice = 0;
                     $toppingIds = [];
-
                     if (!empty($item->topping_id)) {
                         $toppingIdString = (string) $item->topping_id;
                         $toppingIds = array_map('intval', array_filter(array_map('trim', explode(',', $toppingIdString)))); // Sanitize input
-                        Log::debug('Processing topping IDs for user cart item', [
-                            'cart_detail_id' => $item->id,
-                            'topping_ids' => $toppingIds
-                        ]);
-
                         if (!empty($toppingIds)) {
                             $toppingPrice = Product_topping::whereIn('id', $toppingIds)->sum('price');
                         }
                     }
-
                     $unitPrice = $productBasePrice + $toppingPrice;
                     $itemTotal = $unitPrice * $item->quantity;
-
                     $total += $itemTotal;
-
                     $orderDetails[] = [
                         'product_id' => $item->product->id,
                         'product_name' => $item->product->name,
@@ -212,52 +182,22 @@ class CheckoutController extends Controller
                         'note' => $item->note ?? null,
                         'status' => 'pending',
                     ];
-                    Log::debug('Added order detail for user', [
-                        'product_id' => $item->product->id,
-                        'unit_price' => $unitPrice,
-                        'quantity' => $item->quantity,
-                        'item_total' => $itemTotal
-                    ]);
                 }
             } else {
                 $sessionCart = session()->get('cart', []);
-                Log::info('Guest Session Cart Data (before processing):', [
-                    'cart_data' => $sessionCart,
-                    'cart_count' => count($sessionCart)
-                ]);
-
                 if (empty($sessionCart)) {
                     throw new \Exception('Giỏ hàng trống');
                 }
-
                 foreach ($sessionCart as $index => $cartItem) {
-                    Log::info('Processing Guest Cart Item:', [
-                        'item_index' => $index,
-                        'item' => $cartItem
-                    ]);
-
                     if (!isset($cartItem['sanpham_id']) || !isset($cartItem['quantity'])) {
-                        Log::warning('Invalid cart item structure', [
-                            'item_index' => $index,
-                            'item' => $cartItem
-                        ]);
                         continue;
                     }
-
                     $product = Sanpham::select(['id', 'name'])
                         ->where('id', $cartItem['sanpham_id'])
                         ->first();
-                    Log::debug('Fetched product for guest cart item', [
-                        'sanpham_id' => $cartItem['sanpham_id'],
-                        'product_exists' => !is_null($product),
-                        'product_data' => $product ? $product->toArray() : null
-                    ]);
-
                     if (!$product) {
-                        Log::warning('Product not found for guest cart item', ['sanpham_id' => $cartItem['sanpham_id']]);
                         continue;
                     }
-
                     $basePrice = 0;
                     if (isset($cartItem['size_id'])) {
                         $selectedSizeAttribute = DB::table('product_attributes')
@@ -278,11 +218,6 @@ class CheckoutController extends Controller
 
                     if (!empty($cartItem['topping_ids'])) {
                         $toppingIdsArray = array_map('intval', array_filter(array_map('trim', explode(',', $cartItem['topping_ids'])))); // Sanitize input
-                        Log::debug('Processing topping IDs for guest cart item', [
-                            'sanpham_id' => $cartItem['sanpham_id'],
-                            'topping_ids' => $toppingIdsArray
-                        ]);
-
                         if (!empty($toppingIdsArray)) {
                             $toppingTotal = Product_topping::whereIn('id', $toppingIdsArray)->sum('price');
                         }
@@ -292,18 +227,6 @@ class CheckoutController extends Controller
                     $quantity = intval($cartItem['quantity'] ?? 1);
                     $itemTotal = $unitPrice * $quantity;
                     $total += $itemTotal;
-
-                    Log::debug('Item Pricing (Guest)', [
-                        'product_id' => $product->id,
-                        'product_name' => $product->name,
-                        'base_price' => $basePrice, 
-                        'topping_total' => $toppingTotal,
-                        'unit_price_calculated' => $unitPrice,
-                        'quantity' => $quantity,
-                        'item_total' => $itemTotal,
-                        'topping_ids_processed' => $toppingIdsArray
-                    ]);
-
                     $orderDetails[] = [
                         'product_id' => $product->id,
                         'product_name' => $product->name,
@@ -319,13 +242,8 @@ class CheckoutController extends Controller
             }
 
             if (empty($orderDetails)) {
-                Log::error('No valid order details to process', [
-                    'is_logged_in' => Auth::check(),
-                    'session_cart' => session()->get('cart', [])
-                ]);
                 throw new \Exception('Không có sản phẩm hợp lệ trong giỏ hàng');
             }
-
             $appliedCouponsData = session()->get('coupons', []);
             $couponSummaryArray = [];
             $couponTotalDiscount = 0; 
@@ -338,22 +256,13 @@ class CheckoutController extends Controller
                 ];
             }
             $couponSummaryJson = json_encode($couponSummaryArray);
-            
             $discount = 0;
             foreach ($appliedCouponsData as $coupon) {
                 $discount += ($coupon['type'] === 'percent')
                     ? round($total * $coupon['discount'] / 100)
                     : round($coupon['discount']);
             }
-            $couponTotalDiscount = $discount; // Assign the calculated discount to the new field
-
-            Log::info('Applied coupons', [
-                'coupons' => $appliedCouponsData,
-                'discount' => $discount,
-                'coupon_summary_json' => $couponSummaryJson,
-                'coupon_total_discount' => $couponTotalDiscount
-            ]);
-
+            $couponTotalDiscount = $discount; 
             $total = max(0, round($total - $discount)); 
 
             $selectedAddress = Address::find($request->district);
@@ -363,14 +272,6 @@ class CheckoutController extends Controller
             $shippingFee = $selectedAddress->shipping_fee;
             $districtName = $selectedAddress->name;
             $total += $shippingFee; 
-
-            Log::debug('Shipping Fee Info', [
-                'selected_district_id' => $request->district,
-                'district_name' => $districtName,
-                'shipping_fee' => $shippingFee,
-                'total_with_shipping' => $total,
-            ]);
-
             if ($request->payment_method === 'banking') {
                 session([
                     'vnp_order' => [
@@ -390,10 +291,6 @@ class CheckoutController extends Controller
                         'coupon_total_discount' => $couponTotalDiscount,
                     ]
                 ]);
-                Log::info('Stored vnp_order in session', [
-                    'vnp_order' => session()->get('vnp_order')
-                ]);
-
                 DB::commit();
                 return redirect()->route('vnpay.redirect');
             }
@@ -413,16 +310,8 @@ class CheckoutController extends Controller
             $order->coupon_total_discount = $couponTotalDiscount; 
 
             if (!$order->save()) {
-                Log::error('Failed to save order', [
-                    'order_data' => $order->toArray()
-                ]);
                 throw new \Exception('Không thể lưu đơn hàng');
             }
-            Log::info('Order saved', [
-                'order_id' => $order->id,
-                'order_data' => $order->toArray()
-            ]);
-
             foreach ($orderDetails as $detail) {
                 $orderDetail = new OrderDetail();
                 $orderDetail->order_id = $order->id;
@@ -437,16 +326,8 @@ class CheckoutController extends Controller
                 $orderDetail->status = $detail['status'] ?? 'pending';
 
                 if (!$orderDetail->save()) {
-                    Log::error('Failed to save order detail', [
-                        'order_id' => $order->id,
-                        'detail_data' => $detail
-                    ]);
                     throw new \Exception('Không thể lưu chi tiết đơn hàng');
                 }
-                Log::debug('Order detail saved', [
-                    'order_id' => $order->id,
-                    'order_detail' => $orderDetail->toArray()
-                ]);
             }
 
             if (!empty($appliedCouponsData)) {
@@ -455,19 +336,9 @@ class CheckoutController extends Controller
                     if ($couponModel) {
 
                         $order->coupons()->attach($couponModel->id);
-                        Log::debug('Attached coupon to order', [
-                            'order_id' => $order->id,
-                            'coupon_id' => $couponModel->id,
-                            'coupon_code' => $couponModel->code
-                        ]);
 
                         $couponModel->increment('used');
-                        Log::debug('Incremented coupon usage', [
-                            'coupon_id' => $couponModel->id,
-                            'new_used_count' => $couponModel->used
-                        ]);
                     } else {
-                        Log::warning('Applied coupon not found in DB during order processing (code: ' . $couponData['code'] . ')');
                     }
                 }
             }
@@ -483,10 +354,6 @@ class CheckoutController extends Controller
             }
 
             session()->forget(['cart', 'coupons', '_old_input']);
-            Log::info('Session cleared', [
-                'cart' => session()->get('cart'),
-                'coupons' => session()->get('coupons')
-            ]);
 
             DB::commit();
             return redirect()->route('order.complete', $order->id)
@@ -495,13 +362,6 @@ class CheckoutController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Checkout Error: ' . $e->getMessage(), [
-                'exception' => $e,
-                'trace' => $e->getTraceAsString(),
-                'request_data' => $request->all(),
-                'session_cart' => session()->get('cart', [])
-            ]);
-
             return back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())
                 ->withInput();
         }
@@ -512,10 +372,8 @@ class CheckoutController extends Controller
         try {
             $order = Order::with('orderDetails.size', 'orderDetails.product')->findOrFail($orderId);
             $allToppings = Product_topping::all()->keyBy('id');
-            Log::info('All Toppings', ['toppings' => $allToppings->toArray()]);
             return view('client.order-complete', compact('order', 'allToppings'));
         } catch (\Exception $e) {
-            Log::error('Order Complete Page Error: ' . $e->getMessage());
             return redirect()->route('home')->with('error', 'Không tìm thấy đơn hàng');
         }
     }

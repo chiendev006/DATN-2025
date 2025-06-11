@@ -104,10 +104,10 @@
                                         <th>Tên khách hàng</th>
                                         <th>Số điện thoại</th>
                                         <th>Trạng thái</th>
-                                        <th>Tổng tiền</th>
                                         <th>Trạng thái thanh toán</th>
                                         <th>Ngày tạo</th>
                                         <th>Lí do hủy</th>
+                                        <th>Tổng tiền</th>
                                         <th>Hành động</th>
                                     </tr>
                                 </thead>
@@ -135,7 +135,7 @@
                                                 <span>{{ $order->status }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ number_format($order->total, 0, ',', '.') }} đ</td>
+                                       
                                         <td>
                                             @if ($order->pay_status == 0)
                                                 <span style="color: orange;">Chờ thanh toán</span>
@@ -147,12 +147,14 @@
                                                 <span>{{ $order->pay_status }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ $order->created_at }}</td>
+                                        <td>{{ $order->created_at->format('d/m/Y') }}</td>
+                                        
                                      @if($order->status == 'cancelled' || $order->pay_status == 2)
                                      <td>{{ $order->cancel_reason }}</td>
                                      @else
                                      <td></td>
                                      @endif
+                                      <td>{{ number_format($order->total, 0, ',', '.') }} đ</td>
                                         <td>
                                             <button type="button" class="btn-action btn-view"
                                                 onclick="openOrderModal(this)"
