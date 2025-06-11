@@ -15,12 +15,14 @@ class ContactController extends Controller
     $request->validate([
         'name' => 'required|string',
         'email' => 'required|string|email',
+        'phone' => 'nullable|string|max:20',
         'massage' => 'required|string',
     ]);
 
     Contact::create([
         'name' => $request->name,
         'email' => $request->email,
+        'phone' => $request->phone,
         'massage' => $request->massage,
     ]);
 

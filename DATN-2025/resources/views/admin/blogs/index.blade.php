@@ -114,6 +114,7 @@
                             <table id="copy-print-csv" class="table v-middle">
                                 <thead>
                                     <tr>
+                                        <th>STT</th>
                                         <th>Tên bài</th>
                                         <th style="width:30%">Nội dung</th>
                                         <th>Ảnh bìa</th>
@@ -128,8 +129,9 @@
                                 <td colspan="6" class="text-center">Không có dữ liệu</td>
                                </tr>
                                @else
-                               @foreach ($blogs as $item)
+                               @foreach ($blogs as $key => $item)
                                     <tr>
+                                    <td>{{ ($blogs->currentPage()-1) * $blogs->perPage() + $key + 1 }}</td>
                                     <td>{{ $item->title }}</td>
                                     <td style="max-width:400px; word-break:break-word;">{!!  $item->content !!}</td>
                                     <td><img src="{{ asset('storage/'.$item->image) }}" alt="Ảnh bìa" style="width: 100px; height: 100px;"></td>

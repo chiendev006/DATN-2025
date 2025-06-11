@@ -61,24 +61,6 @@
                                         <p><strong>$ 15</strong></p>
                                     </div>
                                 </div>
-                                <div class="best-deal-blog">
-                                    <div class="best-deal-left">
-                                        <img src="{{ url('asset') }}/images/img21.png" alt="">
-                                    </div>
-                                    <div class="best-deal-right">
-                                        <p>Lasal Cheese</p>
-                                        <p><strong>$ 15</strong></p>
-                                    </div>
-                                </div>
-                                <div class="best-deal-blog">
-                                    <div class="best-deal-left">
-                                        <img src="{{ url('asset') }}/images/img22.png" alt="">
-                                    </div>
-                                    <div class="best-deal-right">
-                                        <p>Lasal Cheese</p>
-                                        <p><strong>$ 15</strong></p>
-                                    </div>
-                                </div>
                             </div>
                             <div class="popular-tag blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                 <h5>Popular Tags</h5>

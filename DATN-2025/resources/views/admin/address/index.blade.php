@@ -48,6 +48,7 @@
                                             <table id="copy-print-csv" class="table v-middle">
                                                 <thead>
                                                     <tr>
+                                                        <th>STT</th>
                                                         <th>Tên Khu vực</th>
                                                         <th>Giá ship</th>
                                                         <th>Hành động</th>
@@ -59,8 +60,9 @@
                                                     <td colspan="3" class="text-center">Không có dữ liệu</td>
                                                   </tr>
                                                   @else
-                                                  @foreach ($address as $item)
+                                                  @foreach ($address as $key => $item)
                                                     <tr>
+                                                         <td>{{ ($address->currentPage()-1) * $address->perPage() + $key + 1 }}</td>
                                                         <td>
                                                          {{ $item['name'] }}
                                                         </td>
