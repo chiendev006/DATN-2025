@@ -181,7 +181,6 @@ class CheckoutController extends Controller
                         'total' => $itemTotal,
                         'size_id' => $item->size_id ?? null,
                         'topping_id' => implode(',', $toppingIds),
-                        'note' => $item->note ?? null,
                         'status' => 'pending',
                     ];
                 }
@@ -237,7 +236,6 @@ class CheckoutController extends Controller
                         'total' => $itemTotal,
                         'size_id' => $cartItem['size_id'] ?? null,
                         'topping_id' => !empty($toppingIdsArray) ? implode(',', $toppingIdsArray) : null,
-                        'note' => $cartItem['note'] ?? null,
                         'status' => 'pending',
                     ];
                 }
@@ -327,7 +325,6 @@ class CheckoutController extends Controller
                 $orderDetail->total = $detail['total'];
                 $orderDetail->size_id = $detail['size_id'] ?? null;
                 $orderDetail->topping_id = $detail['topping_id'];
-                $orderDetail->note = $detail['note'] ?? null;
                 $orderDetail->status = $detail['status'] ?? 'pending';
 
                 if (!$orderDetail->save()) {
