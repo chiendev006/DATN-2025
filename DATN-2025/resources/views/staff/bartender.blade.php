@@ -23,6 +23,27 @@
             100% { background-color: transparent; }
         }
 
+        /* Status text styling */
+        td:nth-child(5) {
+            font-weight: bold;
+        }
+
+        td:nth-child(5):has(span.pending) {
+            color: #6c757d;
+        }
+
+        td:nth-child(5):has(span.processing) {
+            color: #007bff;
+        }
+
+        td:nth-child(5):has(span.completed) {
+            color: #28a745;
+        }
+
+        td:nth-child(5):has(span.canceled) {
+            color: #dc3545;
+        }
+
         .menu-text small:last-child {
             display: block;
             padding: 2px 5px;
@@ -126,6 +147,11 @@
         .count-item.processing {
             background-color: rgba(0, 123, 255, 0.1);
             border: 1px solid #007bff;
+        }
+
+        .count-item.completed {
+            background-color: rgba(40, 167, 69, 0.1);
+            border: 1px solid #28a745;
         }
     </style>
 </head>
@@ -231,6 +257,10 @@
                     <div class="count-item processing">
                         <h5>Đang xử lý</h5>
                         <div class="count">{{ $donhangs->where('status', 'processing')->count() }}</div>
+                    </div>
+                    <div class="count-item completed">
+                        <h5>Hoàn thành</h5>
+                        <div class="count">{{ $donhangs->where('status', 'completed')->count() }}</div>
                     </div>
                 </div>
             </div>
@@ -344,17 +374,22 @@ document.addEventListener('DOMContentLoaded', function() {
                         quantityCell.textContent = detail.quantity;
                         row.appendChild(quantityCell);
 
-                        // Create status cell
+                        // Create status cell with span for styling
                         const statusCell = document.createElement('td');
+                        const statusSpan = document.createElement('span');
+                        statusSpan.classList.add(detail.status || 'pending');
+
                         if(detail.status == 'pending'){
-                            statusCell.textContent = 'Chờ xử lý';
+                            statusSpan.textContent = 'Chờ xử lý';
                         }else if(detail.status == 'processing'){
-                            statusCell.textContent = 'Đang xử lý';
+                            statusSpan.textContent = 'Đang xử lý';
                         }else if(detail.status == 'completed'){
-                            statusCell.textContent = 'Hoàn thành';
+                            statusSpan.textContent = 'Hoàn thành';
                         }else if(detail.status == 'canceled'){
-                            statusCell.textContent = 'Đã hủy';
+                            statusSpan.textContent = 'Đã hủy';
                         }
+
+                        statusCell.appendChild(statusSpan);
                         row.appendChild(statusCell);
 
                         // Create action cell with status update form
@@ -399,6 +434,18 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 status === 'processing' ? 'Đang xử lý' :
                                                 status === 'completed' ? 'Hoàn thành' : 'Đã hủy';
 
+                            // Enforce sequential status progression:
+                            // - If current status is pending, only allow pending or processing
+                            // - If current status is processing, only allow processing or completed
+                            // - If current status is completed or canceled, only allow that status
+                            if (
+                                (detail.status === 'pending' && status !== 'pending' && status !== 'processing') ||
+                                (detail.status === 'processing' && status !== 'processing' && status !== 'completed') ||
+                                ((detail.status === 'completed' || detail.status === 'canceled') && status !== detail.status)
+                            ) {
+                                option.disabled = true;
+                            }
+
                             // Disable options that represent earlier stages than the current status
                             if (statusOrder[status] < currentStatusOrder) {
                                 option.disabled = true;
@@ -422,9 +469,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
                             // Get the selected status
                             const newStatus = select.value;
+                            const currentStatus = detail.status || 'pending';
+
+                            // Validate sequential status progression
+                            const validProgression = (
+                                // Can stay at current status
+                                newStatus === currentStatus ||
+                                // Can go from pending to processing
+                                (currentStatus === 'pending' && newStatus === 'processing') ||
+                                // Can go from processing to completed
+                                (currentStatus === 'processing' && newStatus === 'completed') ||
+                                // Special case for canceled status
+                                newStatus === 'canceled'
+                            );
+
+                            if (!validProgression) {
+                                alert('Không thể cập nhật trạng thái. Phải tuân theo thứ tự: Chờ xử lý → Đang xử lý → Hoàn thành');
+                                return;
+                            }
 
                             // Create FormData object
                             const formData = new FormData(this);
+
+                            // Disable the button during submission to prevent double-clicks
+                            button.disabled = true;
+                            button.textContent = 'Đang xử lý...';
 
                             // Send AJAX request to update order detail status
                             fetch(this.action, {
@@ -437,18 +506,79 @@ document.addEventListener('DOMContentLoaded', function() {
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    // Update the status cell
-                                    statusCell.textContent = newStatus;
+                                    // Update the status cell with new text
+                                    const statusSpan = statusCell.querySelector('span') || document.createElement('span');
+
+                                    // Remove all status classes and add the new one
+                                    statusSpan.classList.remove('pending', 'processing', 'completed', 'canceled');
+                                    statusSpan.classList.add(newStatus);
+
+                                    if(newStatus === 'pending') {
+                                        statusSpan.textContent = 'Chờ xử lý';
+                                    } else if(newStatus === 'processing') {
+                                        statusSpan.textContent = 'Đang xử lý';
+                                    } else if(newStatus === 'completed') {
+                                        statusSpan.textContent = 'Hoàn thành';
+                                    } else if(newStatus === 'canceled') {
+                                        statusSpan.textContent = 'Đã hủy';
+                                    }
+
+                                    // Make sure the span is in the cell
+                                    if (!statusCell.contains(statusSpan)) {
+                                        statusCell.innerHTML = '';
+                                        statusCell.appendChild(statusSpan);
+                                    }
+
+                                    // Update the detail object's status for future reference
+                                    detail.status = newStatus;
+
+                                    // Update select options based on new status
+                                    Array.from(select.options).forEach(option => {
+                                        const optionStatus = option.value;
+
+                                        // Reset disabled state
+                                        option.disabled = false;
+
+                                        // Apply sequential progression rules
+                                        if (
+                                            (newStatus === 'pending' && optionStatus !== 'pending' && optionStatus !== 'processing') ||
+                                            (newStatus === 'processing' && optionStatus !== 'processing' && optionStatus !== 'completed') ||
+                                            ((newStatus === 'completed' || newStatus === 'canceled') && optionStatus !== newStatus)
+                                        ) {
+                                            option.disabled = true;
+                                        }
+
+                                        // Disable options that represent earlier stages
+                                        if (statusOrder[optionStatus] < statusOrder[newStatus]) {
+                                            option.disabled = true;
+                                        }
+
+                                        // Set selected option
+                                        if (optionStatus === newStatus) {
+                                            option.selected = true;
+                                        }
+                                    });
 
                                     // Update order status based on all order details
                                     updateParentOrderStatus(orderId);
+
+                                    // Add visual indication of status change
+                                    statusCell.classList.add('status-changed');
+                                    setTimeout(() => {
+                                        statusCell.classList.remove('status-changed');
+                                    }, 2000);
                                 } else {
-                                    alert('Failed to update status');
+                                    alert('Không thể cập nhật trạng thái: ' + (data.message || 'Lỗi không xác định'));
                                 }
                             })
                             .catch(error => {
                                 console.error('Error updating status:', error);
-                                alert('Error updating status');
+                                alert('Lỗi khi cập nhật trạng thái');
+                            })
+                            .finally(() => {
+                                // Re-enable the button
+                                button.disabled = false;
+                                button.textContent = 'Cập nhật';
                             });
                         });
 
@@ -541,11 +671,20 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (sidebarOrderButton) {
                                 const statusElement = sidebarOrderButton.querySelector('.menu-text small:last-child');
                                 if (statusElement) {
-                                    statusElement.textContent = newOrderStatus;
-
                                     // Update the status class
                                     statusElement.className = '';
                                     statusElement.classList.add(newOrderStatus);
+
+                                    // Update text with Vietnamese translation
+                                    if(newOrderStatus === 'pending') {
+                                        statusElement.textContent = 'Chờ xử lý';
+                                    } else if(newOrderStatus === 'processing') {
+                                        statusElement.textContent = 'Đang xử lý';
+                                    } else if(newOrderStatus === 'completed') {
+                                        statusElement.textContent = 'Hoàn thành';
+                                    } else if(newOrderStatus === 'canceled') {
+                                        statusElement.textContent = 'Đã hủy';
+                                    }
 
                                     // Add visual indication of status change
                                     statusElement.classList.add('status-changed');
@@ -571,7 +710,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Function to update the incomplete order count
+    // Function to update the order counts
     function updateIncompleteOrderCount() {
         fetch(`{{ url('bartender/get-incomplete-order-count') }}`)
             .then(response => response.json())
@@ -579,9 +718,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('incomplete-order-count').textContent = data.count;
                 document.querySelector('.count-item.pending .count').textContent = data.pending;
                 document.querySelector('.count-item.processing .count').textContent = data.processing;
+                document.querySelector('.count-item.completed .count').textContent = data.completed;
             })
             .catch(error => {
-                console.error('Error updating incomplete order count:', error);
+                console.error('Error updating order counts:', error);
             });
     }
 });

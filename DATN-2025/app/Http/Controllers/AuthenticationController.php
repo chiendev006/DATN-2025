@@ -28,10 +28,26 @@ class AuthenticationController extends Controller
             'password.required' => 'Mat khau khong duoc de trong',
             'password.min' => 'Mat khau phai it nhat 6 ki tu',
         ]);
+
         if (Auth::guard('web')->attempt($data)) {
+            $user = Auth::user();
+
+            // Only if user is an admin (role must be exactly 1), authenticate admin and staff guards
+            if ($user->role === 1 || $user->role === '1') {
+                Auth::guard('admin')->login($user);
+                Auth::guard('staff')->login($user);
+            } else {
+                // Make sure non-admin users are NOT logged into admin or staff guards
+                if (Auth::guard('admin')->check()) {
+                    Auth::guard('admin')->logout();
+                }
+                if (Auth::guard('staff')->check()) {
+                    Auth::guard('staff')->logout();
+                }
+            }
 
             return redirect()->intended('/');
-        }else{
+        } else {
             return redirect()->back()->with([
                 'message' => 'Email hoac mat khau khong chinh xac'
             ]);
@@ -39,7 +55,11 @@ class AuthenticationController extends Controller
     }
     public function logout()
     {
-        Auth::logout();
+        // Logout from all guards
+        Auth::guard('admin')->logout();
+        Auth::guard('staff')->logout();
+        Auth::logout(); // web guard
+
         return redirect('/');
     }
     public function register()

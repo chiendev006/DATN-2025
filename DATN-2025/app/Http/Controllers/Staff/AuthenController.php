@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
+use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,10 +20,14 @@ class AuthenController extends Controller
             'password' => $request->password,
         ];
         if (Auth::guard('staff')->attempt($data)) {
-            $role = Auth::guard('staff')->user()->role;
+            $staffUser = Auth::guard('staff')->user();
+            $role = $staffUser->role;
 
-            // Admin role (1) can access any route
+            // If user is admin (role 1), also authenticate admin and web guards
             if ($role == 1) {
+                Auth::guard('admin')->login($staffUser);
+                Auth::login($staffUser); // web guard
+
                 // Redirect to staff dashboard by default
                 return redirect()->route('staff.index');
             }
@@ -49,7 +54,19 @@ class AuthenController extends Controller
     }
     public function logout()
     {
-        Auth::guard('staff')->logout();
+        // Check if the user is an admin before logging out
+        $isAdmin = Auth::guard('staff')->check() && Auth::guard('staff')->user()->role == 1;
+
+        // If admin, logout from all guards
+        if ($isAdmin) {
+            Auth::guard('admin')->logout();
+            Auth::guard('staff')->logout();
+            Auth::logout(); // web guard
+        } else {
+            // Just logout from staff guard
+            Auth::guard('staff')->logout();
+        }
+
         return redirect()->route('staff.login');
     }
 }

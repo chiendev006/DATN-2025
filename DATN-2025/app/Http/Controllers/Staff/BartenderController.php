@@ -99,5 +99,40 @@ class BartenderController extends Controller
             return response()->json(['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()], 500);
         }
     }
+
+        public function getIncompleteOrderCount()
+    {
+        try {
+            // Get today's date
+            $today = Carbon::today();
+
+            // Count by status for today's orders
+            $pendingCount = Order::whereDate('created_at', $today)
+                ->where('status', 'pending')
+                ->count();
+
+            $processingCount = Order::whereDate('created_at', $today)
+                ->where('status', 'processing')
+                ->count();
+
+            $completedCount = Order::whereDate('created_at', $today)
+                ->where('status', 'completed')
+                ->count();
+
+            // Count incomplete orders (pending + processing)
+            $incompleteCount = $pendingCount + $processingCount;
+
+            return response()->json([
+                'count' => $incompleteCount,
+                'pending' => $pendingCount,
+                'processing' => $processingCount,
+                'completed' => $completedCount
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Đã xảy ra lỗi khi lấy số lượng đơn hàng: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
 ?>

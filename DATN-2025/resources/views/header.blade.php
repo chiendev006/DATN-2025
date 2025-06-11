@@ -80,7 +80,7 @@
 
 						<a class="nav-link {{ $isAuthTab ? 'active' : '' }}" id="authentication-tab" data-bs-toggle="tab" href="#tab-authentication" role="tab" aria-controls="tab-authentication" aria-selected="false">
 							<i class="icon-unlock"></i>
-							<span class="nav-link-text">Tài khoản</span>
+							<span class="nav-link-text">Tài khoản - Điều hướng</span>
 						</a>
 						<a class="nav-link settings" id="settings-tab" data-bs-toggle="tab" href="#tab-settings" role="tab" aria-controls="tab-authentication" aria-selected="false">
 							<i class="icon-settings1"></i>
@@ -177,7 +177,17 @@
 										<li>
 											<a href="{{ route('payroll.index') }}" class="{{ request()->is('admin/payroll*') ? 'current-page' : '' }}">Bảng lương</a>
 										</li>
-										<li>
+
+                                        <li>
+											<a href="{{ route('staff.index') }}">Trang thu ngân</a>
+										</li>
+                                        <li>
+											<a href="{{ route('bartender.index') }}">Trang pha chế</a>
+										</li>
+                                        <li>
+											<a href="{{ route('danhmuc1.index') }}">Trang cửa hàng</a>
+										</li>
+                                        <li>
 											<a href="{{ route('admin.logout') }}">Logout</a>
 										</li>
 
