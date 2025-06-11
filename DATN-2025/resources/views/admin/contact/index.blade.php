@@ -1,7 +1,3 @@
-
-
-
-
 @include('header')
 
 <style>
@@ -138,7 +134,7 @@
                                     <td>{!! $item['massage'] !!}</td>
                                     <td>{{ $item['created_at']->format('d/m/Y') }}</td>
                                         <td style="width:90px; text-align:center;">
-                                            <a style="color: white; width: 60px;" href="{{ route('contact.delete',[$item->id]) }}" onclick="return confirm('  Xác nhận xóa bài viết?')" class="btn-success1">Xóa</a>
+                                            <a style="color: white; width: 60px;" href="javascript:void(0)" onclick="deleteViaPost('{{ route('contact.delete',[$item->id]) }}', 'Xác nhận xóa bài viết?')" class="btn-success1">Xóa</a>
                                         </td>
                                     </tr>
                                 @endforeach

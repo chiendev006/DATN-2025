@@ -77,7 +77,7 @@
                                                                     <i class="icon-edit1 text-info"></i>
                                                                 </button>
 
-                                                                <a href="{{ route('danhmuc.delete', ['id' => $item->id]) }}" onclick="return confirm('Bạn có chắc chắn muốn xóa ?')"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
+                                                                <a href="javascript:void(0)" onclick="deleteViaPost('{{ route('danhmuc.delete', ['id' => $item->id]) }}', 'Bạn có chắc chắn muốn xóa?')" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
                                                                     <i class="icon-x-circle text-danger"></i>
                                                                 </a>
                                                             </div>
