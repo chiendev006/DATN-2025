@@ -234,7 +234,8 @@ use App\Http\ViewComposers\CartComposer;
 
         Route::prefix('staff')->middleware('checkStaff')->group(function () {
         Route::get('/', [StaffController::class, 'index'])->name('staff.index');
-        Route::get('/product/{id}/options', [StaffController::class, 'getOptions'])->name('staff.options');
+        Route::get('/product/{id}', [StaffController::class, 'ajaxShow'])->name('staff.options');
+        Route::post('/orders', [StaffController::class, 'store'])->name('staff.store');
         Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
         Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
         Route::get('/orderdetailtoday', [StaffController::class, 'orderdetailtoday'])->name('staff.orderdetailtoday');

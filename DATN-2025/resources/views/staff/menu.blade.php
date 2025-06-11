@@ -10,6 +10,8 @@
     <!-- ================== BEGIN core-css ================== -->
     <link href="{{ url('assetstaff/css/vendor.min.css') }}" rel="stylesheet"/>
     <link href="{{ url('assetstaff/css/app.min.css') }}" rel="stylesheet"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!-- ================== END core-css ================== -->
 </head>
 <body class="pace-top">
@@ -55,7 +57,7 @@
                                     </li>
                                 @endforeach
                                 <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('staff.orderdetailtoday') ? 'active' : '' }}" 
+                                <a class="nav-link {{ request()->routeIs('staff.orderdetailtoday') ? 'active' : '' }}"
                                 href="{{ route('staff.orderdetailtoday') }}">
                                     <i class="fa fa-fw fa-file-invoice-dollar"></i> Hóa đơn hôm nay
                                 </a>
@@ -146,7 +148,7 @@
                                     href="#"
                                     data-bs-toggle="tab"
                                     data-bs-target="#newOrderTab"
-                                >New Order (5)</a
+                                >Order</a
                                 >
                             </li>
                             <li class="nav-item">
@@ -155,7 +157,7 @@
                                     href="#"
                                     data-bs-toggle="tab"
                                     data-bs-target="#orderHistoryTab"
-                                >Order History (0)</a
+                                >Order History</a
                                 >
                             </li>
                         </ul>
@@ -167,73 +169,11 @@
                     >
                         <!-- BEGIN #newOrderTab -->
                         <div class="tab-pane fade h-100 show active" id="newOrderTab">
-                            <div class="pos-order">
-                                <div class="pos-order-product">
-                                    <div
-                                        class="img"
-                                        style="
-                            background-image: url(assets/img/pos/product-2.jpg);
-                          "
-                                    ></div>
-                                    <div class="flex-1">
-                                        <div class="h6 mb-1">Grill Pork Chop</div>
-                                        <div class="small">$12.99</div>
-                                        <div class="small mb-2">- size: large</div>
-                                        <div class="d-flex">
-                                            <a href="#" class="btn btn-secondary btn-sm"
-                                            ><i class="fa fa-minus"></i
-                                                ></a>
-                                            <input
-                                                type="text"
-                                                class="form-control w-50px form-control-sm mx-2 bg-white bg-opacity-25 bg-white bg-opacity-25 text-center"
-                                                value="01"
-                                            />
-                                            <a href="#" class="btn btn-secondary btn-sm"
-                                            ><i class="fa fa-plus"></i
-                                                ></a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="pos-order-price d-flex flex-column">
-                                    <div class="flex-1">$12.99</div>
-                                    <div class="text-end">
-                                        <a href="#" class="btn btn-default btn-sm"
-                                        ><i class="fa fa-trash"></i
-                                            ></a>
-                                    </div>
-                                </div>
-                            </div>
+                            <div class="pos-order-list"></div>
                         </div>
                         <!-- END #orderHistoryTab -->
 
                         <!-- BEGIN #orderHistoryTab -->
-                        <div class="tab-pane fade h-100" id="orderHistoryTab">
-                            <div
-                                class="h-100 d-flex align-items-center justify-content-center text-center p-20"
-                            >
-                                <div>
-                                    <div class="mb-3 mt-n5">
-                                        <svg
-                                            width="6em"
-                                            height="6em"
-                                            viewBox="0 0 16 16"
-                                            class="text-gray-300"
-                                            fill="currentColor"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                fill-rule="evenodd"
-                                                d="M14 5H2v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V5zM1 4v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4H1z"
-                                            />
-                                            <path
-                                                d="M8 1.5A2.5 2.5 0 0 0 5.5 4h-1a3.5 3.5 0 1 1 7 0h-1A2.5 2.5 0 0 0 8 1.5z"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <h5>No order history found</h5>
-                                </div>
-                            </div>
-                        </div>
                         <!-- END #orderHistoryTab -->
                     </div>
                     <!-- END pos-sidebar-body -->
@@ -242,16 +182,16 @@
                     <div class="pos-sidebar-footer">
                         <div class="d-flex align-items-center mb-2">
                             <div>Subtotal</div>
-                            <div class="flex-1 text-end h6 mb-0">$30.98</div>
+                            <div class="flex-1 text-end h6 mb-0"></div>
                         </div>
                         <div class="d-flex align-items-center">
                             <div>Taxes (6%)</div>
-                            <div class="flex-1 text-end h6 mb-0">$2.12</div>
+                            <div class="flex-1 text-end h6 mb-0"></div>
                         </div>
                         <hr class="opacity-1 my-10px"/>
                         <div class="d-flex align-items-center mb-2">
                             <div>Total</div>
-                            <div class="flex-1 text-end h4 mb-0">$33.10</div>
+                            <div class="flex-1 text-end h4 mb-0"></div>
                         </div>
                         <div class="mt-3">
                             <div class="d-flex">
@@ -277,14 +217,12 @@
                                 </a>
                                 <a
                                     href="#"
-                                    class="btn btn-theme flex-fill d-flex align-items-center justify-content-center"
+                                    class="btn btn-theme flex-fill d-flex align-items-center justify-content-center btn-submit-order"
                                 >
-                        <span>
-                          <i
-                              class="fa fa-cash-register fa-lg my-10px d-block"
-                          ></i>
-                          <span class="small fw-semibold">Submit Order</span>
-                        </span>
+                                    <span>
+                                      <i class="fa fa-cash-register fa-lg my-10px d-block"></i>
+                                      <span class="small fw-semibold">Submit Order</span>
+                                    </span>
                                 </a>
                             </div>
                         </div>
