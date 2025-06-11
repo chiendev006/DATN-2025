@@ -101,7 +101,7 @@
 
                                                                         </button>
 
-                                                                <a href="{{ route('coupon.delete', ['id' => $item->id]) }}" onclick="return confirm('Ngừng phục vụ Coupon này?')"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
+                                                                <a href="javascript:void(0)" onclick="deleteViaPost('{{ route('coupon.delete', ['id' => $item->id]) }}', 'Ngừng phục vụ Coupon này?')" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
                                                                     <i class="icon-x-circle text-danger"></i>
                                                                 </a>
                                                             </div>

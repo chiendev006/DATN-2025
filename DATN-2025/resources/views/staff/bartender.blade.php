@@ -50,6 +50,83 @@
         .menu-text small.canceled {
             color: #dc3545;
         }
+
+        /* Order styling */
+        .menu-item button {
+            width: 100%;
+            text-align: left;
+            padding: 10px 15px;
+            border: 1px solid transparent;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item button:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+            border-color: #007bff;
+        }
+
+        .menu-item button.active {
+            background-color: rgba(0, 123, 255, 0.15);
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        /* Order detail container styling */
+        .order-detail-container {
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        .order-detail-header {
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        /* Default view styling */
+        .default-view {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .default-view h3 {
+            margin-bottom: 20px;
+            color: #6c757d;
+        }
+
+        .order-count {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .order-count-details {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .count-item {
+            padding: 15px;
+            border-radius: 5px;
+            min-width: 150px;
+        }
+
+        .count-item.pending {
+            background-color: rgba(108, 117, 125, 0.1);
+            border: 1px solid #6c757d;
+        }
+
+        .count-item.processing {
+            background-color: rgba(0, 123, 255, 0.1);
+            border: 1px solid #007bff;
+        }
     </style>
 </head>
 <body>
@@ -58,25 +135,15 @@
     <!-- BEGIN #header -->
     <div id="header" class="app-header">
         <!-- BEGIN navbar-header -->
-        <div class="navbar-header">
-            <a href="{{ route('bartender.index') }}" class="navbar-brand">
-                <span class="navbar-logo"></span>
-                <b>Bartender</b> Dashboard
-            </a>
-            <button type="button" class="navbar-mobile-toggler" data-toggle="app-sidebar-mobile">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-        </div>
+
         <!-- END navbar-header -->
         <!-- BEGIN header-nav -->
-        <div class="navbar-nav">
+        <div style="margin-left: 100px;" class="navbar-nav">
             <div class="navbar-item navbar-user dropdown">
                 <a href="#" class="navbar-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
                     <span>
                         <span class="d-none d-md-inline">{{ Auth::guard('staff')->user()->name ?? 'Bartender' }}</span>
-                        <b class="caret"></b>
+
                     </span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end me-1">
@@ -107,14 +174,14 @@
                 <div class="menu-header">Đơn hàng</div>
                 @foreach($donhangs as $donhang)
                 <div class="menu-item">
-                    <button class="btn-edit-order" data-id="{{ $donhang->id }}" style="background:none;border:none;cursor:pointer;">
+                    <button class="btn-edit-order" data-id="{{ $donhang->id }}" style="background:none;border: 3px solid #dee2e6;cursor:pointer; margin-top:10px">
                         <div class="menu-icon">
                             <i class="fa fa-receipt"></i>
                         </div>
                         <div class="menu-text">
                             <div>{{ $donhang->name }}</div>
                             <small>{{ number_format($donhang->total, 0) }} đ</small>
-                            <small class="{{ $donhang->status ?? 'pending' }}">{{ $donhang->status }}</small>
+                            <small class="{{ $donhang->status ?? 'pending' }}">@if($donhang->status == 'pending') Chờ xử lý @elseif($donhang->status == 'processing') Đang xử lý @elseif($donhang->status == 'completed') Hoàn thành @else Đã hủy @endif</small>
                         </div>
                     </button>
                 </div>
@@ -145,9 +212,30 @@
         <div class="order-detail-container">
             <div class="order-detail-header">
                 <h2>Chi tiết đơn hàng</h2>
+                <div id="order-customer-info" class="mt-2 text-muted"></div>
             </div>
 
-            <table class="table table-bordered">
+            <!-- Default view when no order is selected -->
+            <div id="default-view" class="default-view">
+                <h3>Vui lòng chọn đơn hàng từ danh sách bên trái</h3>
+                <div class="order-count">
+                    <span id="incomplete-order-count">{{ $donhangs->where('status', '!=', 'completed')->where('status', '!=', 'canceled')->count() }}</span>
+                </div>
+                <h4>Số đơn hàng chưa hoàn thành hôm nay</h4>
+
+                <div class="order-count-details">
+                    <div class="count-item pending">
+                        <h5>Chờ xử lý</h5>
+                        <div class="count">{{ $donhangs->where('status', 'pending')->count() }}</div>
+                    </div>
+                    <div class="count-item processing">
+                        <h5>Đang xử lý</h5>
+                        <div class="count">{{ $donhangs->where('status', 'processing')->count() }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <table id="order-details-table" class="table table-bordered" style="display: none;">
                 <thead>
                     <tr>
                         <th>Tên sản phẩm</th>
@@ -168,9 +256,7 @@
     <!-- END #content -->
 
     <!-- BEGIN scroll-top-btn -->
-    <a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top" data-toggle="scroll-to-top">
-        <i class="fa fa-angle-up"></i>
-    </a>
+
     <!-- END scroll-top-btn -->
 </div>
 <!-- END #app -->
@@ -180,9 +266,30 @@
 <script src="{{ url('assetstaff') }}/js/app.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    let activeOrderButton = null;
+    const defaultView = document.getElementById('default-view');
+    const orderDetailsTable = document.getElementById('order-details-table');
+
+    // Initially show default view
+    defaultView.style.display = 'block';
+    orderDetailsTable.style.display = 'none';
+
     document.querySelectorAll('.btn-edit-order').forEach(function(btnEdit) {
         btnEdit.addEventListener('click', function() {
             const orderId = this.dataset.id;
+
+            // Remove active class from previously active button
+            if (activeOrderButton) {
+                activeOrderButton.classList.remove('active');
+            }
+
+            // Add active class to current button
+            this.classList.add('active');
+            activeOrderButton = this;
+
+            // Hide default view and show order details table
+            defaultView.style.display = 'none';
+            orderDetailsTable.style.display = 'table';
 
             // Fetch order details via AJAX
             fetch(`{{ url('bartender/get-order-details') }}/${orderId}`)
@@ -197,6 +304,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Store the current order ID in a data attribute for later use
                     tableBody.dataset.currentOrderId = orderId;
+
+                    // Update customer info if available
+                    const customerInfoDiv = document.getElementById('order-customer-info');
+                    if (data.length > 0 && data[0].order) {
+                        const order = data[0].order;
+                        customerInfoDiv.innerHTML = `
+                            <strong>Khách hàng:</strong> ${order.name} |
+                            <strong>SĐT:</strong> ${order.phone} |
+                            <strong>Mã đơn:</strong> #${order.transaction_id}
+                        `;
+                    } else {
+                        customerInfoDiv.innerHTML = '';
+                    }
 
                     // Add each order detail to the table
                     data.forEach(detail => {
@@ -226,7 +346,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         // Create status cell
                         const statusCell = document.createElement('td');
-                        statusCell.textContent = detail.status || 'pending';
+                        if(detail.status == 'pending'){
+                            statusCell.textContent = 'Chờ xử lý';
+                        }else if(detail.status == 'processing'){
+                            statusCell.textContent = 'Đang xử lý';
+                        }else if(detail.status == 'completed'){
+                            statusCell.textContent = 'Hoàn thành';
+                        }else if(detail.status == 'canceled'){
+                            statusCell.textContent = 'Đã hủy';
+                        }
                         row.appendChild(statusCell);
 
                         // Create action cell with status update form
@@ -426,6 +554,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                     }, 2000);
                                 }
                             }
+
+                            // Update the incomplete order count in the default view
+                            updateIncompleteOrderCount();
                         } else {
                             console.error('Failed to update order status');
                         }
@@ -437,6 +568,20 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error fetching order details for status update:', error);
+            });
+    }
+
+    // Function to update the incomplete order count
+    function updateIncompleteOrderCount() {
+        fetch(`{{ url('bartender/get-incomplete-order-count') }}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('incomplete-order-count').textContent = data.count;
+                document.querySelector('.count-item.pending .count').textContent = data.pending;
+                document.querySelector('.count-item.processing .count').textContent = data.processing;
+            })
+            .catch(error => {
+                console.error('Error updating incomplete order count:', error);
             });
     }
 });

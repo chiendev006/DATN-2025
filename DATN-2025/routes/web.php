@@ -112,7 +112,7 @@ use App\Http\Controllers\admin\AdminStaffController;
         // Đơn hàng
         Route::get('/order', [\App\Http\Controllers\admin\OrderController::class, 'ordersIndex'])->name('admin.order.index');
         Route::post('/order/update/{id}', [\App\Http\Controllers\admin\OrderController::class, 'update'])->name('admin.order.update');
-        Route::get('/order/{id}/delete', [\App\Http\Controllers\admin\OrderController::class, 'delete'])->name('admin.order.delete');
+        Route::post('/order/delete/{id}', [\App\Http\Controllers\admin\OrderController::class, 'delete'])->name('admin.order.delete');
         Route::get('/order/json/{id}', [\App\Http\Controllers\admin\OrderController::class, 'showJson'])->name('admin.order.json');
         Route::get('/order/filter', [\App\Http\Controllers\admin\OrderController::class, 'filterOrders'])->name('admin.order.filter');
         Route::get('/order/search', [\App\Http\Controllers\admin\OrderController::class, 'searchByTransactionId'])->name('admin.order.search');
@@ -124,17 +124,17 @@ use App\Http\Controllers\admin\AdminStaffController;
                 Route::post('/store', [DanhmucController::class, 'store'])->name('danhmuc.store');
                 Route::get('/edit/{id}', [DanhmucController::class, 'edit'])->name('danhmuc.edit');
                 Route::post('/update/{id}', [DanhmucController::class, 'update'])->name('danhmuc.update');
-                Route::get('/delete/{id}', [DanhmucController::class, 'delete'])->name('danhmuc.delete');
+                Route::post('/delete/{id}', [DanhmucController::class, 'delete'])->name('danhmuc.delete');
         });
 
         // Quản lý ảnh theo sản phẩm
-        Route::prefix('admin/sanpham')->name('sanpham.')->group(function () {
+        Route::prefix('sanpham')->name('sanpham.')->group(function () {
                 Route::get('{id}/images', [SanphamController::class, 'listImages'])->name('images');
                 Route::get('{id}/images/create', [SanphamController::class, 'createImage'])->name('images.create');
                 Route::post('{id}/images', [SanphamController::class, 'storeImage'])->name('images.store');
                 Route::get('images/{image}/edit', [SanphamController::class, 'editImage'])->name('images.edit');
-                Route::put('images/{image}', [SanphamController::class, 'updateImage'])->name('images.update');
-                Route::delete('images/{image}', [SanphamController::class, 'deleteImage'])->name('images.delete');
+                Route::post('images/{image}', [SanphamController::class, 'updateImage'])->name('images.update');
+                Route::post('images/{image}/delete', [SanphamController::class, 'deleteImage'])->name('images.delete');
                 Route::get('/filter-category', [SanphamController::class, 'filterByCategory'])->name('filterCategory');
         });
 
@@ -145,7 +145,7 @@ use App\Http\Controllers\admin\AdminStaffController;
                 Route::post('/store', [CouponController::class, 'store'])->name('coupon.store');
                 Route::get('/edit/{id}', [CouponController::class, 'edit'])->name('coupon.edit');
                 Route::post('/update/{id}', [CouponController::class, 'update'])->name('coupon.update');
-                Route::get('/delete/{id}', [CouponController::class, 'delete'])->name('coupon.delete');
+                Route::post('/delete/{id}', [CouponController::class, 'delete'])->name('coupon.delete');
         });
 
         // địa chỉ
@@ -155,7 +155,7 @@ use App\Http\Controllers\admin\AdminStaffController;
                 Route::post('/store', [AddressController::class, 'store'])->name('address.store');
                 Route::get('/edit/{id}', [AddressController::class, 'edit'])->name('address.edit');
                 Route::post('/update/{id}', [AddressController::class, 'update'])->name('address.update');
-                Route::get('/delete/{id}', [AddressController::class, 'delete'])->name('address.delete');
+                Route::post('/delete/{id}', [AddressController::class, 'delete'])->name('address.delete');
         });
 
         // Sản phẩm
@@ -166,7 +166,7 @@ use App\Http\Controllers\admin\AdminStaffController;
                 Route::post('/store', [SanphamController::class, 'store'])->name('sanpham.store');
                 Route::get('/edit/{id}', [SanphamController::class, 'edit'])->name('sanpham.edit');
                 Route::post('/update/{id}', [SanphamController::class, 'update'])->name('sanpham.update');
-                Route::get('/delete/{id}', [SanphamController::class, 'delete'])->name('sanpham.delete');
+                Route::post('/delete/{id}', [SanphamController::class, 'delete'])->name('sanpham.delete');
         });
 
         // payroll
@@ -177,26 +177,28 @@ use App\Http\Controllers\admin\AdminStaffController;
                 Route::get('/show/{id}', [PayrollController::class, 'show'])->name('payroll.show');
                 Route::post('/toggle-workday', [PayrollController::class, 'toggleWorkDay'])->name('payroll.toggleWorkDay');
                 Route::get('/attendance/form', [\App\Http\Controllers\admin\PayrollController::class, 'getAttendanceForm'])->name('attendance.form');
-                Route::post('admin/attendance/store', [\App\Http\Controllers\admin\PayrollController::class, 'storeAttendance'])->name('attendance.store');
-                Route::get('/pay/{id}', [PayrollController::class, 'pay'])->name('payroll.pay');
+                Route::post('/attendance/store', [\App\Http\Controllers\admin\PayrollController::class, 'storeAttendance'])->name('attendance.store');
+                Route::post('/pay/{id}', [PayrollController::class, 'pay'])->name('payroll.pay');
         });
         // Staff
         Route::prefix('staff')->group(function () {
                 Route::get('/', [AdminStaffController::class, 'staffIndex'])->name('admin.staff.index');
+                Route::get('/create', [AdminStaffController::class, 'create'])->name('admin.staff.create');
                 Route::post('/store', [AdminStaffController::class, 'store'])->name('admin.staff.store');
+                Route::get('/edit/{id}', [AdminStaffController::class, 'edit'])->name('admin.staff.edit');
                 Route::post('/update/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
-                Route::get('/delete/{id}', [AdminStaffController::class, 'delete'])->name('admin.staff.delete');
+                Route::post('/delete/{id}', [AdminStaffController::class, 'delete'])->name('admin.staff.delete');
         });
 
 
         // Ảnh sản phẩm
         Route::prefix('product-images')->group(function () {
-                Route::get('/index', [ProductImageController::class, 'index'])->name('product-images.index');
+                Route::get('/', [ProductImageController::class, 'index'])->name('product-images.index');
                 Route::get('/create', [ProductImageController::class, 'create'])->name('product-images.create');
                 Route::post('/', [ProductImageController::class, 'store'])->name('product-images.store');
                 Route::get('/{id}/edit', [ProductImageController::class, 'edit'])->name('product-images.edit');
-                Route::put('/{id}', [ProductImageController::class, 'update'])->name('product-images.update');
-                Route::delete('/{id}', [ProductImageController::class, 'destroy'])->name('product-images.delete');
+                Route::post('/{id}', [ProductImageController::class, 'update'])->name('product-images.update');
+                Route::post('/{id}/delete', [ProductImageController::class, 'destroy'])->name('product-images.delete');
         });
 
 
@@ -204,7 +206,7 @@ use App\Http\Controllers\admin\AdminStaffController;
         // Quản lý liên hệ từ Admin
         Route::prefix('contact')->group(function () {
                 Route::get('/', [ContactAdminController::class, 'index'])->name('contact.index');
-                Route::get('/delete/{id}', [ContactAdminController::class, 'delete'])->name('contact.delete');
+                Route::post('/delete/{id}', [ContactAdminController::class, 'delete'])->name('contact.delete');
         });
 
         // Topping
@@ -214,7 +216,7 @@ use App\Http\Controllers\admin\AdminStaffController;
                 Route::post('/store', [ToppingController::class, 'store'])->name('topping.store');
                 Route::get('/edit/{id}', [ToppingController::class, 'edit'])->name('topping.edit');
                 Route::post('/update/{id}', [ToppingController::class, 'update'])->name('topping.update');
-                Route::get('/delete/{id}', [ToppingController::class, 'delete'])->name('topping.delete');
+                Route::post('/delete/{id}', [ToppingController::class, 'delete'])->name('topping.delete');
         });
 
 
@@ -225,7 +227,7 @@ use App\Http\Controllers\admin\AdminStaffController;
                 Route::post('/store', [Product_attributesController::class, 'store'])->name('size.store');
                 Route::get('/edit/{id}', [Product_attributesController::class, 'edit'])->name('size.edit');
                 Route::post('/update/{id}', [Product_attributesController::class, 'update'])->name('size.update');
-                Route::get('/delete/{id}', [Product_attributesController::class, 'delete'])->name('size.delete');
+                Route::post('/delete/{id}', [Product_attributesController::class, 'delete'])->name('size.delete');
         });
 
         // Blogs
@@ -235,11 +237,11 @@ use App\Http\Controllers\admin\AdminStaffController;
                 Route::post('/store', [BlogsController::class, 'store'])->name('blogs.store');
                 Route::get('/edit/{id}', [BlogsController::class, 'edit'])->name('blogs.edit');
                 Route::post('/update/{id}', [BlogsController::class, 'update'])->name('blogs.update');
-                Route::get('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
+                Route::post('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
         });
  });
-        Route::get('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->name('product_img.delete');
-        Route::get('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
+        Route::post('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->name('product_img.delete');
+        Route::post('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
         Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
 
 
@@ -261,17 +263,32 @@ use App\Http\Controllers\admin\AdminStaffController;
                 Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
                 Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
                 Route::get('/orderdetailtoday', [StaffController::class, 'orderdetailtoday'])->name('staff.orderdetailtoday');
-                Route::get('/staff/products/search', [StaffController::class, 'searchProducts'])->name('staff.products.search');
+                Route::get('/products/search', [StaffController::class, 'searchProducts'])->name('staff.products.search');
         });
 
         Route::prefix('bartender')->middleware('checkStaff')->group(function () {
-        Route::get('/', [BartenderController::class, 'index'])->name('bartender.index');
-        Route::get('/create', [BartenderController::class, 'create'])->name('bartender.create');
-        Route::post('/store', [BartenderController::class, 'store'])->name('bartender.store');
-        Route::get('/edit/{id}', [BartenderController::class, 'edit'])->name('bartender.edit');
-        Route::post('/update/{id}', [BartenderController::class, 'update'])->name('bartender.update');
-        Route::get('/delete/{id}', [BartenderController::class, 'delete'])->name('bartender.delete');
-        });
+
+            Route::get('/', [BartenderController::class, 'index'])->name('bartender.index');
+
+            Route::get('/create', [BartenderController::class, 'create'])->name('bartender.create');
+
+            Route::post('/store', [BartenderController::class, 'store'])->name('bartender.store');
+
+            Route::get('/edit/{id}', [BartenderController::class, 'edit'])->name('bartender.edit');
+
+            Route::post('/update/{id}', [BartenderController::class, 'update'])->name('bartender.update');
+
+            Route::post('/delete/{id}', [BartenderController::class, 'delete'])->name('bartender.delete');
+
+            Route::get('/order/{id}', [BartenderController::class, 'orderDetail'])->name('bartender.order.detail');
+
+            Route::post('/order-detail/{id}/update-status', [BartenderController::class, 'updateOrderDetailStatus'])->name('bartender.order.detail.status');
+
+            Route::get('/get-order-details/{id}', [BartenderController::class, 'getOrderDetails'])->name('bartender.get.order.details');
+
+            Route::post('/update-order-status/{id}', [BartenderController::class, 'updateOrderStatus'])->name('bartender.update.order.status');
+
+            });
 
         // Test route for middleware
         Route::get('/test-middleware', function() {
