@@ -59,6 +59,7 @@
 											<table id="copy-print-csv" class="table v-middle">
 												<thead>
 													<tr>
+                                                        <th>STT</th>
 													    <th>Tên sản phẩm</th>
                                                         <th>Ảnh sản phẩm</th>
                                                         <th>Size - Giá (nhỏ nhất)</th>
@@ -69,8 +70,9 @@
 												</thead>
 												<tbody>
                                                     @if($sanpham->count() > 0)
-                                                        @foreach($sanpham as $sp)
+                                                        @foreach($sanpham as $key => $sp)
                                                             <tr>
+                                                                <td>{{ ($sanpham->currentPage()-1) * $sanpham->perPage() + $key + 1 }}</td>
                                                                <td>
                                                                	{{ $sp['name'] }}
                                                                </td>

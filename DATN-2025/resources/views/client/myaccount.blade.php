@@ -242,7 +242,7 @@ document.querySelectorAll('.cancel-order').forEach(button => {
                     };
                     const statusText = statusLabel[data.status] || data.status;
 
-                    alert(`❌ Đơn hàng này đã được cập nhật sang trạng thái "${statusText}". Không thể hủy nữa.`);
+                    alert(`Đơn hàng này đã được cập nhật sang trạng thái "${statusText}". Không thể hủy được!!!`);
                     location.reload(); 
                     return;
                 }

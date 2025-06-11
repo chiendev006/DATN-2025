@@ -42,6 +42,7 @@
                                             <table id="copy-print-csv" class="table v-middle">
                                                 <thead>
                                                     <tr>
+                                                        <th>STT</th>
                                                         <th>Mã Coupon</th>
                                                         <th>Giảm giá</th>
                                                         <th>Giá trị đơn tối thiểu</th>
@@ -57,8 +58,9 @@
                                                         <td colspan="3" class="text-center">Không có dữ liệu</td>
                                                     </tr>
                                                     @else
-                                                            @foreach ($coupons as $item)
+                                                            @foreach ($coupons as $key => $item)
                                                             <tr>
+                                                                <td>{{ ($coupons->currentPage()-1) * $coupons->perPage() + $key + 1 }}</td>
                                                                 <td>
                                                                 {{ $item['code'] }}
                                                                 </td>

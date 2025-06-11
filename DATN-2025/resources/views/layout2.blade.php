@@ -684,6 +684,7 @@
                 <!-- chubenai3@gmail.com -->
 <div class="elfsight-app-784728d3-89d8-42e0-8e07-0b4b0235f735" data-elfsight-app-lazy></div>
 
+
     <script src="{{ url('asset') }}/js/jquery.min.js"></script>
     <script src="{{ url('asset') }}/js/bootstrap/bootstrap.min.js"></script>
     <script src="{{ url('asset') }}/js/bootstrap/bootstrap-slider.js"></script>

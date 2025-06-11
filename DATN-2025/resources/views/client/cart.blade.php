@@ -99,14 +99,14 @@
                                         @if(Auth::check())
                                             @if($size)
                                                 <div>{{ $size->size ?? 'Không rõ' }}</div>
-                                                <div class="size-price">{{ number_format($size->price) }} VND</div>
+                                                
                                             @else
                                                 <div>Không rõ</div>
                                             @endif
                                         @else
                                             @if(isset($item->size_name) && isset($item->size_price))
                                                 <div>{{ $item->size_name }}</div>
-                                                <div class="size-price">{{ number_format($item->size_price) }} VND</div>
+                                            
                                             @else
                                                 <div>{{ $item->size_name ?? 'Không rõ' }}</div>
                                             @endif
@@ -619,4 +619,59 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
+<style>
+    .coupon-list-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.coupon-card {
+    width: calc(25% - 10px); /* 4 cái trên 1 hàng */
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-size: 13px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.coupon-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.coupon-details p {
+    margin: 3px 0;
+    font-size: 12px;
+}
+
+.apply-coupon-btn,
+.remove-applied-coupon-btn {
+    font-size: 12px;
+    margin-top: 5px;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    background-color:dc3545;
+    color: white;
+    cursor: pointer;
+}
+
+.remove-applied-coupon-btn {
+    background-color: #dc3545;
+}
+
+.selected-coupon {
+    border-color: #28a745;
+    background-color: #e9fbe9;
+}
+
+</style>
 @endsection

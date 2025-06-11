@@ -42,6 +42,10 @@
                                             <label>Email</label>
                                             <input name="email" type="email" required>
                                         </div>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <label>Phone</label>
+                                            <input name="phone" type="text" required>
+                                        </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <label>Your Message *</label>
                                           <textarea id="editor" name="massage" required></textarea>
@@ -119,6 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (data.success) {
         messageBox.innerHTML = `<div style='color: green; background-color: #e6ffe6; padding: 10px;'>${data.message}</div>`;
         form.reset();
+        $('#editor').summernote('reset');  // Reset Summernote editor
       } else {
         messageBox.innerHTML = `<div style='color: red; background-color: #ffe6e6; padding: 10px;'>${data.message || 'Gửi thất bại!'}</div>`;
       }
