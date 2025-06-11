@@ -237,7 +237,7 @@ use App\Http\Controllers\admin\AdminStaffController;
                 Route::post('/update/{id}', [BlogsController::class, 'update'])->name('blogs.update');
                 Route::get('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
         });
-        });
+ });
         Route::get('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->name('product_img.delete');
         Route::get('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
         Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
