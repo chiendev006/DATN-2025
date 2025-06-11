@@ -272,6 +272,10 @@ Route::prefix('bartender')->middleware('checkStaff')->group(function () {
     Route::get('/edit/{id}', [BartenderController::class, 'edit'])->name('bartender.edit');
     Route::post('/update/{id}', [BartenderController::class, 'update'])->name('bartender.update');
     Route::get('/delete/{id}', [BartenderController::class, 'delete'])->name('bartender.delete');
+    Route::get('/order/{id}', [BartenderController::class, 'orderDetail'])->name('bartender.order.detail');
+    Route::post('/order-detail/{id}/update-status', [BartenderController::class, 'updateOrderDetailStatus'])->name('bartender.order.detail.status');
+    Route::get('/get-order-details/{id}', [BartenderController::class, 'getOrderDetails'])->name('bartender.get.order.details');
+    Route::post('/update-order-status/{id}', [BartenderController::class, 'updateOrderStatus'])->name('bartender.update.order.status');
 });
 
 // Test route for middleware
