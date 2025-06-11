@@ -9,9 +9,11 @@ use App\Models\SanPham;
 use App\Models\DanhMuc;
 use App\Models\Topping;
 use App\Models\Order;
+use App\Models\Orderdetail;
 use Carbon\Carbon;
-
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class StaffController extends Controller
 {
@@ -21,16 +23,75 @@ class StaffController extends Controller
         return redirect()->route('staff.products'); // chuyển thẳng về trang sản phẩm
     }
 
-    public function getOptions($id)
+    public function ajaxShow($id)
     {
-        $products = SanPham::all();
-        $attributes = Size::where('product_id', $id)->get(['size', 'price']);
-        $toppings = Product_topping::where('product_id', $id)->get(['topping', 'price']);
+        $product = SanPham::where('id', $id)->first();
+
+        $sizes = \DB::table('product_attributes')
+            ->where('product_id', $id)
+            ->select('id', 'size', 'price')
+            ->get();
+
+        $toppings = \DB::table('product_topping')
+            ->where('product_id', $id)
+            ->select('id', 'topping', 'price')
+            ->get();
+
         return response()->json([
-            'attributes' => $attributes,
-            'toppings' => $toppings
-        ], 200);
+            'id' => $product->id,
+            'name' => $product->name,
+            'image' => asset('storage/uploads/' . $product->image),
+            'mota' => $product->mota,
+            'sizes' => $sizes,
+            'toppings' => $toppings,
+        ]);
     }
+
+    // use DB, Order, OrderDetail, ...
+    public function store(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            // Lưu order
+            $order = new Order();
+            $order->user_id = Auth::guard('staff')->user()->id;
+            $order->name = 'Khách lẻ';
+            $order->phone = 'N/A';
+            $order->address_id = null;
+            $order->address_detail = null;
+            $order->shipping_fee = 0;
+            $order->payment_method = $request->payment_method ?? 'cash';
+            $order->total = $request->total;
+            $order->status = 'pending';
+            $order->save();
+            // Lưu chi tiết order
+            foreach ($request->cart as $item) {
+                $detail = new Orderdetail();
+                $detail->order_id = $order->id;
+                $detail->product_id = $item['product_id'];
+                $detail->product_name = $item['product_name'];
+                $detail->product_price = $item['product_price'];
+                $detail->quantity = $item['quantity'];
+                $detail->total = $item['total'];
+                $detail->size_id = $item['size_id'];
+                $detail->topping_id = (isset($item['toppings']) && is_array($item['toppings']))
+                    ? implode(',', $item['toppings']) : '';
+
+                $detail->status = 'pending';
+                $detail->save();
+            }
+            DB::commit();
+            return response()->json(['message' => 'Đặt hàng thành công!']);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'error' => 'Có lỗi xảy ra!',
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
+    }
+
 
     public function products()
     {
