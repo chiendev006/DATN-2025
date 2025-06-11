@@ -17,6 +17,7 @@ class StaffController extends Controller
 {
     public function index()
     {
+        $message = session('message');
         return redirect()->route('staff.products'); // chuyển thẳng về trang sản phẩm
     }
 
