@@ -340,7 +340,13 @@
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $sanpham->id }}">
                                 <div class="field-wrapper">
-                                    <input type="text" name="size_name"  placeholder="Tên" required />
+                                  <select name="size_name" id="size" class="select-single js-states" id="sizes[${sizeIndex}][size]" title="Select Product Category" data-live-search="true">
+                                    <option value="S">S</option>
+                                    <option value="M">M</option>
+                                    <option value="L">L</option>
+                                    <option value="XL">XL</option>
+                                    <option value="XXL">XXL</option>
+                                    </select>
                                     <div class="field-placeholder">Tên Size</div>
 
                                 </div>
@@ -465,6 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
         div.addEventListener('click', function() {
             if (confirm('Bạn có chắc muốn xóa size này?')) {
                 const sizeId = this.getAttribute('data-id');
+                const element = this;
                 fetch(`/admin/size/delete/${sizeId}`, {
                     method: 'GET',
                     headers: {
@@ -474,8 +481,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                       localStorage.setItem('successMessage', 'Xóa Size-Giá thành công!');
-                       location.reload();
+                       showCustomSuccess('Xóa Size-Giá thành công!');
+                       element.remove();
                     } else {
                         alert('Xóa Size-Giá thất bại!');
                     }
@@ -490,6 +497,7 @@ document.addEventListener('DOMContentLoaded', function() {
         span.addEventListener('click', function() {
             if (confirm('Bạn có chắc muốn xóa topping này?')) {
                 const toppingId = this.getAttribute('data-id');
+                const element = this;
                 fetch(`/admin/topping_detail/delete/${toppingId}`, {
                     method: 'GET',
                     headers: {
@@ -499,8 +507,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                       localStorage.setItem('successMessage', 'Xóa Topping thành công!');
-                       location.reload();
+                       showCustomSuccess('Xóa Topping thành công!');
+                       element.remove();
                     } else {
                         alert('Xóa Topping thất bại!');
                     }
@@ -515,6 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
         img.addEventListener('click', function() {
             if (confirm('Bạn có chắc muốn xóa ảnh này?')) {
                 const imgId = this.getAttribute('data-id');
+                const element = this.closest('.product-item');
                 fetch(`/admin/product_img/delete/${imgId}`, {
                     method: 'GET',
                     headers: {
@@ -524,8 +533,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                       localStorage.setItem('successMessage', 'Xóa Ảnh thành công!');
-                       location.reload();
+                       showCustomSuccess('Xóa Ảnh thành công!');
+                       element.remove();
                     } else {
                         alert('Xóa Ảnh thất bại!');
                     }

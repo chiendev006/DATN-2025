@@ -72,7 +72,7 @@
                                                                     <i class="icon-edit1 text-info"></i>
                                                                 </button>
 
-                                                                <a href="{{ route('topping.delete', ['id' => $item->id]) }}" onclick="return confirm('Ngừng phục vụ topping này?')"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
+                                                                <a href="javascript:void(0)" onclick="deleteViaPost('{{ route('topping.delete', ['id' => $item->id]) }}', 'Ngừng phục vụ topping này?')" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
                                                                     <i class="icon-x-circle text-danger"></i>
                                                                 </a>
                                                             </div>

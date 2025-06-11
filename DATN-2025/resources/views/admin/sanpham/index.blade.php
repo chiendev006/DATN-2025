@@ -92,7 +92,7 @@
                                                                		<a href="{{ route('sanpham.edit', ['id' => $sp->id]) }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit">
                                                                			<i class="icon-edit1 text-info"></i>
                                                                		</a>
-                                                               		<a href="{{ route('sanpham.delete', ['id' => $sp->id]) }}" onclick="return confirm('Bạn có chắc chắn muốn xóa ?')"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
+                                                               		<a href="javascript:void(0)" onclick="deleteViaPost('{{ route('sanpham.delete', ['id' => $sp->id]) }}', 'Bạn có chắc chắn muốn xóa?')" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
                                                                			<i class="icon-x-circle text-danger"></i>
                                                                		</a>
                                                                	</div>

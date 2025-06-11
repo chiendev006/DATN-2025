@@ -19,6 +19,7 @@
     id="app"
     class="app app-content-full-height app-without-sidebar app-without-header"
 >
+
     <!-- BEGIN #content -->
     <div id="content" class="app-content p-0">
         <!-- BEGIN pos -->
@@ -72,6 +73,7 @@
                 <!-- END pos-menu -->
 
                 <!-- BEGIN pos-content -->
+
                 <div class="pos-content">
     <div class="pos-content-container h-100">
         <div class="search-bar-container text-center my-4">
@@ -82,7 +84,15 @@
                 </button>
             </form>
         </div>
-
+        @if(session('message'))
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <strong>Thông báo!</strong> {{ session('message') }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <script>
+            alert("{{ session('message') }}");
+        </script>
+        @endif
         @if (isset($sanpham))
             @if($sanpham->isEmpty())
                 <div class="text-center text-danger fs-4 mt-4">

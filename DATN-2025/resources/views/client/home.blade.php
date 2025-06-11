@@ -423,7 +423,7 @@
                   data-wow-duration="1000ms"
                   data-wow-delay="300ms"
                 >
-                  <a href="menu_fixed.html" class="button-default"
+                  <a href="/menu" class="button-default"
                     >Explore Full Menu</a
                   >
                 </div>

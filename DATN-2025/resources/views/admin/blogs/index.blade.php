@@ -129,18 +129,18 @@
                                </tr>
                                @else
                                @foreach ($blogs as $item)
-    <tr>
-       <td>{{ $item->title }}</td>
-       <td style="max-width:400px; word-break:break-word;">{!!  $item->content !!}</td>
-       <td><img src="{{ asset('storage/'.$item->image) }}" alt="Ảnh bìa" style="width: 100px; height: 100px;"></td>
-       <td>{{ $item->created_at }}</td>
-       <td>{{ $item->updated_at }}</td>
-        <td style="width:90px; text-align:center;">
-            <a style="color: white; width: 60px; margin-bottom:4px;" href="{{ route('blogs.edit', $item->id) }}" class="btn-success">Sửa</a>
-            <a style="color: white; width: 60px;" href="{{ route('blogs.destroy', $item->id) }}" onclick="return confirm('  Xác nhận xóa bài viết?')" class="btn-success1">Xóa</a>
-        </td>
-    </tr>
-@endforeach
+                                    <tr>
+                                    <td>{{ $item->title }}</td>
+                                    <td style="max-width:400px; word-break:break-word;">{!!  $item->content !!}</td>
+                                    <td><img src="{{ asset('storage/'.$item->image) }}" alt="Ảnh bìa" style="width: 100px; height: 100px;"></td>
+                                    <td>{{ $item->created_at }}</td>
+                                    <td>{{ $item->updated_at }}</td>
+                                        <td style="width:90px; text-align:center;">
+                                            <a style="color: white; width: 60px; margin-bottom:4px;" href="{{ route('blogs.edit', $item->id) }}" class="btn-success">Sửa</a>
+                                            <a style="color: white; width: 60px;" href="{{ route('blogs.destroy', $item->id) }}" onclick="return confirm('  Xác nhận xóa bài viết?')" class="btn-success1">Xóa</a>
+                                        </td>
+                                    </tr>
+                                @endforeach
                                @endif
                                 </tbody>
                             </table>

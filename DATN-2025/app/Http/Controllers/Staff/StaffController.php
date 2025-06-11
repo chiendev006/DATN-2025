@@ -19,6 +19,7 @@ class StaffController extends Controller
 {
     public function index()
     {
+        $message = session('message');
         return redirect()->route('staff.products'); // chuyển thẳng về trang sản phẩm
     }
 
@@ -96,7 +97,8 @@ class StaffController extends Controller
     {
         $sanpham = SanPham::all();
         $danhmuc = DanhMuc::all();
-        return view('staff.menu', compact('sanpham', 'danhmuc'));
+        $message = session('message');
+        return view('staff.menu', compact('sanpham', 'danhmuc', 'message'));
     }
 
     public function productsByCategory($id)
@@ -104,10 +106,11 @@ class StaffController extends Controller
         $sanpham = SanPham::where('id_danhmuc', $id)->get();
         $danhmuc = DanhMuc::all();
         $selectedDanhmuc = DanhMuc::find($id);
+        $message = session('message');
         if (!$selectedDanhmuc) {
             return redirect()->route('staff.products')->with('error', 'Danh mục không tồn tại.');
         }
-        return view('staff.menu', compact('sanpham', 'danhmuc', 'selectedDanhmuc'));
+        return view('staff.menu', compact('sanpham', 'danhmuc', 'selectedDanhmuc', 'message'));
     }
      public function orderdetailtoday()
     {

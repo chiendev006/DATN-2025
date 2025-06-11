@@ -6,8 +6,8 @@
             <div class="container">
                 <div class="breadcrumb-nav-inner">
                     <ul>
-                        <li><a href="index-2.html">Home</a></li>
-                        <li class="active"><a href="#">Shop</a></li>
+                        <li><a href="">Home</a></li>
+                        <li class="active"><a href="{{ route('shop.index') }}">Shop</a></li>
                     </ul>
                     <label class="now">SHOP</label>
                 </div>
@@ -110,7 +110,7 @@
                                         <div class="shop-main-list">
                                             <div class="shop-product">
                                                 <a href="{{ route('client.product.detail', $product->id) }}">
-                                                    <img class="" src="{{ url('storage/uploads/'.$product->image) }}" alt="{{ $product->name }}" style="border-radius: 20px;">
+                                                    <img src="{{ url('storage/uploads/'.$product->image) }}" alt="{{ $product->name }}" style="border-radius: 20px;">
                                                 </a>
                                                 <div class="cart-overlay-wrap">
                                                     <div class="cart-overlay">
@@ -146,204 +146,14 @@
     </div>
 </main>
 
-     <script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('#category-list a').forEach(function (link) {
-        link.addEventListener('click', function (e) {
-            e.preventDefault();
-            let categoryId = this.dataset.id;
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css">
 
-            fetch('/shop/category/' + categoryId)
-                .then(res => res.json())
-                .then(data => {
-                    const productList = document.getElementById('product-list');
-                    productList.innerHTML = '';
-
-                    data.products.forEach(product => {
-                        productList.innerHTML += `
-                            <div class="col-md-4">
-                                <div class="shop-main-list">
-                                    <div class="shop-product">
-                                        <a href="/product/${product.id}">
-                                            <img src="/storage/uploads/${product.image}" alt="${product.name}" style="border-radius: 20px;">
-                                        </a>
-                                        <div class="cart-overlay-wrap">
-                                            <div class="cart-overlay">
-                                                <a href="/product/${product.id}" class="shop-cart-btn">ADD TO CART</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <a href="/product/${product.id}"><h5>${product.name}</h5></a>
-                                    <h5><strong>${Number(product.min_price).toLocaleString()} VND</strong></h5>
-                                </div>
-                            </div>
-                        `;
-                    });
-                });
-        });
-    });
-});
-</script>
-
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $('#btn-search').on('click', function () {
-        let keyword = $('#search').val();
-
-        $.ajax({
-            url: "{{ route('ajax.search') }}",
-            type: "GET",
-            data: { search: keyword },
-            success: function (response) {
-                let html = '';
-
-                if(response.sanpham.length > 0) {
-                    response.sanpham.forEach(function(item) {
-                        html += `
-                            <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown">
-                                <div class="shop-main-list">
-                                    <div class="shop-product">
-                                        <a href="/product/${item.id}">
-                                            <img src="${item.image}" alt="${item.name}" style="border-radius: 20px;">
-                                        </a>
-                                        <div class="cart-overlay-wrap">
-                                            <div class="cart-overlay">
-                                                <a href="{{ route('client.product.detail', $product->id) }}" class="shop-cart-btn">ADD TO CART</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <a href="/product/${item.id}"><h5>${item.name}</h5></a>
-                                    <h5><strong>${Number(item.min_price).toLocaleString('vi-VN')} VND</strong></h5>
-                                </div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    html = '<p class="text-center">Không tìm thấy sản phẩm nào.</p>';
-                }
-
-                $('#product-list').html(html);
-            }
-        });
-    });
-    // Name sp 
-    document.getElementById('btn-search').addEventListener('click', function () {
-    let keyword = document.getElementById('search').value;
-
-    $.ajax({
-        url: "{{ route('ajax.search') }}",
-        type: "GET",
-        data: { search: keyword },
-        success: function (response) {
-            let html = '';
-
-            if (response.sanpham.length > 0) {
-                response.sanpham.forEach(function (item) {
-                    html += `
-                        <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown">
-                            <div class="shop-main-list">
-                                <div class="shop-product">
-                                    <a href="/product/${item.id}">
-                                        <img src="${item.image}" alt="${item.name}" style="border-radius: 20px;">
-                                    </a>
-                                    <div class="cart-overlay-wrap">
-                                        <div class="cart-overlay">
-                                            <a href="{{ route('client.product.detail', $product->id) }}" class="shop-cart-btn">ADD TO CART</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <a href="/product/${item.id}"><h5>${item.name}</h5></a>
-                                <h5><strong>${Number(item.min_price).toLocaleString('vi-VN')} VND</strong></h5>
-                            </div>
-                        </div>
-                    `;
-                });
-            } else {
-                html = '<p class="text-center">Không tìm thấy sản phẩm nào.</p>';
-            }
-
-            $('#product-list').html(html);
-        }
-    });
-});
-$(document).ready(function () {
-    // Khởi tạo slider
-    var slider = new Slider('#price-range', {
-        formatter: function(value) {
-            return formatVND(value[0]) + ' — ' + formatVND(value[1]);
-        }
-    });
-
-    // Hàm format số thành VND
-    function formatVND(number) {
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(number);
-    }
-
-    // Cập nhật label khi slider thay đổi
-    slider.on('slide', function(value) {
-        $("#price-range-label").text(formatVND(value[0]) + ' — ' + formatVND(value[1]));
-    });
-
-    // Xử lý nút lọc giá
-    $('#btn-filter').on('click', function (e) {
-        e.preventDefault();
-        
-        let range = slider.getValue();
-        let minPrice = range[0];
-        let maxPrice = range[1];
-
-        // Thêm loading state
-        $('#product-list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x"></i></div>');
-
-        $.ajax({
-            url: "{{ route('ajax.filter.price') }}",
-            type: "GET",
-            data: { min: minPrice, max: maxPrice },
-            success: function (response) {
-                let html = '';
-
-                if(response.sanpham && response.sanpham.length > 0) {
-                    response.sanpham.forEach(function(item) {
-                        html += `
-                            <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown">
-                                <div class="shop-main-list">
-                                    <div class="shop-product">
-                                        <a href="/product/${item.id}">
-                                            <img src="${item.image}" alt="${item.name}" style="border-radius: 20px;">
-                                        </a>
-                                        <div class="cart-overlay-wrap">
-                                            <div class="cart-overlay">
-                                                <a href="{{ route('client.product.detail', $product->id) }}" class="shop-cart-btn">ADD TO CART</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <a href="/product/${item.id}"><h5>${item.name}</h5></a>
-                                    <h5><strong>${formatVND(item.min_price)}</strong></h5>
-                                </div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    html = '<div class="col-12 text-center"><p>Không tìm thấy sản phẩm nào trong khoảng giá này.</p></div>';
-                }
-
-                $('#product-list').html(html);
-            },
-            error: function() {
-                $('#product-list').html('<div class="col-12 text-center"><p>Đã có lỗi xảy ra. Vui lòng thử lại.</p></div>');
-            }
-        });
-    });
-});
-
-</script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // Define the product detail route template
+    const productDetailRoute = "{{ route('client.product.detail', ':id') }}";
     const productList = document.getElementById('product-list');
     const paginationContainer = document.querySelector('.gallery-pagination-inner ul');
     const resultText = document.querySelector('.shop-search h6');
@@ -351,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to fetch products
     function fetchProducts(page, danhmucId) {
-        const url = `/shop?page=${page}&danhmuc_id=${danhmucId}`;
+        const url = `{{ route('shop.index') }}?page=${page}&danhmuc_id=${danhmucId}`;
         fetch(url, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
@@ -365,16 +175,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                     <div class="shop-main-list">
                         <div class="shop-product">
-                            <a href="/shop/product/${product.id}">
+                            <a href="${productDetailRoute.replace(':id', product.id)}">
                                 <img src="/storage/uploads/${product.image}" alt="${product.name}" style="border-radius: 20px;">
                             </a>
                             <div class="cart-overlay-wrap">
                                 <div class="cart-overlay">
-                                    <a href="/shop/product/${product.id}" class="shop-cart-btn">ADD TO CART</a>
+                                    <a href="${productDetailRoute.replace(':id', product.id)}" class="shop-cart-btn">ADD TO CART</a>
                                 </div>
                             </div>
                         </div>
-                        <a href="/shop/product/${product.id}"><h5>${product.name}</h5></a>
+                        <a href="${productDetailRoute.replace(':id', product.id)}"><h5>${product.name}</h5></a>
                         <h5><strong>${new Intl.NumberFormat('vi-VN').format(product.min_price)} VND</strong></h5>
                     </div>
                 </div>
@@ -428,47 +238,153 @@ document.addEventListener('DOMContentLoaded', function () {
         const page = target.getAttribute('data-page');
         fetchProducts(page, currentDanhmucId);
     });
+
+    // Handle search
+    $('#btn-search').on('click', function () {
+        let keyword = $('#search').val();
+
+        $.ajax({
+            url: "{{ route('ajax.search') }}",
+            type: "GET",
+            data: { search: keyword },
+            success: function (response) {
+                let html = '';
+
+                if (response.sanpham.length > 0) {
+                    response.sanpham.forEach(function (item) {
+                        html += `
+                            <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown">
+                                <div class="shop-main-list">
+                                    <div class="shop-product">
+                                        <a href="${productDetailRoute.replace(':id', item.id)}">
+                                            <img src="/storage/uploads/${item.image}" alt="${item.name}" style="border-radius: 20px;">
+                                        </a>
+                                        <div class="cart-overlay-wrap">
+                                            <div class="cart-overlay">
+                                                <a href="${productDetailRoute.replace(':id', item.id)}" class="shop-cart-btn">ADD TO CART</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a href="${productDetailRoute.replace(':id', item.id)}"><h5>${item.name}</h5></a>
+                                    <h5><strong>${new Intl.NumberFormat('vi-VN').format(item.min_price)} VND</strong></h5>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = '<p class="text-center">Không tìm thấy sản phẩm nào.</p>';
+                }
+
+                $('#product-list').html(html);
+            },
+            error: function() {
+                $('#product-list').html('<p class="text-center">Đã có lỗi xảy ra. Vui lòng thử lại.</p>');
+            }
+        });
+    });
+
+    // Initialize slider
+    var slider = new Slider('#price-range', {
+        formatter: function(value) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 }).format(value[0]) + 
+                   ' — ' + 
+                   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 }).format(value[1]);
+        }
+    });
+
+    // Update price range label
+    slider.on('slide', function(value) {
+        $("#price-range-label").text(
+            new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 }).format(value[0]) + 
+            ' — ' + 
+            new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 }).format(value[1])
+        );
+    });
+
+    // Handle price filter
+    $('#btn-filter').on('click', function (e) {
+        e.preventDefault();
+        
+        let range = slider.getValue();
+        let minPrice = range[0];
+        let maxPrice = range[1];
+
+        $('#product-list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x"></i></div>');
+
+        $.ajax({
+            url: "{{ route('ajax.filter.price') }}",
+            type: "GET",
+            data: { min: minPrice, max: maxPrice },
+            success: function (response) {
+                let html = '';
+
+                if (response.sanpham && response.sanpham.length > 0) {
+                    response.sanpham.forEach(function (item) {
+                        html += `
+                            <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown">
+                                <div class="shop-main-list">
+                                    <div class="shop-product">
+                                        <a href="${productDetailRoute.replace(':id', item.id)}">
+                                            <img src="/storage/uploads/${item.image}" alt="${item.name}" style="border-radius: 20px;">
+                                        </a>
+                                        <div class="cart-overlay-wrap">
+                                            <div class="cart-overlay">
+                                                <a href="${productDetailRoute.replace(':id', item.id)}" class="shop-cart-btn">ADD TO CART</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a href="${productDetailRoute.replace(':id', item.id)}"><h5>${item.name}</h5></a>
+                                    <h5><strong>${new Intl.NumberFormat('vi-VN').format(item.min_price)} VND</strong></h5>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = '<div class="col-12 text-center"><p>Không tìm thấy sản phẩm nào trong khoảng giá này.</p></div>';
+                }
+
+                $('#product-list').html(html);
+            },
+            error: function() {
+                $('#product-list').html('<div class="col-12 text-center"><p>Đã có lỗi xảy ra. Vui lòng thử lại.</p></div>');
+            }
+        });
+    });
 });
 </script>
+
 <style>
 .slider-wrapper {
     padding: 10px 15px;
     margin-bottom: 20px;
 }
-
 .slider.slider-horizontal {
     width: 100%;
     height: 20px;
     margin: 0 auto;
 }
-
 .slider-track {
     background: #e9ecef;
     box-shadow: none;
 }
-
 .slider-selection {
     background: #c7a17a;
     box-shadow: none;
 }
-
 .slider-handle {
     background: #c7a17a;
     border: 2px solid #fff;
     box-shadow: 0 0 3px rgba(0,0,0,0.3);
 }
-
 .slider-handle:hover {
     background: #b08b63;
 }
-
 #price-range-label {
     font-size: 14px;
     color: #666;
     margin-bottom: 10px;
     display: inline-block;
 }
-
 .filter-btn {
     background: #c7a17a;
     color: #fff;
@@ -478,12 +394,9 @@ document.addEventListener('DOMContentLoaded', function () {
     display: inline-block;
     transition: all 0.3s ease;
 }
-
 .filter-btn:hover {
     background: #b08b63;
     color: #fff;
 }
 </style>
-
-
 @endsection

@@ -27,13 +27,13 @@
                 <div class="row">
                     <div class="col-md-12 text-center wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                         <div class="shop-checkout-left">
-                            <h3>Thank you for your order!</h3>
+                            <h3>Cảm ơn bạn đã đặt hàng!</h3>
                             @if(session('success'))
                                 <div class="alert alert-success">
                                     {{ session('success') }}
                                 </div>
                             @endif
-                            <h4 class="mt-5 mb-3">Order Details</h4>
+                            <h4 class="mt-5 mb-3">Chi tiết đơn hàng</h4>
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
@@ -51,62 +51,76 @@
                                     @if($order->orderDetails->isNotEmpty())
                                         @foreach($order->orderDetails as $item)
                                             <tr>
-                                             <td>
-                                                @if($item->product && $item->product->image)
-                                                    <img src="{{ asset('storage/uploads/'.$item->product->image) }}" alt="Sản phẩm" width="80">
-                                                @else
-                                                    <p>Không có ảnh</p>
-                                                @endif
-                                            </td>
+                                                <td>
+                                                    @if($item->product && $item->product->image)
+                                                        <img src="{{ asset('storage/uploads/'.$item->product->image) }}" alt="Sản phẩm" width="80">
+                                                    @else
+                                                        <p>Không có ảnh</p>
+                                                    @endif
+                                                </td>
                                                 <td>{{ $item->product_name }}</td>
-                                                <td>{{ $item->size_id ? ($item->size->size ?? 'Không topping') : 'Không topping' }}</td>
-                                            <td>
-                                                @php
-                                                    $toppingIds = (!empty($item->topping_id) && is_string($item->topping_id)) 
-                                                        ? explode(',', $item->topping_id) 
-                                                        : [];
-                                                @endphp
+                                                {{-- SỬA LỖI LOGIC: Hiển thị size hợp lý hơn --}}
+                                                <td>{{ $item->size->size ?? 'Không có' }}</td>
+                                                <td>
+                                                    @php
+                                                        $toppingIds = (!empty($item->topping_id) && is_string($item->topping_id)) 
+                                                            ? explode(',', $item->topping_id) 
+                                                            : [];
+                                                    @endphp
 
-                                                @if(!empty($toppingIds))
-                                                    @foreach($toppingIds as $toppingId)
-                                                        @php $toppingId = (int) trim($toppingId); @endphp
-                                                        @if(isset($allToppings[$toppingId]))
-                                                            <div>
-                                                                {{ $allToppings[$toppingId]->topping ?? 'Không tên' }} 
-                                                                ({{ number_format($allToppings[$toppingId]->price ?? 0, 0) }}đ)
-                                                            </div>
-                                                        @else
-                                                            <div>Unknown Topping (ID: {{ $toppingId }})</div>
-                                                        @endif
-                                                    @endforeach
-                                                @else
-                                                    <div>Không topping</div>
-                                                @endif
-                                            </td>
-
-                                                <td>{{ $order->address }}</td>
+                                                    @if(!empty($toppingIds) && count(array_filter($toppingIds)) > 0)
+                                                        @foreach($toppingIds as $toppingId)
+                                                            @php $toppingId = (int) trim($toppingId); @endphp
+                                                            @if(isset($allToppings[$toppingId]))
+                                                                <div>
+                                                                    {{ $allToppings[$toppingId]->topping ?? 'Không tên' }} 
+                                                                    ({{ number_format($allToppings[$toppingId]->price ?? 0, 0) }}đ)
+                                                                </div>
+                                                            @else
+                                                                <div>Unknown Topping (ID: {{ $toppingId }})</div>
+                                                            @endif
+                                                        @endforeach
+                                                    @else
+                                                        <div>Không topping</div>
+                                                    @endif
+                                                </td>
+                                                
+                                                {{-- THAY ĐỔI: Sử dụng các trường địa chỉ mới từ DB --}}
+                                                <td>{{ $order->address_detail }}, {{ $order->district_name }}</td>
+                                                
                                                 <td>{{ $item->quantity }}</td>
                                                 <td>{{ number_format($item->product_price, 0) }}đ</td>
                                                 <td>{{ number_format($item->total, 0) }}đ</td>
                                             </tr>
                                         @endforeach
                                     @else
-                                        <tr><td colspan="6">No order details available.</td></tr>
+                                        <tr><td colspan="8">Không có chi tiết đơn hàng.</td></tr>
                                     @endif
                                 </tbody>
                             </table>
-                                 <div style="color: red;" class="text-right mt-3">
-                                <h5>Tiền ship: <strong>{{ number_format($order->shipping_fee, 0) }}đ</strong></h5>
-                            </div>
-                            <div style="color: red;" class="text-right mt-3">
-                                <h5>Tổng tiền: <strong>{{ number_format($order->total, 0) }}đ</strong></h5>
+                            
+                            {{-- THAY ĐỔI: Thêm phần hiển thị giảm giá và tổng tiền --}}
+                            <div class="text-right mt-3" style="max-width: 400px; margin-left: auto;">
+                                <h5 style="display: flex; justify-content: space-between;">
+                                    <span>Giảm giá:</span>
+                                    <strong style="color: green;">-{{ number_format($order->coupon_total_discount, 0) }}đ</strong>
+                                </h5>
+                                <h5 style="display: flex; justify-content: space-between;">
+                                    <span>Tiền ship:</span>
+                                    <strong>{{ number_format($order->shipping_fee, 0) }}đ</strong>
+                                </h5>
+                                <hr>
+                                <h5 style="display: flex; justify-content: space-between; color: red;">
+                                    <span>Tổng tiền:</span>
+                                    <strong>{{ number_format($order->total, 0) }}đ</strong>
+                                </h5>
                             </div>
 
-                            <p>Your order has been placed and will be processed as soon as possible.</p>
-                            <p>Make sure you make note of your order number, which is <strong>#{{ session('order_number') }}</strong></p>
-                            <p>You will be receiving an email shortly with confirmation of your order.</p>
+                            <p class="mt-4">Đơn hàng của bạn đã được đặt và sẽ được xử lý sớm nhất có thể.</p>
+                            <p>Vui lòng ghi lại mã đơn hàng của bạn: <strong>#{{ session('order_number', $order->id) }}</strong></p>
+                            <p>Bạn sẽ sớm nhận được email xác nhận đơn hàng.</p>
                             <div class="mt-4">
-                                <a href="/shop" class="button-default btn-large btn-primary-gold">Continue Shopping</a>
+                                <a href="/shop" class="button-default btn-large btn-primary-gold">Tiếp tục mua sắm</a>
                             </div>
                         </div>
                     </div>

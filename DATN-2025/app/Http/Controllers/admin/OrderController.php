@@ -14,7 +14,10 @@ class OrderController extends Controller
     public function ordersIndex(Request $request)
     {
         $perPage = $request->input('per_page', 10);
-        $orders = Order::paginate($perPage);
+        $orders = Order::select(
+            'orders.*'
+        )->paginate($perPage);
+
         return view('admin.order.index', ['orders' => $orders]);
     }
 
@@ -22,8 +25,10 @@ class OrderController extends Controller
     {
         $order = \App\Models\Order::findOrFail($id);
         $order->pay_status = $request->input('pay_status');
+        $order->status = $request->input('status');
+        $order->cancel_reason = $request->input('cancel_reason');
         $order->save();
-        return redirect()->route('admin.order.index')->with('success', 'Cập nhật trạng thái thanh toán thành công!');
+        return redirect()->route('admin.order.index')->with('success', 'Cập nhật đơn hàng thành công!');
     }
 
     public function delete($id)
@@ -69,6 +74,10 @@ class OrderController extends Controller
         });
         $orderArr = $order->toArray();
         $orderArr['details'] = $details;
+
+        // Thêm thông tin tính toán
+        $orderArr['product_total'] = $order->total - $order->shipping_fee - $order->coupon_total_discount;
+
         return response()->json($orderArr);
     }
 
@@ -79,7 +88,7 @@ class OrderController extends Controller
     public function filterOrders(Request $request)
     {
         $perPage = $request->input('per_page', 10);
-        $query = Order::query();
+        $query = Order::query()->select('orders.*');
         $hasPayStatus = $request->filled('pay_status');
         $hasStatus = $request->filled('status');
 
@@ -104,7 +113,9 @@ class OrderController extends Controller
     {
         $perPage = $request->input('per_page', 10);
         $transactionId = $request->input('transaction_id');
-        $orders = Order::where('transaction_id', 'like', "%$transactionId%")
+        $orders = Order::select('orders.*')
+            ->where('name', 'like', "%$transactionId%")
+            ->orWhere('phone', 'like', "%$transactionId%")
             ->paginate($perPage);
         return view('admin.order.index', ['orders' => $orders]);
     }

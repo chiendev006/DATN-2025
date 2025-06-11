@@ -15,7 +15,6 @@
             </div>
         </section>
 
-        <!-- Start Shop Cart -->
         <section class="default-section shop-cart bg-grey">
             <div class="container">
                 <div class="checkout-wrap wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
@@ -46,7 +45,7 @@
                                 <th>XÓA</th>
                             </tr>
                         </thead>
-                        <tbody>
+                       <tbody>
                             @foreach($items as $item)
                             @php
                                 if (Auth::check()) {
@@ -54,7 +53,8 @@
                                     if (!$product) continue;
                                     $size = $item->size;
                                     $basePrice = $size ? $size->price : $product->price;
-                                    $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id ?? '')));
+                                    $toppingIdString = (string) ($item->topping_id ?? '');
+                                    $toppingIds = array_filter(array_map('trim', explode(',', $toppingIdString)));
                                     $toppings = \App\Models\Product_topping::whereIn('id', $toppingIds)->get();
                                     $toppingPrice = $toppings->sum('price');
                                     $unitPrice = $basePrice + $toppingPrice;
@@ -68,7 +68,16 @@
                                     $toppingPrice = array_sum($item->topping_prices ?? []);
                                     $unitPrice = $basePrice + $toppingPrice;
                                     $total = $unitPrice * $item->quantity;
-                                    $rowKey = $item->sanpham_id . '-' . $item->size_id . '-' . implode(',', $item->topping_ids ?? []);
+                                    $toppingIdsForImplode = [];
+                                    if (isset($item->topping_ids)) {
+                                        if (is_array($item->topping_ids)) {
+                                            $toppingIdsForImplode = $item->topping_ids;
+                                        } elseif (is_string($item->topping_ids) && $item->topping_ids !== '') {
+                                            $toppingIdsForImplode = array_map('intval', array_filter(array_map('trim', explode(',', (string) $item->topping_ids))));
+                                        }
+                                    }
+                                    $rowKey = $item->sanpham_id . '-' . ($item->size_id ?? '0') . '-' . implode(',', $toppingIdsForImplode);
+
                                     $image = $item->image;
                                     $name = $item->name;
                                     $quantity = $item->quantity;
@@ -143,8 +152,8 @@
                                             class="quantity-input" min="1" readonly
                                             data-key="{{ $rowKey }}"
                                             data-product_id="{{ Auth::check() ? $item->product_id : $item->sanpham_id }}"
-                                            data-size_id="{{ Auth::check() ? ($item->size_id ?? '0') : $item->size_id }}"
-                                            data-topping_ids="{{ Auth::check() ? implode(',', $toppingIds) : implode(',', $item->topping_ids ?? []) }}">
+                                            data-size_id="{{ Auth::check() ? ($item->size_id ?? '0') : ($item->size_id ?? '0') }}"
+                                            data-topping_ids="{{ Auth::check() ? implode(',', $toppingIds) : implode(',', $toppingIdsForImplode) }}">
                                         <span class="plus-text increment-btn"><i class="icon-plus"></i></span>
                                     </div>
                                 </td>
@@ -156,13 +165,49 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <div class="product-cart-detail">
-                        <div class="cupon-part">
-                            <input type="text" name="coupon_code" placeholder="Mã giảm giá">
-                        </div>
-                        <a href="#" class="btn-medium btn-dark-coffee" id="apply-coupon">Áp dụng mã</a>
-                        <a href="#" class="btn-medium btn-skin pull-right" id="update-cart">Cập nhật giỏ hàng</a>
+                   <div class="product-cart-detail">
+                <div class="coupon-selection-container">
+                    <label class="coupon-label">Chọn mã giảm giá:</label>
+                    <div class="coupon-list-wrapper">
+                        @forelse($availableCoupons as $coupon)
+                            <div class="coupon-card @if(session('coupons') && array_key_exists($coupon->code, session('coupons'))) selected-coupon @endif" data-code="{{ $coupon->code }}">
+                                <div class="coupon-header">
+                                    <span class="coupon-code">{{ $coupon->code }}</span>
+                                    <span class="coupon-discount-type">{{ $coupon->type === 'percent' ? $coupon->discount . '%' : number_format($coupon->discount) . ' VND' }}</span>
+                                </div>
+                                <div class="coupon-details">
+                                    @if($coupon->min_order_value)
+                                        <p class="coupon-condition">Đơn hàng tối thiểu: {{ number_format($coupon->min_order_value) }}đ</p>
+                                    @endif
+                                    @if($coupon->expires_at)
+                                        <p class="coupon-expiry">HSD: {{ \Carbon\Carbon::parse($coupon->expires_at)->format('d/m/Y') }}</p>
+                                    @endif
+                                    @if(!is_null($coupon->used) && !is_null($coupon->usage_limit))
+                                        <p class="coupon-usage">Còn lại: {{ $coupon->used }} / {{ $coupon->usage_limit }} lần</p>
+                                    @endif
+                                </div>
+                                <button type="button" class="apply-coupon-btn" data-code="{{ $coupon->code }}">Áp dụng</button>
+                                @if(session('coupons') && array_key_exists($coupon->code, session('coupons')))
+                                    <button type="button" class="remove-applied-coupon-btn" data-code="{{ $coupon->code }}">Gỡ bỏ</button>
+                                @endif
+                            </div>
+                        @empty
+                            <p class="no-coupon-message">Không có mã giảm giá khả dụng nào.</p>
+                        @endforelse
                     </div>
+
+        @if($expiredCoupons->count())
+            <div class="expired-coupon-section">
+                <p class="expired-coupon-title">Mã đã hết hạn:</p>
+                <ul class="expired-coupon-list">
+                    @foreach($expiredCoupons as $coupon)
+                        <li>{{ $coupon->code }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+    </div>
+</div>
                 </div>
 
                 @php
@@ -185,7 +230,11 @@
                     $coupons = session('coupons', []);
                     $discount = 0;
                     foreach ($coupons as $c) {
-                        $discount += ($c['type'] === 'percent') ? ($subtotal * $c['discount'] / 100) : $c['discount'];
+                        if ($c['type'] === 'percent') {
+                             $discount += ($subtotal * $c['discount']) / 100;
+                        } else {
+                            $discount += $c['discount'];
+                        }
                     }
                     $total = max(0, $subtotal - $discount);
                 @endphp
@@ -198,12 +247,18 @@
                         <small>Tạm tính</small>
                         <span id="cart-subtotal">{{ number_format($subtotal) }} VND</span>
                     </div>
-                    @foreach($coupons as $c)
-                    <div class="product-cart-total">
-                        <small>Mã giảm giá ({{ $c['code'] }})</small>
-                        <span>-{{ $c['type'] === 'percent' ? number_format($subtotal * $c['discount'] / 100) : number_format($c['discount']) }} VND</span>
+                    <div id="applied-coupons-display">
+                        @foreach(session('coupons', []) as $c)
+                        <div class="product-cart-total coupon-applied-row" data-code="{{ $c['code'] }}">
+                            <small>Mã giảm giá:  <span class="applied-coupon-code">{{ $c['code'] }}</span></small>
+                            @php
+                                $couponDisplayDiscount = ($c['type'] === 'percent') ? ($subtotal * $c['discount'] / 100) : $c['discount'];
+                            @endphp
+                            <span class="applied-coupon-discount">-{{ number_format($couponDisplayDiscount) }} VND</span>
+                        </div>
+                        @endforeach
                     </div>
-                    @endforeach
+
                     <div class="grand-total">
                         <h5>TỔNG CỘNG <span id="cart-total">{{ number_format($total) }} VND</span></h5>
                     </div>
@@ -219,8 +274,7 @@
                 @endif
             </div>
         </section>
-        <!-- End Shop Cart -->
-    </div>
+        </div>
 </main>
 @endsection
 
@@ -234,7 +288,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function formatCurrency(amount) {
-        return Number(amount).toLocaleString('vi-VN') + ' VND';
+        if (typeof amount !== 'number') {
+            amount = parseFloat(amount);
+            if (isNaN(amount)) {
+                return 'N/A';
+            }
+        }
+        return amount.toLocaleString('vi-VN') + ' VND';
     }
 
     function updateUIElements(data) {
@@ -254,20 +314,76 @@ document.addEventListener("DOMContentLoaded", function () {
             const totalEl = document.getElementById('cart-total');
             if (totalEl) totalEl.textContent = formatCurrency(data.total);
         }
+
+        const appliedCouponsDisplay = document.getElementById('applied-coupons-display');
+        if (appliedCouponsDisplay && data.applied_coupons !== undefined) {
+            appliedCouponsDisplay.innerHTML = '';
+            let discountHtml = '';
+            for (const code in data.applied_coupons) {
+                const coupon = data.applied_coupons[code];
+                let discountAmount;
+                if (coupon.type === 'percent') {
+                    const currentSubtotal = parseFloat(document.getElementById('cart-subtotal')?.textContent.replace(/\D/g, '')) || 0;
+                    discountAmount = (currentSubtotal * coupon.discount) / 100;
+                } else {
+                    discountAmount = coupon.discount;
+                }
+                discountHtml += `
+                    <div class="product-cart-total coupon-applied-row" data-code="${coupon.code}">
+                        <small>Mã giảm giá (<span class="applied-coupon-code">${coupon.code}</span>)</small>
+                        <span class="applied-coupon-discount">- ${formatCurrency(discountAmount)}</span>
+                    </div>
+                `;
+            }
+            appliedCouponsDisplay.innerHTML = discountHtml;
+        }
+        document.querySelectorAll('.remove-applied-coupon-btn').forEach(btn => {
+            btn.removeEventListener('click', handleRemoveCouponClick);
+        });
+
+        document.querySelectorAll('.coupon-card').forEach(card => {
+            card.classList.remove('selected-coupon');
+            const removeBtn = card.querySelector('.remove-applied-coupon-btn');
+            if (removeBtn) removeBtn.remove();
+        });
+
+        if (data.applied_coupons) {
+            for (const code in data.applied_coupons) {
+                const selectedCouponCard = document.querySelector(`.coupon-card[data-code="${code}"]`);
+                if (selectedCouponCard) {
+                    selectedCouponCard.classList.add('selected-coupon');
+                    let removeBtn = selectedCouponCard.querySelector('.remove-applied-coupon-btn');
+                    if (!removeBtn) {
+                        removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.className = 'remove-applied-coupon-btn';
+                        removeBtn.dataset.code = code;
+                        removeBtn.textContent = 'Gỡ bỏ';
+                        selectedCouponCard.appendChild(removeBtn);
+                    }
+                    removeBtn.addEventListener('click', handleRemoveCouponClick);
+                }
+            }
+        }
     }
 
     document.querySelectorAll('.remove-item').forEach(btn => {
         btn.addEventListener('click', async function (e) {
             e.preventDefault();
-            if (!confirm('Xóa sản phẩm?')) return;
+            if (!confirm('Xóa sản phẩm này khỏi giỏ hàng?')) return;
 
             const row = this.closest('tr');
             const key = this.dataset.key;
-            if (!key) {
-                console.error('Missing key for remove item');
+            const productId = row.querySelector('.quantity-input').dataset.product_id;
+            const sizeId = row.querySelector('.quantity-input').dataset.size_id;
+            const toppingIds = row.querySelector('.quantity-input').dataset.topping_ids;
+
+            if (!key && (!productId || sizeId === undefined)) {
+                console.error('Missing key or product identifiers for remove item');
                 return;
             }
-            logDebug('Remove Request', { key });
+
+            logDebug('Remove Request', { key, productId, sizeId, toppingIds });
             try {
                 const response = await fetch(`/cart/remove/${encodeURIComponent(key)}`, {
                     method: "POST",
@@ -275,16 +391,21 @@ document.addEventListener("DOMContentLoaded", function () {
                         "X-CSRF-TOKEN": csrfToken,
                         "Content-Type": "application/json",
                         "Accept": "application/json"
-                    }
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        size_id: sizeId,
+                        topping_ids: toppingIds ? toppingIds.split(',').map(id => parseInt(id)) : []
+                    })
                 });
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
                 logDebug('Remove Response', data);
+
                 if (data.success) {
                     row?.remove();
-                    updateUIElements(data);
                     const remainingRows = document.querySelectorAll('.shop-cart-table tbody tr');
                     if (remainingRows.length === 0) {
                         const cartTable = document.querySelector('.shop-cart-list');
@@ -302,9 +423,10 @@ document.addEventListener("DOMContentLoaded", function () {
                                 <p>Giỏ hàng trống.</p>
                                 <a href="/shop" class="btn-medium btn-dark-coffee">Tiếp tục mua sắm</a>
                             `;
-                            container.appendChild(emptyCart);
+                            document.querySelector('section.shop-cart .container').appendChild(emptyCart);
                         }
                     }
+                    updateUIElements(data);
                 } else {
                     alert(data.message || "Không thể xóa sản phẩm.");
                 }
@@ -336,7 +458,7 @@ document.addEventListener("DOMContentLoaded", function () {
             topping_ids: topping_ids ? topping_ids.split(',').map(id => parseInt(id)) : []
         };
 
-        logDebug('Update Request', requestData);
+        logDebug('Update Quantity Request', requestData);
 
         try {
             const response = await fetch('/cart/update', {
@@ -354,7 +476,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const data = await response.json();
-            logDebug('Update Response', data);
+            logDebug('Update Quantity Response', data);
 
             if (data.success) {
                 input.value = data.quantity;
@@ -366,7 +488,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return false;
             }
         } catch (error) {
-            console.error('Update Error:', error);
+            console.error('Update Quantity Error:', error);
             input.value = oldQuantity;
             alert("Lỗi khi cập nhật số lượng. Vui lòng thử lại.");
             return false;
@@ -394,18 +516,24 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    document.getElementById('apply-coupon')?.addEventListener('click', async function(e) {
+    async function handleApplyCouponClick(e) {
         e.preventDefault();
-        const couponInput = document.querySelector('input[name="coupon_code"]');
-        const couponCode = couponInput?.value;
+        const couponCode = this.dataset.code;
 
         if (!couponCode) {
-            alert('Vui lòng nhập mã giảm giá');
+            alert('Mã giảm giá không xác định.');
             return;
         }
 
-        const requestData = { code: couponCode };
-        logDebug('Coupon Request', requestData);
+        const subtotalText = document.getElementById('cart-subtotal')?.textContent;
+        const subtotal = parseFloat(subtotalText?.replace(/\D/g, '')) || 0;
+
+        const requestData = {
+            code: couponCode,
+            subtotal: subtotal
+        };
+
+        logDebug('Coupon Apply Request', requestData);
 
         try {
             const response = await fetch('/cart/apply-coupon', {
@@ -419,17 +547,75 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             const data = await response.json();
-            logDebug('Coupon Response', data);
+            logDebug('Coupon Apply Response', data);
 
             if (data.success) {
-                window.location.reload();
+                alert(data.message);
+                updateUIElements({
+                    subtotal: data.subtotal,
+                    discount: data.discount,
+                    total: data.total,
+                    applied_coupons: data.applied_coupons
+                });
             } else {
                 alert(data.message || "Mã giảm giá không hợp lệ");
             }
         } catch (error) {
-            console.error('Coupon Error:', error);
+            console.error('Coupon Apply Error:', error);
             alert("Lỗi khi áp dụng mã giảm giá. Vui lòng thử lại.");
         }
+    }
+
+    document.querySelectorAll('.apply-coupon-btn').forEach(btn => {
+        btn.addEventListener('click', handleApplyCouponClick);
+    });
+
+    document.querySelectorAll('.coupon-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (!e.target.classList.contains('apply-coupon-btn') && !e.target.classList.contains('remove-applied-coupon-btn')) {
+                this.querySelector('.apply-coupon-btn')?.click();
+            }
+        });
+    });
+
+    async function handleRemoveCouponClick(e) {
+        e.preventDefault();
+        const couponCodeToRemove = this.dataset.code;
+
+        if (!confirm('Bạn có muốn hủy áp dụng mã giảm giá này?')) return;
+
+        try {
+            const response = await fetch('/cart/remove-coupon', {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({ code: couponCodeToRemove })
+            });
+            const data = await response.json();
+            logDebug('Remove Coupon Response', data);
+
+            if (data.success) {
+                alert(data.message);
+                updateUIElements({
+                    subtotal: data.subtotal,
+                    discount: data.discount,
+                    total: data.total,
+                    applied_coupons: data.applied_coupons
+                });
+            } else {
+                alert(data.message || "Không thể hủy mã giảm giá.");
+            }
+        } catch (error) {
+            console.error('Remove Coupon Error:', error);
+            alert("Lỗi khi hủy mã giảm giá. Vui lòng thử lại.");
+        }
+    }
+
+    document.querySelectorAll('.remove-applied-coupon-btn').forEach(btn => {
+        btn.addEventListener('click', handleRemoveCouponClick);
     });
 });
 </script>

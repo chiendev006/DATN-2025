@@ -10,11 +10,14 @@ use App\Models\Topping;
 use App\Models\Product_topping;
 use App\Models\Cart;
 use App\Models\Cartdetail;
+use App\Models\Coupon;
 
 class CartController extends Controller
 {
     /**
+     * Display a listing of the resource.
      *
+     * @return \Illuminate\Http\Response
      */
     public function index()
     {
@@ -37,57 +40,89 @@ class CartController extends Controller
             $cart->load(['cartdetails.product', 'cartdetails.size']);
             $items = $cart->cartdetails;
 
-            if ($items) {
-                foreach ($items as $item) {
-                    if (!$item->product) continue;
+            foreach ($items as $item) {
+                if (!$item->product) continue;
 
-                    $size = $item->size;
-                    $basePrice = $size ? $size->price : $item->product->price;
+                $size = $item->size;
+                $basePrice = $size ? $size->price : $item->product->price;
 
-                    $toppingPrice = 0;
-                    if (!empty($item->topping_id)) {
-                        $toppingIds = array_filter(array_map('trim', explode(',', $item->topping_id)));
-                        if (!empty($toppingIds)) {
-                            $toppingPrice = Product_topping::whereIn('id', $toppingIds)->sum('price');
-                        }
+                $toppingPrice = 0;
+                if (!empty($item->topping_id)) {
+                    $toppingIdString = (string) $item->topping_id;
+                    $toppingIds = array_filter(array_map('trim', explode(',', $toppingIdString)));
+                    if (!empty($toppingIds)) {
+                        $toppingPrice = Product_topping::whereIn('id', $toppingIds)->sum('price');
                     }
-
-                    $subtotal += ($basePrice + $toppingPrice) * $item->quantity;
                 }
+
+                $subtotal += ($basePrice + $toppingPrice) * $item->quantity;
             }
         } else {
             $cartSession = session('cart', []);
             foreach ($cartSession as $key => $item) {
                 $items->push((object) $item);
+
                 $basePrice = $item['size_price'] ?? 0;
-                $toppingPrice = array_sum($item['topping_prices'] ?? []);
+                $toppingPrice = 0;
+
+                if (isset($item['topping_ids'])) {
+                    $sessionToppingIdsString = (string) $item['topping_ids'];
+                    if ($sessionToppingIdsString !== '') {
+                        $sessionToppingIdsArray = array_map('intval', array_filter(array_map('trim', explode(',', $sessionToppingIdsString))));
+
+                        if (!empty($sessionToppingIdsArray)) {
+                            $toppingPrice = Product_topping::whereIn('id', $sessionToppingIdsArray)->sum('price');
+                        }
+                    }
+                }
                 $subtotal += ($basePrice + $toppingPrice) * ($item['quantity'] ?? 1);
             }
         }
 
-        foreach ($coupons as $coupon) {
-            if ($coupon['type'] === 'percent') {
-                $discount += ($subtotal * $coupon['discount']) / 100;
-            } elseif ($coupon['type'] === 'fixed') {
-                $discount += $coupon['discount'];
-            }
-        }
+        $this->applyCouponsToCart($subtotal, $discount, $coupons);
 
         $total = max(0, $subtotal - $discount);
+
+        $now = now();
+
+        $availableCoupons = \App\Models\Coupon::where('is_active', true)
+            ->where(function ($q) use ($now) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>=', $now);
+            })
+            ->get()
+            ->filter(function ($coupon) {
+                return is_null($coupon->usage_limit) || $coupon->used < $coupon->usage_limit;
+            });
+
+        $expiredCoupons = \App\Models\Coupon::where(function ($q) use ($now) {
+                $q->where('expires_at', '<', $now)
+                  ->orWhere('is_active', false);
+            })
+            ->orWhere(function ($q) {
+                $q->whereNotNull('usage_limit')
+                  ->whereColumn('used', '>=', 'usage_limit');
+            })
+            ->get();
 
         return view('client.cart', compact(
             'items',
             'subtotal',
             'discount',
             'total',
-            'coupons'
+            'coupons',
+            'availableCoupons',
+            'expiredCoupons'
         ));
     }
 
+
     /**
+     * Store a newly created resource in storage.
      *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function addToCart(Request $request, $id)
+   public function addToCart(Request $request, $id)
     {
         $sanpham = Sanpham::findOrFail($id);
 
@@ -97,17 +132,13 @@ class CartController extends Controller
         $toppingIds = $request->input('topping_ids', []);
         $toppingIds = array_map('intval', (array)$toppingIds);
         sort($toppingIds);
-
+        $toppingIdsString = implode(',', $toppingIds);
         $productToppings = Product_topping::whereIn('id', $toppingIds)->get();
-
         $qty = max(1, (int)$request->input('qty', 1));
-
         $basePrice = $size ? $size->price : ($sanpham->price ?? 0);
         $toppingPrice = $productToppings->sum('price');
         $unitPrice = $basePrice + $toppingPrice;
-
-        $key = $sanpham->id . '-' . $sizeId . '-' . implode(',', $toppingIds);
-
+        $key = $sanpham->id . '-' . $sizeId . '-' . $toppingIdsString;
         if (Auth::check()) {
             $cart = Cart::firstOrCreate(
                 ['user_id' => Auth::id()],
@@ -117,7 +148,7 @@ class CartController extends Controller
             $existingItem = Cartdetail::where('cart_id', $cart->id)
                 ->where('product_id', $sanpham->id)
                 ->where('size_id', $sizeId)
-                ->where('topping_id', implode(',', $toppingIds))
+                ->where('topping_id', $toppingIdsString)
                 ->first();
 
             if ($existingItem) {
@@ -128,7 +159,7 @@ class CartController extends Controller
                     'cart_id' => $cart->id,
                     'product_id' => $sanpham->id,
                     'size_id' => $sizeId,
-                    'topping_id' => implode(',', $toppingIds),
+                    'topping_id' => $toppingIdsString,
                     'quantity' => $qty
                 ]);
                 $cartDetail->save();
@@ -137,40 +168,45 @@ class CartController extends Controller
             $this->_updateCartTotal($cart);
 
         } else {
-            $cartSession = session('cart', []);
+        $cartSession = session('cart', []);
 
-            if (isset($cartSession[$key])) {
-                $cartSession[$key]['quantity'] += $qty;
-                $cartSession[$key]['price'] = $unitPrice * $cartSession[$key]['quantity'];
-            } else {
-                $cartSession[$key] = [
-                    'sanpham_id'    => $sanpham->id,
-                    'name'          => $sanpham->name,
-                    'size_id'       => $sizeId,
-                    'size_name'     => $size ? $size->size : null,
-                    'size_price'    => $size ? $size->price : ($sanpham->price ?? 0),
-                    'topping_ids'   => $toppingIds,
-                    'quantity'      => $qty,
-                    'unit_price'    => $unitPrice,
-                    'price'         => $unitPrice * $qty,
-                    'image'         => $sanpham->image,
-                    'topping_names' => [],
-                    'topping_prices' => []
-                ];
+        if (isset($cartSession[$key])) {
+            $cartSession[$key]['quantity'] += $qty;
+            $cartSession[$key]['price'] = $unitPrice * $cartSession[$key]['quantity'];
+        } else {
+            $cartSession[$key] = [
+                'sanpham_id'    => $sanpham->id,
+                'name'          => $sanpham->name,
+                'size_id'       => $sizeId,
+                'size_name'     => $size ? $size->size : null,
+                'size_price'    => $size ? $size->price : ($sanpham->price ?? 0),
+                'topping_ids'   => $toppingIdsString,
+                'quantity'      => $qty,
+                'unit_price'    => $unitPrice,
+                'price'         => $unitPrice * $qty,
+                'image'         => $sanpham->image,
+                'topping_names' => [],
+                'topping_prices' => []
+            ];
 
-                foreach ($productToppings as $productTopping) {
-                    $cartSession[$key]['topping_names'][] = $productTopping->topping;
-                    $cartSession[$key]['topping_prices'][] = $productTopping->price;
-                }
+            foreach ($productToppings as $productTopping) {
+                $cartSession[$key]['topping_names'][] = $productTopping->topping;
+                $cartSession[$key]['topping_prices'][] = $productTopping->price;
             }
-
-            session(['cart' => $cartSession]);
         }
+
+        session(['cart' => $cartSession]);
+    }
 
         return redirect()->route('shop.index')->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
     }
 
     /**
+     * Make a unique key for cart items.
+     * @param int $productId
+     * @param int $sizeId
+     * @param array $toppingIds
+     * @return string
      */
     private function _makeCartKey($productId, $sizeId, $toppingIds = [])
     {
@@ -180,11 +216,13 @@ class CartController extends Controller
     }
 
     /**
+     * Update the quantity of a product in the cart.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function updateCart(Request $request)
     {
-        \Log::info('Update Cart Request:', $request->all());
-
         try {
             $key = $request->input('key');
             $newQuantity = max(1, (int)$request->input('quantity', 1));
@@ -196,22 +234,15 @@ class CartController extends Controller
             sort($toppingIds);
             $toppingIdsString = implode(',', $toppingIds);
 
-            \Log::info('Normalized Data:', [
-                'key' => $key,
-                'productId' => $productId,
-                'sizeId' => $sizeId,
-                'toppingIds' => $toppingIds,
-                'toppingIdsString' => $toppingIdsString
-            ]);
-
             if (!$key && $productId && $sizeId !== null) {
                 $key = $this->_makeCartKey($productId, $sizeId, $toppingIds);
-                \Log::info('Generated Key:', ['key' => $key]);
             }
+
+            $subtotal = 0;
+            $lineTotal = 0; 
 
             if (Auth::check()) {
                 $cart = Cart::where('user_id', Auth::id())->first();
-                \Log::info('Found Cart:', ['cart_id' => $cart?->id]);
 
                 if (!$cart) {
                     return response()->json(['success' => false, 'message' => 'Giỏ hàng không tồn tại.']);
@@ -224,13 +255,6 @@ class CartController extends Controller
                         ->where('size_id', $sizeId)
                         ->where('topping_id', $toppingIdsString)
                         ->first();
-                    \Log::info('Finding CartDetail by IDs:', [
-                        'found' => !!$cartDetail,
-                        'cart_id' => $cart->id,
-                        'product_id' => $productId,
-                        'size_id' => $sizeId,
-                        'topping_id' => $toppingIdsString
-                    ]);
                 } else if ($key) {
                     $parts = explode('-', $key);
                     $pid = $parts[0] ?? null;
@@ -244,11 +268,6 @@ class CartController extends Controller
                         ->where('size_id', $sid)
                         ->where('topping_id', $tidsString)
                         ->first();
-                    \Log::info('Finding CartDetail by Key:', [
-                        'found' => !!$cartDetail,
-                        'key_parts' => ['pid' => $pid, 'sid' => $sid, 'tids' => $tidsString],
-                        'cart_id' => $cart->id
-                    ]);
                 }
 
                 if (!$cartDetail) {
@@ -258,9 +277,7 @@ class CartController extends Controller
                 $cartDetail->quantity = $newQuantity;
                 $cartDetail->save();
 
-                $this->_updateCartTotal($cart);
-                $subtotal = $cart->total;
-                $total = $cart->total;
+                $subtotal = $this->_updateCartTotal($cart); 
 
                 $product = $cartDetail->product;
                 $size = $cartDetail->size;
@@ -272,39 +289,19 @@ class CartController extends Controller
                 $unitPrice = ($size ? $size->price : ($product->price ?? 0)) + $toppingPrice;
                 $lineTotal = $unitPrice * $cartDetail->quantity;
 
-                \Log::info('Updated CartDetail:', [
-                    'quantity' => $cartDetail->quantity,
-                    'unit_price' => $unitPrice,
-                    'line_total' => $lineTotal,
-                    'subtotal' => $subtotal,
-                    'total' => $total
-                ]);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Đã cập nhật số lượng sản phẩm.',
-                    'key' => $key,
-                    'quantity' => $cartDetail->quantity,
-                    'line_total' => $lineTotal,
-                    'subtotal' => $subtotal,
-                    'total' => $total
-                ]);
             } else {
                 $cartSession = session('cart', []);
-                \Log::info('Guest Cart Session:', ['key_exists' => isset($cartSession[$key])]);
-
                 if (!isset($cartSession[$key])) {
                     return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
                 }
                 $sanpham = Sanpham::find($cartSession[$key]['sanpham_id']);
                 $size = Size::find($cartSession[$key]['size_id']);
-                $productToppings = Product_topping::whereIn('id', (array)$cartSession[$key]['topping_ids'])->get();
-
                 $basePrice = $size ? $size->price : ($sanpham->price ?? 0);
-                $toppingPrice = $productToppings->sum('price');
+                $toppingPrice = array_sum($cartSession[$key]['topping_prices'] ?? []);
                 $unitPrice = $basePrice + $toppingPrice;
 
                 $cartSession[$key]['quantity'] = $newQuantity;
+                $cartSession[$key]['unit_price'] = $unitPrice;
                 $cartSession[$key]['price'] = $unitPrice * $newQuantity;
 
                 session(['cart' => $cartSession]);
@@ -313,37 +310,32 @@ class CartController extends Controller
                     $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
                     return $unitPrice * $item['quantity'];
                 });
-
-                $coupons = session('coupons', []);
-                $discount = 0;
-                foreach ($coupons as $c) {
-                    $discount += ($c['type'] === 'percent') ? ($subtotal * $c['discount'] / 100) : $c['discount'];
-                }
-                $total = max(0, $subtotal - $discount);
-
-                \Log::info('Updated Guest Cart:', [
-                    'key' => $key,
-                    'quantity' => $cartSession[$key]['quantity'],
-                    'price' => $cartSession[$key]['price'],
-                    'subtotal' => $subtotal,
-                    'total' => $total
-                ]);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Đã cập nhật số lượng sản phẩm.',
-                    'key' => $key,
-                    'quantity' => $cartSession[$key]['quantity'],
-                    'line_total' => $cartSession[$key]['price'],
-                    'subtotal' => $subtotal,
-                    'total' => $total
-                ]);
+                $lineTotal = $cartSession[$key]['price'];
             }
-        } catch (\Exception $e) {
-            \Log::error('Cart Update Error:', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+
+            $coupons = session('coupons', []);
+            $discount = 0;
+            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons); // Re-evaluate and update coupons
+
+            $total = max(0, $subtotal - $discount);
+
+            if (Auth::check()) {
+                $cart->total = $total;
+                $cart->save();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã cập nhật số lượng sản phẩm.',
+                'key' => $key,
+                'quantity' => $newQuantity,
+                'line_total' => $lineTotal,
+                'subtotal' => $subtotal,
+                'discount' => $discount, 
+                'total' => $total,
+                'applied_coupons' => $updatedCoupons
             ]);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi khi cập nhật giỏ hàng: ' . $e->getMessage()
@@ -352,15 +344,15 @@ class CartController extends Controller
     }
 
     /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string|null  $key
+     * @return \Illuminate\Http\Response
      */
     public function removeItem(Request $request, $key = null)
     {
         try {
-            \Log::info('Remove Cart Item Request:', [
-                'key' => $key,
-                'request_data' => $request->all()
-            ]);
-
             $key = $key ?? $request->input('key');
             $productId = $request->input('product_id');
             $sizeId = $request->input('size_id');
@@ -373,6 +365,8 @@ class CartController extends Controller
             $toppingIds = array_map('intval', (array)$toppingIds);
             sort($toppingIds);
             $toppingIdsString = implode(',', $toppingIds);
+
+            $subtotal = 0; 
 
             if (Auth::check()) {
                 $cart = Cart::where('user_id', Auth::id())->first();
@@ -404,23 +398,7 @@ class CartController extends Controller
 
                 if ($cartDetail) {
                     $cartDetail->delete();
-                    $this->_updateCartTotal($cart);
-                    $subtotal = $cart->total;
-                    $total = $cart->total;
-
-                    \Log::info('Removed Cart Item:', [
-                        'cart_id' => $cart->id,
-                        'subtotal' => $subtotal,
-                        'total' => $total
-                    ]);
-
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Đã xóa sản phẩm khỏi giỏ hàng.',
-                        'key' => $key,
-                        'subtotal' => $subtotal,
-                        'total' => $total
-                    ]);
+                    $subtotal = $this->_updateCartTotal($cart); 
                 } else {
                     return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
                 }
@@ -434,36 +412,33 @@ class CartController extends Controller
                         $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
                         return $unitPrice * $item['quantity'];
                     });
-
-                    $coupons = session('coupons', []);
-                    $discount = 0;
-                    foreach ($coupons as $c) {
-                        $discount += ($c['type'] === 'percent') ? ($subtotal * $c['discount'] / 100) : $c['discount'];
-                    }
-                    $total = max(0, $subtotal - $discount);
-
-                    \Log::info('Removed Guest Cart Item:', [
-                        'key' => $key,
-                        'subtotal' => $subtotal,
-                        'total' => $total
-                    ]);
-
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Đã xóa sản phẩm khỏi giỏ hàng.',
-                        'key' => $key,
-                        'subtotal' => $subtotal,
-                        'total' => $total
-                    ]);
                 } else {
                     return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
                 }
             }
-        } catch (\Exception $e) {
-            \Log::error('Remove Cart Item Error:', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+
+            $coupons = session('coupons', []);
+            $discount = 0;
+            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons); 
+
+            $total = max(0, $subtotal - $discount);
+
+            if (Auth::check()) {
+                $cart->total = $total;
+                $cart->save();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã xóa sản phẩm khỏi giỏ hàng.',
+                'key' => $key,
+                'subtotal' => $subtotal,
+                'discount' => $discount, 
+                'total' => $total,
+                'applied_coupons' => $updatedCoupons
             ]);
+
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi khi xóa sản phẩm: ' . $e->getMessage()
@@ -472,12 +447,15 @@ class CartController extends Controller
     }
 
     /**
+     * Update the total price of the cart.
+     * @param Cart $cart
+     * @return float The calculated subtotal (before discount)
      */
     private function _updateCartTotal($cart)
     {
         $total = 0;
         foreach ($cart->cartdetails as $detail) {
-            if (!$detail->product) continue;
+            if (!$detail->product) continue; 
 
             $size = $detail->size;
             $basePrice = $size ? $size->price : $detail->product->price;
@@ -493,11 +471,326 @@ class CartController extends Controller
             $total += ($basePrice + $toppingPrice) * $detail->quantity;
         }
 
-        $cart->total = $total;
+        $cart->total = $total; 
         $cart->save();
 
-        return $total;
+        return $total; 
+    }
+
+    /**
+     * Helper to apply coupons and calculate discount, also removes invalid coupons.
+     *
+     * @param float $subtotal
+     * @param float $discount (passed by reference, will be updated with total discount)
+     * @param array $currentCoupons (session coupons data)
+     * @return array The updated list of applied coupons (only valid ones)
+     */
+    private function applyCouponsToCart(float $subtotal, float &$discount, array $currentCoupons)
+    {
+        $discount = 0; 
+        $updatedCoupons = [];
+        $now = now();
+
+        foreach ($currentCoupons as $code => $couponData) {
+            $coupon = Coupon::where('code', $code)
+                ->where('is_active', true)
+                ->where(function ($q) use ($now) {
+                    $q->whereNull('expires_at')->orWhere('expires_at', '>=', $now);
+                })
+                ->first();
+
+            $isValid = true;
+            if (!$coupon) {
+                $isValid = false; 
+            } elseif ($coupon->usage_limit && $coupon->used >= $coupon->usage_limit) {
+                $isValid = false; 
+            } elseif ($coupon->user_id && Auth::check() && Auth::id() !== $coupon->user_id) {
+                $isValid = false; 
+            } elseif ($coupon->user_id && !Auth::check()) {
+                $isValid = false; 
+            } elseif ($coupon->min_order_value && $subtotal < $coupon->min_order_value) {
+                $isValid = false; 
+            }
+
+            if ($isValid) {
+                if ($coupon->type === 'percent') {
+                    $discount += ($subtotal * $coupon->discount) / 100;
+                } elseif ($coupon->type === 'fixed') {
+                    $discount += $coupon->discount;
+                }
+                $updatedCoupons[$coupon->code] = [
+                    'code' => $coupon->code,
+                    'discount' => $coupon->discount,
+                    'type' => $coupon->type
+                ];
+            }
+        }
+        session(['coupons' => $updatedCoupons]);
+        return $updatedCoupons;
     }
 
 
+    /**
+     * Apply a coupon to the cart.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function applyCoupon(Request $request)
+    {
+        $code = $request->input('code');
+        $cartSubtotal = $request->input('subtotal', 0); 
+
+        $coupon = Coupon::where('code', $code)
+            ->where('is_active', true)
+            ->where(function ($q) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>=', now());
+            })
+            ->first();
+
+        if (!$coupon) {
+            return response()->json(['success' => false, 'message' => 'Mã không hợp lệ hoặc đã hết hạn.']);
+        }
+
+        if ($coupon->usage_limit && $coupon->used >= $coupon->usage_limit) {
+            return response()->json(['success' => false, 'message' => 'Mã đã hết lượt sử dụng.']);
+        }
+
+        if (Auth::check()) {
+            if ($coupon->user_id && Auth::id() !== $coupon->user_id) {
+                return response()->json(['success' => false, 'message' => 'Mã này không dành cho bạn.']);
+            }
+        } else {
+            if ($coupon->user_id) {
+                return response()->json(['success' => false, 'message' => 'Bạn cần đăng nhập để dùng mã này.']);
+            }
+        }
+
+        if ($coupon->min_order_value && $cartSubtotal < $coupon->min_order_value) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đơn hàng cần tối thiểu ' . number_format($coupon->min_order_value) . 'đ để áp dụng mã.',
+                'subtotal' => $cartSubtotal 
+            ]);
+        }
+
+        $couponData = [
+            'code' => $coupon->code,
+            'discount' => $coupon->discount,
+            'type' => $coupon->type
+        ];
+
+        $coupons = session('coupons', []);
+        $coupons[$coupon->code] = $couponData;
+        session(['coupons' => $coupons]);
+
+        $discount = 0;
+        $actualSubtotal = 0;
+        if (Auth::check()) {
+            $cart = Cart::where('user_id', Auth::id())->first();
+            if ($cart) {
+                $actualSubtotal = $this->_updateCartTotal($cart); 
+            }
+        } else {
+            $cartSession = session('cart', []);
+            $actualSubtotal = collect($cartSession)->sum(function($item) {
+                $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
+                return $unitPrice * $item['quantity'];
+            });
+        }
+        $updatedCoupons = $this->applyCouponsToCart($actualSubtotal, $discount, $coupons);
+
+        $total = max(0, $actualSubtotal - $discount);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Áp dụng mã thành công.',
+            'coupon' => $couponData,
+            'subtotal' => $actualSubtotal, 
+            'discount' => $discount,     
+            'total' => $total,           
+            'applied_coupons' => $updatedCoupons 
+        ]);
+    }
+
+    /**
+     * Remove a specific coupon from the session.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function removeCoupon(Request $request)
+    {
+        $code = $request->input('code');
+        $coupons = session('coupons', []);
+
+        if (isset($coupons[$code])) {
+            unset($coupons[$code]);
+            session(['coupons' => $coupons]);
+            $subtotal = 0;
+            if (Auth::check()) {
+                $cart = Cart::where('user_id', Auth::id())->first();
+                if ($cart) {
+                    $subtotal = $this->_updateCartTotal($cart); 
+                }
+            } else {
+                $cartSession = session('cart', []);
+                $subtotal = collect($cartSession)->sum(function($item) {
+                    $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
+                    return $unitPrice * $item['quantity'];
+                });
+            }
+
+            $discount = 0;
+            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons); 
+            $total = max(0, $subtotal - $discount);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Mã giảm giá đã được gỡ bỏ.',
+                'subtotal' => $subtotal,
+                'discount' => $discount,
+                'total' => $total,
+                'applied_coupons' => $updatedCoupons 
+            ]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Mã giảm giá không tìm thấy trong giỏ hàng.']);
+    }
+     public function updateQuantity(Request $request)
+    {
+        $itemId = $request->input('item_id');
+        $quantity = $request->input('quantity');
+
+        if (!is_numeric($quantity) || $quantity < 1) {
+            return response()->json(['success' => false, 'message' => 'Số lượng không hợp lệ']);
+        }
+
+        try {
+            if (Auth::check()) {
+                $cartDetail = Cartdetail::find($itemId);
+                if (!$cartDetail) {
+                    return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
+                }
+
+                $cart = Cart::find($cartDetail->cart_id);
+                if (!$cart || $cart->user_id !== Auth::id()) {
+                    return response()->json(['success' => false, 'message' => 'Unauthorized action.']);
+                }
+
+                $cartDetail->quantity = $quantity;
+                $cartDetail->save();
+
+                $basePrice = $cartDetail->size->price ?? $cartDetail->product->price;
+                $toppingIds = array_filter(explode(',', $cartDetail->topping_id ?? ''));
+                $toppingPrice = $toppingIds ? Product_topping::whereIn('id', $toppingIds)->sum('price') : 0;
+                $itemPrice = ($basePrice + $toppingPrice) * $quantity;
+
+                $subtotal = $this->_updateCartTotal($cart);
+
+                return response()->json([
+                    'success' => true,
+                    'subtotal' => $subtotal,
+                    'item_price' => $itemPrice
+                ]);
+            } else {
+                $cartSession = session('cart', []);
+                $cartArray = array_values($cartSession);
+                
+                if (!isset($cartArray[$itemId])) {
+                    return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
+                }
+
+                $key = array_keys($cartSession)[$itemId];
+                $cartSession[$key]['quantity'] = $quantity;
+                
+                $basePrice = $cartSession[$key]['size_price'] ?? 0;
+                $toppingPrice = array_sum($cartSession[$key]['topping_prices'] ?? []);
+                $itemPrice = ($basePrice + $toppingPrice) * $quantity;
+                $cartSession[$key]['price'] = $itemPrice;
+
+                session(['cart' => $cartSession]);
+
+                // Calculate new subtotal
+                $subtotal = collect($cartSession)->sum(function($item) {
+                    $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
+                    return $unitPrice * ($item['quantity'] ?? 1);
+                });
+
+                return response()->json([
+                    'success' => true,
+                    'subtotal' => $subtotal,
+                    'item_price' => $itemPrice
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Có lỗi xảy ra khi cập nhật số lượng: ' . $e->getMessage()]);
+        }
+    }
+
+    public function remove(Request $request)
+    {
+        $itemId = $request->input('item_id');
+
+        try {
+            if (Auth::check()) {
+                $cartDetail = Cartdetail::find($itemId);
+                if (!$cartDetail) {
+                    return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
+                }
+
+                $cart = Cart::find($cartDetail->cart_id);
+                if (!$cart || $cart->user_id !== Auth::id()) {
+                    return response()->json(['success' => false, 'message' => 'Unauthorized action.']);
+                }
+
+                $cartDetail->delete();
+
+                $subtotal = $this->_updateCartTotal($cart);
+
+                return response()->json(['success' => true, 'subtotal' => $subtotal]);
+            } else {
+                $cartSession = session('cart', []);
+                $cartArray = array_values($cartSession);
+                
+                if (!isset($cartArray[$itemId])) {
+                    return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
+                }
+
+                $key = array_keys($cartSession)[$itemId];
+                unset($cartSession[$key]);
+                session(['cart' => $cartSession]);
+
+                $subtotal = collect($cartSession)->sum(function($item) {
+                    $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
+                    return $unitPrice * ($item['quantity'] ?? 1);
+                });
+
+                return response()->json(['success' => true, 'subtotal' => $subtotal]);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Có lỗi xảy ra khi xóa sản phẩm: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Helper method to calculate the current subtotal of the cart.
+     * You will need to implement this based on how your cart items are stored.
+     */
+    private function calculateCartSubtotal()
+    {
+        $subtotal = 0;
+        $cartItems = Cart::where('user_id', auth()->id())->get(); 
+
+        foreach ($cartItems as $item) {
+            $basePrice = $item->size->price ?? $item->product->price ?? 0;
+            $toppingPrice = 0;
+            if (!empty($item->topping_id)) {
+                $toppingIds = array_filter(explode(',', $item->topping_id));
+                $toppingPrice = Product_topping::whereIn('id', $toppingIds)->sum('price');
+            }
+            $subtotal += ($basePrice + $toppingPrice) * $item->quantity;
+        }
+        return $subtotal;
+    }
 }
