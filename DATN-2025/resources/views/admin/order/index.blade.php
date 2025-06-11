@@ -90,7 +90,7 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <form method="GET" action="{{ route('admin.order.search') }}" class="form-inline" style="float: right; display: flex; align-items: center;">
-                                                    <input type="text" name="transaction_id" class="form-control" placeholder="Tìm kiếm theo mã giao dịch..." value="{{ request('transaction_id') }}" style="width: 220px; margin-right: 8px;">
+                                                    <input type="text" name="transaction_id" class="form-control" placeholder="Tìm kiếm tên và số điện thoại ..." value="{{ request('transaction_id') }}" style="width: 220px; margin-right: 8px;">
                                                     <button type="submit" class="btn btn-success">Tìm kiếm</button>
                                                 </form>
                                             </div>
@@ -102,7 +102,9 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Tên khách hàng</th>
+                                        <th>Email</th>
                                         <th>Số điện thoại</th>
+                                        <th>Địa chỉ</th>
                                         <th>Trạng thái</th>
                                         <th>Trạng thái thanh toán</th>
                                         <th>Ngày tạo</th>
@@ -121,7 +123,9 @@
                                     <tr>
                                         <td>{{ $order->id }}</td>
                                         <td>{{ $order->name }}</td>
+                                        <td>{{ $order->email }}</td>
                                         <td>{{ $order->phone }}</td>
+                                        <td>{{ $order->address_detail }}, {{ $order->district_name }}</td>
                                         <td>
                                             @if ($order->status == 'pending' || $order->status == 0)
                                                 <span style="color: orange;">Chờ xử lý</span>
@@ -147,7 +151,7 @@
                                                 <span>{{ $order->pay_status }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ $order->created_at->format('d/m/Y') }}</td>
+                                        <td>{{ $order->created_at->format('d/m') }}</td>
                                         
                                      @if($order->status == 'cancelled' || $order->pay_status == 2)
                                      <td>{{ $order->cancel_reason }}</td>

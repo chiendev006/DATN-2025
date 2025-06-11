@@ -140,6 +140,7 @@ class VNPayController extends Controller
                     $order->user_id = $vnpOrder['user_id'];
                     $order->name = $vnpOrder['name'];
                     $order->phone = $vnpOrder['phone'];
+                    $order->email = $vnpOrder['email'];
                     $order->address_id = $vnpOrder['address_id']; 
                     $order->address_detail = $vnpOrder['address_detail'];
                     $order->district_name = $vnpOrder['district_name'];
@@ -150,6 +151,7 @@ class VNPayController extends Controller
                     $order->pay_status = 1;
                     $order->coupon_summary = $vnpOrder['coupon_summary'];
                     $order->coupon_total_discount = $vnpOrder['coupon_total_discount'];
+                    $order->note = $vnpOrder['note'];
                     $order->transaction_id = $vnpData['vnp_TransactionNo'];
 
                     if (!$order->save()) {

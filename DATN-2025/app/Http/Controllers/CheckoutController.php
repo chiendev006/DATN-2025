@@ -128,7 +128,9 @@ class CheckoutController extends Controller
                 'district' => 'required|exists:address,id',
                 'address_detail' => 'required|string|max:255',
                 'payment_method' => 'required|in:cash,banking',
-                'terms' => 'required|accepted'
+                'terms' => 'required|accepted',
+                'email' => 'nullable|email|max:255',
+                'note' => 'nullable|string|max:1000'
             ]);
 
             DB::beginTransaction();
@@ -277,6 +279,7 @@ class CheckoutController extends Controller
                     'vnp_order' => [
                         'name' => $request->name,
                         'phone' => $request->phone_raw, 
+                        'email' => $request->email,
                         'address_id' => $selectedAddress->id,
                         'address_detail' => $request->address_detail,
                         'district_name' => $districtName,
@@ -285,7 +288,7 @@ class CheckoutController extends Controller
                         'discount' => $discount,
                         'shipping_fee' => $shippingFee,
                         'user_id' => Auth::check() ? Auth::id() : null,
-                        'note' => $request->note ?? null,
+                        'note' => $request->note,
                         'status' => 'pending_payment',
                         'coupon_summary' => $couponSummaryJson, 
                         'coupon_total_discount' => $couponTotalDiscount,
@@ -299,6 +302,7 @@ class CheckoutController extends Controller
             $order->user_id = Auth::check() ? Auth::id() : null;
             $order->name = $request->name;
             $order->phone = $request->phone_raw; 
+            $order->email = $request->email;
             $order->address_id = $selectedAddress->id;
             $order->address_detail = $request->address_detail;
             $order->district_name = $districtName;
@@ -307,7 +311,8 @@ class CheckoutController extends Controller
             $order->shipping_fee = $shippingFee;
             $order->total = $total;
             $order->coupon_summary = $couponSummaryJson; 
-            $order->coupon_total_discount = $couponTotalDiscount; 
+            $order->coupon_total_discount = $couponTotalDiscount;
+            $order->note = $request->note;
 
             if (!$order->save()) {
                 throw new \Exception('Không thể lưu đơn hàng');
