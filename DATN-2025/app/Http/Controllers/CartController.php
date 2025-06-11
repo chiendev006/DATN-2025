@@ -657,4 +657,140 @@ class CartController extends Controller
 
         return response()->json(['success' => false, 'message' => 'Mã giảm giá không tìm thấy trong giỏ hàng.']);
     }
+     public function updateQuantity(Request $request)
+    {
+        $itemId = $request->input('item_id');
+        $quantity = $request->input('quantity');
+
+        if (!is_numeric($quantity) || $quantity < 1) {
+            return response()->json(['success' => false, 'message' => 'Số lượng không hợp lệ']);
+        }
+
+        try {
+            if (Auth::check()) {
+                $cartDetail = Cartdetail::find($itemId);
+                if (!$cartDetail) {
+                    return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
+                }
+
+                $cart = Cart::find($cartDetail->cart_id);
+                if (!$cart || $cart->user_id !== Auth::id()) {
+                    return response()->json(['success' => false, 'message' => 'Unauthorized action.']);
+                }
+
+                $cartDetail->quantity = $quantity;
+                $cartDetail->save();
+
+                $basePrice = $cartDetail->size->price ?? $cartDetail->product->price;
+                $toppingIds = array_filter(explode(',', $cartDetail->topping_id ?? ''));
+                $toppingPrice = $toppingIds ? Product_topping::whereIn('id', $toppingIds)->sum('price') : 0;
+                $itemPrice = ($basePrice + $toppingPrice) * $quantity;
+
+                $subtotal = $this->_updateCartTotal($cart);
+
+                return response()->json([
+                    'success' => true,
+                    'subtotal' => $subtotal,
+                    'item_price' => $itemPrice
+                ]);
+            } else {
+                $cartSession = session('cart', []);
+                $cartArray = array_values($cartSession);
+                
+                if (!isset($cartArray[$itemId])) {
+                    return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
+                }
+
+                $key = array_keys($cartSession)[$itemId];
+                $cartSession[$key]['quantity'] = $quantity;
+                
+                $basePrice = $cartSession[$key]['size_price'] ?? 0;
+                $toppingPrice = array_sum($cartSession[$key]['topping_prices'] ?? []);
+                $itemPrice = ($basePrice + $toppingPrice) * $quantity;
+                $cartSession[$key]['price'] = $itemPrice;
+
+                session(['cart' => $cartSession]);
+
+                // Calculate new subtotal
+                $subtotal = collect($cartSession)->sum(function($item) {
+                    $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
+                    return $unitPrice * ($item['quantity'] ?? 1);
+                });
+
+                return response()->json([
+                    'success' => true,
+                    'subtotal' => $subtotal,
+                    'item_price' => $itemPrice
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Có lỗi xảy ra khi cập nhật số lượng: ' . $e->getMessage()]);
+        }
+    }
+
+    public function remove(Request $request)
+    {
+        $itemId = $request->input('item_id');
+
+        try {
+            if (Auth::check()) {
+                $cartDetail = Cartdetail::find($itemId);
+                if (!$cartDetail) {
+                    return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
+                }
+
+                $cart = Cart::find($cartDetail->cart_id);
+                if (!$cart || $cart->user_id !== Auth::id()) {
+                    return response()->json(['success' => false, 'message' => 'Unauthorized action.']);
+                }
+
+                $cartDetail->delete();
+
+                $subtotal = $this->_updateCartTotal($cart);
+
+                return response()->json(['success' => true, 'subtotal' => $subtotal]);
+            } else {
+                $cartSession = session('cart', []);
+                $cartArray = array_values($cartSession);
+                
+                if (!isset($cartArray[$itemId])) {
+                    return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
+                }
+
+                $key = array_keys($cartSession)[$itemId];
+                unset($cartSession[$key]);
+                session(['cart' => $cartSession]);
+
+                $subtotal = collect($cartSession)->sum(function($item) {
+                    $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
+                    return $unitPrice * ($item['quantity'] ?? 1);
+                });
+
+                return response()->json(['success' => true, 'subtotal' => $subtotal]);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Có lỗi xảy ra khi xóa sản phẩm: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Helper method to calculate the current subtotal of the cart.
+     * You will need to implement this based on how your cart items are stored.
+     */
+    private function calculateCartSubtotal()
+    {
+        $subtotal = 0;
+        $cartItems = Cart::where('user_id', auth()->id())->get(); 
+
+        foreach ($cartItems as $item) {
+            $basePrice = $item->size->price ?? $item->product->price ?? 0;
+            $toppingPrice = 0;
+            if (!empty($item->topping_id)) {
+                $toppingIds = array_filter(explode(',', $item->topping_id));
+                $toppingPrice = Product_topping::whereIn('id', $toppingIds)->sum('price');
+            }
+            $subtotal += ($basePrice + $toppingPrice) * $item->quantity;
+        }
+        return $subtotal;
+    }
 }

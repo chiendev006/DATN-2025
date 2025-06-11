@@ -1,5 +1,4 @@
 <?php
-
         use App\Http\Controllers\AboutController;
 use App\Http\Controllers\admin\AddressController;
 use App\Http\Controllers\admin\AdminStaffController;
@@ -22,8 +21,8 @@ use App\Http\Controllers\admin\AdminStaffController;
         use App\Http\Controllers\ShowproductController;
         use App\Http\Controllers\ResetPasswordController;
         use App\Http\Controllers\admin\AuthController;
-use App\Http\Controllers\admin\CouponController;
-use App\Http\Controllers\OrderController;
+        use App\Http\Controllers\admin\CouponController;
+        use App\Http\Controllers\OrderController;
         use App\Http\Controllers\admin\PayrollController;
         use App\Http\Controllers\CheckoutController;
         use App\Http\Controllers\MyaccountController;
@@ -31,82 +30,82 @@ use App\Http\Controllers\OrderController;
         use App\Http\Controllers\Staff\StaffController;
         use App\Http\Controllers\VNPayController;
         use App\Http\Controllers\Staff\AuthenController;
-use App\Http\Controllers\Staff\BartenderController;
-use App\Http\ViewComposers\CartComposer;
-use Illuminate\Support\Facades\Auth;
+        use App\Http\Controllers\Staff\BartenderController;
+        use App\Http\ViewComposers\CartComposer;
+        use Illuminate\Support\Facades\Auth;
 
-Route::get('login', [AuthenticationController::class, 'login'])->name('login');
-Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
-Route::get('register', [AuthenticationController::class, 'register'])->name('register');
-Route::post('register', [AuthenticationController::class, 'postRegister'])->name('post-register');
-Route::post('logout', [AuthenticationController::class, 'logout'])->name('logout');
-Route::get('forgot-password', [AuthenticationController::class, 'forgotPassword'])->name('forgot-password');
-Route::post('forgot-password/send', [AuthenticationController::class, 'sendResetPassword'])->name('send.reset');
-Route::get('reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('reset-password', [ResetPasswordController::class, 'resetPassword'])->name('password.update');
+        Route::get('login', [AuthenticationController::class, 'login'])->name('login');
+        Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
+        Route::get('register', [AuthenticationController::class, 'register'])->name('register');
+        Route::post('register', [AuthenticationController::class, 'postRegister'])->name('post-register');
+        Route::post('logout', [AuthenticationController::class, 'logout'])->name('logout');
+        Route::get('forgot-password', [AuthenticationController::class, 'forgotPassword'])->name('forgot-password');
+        Route::post('forgot-password/send', [AuthenticationController::class, 'sendResetPassword'])->name('send.reset');
+        Route::get('reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+        Route::post('reset-password', [ResetPasswordController::class, 'resetPassword'])->name('password.update');
 
-// Show ctsp
-Route::get('/product/{id}', [ShowproductController::class, 'showctsp'])->name('client.product.detail');
-
-
-// cart
-Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
-Route::post('/cart/remove/{key?}', [CartController::class, 'removeItem'])->name('cart.remove');
+        // Show ctsp
+        Route::get('/product/{id}', [ShowproductController::class, 'showctsp'])->name('client.product.detail');
 
 
-
-
-// Trang chủ Client
-Route::get('/', [Controller::class, 'index'])->name('index');
-Route::get('/',         [Controller::class, 'danhmuc'])->name('danhmuc1.index');
-Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp');
-// routes/web.php
-Route::get('/menu', [Controller::class, 'show'])->name('menu.show');
-Route::get('/menu/category/{categoryId}', [Controller::class, 'getCategoryProducts'])->name('menu.category');
-
-Route::post('comment', [Controller::class, 'postComment'])->name('comment.store');
+        // cart
+        Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
+        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+        Route::post('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
+        Route::post('/cart/remove/{key?}', [CartController::class, 'removeItem'])->name('cart.remove');
 
 
 
-// Shop
-Route::get('/shop', [ShopController::class, 'index'])->name('client.shop');
-Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
-Route::get('/shop/category/{id}', [ShopController::class, 'getByCategory'])->name('shop.category');
 
+        // Trang chủ Client
+        Route::get('/', [Controller::class, 'index'])->name('index');
+        Route::get('/',         [Controller::class, 'danhmuc'])->name('danhmuc1.index');
+        Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp');
+        // routes/web.php
+        Route::get('/menu', [Controller::class, 'show'])->name('menu.show');
+        Route::get('/menu/category/{categoryId}', [Controller::class, 'getCategoryProducts'])->name('menu.category');
 
-// Search
-// web.php
-Route::get('/ajax-search', [App\Http\Controllers\Controller::class, 'ajaxSearch'])->name('ajax.search');
-Route::get('/ajax-filter-price', [Controller::class, 'filterByPrice'])->name('ajax.filter.price');
-
-
-// Liên hệ từ Client
-Route::get('/contact', [ContactController::class, 'create'])->name('contact.create');
-Route::post('/contact/store', [ContactController::class, 'store'])->name('contact.store');
-
-
-// About
-Route::get('/about', [AboutController::class, 'index'])->name('about.index');
-
-// Checkout routes
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
-Route::get('/order/complete/{orderId}', [CheckoutController::class, 'success'])->name('order.complete');
+        Route::post('comment', [Controller::class, 'postComment'])->name('comment.store');
 
 
 
-// Services
-Route::get('/services', [ServicesController::class, 'index'])->name('services.index');
+        // Shop
+        Route::get('/shop', [ShopController::class, 'index'])->name('client.shop');
+        Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+        Route::get('/shop/category/{id}', [ShopController::class, 'getByCategory'])->name('shop.category');
 
-// Admin
-Route::get('admin/login', [AuthController::class, 'login'])->name('admin.login');
-Route::post('admin/login', [AuthController::class, 'postLogin'])->name('admin.post-login');
-Route::get('admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
-// Group Admin Route
-Route::prefix('admin')->middleware(['auth', 'check.valid.id'  ])->group(function () {
+        // Search
+        // web.php
+        Route::get('/ajax-search', [App\Http\Controllers\Controller::class, 'ajaxSearch'])->name('ajax.search');
+        Route::get('/ajax-filter-price', [Controller::class, 'filterByPrice'])->name('ajax.filter.price');
+
+
+        // Liên hệ từ Client
+        Route::get('/contact', [ContactController::class, 'create'])->name('contact.create');
+        Route::post('/contact/store', [ContactController::class, 'store'])->name('contact.store');
+
+
+        // About
+        Route::get('/about', [AboutController::class, 'index'])->name('about.index');
+
+        // Checkout routes
+        Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+        Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+        Route::get('/order/complete/{orderId}', [CheckoutController::class, 'success'])->name('order.complete');
+
+
+
+        // Services
+        Route::get('/services', [ServicesController::class, 'index'])->name('services.index');
+
+        // Admin
+        Route::get('admin/login', [AuthController::class, 'login'])->name('admin.login');
+        Route::post('admin/login', [AuthController::class, 'postLogin'])->name('admin.post-login');
+        Route::get('admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
+
+        // Group Admin Route
+        Route::prefix('admin')->middleware(['auth', 'check.valid.id'  ])->group(function () {
         // Trang chủ Admin
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
@@ -238,59 +237,55 @@ Route::prefix('admin')->middleware(['auth', 'check.valid.id'  ])->group(function
                 Route::post('/update/{id}', [BlogsController::class, 'update'])->name('blogs.update');
                 Route::get('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
         });
-});
-Route::get('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->name('product_img.delete');
-Route::get('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
-Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
+ });
+        Route::get('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->name('product_img.delete');
+        Route::get('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
+        Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
 
 
-Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+        Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 
-// Checkout routes
-Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
-Route::get('/checkout/success', [App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
+        // Checkout routes
+        Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout.index');
+        Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
+        Route::get('/checkout/success', [App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 
-// Staff
-Route::get('staff/login', [AuthenController::class, 'login'])->name('staff.login');
-Route::post('staff/postlogin', [AuthenController::class, 'postlogin'])->name('staff.postlogin');
-Route::get('staff/logout', [AuthenController::class, 'logout'])->name('staff.logout');
+        // Staff
+        Route::get('staff/login', [AuthenController::class, 'login'])->name('staff.login');
+        Route::post('staff/postlogin', [AuthenController::class, 'postlogin'])->name('staff.postlogin');
+        Route::get('staff/logout', [AuthenController::class, 'logout'])->name('staff.logout');
 
-Route::prefix('staff')->middleware('checkStaff')->group(function () {
-        Route::get('/', [StaffController::class, 'index'])->name('staff.index');
-        Route::get('/product/{id}/options', [StaffController::class, 'getOptions'])->name('staff.options');
-        Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
-        Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
-        Route::get('/orderdetailtoday', [StaffController::class, 'orderdetailtoday'])->name('staff.orderdetailtoday');
-        Route::get('/staff/products/search', [StaffController::class, 'searchProducts'])->name('staff.products.search');
-});
+        Route::prefix('staff')->middleware('checkStaff')->group(function () {
+                Route::get('/', [StaffController::class, 'index'])->name('staff.index');
+                Route::get('/product/{id}/options', [StaffController::class, 'getOptions'])->name('staff.options');
+                Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
+                Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
+                Route::get('/orderdetailtoday', [StaffController::class, 'orderdetailtoday'])->name('staff.orderdetailtoday');
+                Route::get('/staff/products/search', [StaffController::class, 'searchProducts'])->name('staff.products.search');
+        });
 
-Route::prefix('bartender')->middleware('checkStaff')->group(function () {
-    Route::get('/', [BartenderController::class, 'index'])->name('bartender.index');
-    Route::get('/create', [BartenderController::class, 'create'])->name('bartender.create');
-    Route::post('/store', [BartenderController::class, 'store'])->name('bartender.store');
-    Route::get('/edit/{id}', [BartenderController::class, 'edit'])->name('bartender.edit');
-    Route::post('/update/{id}', [BartenderController::class, 'update'])->name('bartender.update');
-    Route::get('/delete/{id}', [BartenderController::class, 'delete'])->name('bartender.delete');
-    Route::get('/order/{id}', [BartenderController::class, 'orderDetail'])->name('bartender.order.detail');
-    Route::post('/order-detail/{id}/update-status', [BartenderController::class, 'updateOrderDetailStatus'])->name('bartender.order.detail.status');
-    Route::get('/get-order-details/{id}', [BartenderController::class, 'getOrderDetails'])->name('bartender.get.order.details');
-    Route::post('/update-order-status/{id}', [BartenderController::class, 'updateOrderStatus'])->name('bartender.update.order.status');
-});
+        Route::prefix('bartender')->middleware('checkStaff')->group(function () {
+        Route::get('/', [BartenderController::class, 'index'])->name('bartender.index');
+        Route::get('/create', [BartenderController::class, 'create'])->name('bartender.create');
+        Route::post('/store', [BartenderController::class, 'store'])->name('bartender.store');
+        Route::get('/edit/{id}', [BartenderController::class, 'edit'])->name('bartender.edit');
+        Route::post('/update/{id}', [BartenderController::class, 'update'])->name('bartender.update');
+        Route::get('/delete/{id}', [BartenderController::class, 'delete'])->name('bartender.delete');
+        });
 
-// Test route for middleware
-Route::get('/test-middleware', function() {
-    $guard = Auth::guard('staff');
-    if ($guard->check()) {
-        $user = $guard->user();
-        return "Logged in as: " . $user->name . " (Role: " . $user->role . ")";
-    }
-    return "Not logged in";
-})->middleware('checkStaff');
+        // Test route for middleware
+        Route::get('/test-middleware', function() {
+        $guard = Auth::guard('staff');
+        if ($guard->check()) {
+                $user = $guard->user();
+                return "Logged in as: " . $user->name . " (Role: " . $user->role . ")";
+        }
+        return "Not logged in";
+        })->middleware('checkStaff');
 
-// VNPAY
-Route::get('/vnpay/return', [App\Http\Controllers\VNPayController::class, 'vnpayReturn'])->name('vnpay.return');
-Route::get('/vnpay/redirect', [App\Http\Controllers\VNPayController::class, 'redirectToVnpay'])->name('vnpay.redirect');
+        // VNPAY
+        Route::get('/vnpay/return', [App\Http\Controllers\VNPayController::class, 'vnpayReturn'])->name('vnpay.return');
+        Route::get('/vnpay/redirect', [App\Http\Controllers\VNPayController::class, 'redirectToVnpay'])->name('vnpay.redirect');
 
         // My account
         Route::get('/myaccount', [MyaccountController::class, 'index'])->middleware('auth')->name('client.myaccount');
@@ -302,11 +297,14 @@ Route::get('/vnpay/redirect', [App\Http\Controllers\VNPayController::class, 'red
 
         Route::post('/order/reorder/{orderId}', [OrderController::class, 'reorder'])->name('client.order.reorder');
 
-//
-Route::get('/blog', [BlogController::class, 'index'])->name('client.blog');
-Route::get('/blog/{id}', [BlogController::class, 'show'])->name('client.blogsingle');
-// Discout
-Route::post('/cart/apply-coupon', [CartController::class, 'applyCoupon'])->name('cart.applyCoupon');
-Route::post('/cart/remove-coupon', [CartController::class, 'removeCoupon'])->name('cart.removeCoupon');
+        //
+        Route::get('/blog', [BlogController::class, 'index'])->name('client.blog');
+        Route::get('/blog/{id}', [BlogController::class, 'show'])->name('client.blogsingle');
+        // Discout
+        Route::post('/cart/apply-coupon', [CartController::class, 'applyCoupon'])->name('cart.applyCoupon');
+        Route::post('/cart/remove-coupon', [CartController::class, 'removeCoupon'])->name('cart.removeCoupon');
 
 
+        // Cart mini
+        Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+        Route::post('/cart/remove-item', [CartController::class, 'remove'])->name('cart.removeItem');

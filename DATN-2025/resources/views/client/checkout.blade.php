@@ -223,11 +223,8 @@
                                             @endphp
                                             <hr style="margin-top: 0px ">
                                             <div class="row" >
-                                                <div class="col-xs-2">
-                                                    <small>x{{ $quantity }}</small>
-                                                </div>
                                                 <div class="col-xs-7">
-                                                    <p><strong>{{ $name }}</strong></p>
+                                                    <p><strong>{{ $name }} </strong>x{{ $quantity }}</p>
                                                     @if(isset($desc[1]))
                                                         <p style="color: #666; font-size: 0.8em; font-weight: bold;">{{ $desc[1] }}</p>
                                                     @endif
@@ -235,7 +232,7 @@
                                                         <p style="color: #666; font-size: 0.8em; font-weight: bold;">{{ $desc[2] }}</p>
                                                     @endif
                                                 </div>
-                                                <div class="col-xs-3 text-right">
+                                                <div style="margin-left: 30px;" class="col-xs-4 text-right">
                                                     <p><strong>{{ number_format($itemTotal) }} VND</strong></p>
                                                 </div>
                                             </div>
@@ -348,7 +345,7 @@
 }
 
 .shop-checkout-row p strong {
-    color: #000;
+    color: #959393;
 }
 
 .checkout-total h6 {
