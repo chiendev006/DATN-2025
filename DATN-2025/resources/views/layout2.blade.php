@@ -488,78 +488,75 @@
                         </li>
                     @endauth
                   </div>
-
                   <div class="cart animated">
-    <span class="icon-basket fontello"></span>
-    <span>Giỏ hàng</span>
-    <div class="cart-wrap">
-        <div class="cart-blog scrollable-cart">
-            @forelse ($items as $item)
-                @php
-                    $productName = $item->product->name ?? $item->name;
-                    // For authenticated users, use the cart detail id
-                    // For guest users, use the cart item key
-                    $itemId = isset($item->product) 
-                        ? $item->id 
-                        : $loop->index; // Use loop index for guest cart items
-                    $productImage = isset($item->product->image)
-                        ? asset('storage/uploads/' . $item->product->image)
-                        : (isset($item->image) ? asset('storage/uploads/' . $item->image) : asset('asset/images/img21.png'));
-                    $quantity = $item->quantity ?? 1;
-                    $price = 0;
+                       <span class="icon-basket fontello"></span
+                    ><span>{{ $cartCount }} sản phẩm - {{ number_format($subtotal, 0, ',', '.') }}₫</span>
+                        <div class="cart-wrap">
+                            <div class="cart-blog scrollable-cart">
+                                @forelse ($items as $item)
+                                    @php
+                                        $productName = $item->product->name ?? $item->name;
+                                        $itemId = isset($item->product) 
+                                            ? $item->id 
+                                            : $loop->index; 
+                                        $productImage = isset($item->product->image)
+                                            ? asset('storage/uploads/' . $item->product->image)
+                                            : (isset($item->image) ? asset('storage/uploads/' . $item->image) : asset('asset/images/img21.png'));
+                                        $quantity = $item->quantity ?? 1;
+                                        $price = 0;
 
-                    if (isset($item->product)) {
-                        $basePrice = $item->size->price ?? $item->product->price;
-                        $toppingIds = array_filter(explode(',', $item->topping_id ?? ''));
-                        $toppingPrice = $toppingIds ? \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price') : 0;
-                        $price = ($basePrice + $toppingPrice);
-                    } else {
-                        $basePrice = $item->size_price ?? 0;
-                        $toppingPrice = array_sum($item->topping_prices ?? []);
-                        $price = ($basePrice + $toppingPrice);
-                    }
-                    $totalItemPrice = $price * $quantity;
-                @endphp
+                                        if (isset($item->product)) {
+                                            $basePrice = $item->size->price ?? $item->product->price;
+                                            $toppingIds = array_filter(explode(',', $item->topping_id ?? ''));
+                                            $toppingPrice = $toppingIds ? \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price') : 0;
+                                            $price = ($basePrice + $toppingPrice);
+                                        } else {
+                                            $basePrice = $item->size_price ?? 0;
+                                            $toppingPrice = array_sum($item->topping_prices ?? []);
+                                            $price = ($basePrice + $toppingPrice);
+                                        }
+                                        $totalItemPrice = $price * $quantity;
+                                    @endphp
 
-                <div class="cart-item" data-item-id="{{ $itemId }}" data-item-price-per-unit="{{ $price }}">
-                    <div class="cart-item-left">
-                        <img src="{{ $productImage }}" alt="" />
-                    </div>
-                    <div class="cart-item-right">
-                        <h6>{{ $productName }}</h6>
-                        <div class="quantity-controls">
-                            <button class="decrease-quantity" data-item-id="{{ $itemId }}">-</button>
-                            <input type="number" class="item-quantity" value="{{ $quantity }}" min="1" data-item-id="{{ $itemId }}" readonly>
-                            <button class="increase-quantity" data-item-id="{{ $itemId }}">+</button>
+                                    <div class="cart-item" data-item-id="{{ $itemId }}" data-item-price-per-unit="{{ $price }}">
+                                        <div class="cart-item-left">
+                                            <img src="{{ $productImage }}" alt="" />
+                                        </div>
+                                        <div class="cart-item-right">
+                                            <h6>{{ $productName }}</h6>
+                                            <div class="quantity-controls">
+                                                <button class="decrease-quantity" data-item-id="{{ $itemId }}">-</button>
+                                                <input type="number" class="item-quantity" value="{{ $quantity }}" min="1" data-item-id="{{ $itemId }}" readonly>
+                                                <button class="increase-quantity" data-item-id="{{ $itemId }}">+</button>
+                                            </div>
+                                            <span class="item-price">{{ number_format($totalItemPrice, 0, ',', '.') }}₫</span>
+                                        </div>
+                                        <i class="delete-icon fa fa-trash" data-item-id="{{ $itemId }}"></i>
+                                    </div>
+                                @empty
+                                    <div class="cart-item">
+                                        <p>Không có sản phẩm nào trong giỏ hàng.</p>
+                                    </div>
+                                @endforelse
+
+                                <div class="subtotal">
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-6 col-xs-6">
+                                            <h6>Tạm tính :</h6>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6 col-xs-6">
+                                            <span id="subtotal-amount">{{ number_format($subtotal, 0, ',', '.') }}₫</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="cart-btn">
+                                    <a href="{{ route('cart.index') }}" class="button-default view">XEM GIỎ HÀNG</a>
+                                    <a href="{{ route('checkout.index') }}" class="button-default checkout">THANH TOÁN</a>
+                                </div>
+                            </div>
                         </div>
-                        <span class="item-price">{{ number_format($totalItemPrice, 0, ',', '.') }}₫</span>
                     </div>
-                    <i class="delete-icon fa fa-trash" data-item-id="{{ $itemId }}"></i>
-                </div>
-            @empty
-                <div class="cart-item">
-                    <p>Không có sản phẩm nào trong giỏ hàng.</p>
-                </div>
-            @endforelse
-
-            <div class="subtotal">
-                <div class="row">
-                    <div class="col-md-6 col-sm-6 col-xs-6">
-                        <h6>Tạm tính :</h6>
-                    </div>
-                    <div class="col-md-6 col-sm-6 col-xs-6">
-                        <span id="subtotal-amount">{{ number_format($subtotal, 0, ',', '.') }}₫</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="cart-btn">
-                <a href="{{ route('cart.index') }}" class="button-default view">XEM GIỎ HÀNG</a>
-                <a href="{{ route('checkout.index') }}" class="button-default checkout">THANH TOÁN</a>
-            </div>
-        </div>
-    </div>
-</div>
                   </div>
                   <div class="menu-icon">
                     <a href="#" class="hambarger">
@@ -731,6 +728,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to update the subtotal displayed in the cart
     function updateCartSubtotal(newSubtotal) {
         subtotalAmountSpan.textContent = formatCurrency(newSubtotal);
+        // Update header cart count and total
+        const headerCartText = document.querySelector('.cart.animated > span:nth-child(2)');
+        const cartItemCount = document.querySelectorAll('.cart-item').length - (document.querySelector('.cart-item p') ? 1 : 0); // Subtract 1 if empty cart message exists
+        headerCartText.textContent = `${cartItemCount} sản phẩm - ${formatCurrency(newSubtotal)}`;
     }
 
     // Handle quantity changes and delete
