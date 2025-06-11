@@ -57,7 +57,7 @@ class StaffController extends Controller
             $order->user_id = Auth::guard('staff')->user()->id;
             $order->name = 'Khách lẻ';
             $order->phone = 'N/A';
-            $order->address_id = null;
+            $order->address_id = $request->input('address_id') ?? 1;
             $order->address_detail = null;
             $order->shipping_fee = 0;
             $order->payment_method = $request->payment_method ?? 'cash';
