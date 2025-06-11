@@ -41,8 +41,7 @@ public function  danhmuc()
             ? $danhmucs->firstWhere('id', $categoryId)
             : $danhmucs->first();
 
-        // Paginate products for the selected category
-        $perPage = 8; // Number of products per page
+        $perPage = 8; 
         $firstProducts = $firstDanhmuc
             ? $firstDanhmuc->sanphams()->withMin('sizes', 'price')->paginate($perPage)
             : collect([])->paginate($perPage);
@@ -54,11 +53,10 @@ public function  danhmuc()
         return view('client.menu', compact('danhmucs', 'firstDanhmuc', 'firstProducts'));
     }
 
-    // New method to handle AJAX pagination
     public function getCategoryProducts(Request $request, $categoryId)
     {
         $danhmuc = Danhmuc::findOrFail($categoryId);
-        $perPage = 8; // Match with show method
+        $perPage = 8; 
         $products = $danhmuc->sanphams()->withMin('sizes', 'price')->paginate($perPage);
 
         foreach ($products as $product) {

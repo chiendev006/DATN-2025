@@ -23,7 +23,7 @@ return new class extends Migration
 
             // Vai trò: Ví dụ 0=Customer, 1=Staff, 2=Admin
             $table->tinyInteger('role')->default(0)->comment('0: Customer, 1: Admin, 21: Thu ngân, 22: Pha chế');
-
+            $table->string('address',255)->nullable();
             // Mã nhân viên (nếu có)
             $table->string('employee_id')->nullable()->unique()->comment('Mã nhân viên (nếu có)');
 

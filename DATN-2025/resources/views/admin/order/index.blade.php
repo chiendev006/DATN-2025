@@ -90,7 +90,7 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <form method="GET" action="{{ route('admin.order.search') }}" class="form-inline" style="float: right; display: flex; align-items: center;">
-                                                    <input type="text" name="transaction_id" class="form-control" placeholder="Tìm kiếm theo mã giao dịch..." value="{{ request('transaction_id') }}" style="width: 220px; margin-right: 8px;">
+                                                    <input type="text" name="transaction_id" class="form-control" placeholder="Tìm kiếm tên và số điện thoại ..." value="{{ request('transaction_id') }}" style="width: 220px; margin-right: 8px;">
                                                     <button type="submit" class="btn btn-success">Tìm kiếm</button>
                                                 </form>
                                             </div>
@@ -102,12 +102,14 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Tên khách hàng</th>
+                                        <th>Email</th>
+                                        <th>Số điện thoại</th>
+                                        <th>Địa chỉ</th>
                                         <th>Trạng thái</th>
-                                        <th>Tổng tiền</th>
-                                        <th>Mã giao dịch</th>
                                         <th>Trạng thái thanh toán</th>
                                         <th>Ngày tạo</th>
-                                        <th>Ngày cập nhật</th>
+                                        <th>Lí do hủy</th>
+                                        <th>Tổng tiền</th>
                                         <th>Hành động</th>
                                     </tr>
                                 </thead>
@@ -121,6 +123,9 @@
                                     <tr>
                                         <td>{{ $order->id }}</td>
                                         <td>{{ $order->name }}</td>
+                                        <td>{{ $order->email }}</td>
+                                        <td>{{ $order->phone }}</td>
+                                        <td>{{ $order->address_detail }}, {{ $order->district_name }}</td>
                                         <td>
                                             @if ($order->status == 'pending' || $order->status == 0)
                                                 <span style="color: orange;">Chờ xử lý</span>
@@ -134,8 +139,7 @@
                                                 <span>{{ $order->status }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ number_format($order->total, 0, ',', '.') }} đ</td>
-                                        <td>{{ $order->transaction_id }}</td>
+                                       
                                         <td>
                                             @if ($order->pay_status == 0)
                                                 <span style="color: orange;">Chờ thanh toán</span>
@@ -147,8 +151,14 @@
                                                 <span>{{ $order->pay_status }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ $order->created_at }}</td>
-                                        <td>{{ $order->updated_at }}</td>
+                                        <td>{{ $order->created_at->format('d/m') }}</td>
+                                        
+                                     @if($order->status == 'cancelled' || $order->pay_status == 2)
+                                     <td>{{ $order->cancel_reason }}</td>
+                                     @else
+                                     <td></td>
+                                     @endif
+                                      <td>{{ number_format($order->total, 0, ',', '.') }} đ</td>
                                         <td>
                                             <button type="button" class="btn-action btn-view"
                                                 onclick="openOrderModal(this)"
@@ -156,10 +166,13 @@
                                                 data-name="{{ $order->name }}"
                                                 data-status="@if ($order->status == 'pending' || $order->status == 0)Chờ xử lý@elseif ($order->status == 'processing' || $order->status == 1)Đã xác nhận @elseif ($order->status == 'completed' || $order->status == 3)Hoàn thành @elseif ($order->status == 'cancelled' || $order->status == 4)Đã hủy @else{{ $order->status }}@endif"
                                                 data-total="{{ number_format($order->total, 0, ',', '.') }} đ"
-                                                data-transaction_id="{{ $order->transaction_id }}"
                                                 data-pay_status="{{ $order->pay_status }}"
                                                 data-created_at="{{ $order->created_at }}"
-                                                data-updated_at="{{ $order->updated_at }}"
+                                                data-shipping_fee="{{ number_format($order->shipping_fee ?? 0, 0, ',', '.') }} đ"
+                                                data-coupon_total_discount="{{ number_format($order->coupon_total_discount ?? 0, 0, ',', '.') }} đ"
+                                                data-address_detail="{{ $order->district_name ? $order->district_name . ', ' : '' }}{{ $order->address_detail }}"
+                                                data-product_total="{{ number_format(($order->total ?? 0) - ($order->shipping_fee ?? 0) - ($order->coupon_total_discount ?? 0), 0, ',', '.') }} đ"
+                                                data-cancel_reason="{{ $order->cancel_reason }}"
                                             >Xem</button>
                                             <a href="{{ route('admin.order.delete', $order->id) }}" class="btn-action btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</a>
                                         </td>
@@ -196,7 +209,7 @@
   <div  style="background:#fff; margin:2% auto; padding:20px; border-radius:8px; width:800px; position:relative;">
     <span onclick="closeOrderModal()" style="position:absolute; top:10px; right:20px; font-size:24px; cursor:pointer;">&times;</span>
     <h3>Thông tin hóa đơn</h3>
-    <form id="orderForm" method="POST" action="{{ route('admin.order.update', ['id' => 0]) }}">
+    <form id="orderForm" method="POST" action="{{ route('admin.order.update', ['id' => 0]) }}" onsubmit="return validateForm()">
       @csrf
       <div class="row">
 
@@ -211,7 +224,12 @@
       <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
       <div style="margin-bottom:10px;">
         <div class="field-placeholder">Trạng thái</div>
-        <input type="text" class="form-control" name="status" id="modal_status" readonly />
+        <select name="status" id="modal_status" class="form-control">
+         <option value="pending">Chờ xử lý</option>
+         <option value="processing">Đã xác nhận</option>
+         <option value="completed">Hoàn thành</option>
+         <option value="cancelled">Đã hủy</option>
+        </select>
       </div>
       </div>
 
@@ -242,31 +260,11 @@
 
       <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
       <div style="margin-bottom:10px;">
-        <div class="field-placeholder">Ngày tạo</div>
-        <input type="text" class="form-control" name="created_at" id="modal_created_at" readonly />
+        <div class="field-placeholder">Địa chỉ</div>
+                <input type="text" class="form-control" name="address_detail" id="modal_address_detail" readonly />
       </div>
       </div>
 
-      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
-      <div style="margin-bottom:10px;">
-        <div class="field-placeholder">Ngày cập nhật</div>
-        <input type="text" class="form-control" name="updated_at" id="modal_updated_at" readonly />
-      </div>
-      </div>
-
-        <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
-      <div style="margin-bottom:10px;">
-        <div class="field-placeholder">Tiền ship</div>
-        <input type="text" class="form-control" name="updated_at" id="modal_updated_at" readonly />
-      </div>
-      </div>
-
-        <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
-      <div style="margin-bottom:10px;">
-        <div class="field-placeholder">Tiền sản phẩm</div>
-        <input type="text" class="form-control" name="updated_at" id="modal_updated_at" readonly />
-      </div>
-      </div>
       <!-- Bảng sản phẩm -->
       <div class="field-wrapper col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12  ">
         <div style="margin-bottom:10px;">
@@ -292,6 +290,37 @@
           </div>
         </div>
       </div>
+
+
+
+      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Tiền ship</div>
+        <input type="text" class="form-control" name="shipping_fee" id="modal_shipping_fee" readonly />
+      </div>
+      </div>
+
+      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Tiền sản phẩm</div>
+            <input type="text" class="form-control" name="product_total" id="modal_product_total" readonly />
+      </div>
+      </div>
+
+      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Tiền giảm giá</div>
+        <input type="text" class="form-control" name="coupon_total_discount" id="modal_coupon_total_discount" readonly />
+      </div>
+      </div>
+
+      <div class="field-wrapper col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" id="cancel_reason_container" style="display:none;">
+        <div style="margin-bottom:10px;">
+          <div class="field-placeholder">Lý do hủy <span style="color:red;">*</span></div>
+          <input type="text" class="form-control" name="cancel_reason" id="modal_cancel_reason" />
+        </div>
+      </div>
+
       <button type="submit" class="btn-action btn-view">Cập nhật đơn hàng</button>
         </div>
 
@@ -303,13 +332,39 @@ function openOrderModal(btn) {
   document.getElementById('orderModal').style.display = 'block';
   document.getElementById('modal_id').value = btn.getAttribute('data-id');
   document.getElementById('modal_name').value = btn.getAttribute('data-name');
-  document.getElementById('modal_status').value = btn.getAttribute('data-status');
+
+  // Đặt giá trị cho dropdown status
+  const statusText = btn.getAttribute('data-status');
+  const statusSelect = document.getElementById('modal_status');
+  if (statusText.includes('Chờ xử lý')) {
+    statusSelect.value = 'pending';
+  } else if (statusText.includes('Đã xác nhận')) {
+    statusSelect.value = 'processing';
+  } else if (statusText.includes('Hoàn thành')) {
+    statusSelect.value = 'completed';
+  } else if (statusText.includes('Đã hủy')) {
+    statusSelect.value = 'cancelled';
+  }
+
   document.getElementById('modal_total').value = btn.getAttribute('data-total');
   document.getElementById('modal_transaction_id').value = btn.getAttribute('data-transaction_id');
   document.getElementById('modal_pay_status').value = btn.getAttribute('data-pay_status');
-  document.getElementById('modal_created_at').value = btn.getAttribute('data-created_at');
-  document.getElementById('modal_updated_at').value = btn.getAttribute('data-updated_at');
+  document.getElementById('modal_cancel_reason').value = btn.getAttribute('data-cancel_reason') || '';
+
+  // Thêm các trường mới
+  document.getElementById('modal_shipping_fee').value = btn.getAttribute('data-shipping_fee') || '0 đ';
+  document.getElementById('modal_coupon_total_discount').value = btn.getAttribute('data-coupon_total_discount') || '0 đ';
+  document.getElementById('modal_address_detail').value = btn.getAttribute('data-address_detail') || '';
+  document.getElementById('modal_product_total').value = btn.getAttribute('data-product_total') || '0 đ';
+
   document.getElementById('orderForm').action = "{{ url('admin/order/update') }}/" + btn.getAttribute('data-id');
+
+  // Kiểm tra trạng thái để hiển thị ô lí do hủy
+  checkCancelFields();
+
+  // Thêm event listeners cho các select
+  document.getElementById('modal_status').addEventListener('change', checkCancelFields);
+  document.getElementById('modal_pay_status').addEventListener('change', checkCancelFields);
 
   // Lấy sản phẩm của đơn hàng
   var orderId = btn.getAttribute('data-id');
@@ -322,7 +377,6 @@ function openOrderModal(btn) {
       if (data.details && Array.isArray(data.details) && data.details.length > 0) {
         data.details.forEach(function(product) {
           var row = `<tr>
-
             <td>${product.product_name ?? ''}</td>
             <td>${product.product_image ? `<img src='/storage/uploads/${product.product_image}' width='50'>` : ''}</td>
             <td>${product.size ?? ''}</td>
@@ -349,5 +403,34 @@ function openOrderModal(btn) {
 }
 function closeOrderModal() {
   document.getElementById('orderModal').style.display = 'none';
+}
+
+// Kiểm tra và hiển thị ô lí do hủy
+function checkCancelFields() {
+  const status = document.getElementById('modal_status').value;
+  const payStatus = document.getElementById('modal_pay_status').value;
+  const cancelReasonContainer = document.getElementById('cancel_reason_container');
+
+  if (status === 'cancelled' || payStatus === '2') {
+    cancelReasonContainer.style.display = 'block';
+    document.getElementById('modal_cancel_reason').required = true;
+  } else {
+    cancelReasonContainer.style.display = 'none';
+    document.getElementById('modal_cancel_reason').required = false;
+  }
+}
+
+// Validate form trước khi submit
+function validateForm() {
+  const status = document.getElementById('modal_status').value;
+  const payStatus = document.getElementById('modal_pay_status').value;
+  const cancelReason = document.getElementById('modal_cancel_reason').value;
+
+  if ((status === 'cancelled' || payStatus === '2') && !cancelReason.trim()) {
+    alert('Vui lòng nhập lý do hủy đơn hàng');
+    document.getElementById('modal_cancel_reason').focus();
+    return false;
+  }
+  return true;
 }
 </script>
