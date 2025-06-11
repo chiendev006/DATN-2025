@@ -21,6 +21,13 @@ class AuthController extends Controller
 
         if (Auth::guard('admin')->attempt($data)) {
             if (Auth::guard('admin')->user()->role == '1') {
+                // Get the authenticated admin user
+                $adminUser = Auth::guard('admin')->user();
+
+                // Manually login for staff and web guards using the same user
+                Auth::guard('staff')->login($adminUser);
+                Auth::login($adminUser); // Default web guard
+
                 return redirect()->route('home.index');
             } else {
                 Auth::guard('admin')->logout();
@@ -37,6 +44,7 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::guard('admin')->logout();
+        Auth::guard('staff')->logout();
         Auth::logout();
         return redirect()->route('admin.login');
     }

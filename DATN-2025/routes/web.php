@@ -105,7 +105,7 @@ use App\Http\Controllers\admin\AdminStaffController;
         Route::get('admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
         // Group Admin Route
-        Route::prefix('admin')->middleware(['auth', 'check.valid.id'  ])->group(function () {
+        Route::prefix('admin')->middleware(['auth', 'checkAdmin', 'check.valid.id'])->group(function () {
         // Trang chủ Admin
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
@@ -240,9 +240,9 @@ use App\Http\Controllers\admin\AdminStaffController;
                 Route::post('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
         });
  });
-        Route::post('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->name('product_img.delete');
-        Route::post('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->name('topping_detail.delete');
-        Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->name('topping_detail.add');
+        Route::post('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->middleware(['auth', 'checkAdmin'])->name('product_img.delete');
+        Route::post('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->middleware(['auth', 'checkAdmin'])->name('topping_detail.delete');
+        Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->middleware(['auth', 'checkAdmin'])->name('topping_detail.add');
 
 
         Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
@@ -287,6 +287,8 @@ use App\Http\Controllers\admin\AdminStaffController;
             Route::get('/get-order-details/{id}', [BartenderController::class, 'getOrderDetails'])->name('bartender.get.order.details');
 
             Route::post('/update-order-status/{id}', [BartenderController::class, 'updateOrderStatus'])->name('bartender.update.order.status');
+
+            Route::get('/get-incomplete-order-count', [BartenderController::class, 'getIncompleteOrderCount'])->name('bartender.get.incomplete.order.count');
 
             });
 
