@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('name', 255);
             $table->string('phone', 15);
+            $table->string('email', 255)->nullable();
             $table->foreignId('address_id')->constrained('address')->onDelete('cascade');
             $table->string('address_detail')->nullable();
             $table->string('district_name')->nullable();
@@ -28,6 +29,7 @@ return new class extends Migration
             $table->string('pay_status', 10)->default('0');
             $table->text('coupon_summary')->nullable();
             $table->decimal('coupon_total_discount', 10, 2)->default(0);
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }

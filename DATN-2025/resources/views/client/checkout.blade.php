@@ -43,31 +43,41 @@
                             @if(!$isLoggedIn)
                             <h6>Returning customer? Click here to <a href="{{ route('login') }}">login</a></h6>
                             @endif
-                            <form id="checkout-form" class="form" method="POST" action="{{ route('checkout.process') }}">
+                           <form id="checkout-form" class="form" method="POST" action="{{ route('checkout.process') }}">
                                 @csrf
 
-                                <div class="row">
-                                    <div class="col-md-12">
+                         <div class="row mb-4">
+                                    <div class="col-12">
                                         <h5>Thông tin đặt hàng</h5>
                                     </div>
 
-                                    <div class="col-md-12">
-                                        <input type="text" name="name" value="{{ old('name', Auth::check() ? Auth::user()->name : '') }}" placeholder="Họ và tên" required>
+                                    <!-- Name & Phone -->
+                                    <div class="col-md-6 mb-3">
+                                        <input type="text" name="name" value="{{ old('name', Auth::check() ? Auth::user()->name : '') }}" placeholder="Họ và tên" required class="form-control" style="height: 45px; border-radius: 30px;">
                                         @error('name')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
 
-                                    <div class="col-md-12">
-                                        <input type="text" name="phone_raw" value="{{ old('phone_raw', Auth::check() ? Auth::user()->phone : '') }}" placeholder="Số điện thoại" required>
+                                    <div class="col-md-6 mb-3">
+                                        <input type="text" name="phone_raw" value="{{ old('phone_raw', Auth::check() ? Auth::user()->phone : '') }}" placeholder="Số điện thoại" required class="form-control" style="height: 45px; border-radius: 30px;">
                                         @error('phone_raw')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
 
-                                    <div class="col-md-12">
+                                    <!-- Email -->
+                                    <div class="col-md-12 mb-3">
+                                        <input type="email" name="email" value="{{ old('email', Auth::check() ? Auth::user()->email : '') }}" placeholder="Email" class="form-control" style="height: 45px; border-radius: 30px;">
+                                        @error('email')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <!-- District & Address -->
+                                    <div class="col-md-6 mb-3">
                                         <label>Chọn huyện (tỉnh Hải Phòng) <span class="text-danger">*</span></label>
-                                        <select name="district" id="district-select" class="form-control" required>
+                                        <select name="district" id="district-select" class="form-control" style="height: 45px; border-radius: 30px;">
                                             <option value="" disabled selected>-- Chọn huyện --</option>
                                             @foreach($districts as $districtOption)
                                                 <option value="{{ $districtOption->id }}" data-ship="{{ $districtOption->shipping_fee }}" {{ old('district') == $districtOption->id ? 'selected' : '' }}>
@@ -80,64 +90,60 @@
                                         @enderror
                                     </div>
 
-                                    <div class="col-md-12 mt-3">
-                                        <label>Địa chỉ chi tiết (Số nhà, tên đường, ngõ,...) <span class="text-danger">*</span></label>
-                                        <input type="text" name="address_detail" value="{{ old('address_detail') }}" placeholder="Nhập số nhà, tên đường..." required class="form-control">
+                                    <div class="col-md-6 mb-3">
+                                        <label>Địa chỉ chi tiết <span class="text-danger">*</span></label>
+                                        <input type="text" name="address_detail" value="{{ old('address_detail') }}" placeholder="Nhập số nhà, tên đường..." required class="form-control" style="height: 45px; border-radius: 30px;">
                                         @error('address_detail')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
-
-                                    <div class="col-md-12 mt-3">
+                                    <div class="col-md-12 mb-3">
                                         <p>Phí vận chuyển hiện tại: <strong id="shipping-fee-display">Chưa chọn huyện</strong></p>
                                     </div>
                                 </div>
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <label>Ghi chú đơn hàng</label>
+                                        <textarea name="note" class="form-control" rows="3" placeholder="Nhập ghi chú cho đơn hàng (nếu có)">{{ old('note') }}</textarea>
+                                    </div>
+                                </div>
 
-                                <div class="row mt-4">
+                                <div class="row mb-4">
                                     <div class="col-md-12">
                                         <h5>Phương thức thanh toán</h5>
                                         <div class="payment-methods">
-                                            <div class="payment-method" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                                                <label style="display: flex; align-items: center; gap: 10px;">
-                                                    <input type="radio" name="payment_method" value="cash" required {{ old('payment_method') === 'cash' ? 'checked' : '' }}>
-                                                    <img src="{{ url('asset') }}/images/cod.png" alt="COD" style="height: 24px;">
-                                                    <span>Thanh toán khi nhận hàng (COD)</span>
-                                                </label>
+                                            <div class="form-check d-flex align-items-center gap-2 mb-2">
+                                                <input class="form-check-input" type="radio" name="payment_method" value="cash" required {{ old('payment_method') === 'cash' ? 'checked' : '' }}>
+                                                <img src="{{ url('asset') }}/images/cod.png" alt="COD" style="height: 24px;">
+                                                <label class="form-check-label">Thanh toán khi nhận hàng (COD)</label>
                                             </div>
 
-                                            <div class="payment-method" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                                                <label style="display: flex; align-items: center; gap: 10px;">
-                                                    <input type="radio" name="payment_method" value="banking" {{ old('payment_method') === 'banking' ? 'checked' : '' }}>
-                                                    <img src="{{ url('asset') }}/images/vnpay.jpg" alt="VNPAY" style="height: 24px;">
-                                                    <span>Chuyển khoản ngân hàng (qua VNPAY)</span>
-                                                </label>
+                                            <div class="form-check d-flex align-items-center gap-2 mb-2">
+                                                <input class="form-check-input" type="radio" name="payment_method" value="banking" {{ old('payment_method') === 'banking' ? 'checked' : '' }}>
+                                                <img src="{{ url('asset') }}/images/vnpay.jpg" alt="VNPAY" style="height: 24px;">
+                                                <label class="form-check-label">Chuyển khoản ngân hàng (qua VNPAY)</label>
                                             </div>
-
                                             @error('payment_method')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row mt-4">
+                                <div class="row mb-4">
                                     <div class="col-md-12">
-                                        <div class="terms-conditions">
-                                            <label>
-                                                <input type="checkbox" name="terms" required {{ old('terms') ? 'checked' : '' }}>
-                                                <span>Tôi đồng ý với các điều khoản và điều kiện *</span>
-                                            </label>
-                                            @error('terms')
-                                                <span class="text-danger">{{ $message }}</span>
-                                            @enderror
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="terms" required {{ old('terms') ? 'checked' : '' }}>
+                                            <label class="form-check-label">Tôi đồng ý với các điều khoản và điều kiện *</label>
                                         </div>
+                                        @error('terms')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                     </div>
                                 </div>
-
                                 <input type="hidden" name="redirect" value="1">
-
-                                <div class="row mt-4">
-                                    <div class="col-md-12">
-                                        <button type="submit" class="btn-large btn-primary-gold">Đặt hàng</button>
+                                <div style="margin-top: 30px;" class="row mb-4">
+                                    <div class="col-md-12 text-center">
+                                        <button type="submit" class="btn btn-primary btn-lg">Đặt hàng</button>
                                     </div>
                                 </div>
                             </form>
