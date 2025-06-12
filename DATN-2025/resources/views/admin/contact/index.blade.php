@@ -114,8 +114,10 @@
                             <table id="copy-print-csv" class="table v-middle">
                                 <thead>
                                     <tr>
+                                        <th>STT</th>
                                          <th>Tên khách hàng</th>
                                          <th>Email</th>
+                                         <th>Phone</th>
                                           <th>Nội dung</th>
                                           <th>Ngày liên hệ</th>
                                         <th style="width:90px; text-align:center;">Hành động</th>
@@ -127,10 +129,12 @@
                                 <td colspan="6" class="text-center">Không có dữ liệu</td>
                                </tr>
                                @else
-                               @foreach ($contact as $item)
+                               @foreach ($contact as $key => $item)
                                     <tr>
+                                    <td>{{ ($contact->currentPage()-1) * $contact->perPage() + $key + 1 }}</td>
                                     <td>{{ $item['name'] }}</td>
                                     <td>{{ $item['email'] }}</td>
+                                    <td>{{ $item['phone'] }}</td>
                                     <td>{!! $item['massage'] !!}</td>
                                     <td>{{ $item['created_at']->format('d/m/Y') }}</td>
                                         <td style="width:90px; text-align:center;">

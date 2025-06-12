@@ -1,7 +1,7 @@
 <?php
         use App\Http\Controllers\AboutController;
-use App\Http\Controllers\admin\AddressController;
-use App\Http\Controllers\admin\AdminStaffController;
+        use App\Http\Controllers\admin\AddressController;
+        use App\Http\Controllers\admin\AdminStaffController;
         use App\Http\Controllers\admin\Product_attributesController;
         use Illuminate\Support\Facades\Route;
         use App\Http\Controllers\Controller;
@@ -112,7 +112,7 @@ use App\Http\Controllers\admin\AdminStaffController;
         // Đơn hàng
         Route::get('/order', [\App\Http\Controllers\admin\OrderController::class, 'ordersIndex'])->name('admin.order.index');
         Route::post('/order/update/{id}', [\App\Http\Controllers\admin\OrderController::class, 'update'])->name('admin.order.update');
-        Route::post('/order/delete/{id}', [\App\Http\Controllers\admin\OrderController::class, 'delete'])->name('admin.order.delete');
+        Route::get('/order/delete/{id}', [\App\Http\Controllers\admin\OrderController::class, 'delete'])->name('admin.order.delete');
         Route::get('/order/json/{id}', [\App\Http\Controllers\admin\OrderController::class, 'showJson'])->name('admin.order.json');
         Route::get('/order/filter', [\App\Http\Controllers\admin\OrderController::class, 'filterOrders'])->name('admin.order.filter');
         Route::get('/order/search', [\App\Http\Controllers\admin\OrderController::class, 'searchByTransactionId'])->name('admin.order.search');
@@ -258,12 +258,15 @@ use App\Http\Controllers\admin\AdminStaffController;
         Route::get('staff/logout', [AuthenController::class, 'logout'])->name('staff.logout');
 
         Route::prefix('staff')->middleware('checkStaff')->group(function () {
-                Route::get('/', [StaffController::class, 'index'])->name('staff.index');
-                Route::get('/product/{id}/options', [StaffController::class, 'getOptions'])->name('staff.options');
-                Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
-                Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
-                Route::get('/orderdetailtoday', [StaffController::class, 'orderdetailtoday'])->name('staff.orderdetailtoday');
-                Route::get('/products/search', [StaffController::class, 'searchProducts'])->name('staff.products.search');
+        Route::get('/', [StaffController::class, 'index'])->name('staff.index');
+        Route::get('/product/{id}', [StaffController::class, 'ajaxShow'])->name('staff.options');
+        Route::post('/orders', [StaffController::class, 'store'])->name('staff.store');
+        Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
+        Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
+        Route::get('/orderdetailtoday', [StaffController::class, 'orderdetailtoday'])->name('staff.orderdetailtoday');
+        Route::get('/staff/products/search', [StaffController::class, 'searchProducts'])->name('staff.products.search');
+
+
         });
 
         Route::prefix('bartender')->middleware('checkStaff')->group(function () {

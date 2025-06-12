@@ -100,7 +100,7 @@
                                             <table id="copy-print-csv" class="table v-middle">
                                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <th>STT</th>
                                         <th>Tên khách hàng</th>
                                         <th>Email</th>
                                         <th>Số điện thoại</th>
@@ -119,9 +119,9 @@
                                     <td colspan="10" class="text-center">Không có dữ liệu</td>
                                   </tr>
                                   @else
-                                  @foreach ($orders as $order)
+                                  @foreach ($orders as $key => $order)
                                     <tr>
-                                        <td>{{ $order->id }}</td>
+                                       <td>{{ ($orders->currentPage()-1) * $orders->perPage() + $key + 1 }}</td>
                                         <td>{{ $order->name }}</td>
                                         <td>{{ $order->email }}</td>
                                         <td>{{ $order->phone }}</td>
@@ -151,7 +151,10 @@
                                                 <span>{{ $order->pay_status }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ $order->created_at->format('d/m') }}</td>
+
+
+                                        <td>{{ $order->created_at->format('d/m/Y') }}</td>
+                                        
 
                                      @if($order->status == 'cancelled' || $order->pay_status == 2)
                                      <td>{{ $order->cancel_reason }}</td>

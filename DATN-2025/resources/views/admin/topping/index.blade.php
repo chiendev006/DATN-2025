@@ -42,6 +42,7 @@
                                             <table id="copy-print-csv" class="table v-middle">
                                                 <thead>
                                                     <tr>
+                                                        <th>STT</th>
                                                         <th>Tên topping</th>
                                                         <th>Giá</th>
                                                         <th>Hành động</th>
@@ -53,8 +54,9 @@
                                                         <td colspan="3" class="text-center">Không có dữ liệu</td>
                                                     </tr>
                                                     @else
-                                                    @foreach ($topping as $item)
+                                                    @foreach ($topping as $key => $item)
                                                     <tr>
+                                                         <td>{{ ($topping->currentPage()-1) * $topping->perPage() + $key + 1 }}</td>
                                                         <td>
                                                          {{ $item['name'] }}
                                                         </td>

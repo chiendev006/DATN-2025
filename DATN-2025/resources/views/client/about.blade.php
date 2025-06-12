@@ -78,8 +78,6 @@
                 </section>
 
                 <!-- End Partner Blog -->
-
             </div>
         </main>  
-
 @endsection
