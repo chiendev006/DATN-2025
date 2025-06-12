@@ -94,9 +94,11 @@
                                                                		<a href="{{ route('sanpham.edit', ['id' => $sp->id]) }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit">
                                                                			<i class="icon-edit1 text-info"></i>
                                                                		</a>
-                                                               		<a href="javascript:void(0)" onclick="deleteViaPost('{{ route('sanpham.delete', ['id' => $sp->id]) }}', 'Bạn có chắc chắn muốn xóa?')" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
-                                                               			<i class="icon-x-circle text-danger"></i>
-                                                               		</a>
+                                                               		 <form action="{{ route('sanpham.delete', ['id' => $sp->id]) }}" method="POST">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
+                                                                    </form>
                                                                	</div>
                                                                </td>
                                                             </tr>

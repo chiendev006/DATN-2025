@@ -103,9 +103,11 @@
 
                                                                         </button>
 
-                                                                <a href="javascript:void(0)" onclick="deleteViaPost('{{ route('coupon.delete', ['id' => $item->id]) }}', 'Ngừng phục vụ Coupon này?')" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
-                                                                    <i class="icon-x-circle text-danger"></i>
-                                                                </a>
+                                                                        <form action="{{ route('coupon.delete', ['id' => $item->id]) }}" method="POST">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                            <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa Coupon này?')">Xóa</button>
+                                                                        </form>
                                                             </div>
                                                         </td>
                                                     </tr>

@@ -74,9 +74,11 @@
                                                                     <i class="icon-edit1 text-info"></i>
                                                                 </button>
 
-                                                                <a href="javascript:void(0)" onclick="deleteViaPost('{{ route('topping.delete', ['id' => $item->id]) }}', 'Ngừng phục vụ topping này?')" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
-                                                                    <i class="icon-x-circle text-danger"></i>
-                                                                </a>
+                                                                 <form action="{{ route('topping.delete', ['id' => $item->id]) }}" method="POST">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
+                                                                    </form>
                                                             </div>
                                                         </td>
                                                     </tr>

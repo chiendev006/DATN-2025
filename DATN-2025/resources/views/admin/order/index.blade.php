@@ -124,7 +124,7 @@
                                         <th>Địa chỉ</th>
                                         <th>Trạng thái</th>
                                         <th>Trạng thái thanh toán</th>
-                                        <th>Ngày tạo</th> 
+                                        <th>Ngày tạo</th>
                                         <th>Ghi chú</th>
                                         <th>Lí do hủy</th>
                                         <th>Tổng tiền</th>
@@ -195,8 +195,11 @@
                                                 data-product_total="{{ number_format(($order->total ?? 0) - ($order->shipping_fee ?? 0) - ($order->coupon_total_discount ?? 0), 0, ',', '.') }} đ"
                                                 data-cancel_reason="{{ $order->cancel_reason }}"
                                             >Xem</button>
-                                            <a href="javascript:void(0)" onclick="deleteViaPost('{{ route('admin.order.delete', ['id' => $order->id]) }}', 'Bạn có chắc chắn muốn xóa đơn hàng này?')"  data-toggle="tooltip" class="btn-action btn-delete" data-placement="top" title="" data-original-title="Delete">Xóa</a>
-
+                                            <form action="{{ route('admin.order.delete', ['id' => $order->id]) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
+                                            </form>
                                                              </td>
                                     </tr>
                                     @endforeach
@@ -302,7 +305,7 @@
                   <th>Topping</th>
                   <th>Số lượng</th>
                   <th>Thành tiền</th>
-                  
+
                 </tr>
               </thead>
               <tbody>
