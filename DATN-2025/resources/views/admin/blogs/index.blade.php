@@ -160,7 +160,11 @@
                                     <td>{{ $item->updated_at }}</td>
                                         <td style="width:90px; text-align:center;">
                                             <a style="color: white; width: 60px; margin-bottom:4px;" href="{{ route('blogs.edit', $item->id) }}" class="btn-success">Sửa</a>
-                                            <a style="color: white; width: 60px;" href="{{ route('blogs.destroy', $item->id) }}" onclick="return confirm('  Xác nhận xóa bài viết?')" class="btn-success1">Xóa</a>
+                                            <form action="{{ route('blogs.destroy', ['id' => $item->id]) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này?')">Xóa</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 @endforeach

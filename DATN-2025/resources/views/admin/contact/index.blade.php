@@ -138,7 +138,11 @@
                                     <td>{!! $item['massage'] !!}</td>
                                     <td>{{ $item['created_at']->format('d/m/Y') }}</td>
                                         <td style="width:90px; text-align:center;">
-                                            <a style="color: white; width: 60px;" href="javascript:void(0)" onclick="deleteViaPost('{{ route('contact.delete',[$item->id]) }}', 'Xác nhận xóa bài viết?')" class="btn-success1">Xóa</a>
+                                        <form action="{{ route('contact.delete', ['id' => $item->id]) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 @endforeach

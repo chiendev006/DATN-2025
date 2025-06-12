@@ -32,6 +32,7 @@
 		<!-- *************
 			************ Vendor Css Files *************
 		************ -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
 		<!-- Mega Menu -->
 		<link rel="stylesheet" href="{{ url('assetadmin') }}/vendor/megamenu/css/megamenu.css">

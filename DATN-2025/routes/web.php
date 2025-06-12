@@ -100,7 +100,7 @@
         Route::get('/services', [ServicesController::class, 'index'])->name('services.index');
 
         // Admin
-        Route::get('admin/login', [AuthController::class, 'login'])->name('admin.login');
+        Route::get('login', [AuthController::class, 'login'])->name('admin.login');
         Route::post('admin/login', [AuthController::class, 'postLogin'])->name('admin.post-login');
         Route::get('admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
@@ -112,7 +112,7 @@
         // Đơn hàng
         Route::get('/order', [\App\Http\Controllers\admin\OrderController::class, 'ordersIndex'])->name('admin.order.index');
         Route::post('/order/update/{id}', [\App\Http\Controllers\admin\OrderController::class, 'update'])->name('admin.order.update');
-        Route::post('/order/delete/{id}', [\App\Http\Controllers\admin\OrderController::class, 'delete'])->name('admin.order.delete');
+        Route::delete('/order/delete/{id}', [\App\Http\Controllers\admin\OrderController::class, 'delete'])->name('admin.order.delete');
         Route::get('/order/json/{id}', [\App\Http\Controllers\admin\OrderController::class, 'showJson'])->name('admin.order.json');
         Route::get('/order/filter', [\App\Http\Controllers\admin\OrderController::class, 'filterOrders'])->name('admin.order.filter');
         Route::get('/order/search', [\App\Http\Controllers\admin\OrderController::class, 'searchByTransactionId'])->name('admin.order.search');
@@ -124,7 +124,7 @@
                 Route::post('/store', [DanhmucController::class, 'store'])->name('danhmuc.store');
                 Route::get('/edit/{id}', [DanhmucController::class, 'edit'])->name('danhmuc.edit');
                 Route::post('/update/{id}', [DanhmucController::class, 'update'])->name('danhmuc.update');
-                Route::post('/delete/{id}', [DanhmucController::class, 'delete'])->name('danhmuc.delete');
+                Route::delete('/delete/{id}', [DanhmucController::class, 'delete'])->name('danhmuc.delete');
         });
 
         // Quản lý ảnh theo sản phẩm
@@ -134,7 +134,7 @@
                 Route::post('{id}/images', [SanphamController::class, 'storeImage'])->name('images.store');
                 Route::get('images/{image}/edit', [SanphamController::class, 'editImage'])->name('images.edit');
                 Route::post('images/{image}', [SanphamController::class, 'updateImage'])->name('images.update');
-                Route::post('images/{image}/delete', [SanphamController::class, 'deleteImage'])->name('images.delete');
+                Route::delete('images/{image}/delete', [SanphamController::class, 'deleteImage'])->name('images.delete');
                 Route::get('/filter-category', [SanphamController::class, 'filterByCategory'])->name('filterCategory');
         });
 
@@ -145,7 +145,7 @@
                 Route::post('/store', [CouponController::class, 'store'])->name('coupon.store');
                 Route::get('/edit/{id}', [CouponController::class, 'edit'])->name('coupon.edit');
                 Route::post('/update/{id}', [CouponController::class, 'update'])->name('coupon.update');
-                Route::post('/delete/{id}', [CouponController::class, 'delete'])->name('coupon.delete');
+                Route::delete('/delete/{id}', [CouponController::class, 'delete'])->name('coupon.delete');
         });
 
         // địa chỉ
@@ -155,7 +155,7 @@
                 Route::post('/store', [AddressController::class, 'store'])->name('address.store');
                 Route::get('/edit/{id}', [AddressController::class, 'edit'])->name('address.edit');
                 Route::post('/update/{id}', [AddressController::class, 'update'])->name('address.update');
-                Route::post('/delete/{id}', [AddressController::class, 'delete'])->name('address.delete');
+                Route::delete('/delete/{id}', [AddressController::class, 'delete'])->name('address.delete');
         });
 
         // Sản phẩm
@@ -165,8 +165,8 @@
                 Route::get('/create', [SanphamController::class, 'create'])->name('sanpham.create');
                 Route::post('/store', [SanphamController::class, 'store'])->name('sanpham.store');
                 Route::get('/edit/{id}', [SanphamController::class, 'edit'])->name('sanpham.edit');
-                Route::post('/update/{id}', [SanphamController::class, 'update'])->name('sanpham.update');
-                Route::post('/delete/{id}', [SanphamController::class, 'delete'])->name('sanpham.delete');
+                Route::post( '/update/{id}', [SanphamController::class, 'update'])->name('sanpham.update');
+                Route::delete('/delete/{id}', [SanphamController::class, 'delete'])->name('sanpham.delete');
         });
 
         // payroll
@@ -187,7 +187,7 @@
                 Route::post('/store', [AdminStaffController::class, 'store'])->name('admin.staff.store');
                 Route::get('/edit/{id}', [AdminStaffController::class, 'edit'])->name('admin.staff.edit');
                 Route::post('/update/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
-                Route::post('/delete/{id}', [AdminStaffController::class, 'delete'])->name('admin.staff.delete');
+                Route::delete('/delete/{id}', [AdminStaffController::class, 'delete'])->name('admin.staff.delete');
         });
 
 
@@ -198,7 +198,7 @@
                 Route::post('/', [ProductImageController::class, 'store'])->name('product-images.store');
                 Route::get('/{id}/edit', [ProductImageController::class, 'edit'])->name('product-images.edit');
                 Route::post('/{id}', [ProductImageController::class, 'update'])->name('product-images.update');
-                Route::post('/{id}/delete', [ProductImageController::class, 'destroy'])->name('product-images.delete');
+                Route::delete('/{id}/delete', [ProductImageController::class, 'destroy'])->name('product-images.delete');
         });
 
 
@@ -206,7 +206,7 @@
         // Quản lý liên hệ từ Admin
         Route::prefix('contact')->group(function () {
                 Route::get('/', [ContactAdminController::class, 'index'])->name('contact.index');
-                Route::post('/delete/{id}', [ContactAdminController::class, 'delete'])->name('contact.delete');
+                Route::delete('/delete/{id}', [ContactAdminController::class, 'delete'])->name('contact.delete');
         });
 
         // Topping
@@ -216,7 +216,7 @@
                 Route::post('/store', [ToppingController::class, 'store'])->name('topping.store');
                 Route::get('/edit/{id}', [ToppingController::class, 'edit'])->name('topping.edit');
                 Route::post('/update/{id}', [ToppingController::class, 'update'])->name('topping.update');
-                Route::post('/delete/{id}', [ToppingController::class, 'delete'])->name('topping.delete');
+                Route::delete('/delete/{id}', [ToppingController::class, 'delete'])->name('topping.delete');
         });
 
 
@@ -227,7 +227,7 @@
                 Route::post('/store', [Product_attributesController::class, 'store'])->name('size.store');
                 Route::get('/edit/{id}', [Product_attributesController::class, 'edit'])->name('size.edit');
                 Route::post('/update/{id}', [Product_attributesController::class, 'update'])->name('size.update');
-                Route::post('/delete/{id}', [Product_attributesController::class, 'delete'])->name('size.delete');
+                Route::delete('/delete/{id}', [Product_attributesController::class, 'delete'])->name('size.delete');
         });
 
         // Blogs
@@ -237,12 +237,11 @@
                 Route::post('/store', [BlogsController::class, 'store'])->name('blogs.store');
                 Route::get('/edit/{id}', [BlogsController::class, 'edit'])->name('blogs.edit');
                 Route::post('/update/{id}', [BlogsController::class, 'update'])->name('blogs.update');
-                Route::post('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
-                Route::get('/search', [BlogsController::class, 'search'])->name('blogs.search');
+                Route::delete('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
         });
  });
-        Route::post('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->middleware(['auth', 'checkAdmin'])->name('product_img.delete');
-        Route::post('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->middleware(['auth', 'checkAdmin'])->name('topping_detail.delete');
+        Route::delete('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->middleware(['auth', 'checkAdmin'])->name('product_img.delete');
+        Route::delete('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->middleware(['auth', 'checkAdmin'])->name('topping_detail.delete');
         Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->middleware(['auth', 'checkAdmin'])->name('topping_detail.add');
 
 

@@ -164,9 +164,11 @@
                                                     <i class="icon-edit1 text-info"></i>
                                                 </button>
 
-                                                <a href="{{ route('admin.staff.delete', ['id' => $staff->id]) }}" onclick="return confirm('Bạn có chắc chắn muốn xóa ?')" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
-                                                    <i class="icon-x-circle text-danger"></i>
-                                                </a>
+                                                <form action="{{ route('admin.staff.delete', ['id' => $staff->id]) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
+                                            </form>
                                             </div>
                                         </td>
                                     </tr>
