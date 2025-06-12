@@ -86,4 +86,21 @@ class BlogsController extends Controller
 
         return redirect()->route('blogs.index')->with('success', 'Xóa blog thành công!');
     }
+    public function search(Request $request)
+    {
+        $query = Blogs::query();
+
+        if ($request->filled('name')) {
+            $query->where('title', 'like', '%' . $request->name . '%');
+        }
+
+        if ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        $blogs = $query->paginate(10);
+
+        return view('admin.blogs.index', compact('blogs'));
+    }
+
 }

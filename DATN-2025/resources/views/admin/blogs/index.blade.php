@@ -95,19 +95,40 @@
                 <div class="card">
                     <a href="{{ route('blogs.create') }}" class="btn-success">Thêm bài viết</a>
                     <div class="card-body">
-                        <div style="margin-bottom: 10px;">
-                            <form method="GET" style="display:inline-block;">
-                                <label for="per_page">Hiển thị</label>
-                                <select name="per_page" id="per_page" class="form-control" style="width: 80px; display:inline-block;" onchange="this.form.submit()">
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap" style="gap: 15px;">
+                            <!-- Bên trái: chọn số bản ghi -->
+                            <form method="GET" class="d-flex align-items-center" style="gap: 8px;">
+                                <label for="per_page" class="mb-0">Hiển thị</label>
+                                <select name="per_page" id="per_page" class="form-control" style="width: 80px;" onchange="this.form.submit()">
                                     <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
                                     <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
                                     <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
                                     <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
-                                </select> bản ghi/trang
+                                </select>
+                                <span>bản ghi/trang</span>
                                 @foreach(request()->except(['per_page','page']) as $key => $val)
                                     <input type="hidden" name="{{ $key }}" value="{{ $val }}">
                                 @endforeach
                             </form>
+
+                            <!-- Bên phải: các form tìm kiếm -->
+                            <div class="d-flex align-items-center" style="gap: 15px;">
+                                <!-- Tìm theo tên -->
+                                <form action="{{ route('blogs.search') }}" method="GET" class="d-flex" style="gap: 8px;">
+                                    <input type="text" name="name" class="form-control" placeholder="Tìm theo tên..." value="{{ request('name') }}" style="max-width: 250px;">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search">Tìm</i>
+                                    </button>
+                                </form>
+
+                                <!-- Tìm theo ngày -->
+                                <form action="{{ route('blogs.search') }}" method="GET" class="d-flex" style="gap: 8px;">
+                                    <input type="date" name="date" class="form-control" value="{{ request('date') }}" style="max-width: 180px;">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-search">Tìm</i>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
 
                         <div class="table-responsive">
