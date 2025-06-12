@@ -542,9 +542,10 @@
                   data-speed="2500"
                   data-autotime="6000"
                 >
+                @foreach ($blog as $item)
                   <div class="item dp-animation">
                     <div class="feature-img">
-                      <img src="{{ url('asset') }}/images/feature1.jpg" alt="" class="animated" />
+                      <img style="height: auto;" src="{{ asset('storage/'.$item->image) }}" alt="" class="animated" />
                       <div class="date-feature">
                         27 <br />
                         <small>may</small>
@@ -553,121 +554,16 @@
                     <div class="feature-info">
                       <span><i class="icon-user-1"></i> By Ali TUFAN</span>
                       <span><i class="icon-comment-5"></i> 5 Comments</span>
-                      <h5>Make It SImple</h5>
+                      <h5>{{ $item->title }}</h5>
                       <p>
-                        Aptent taciti sociosqu ad litora euismod atras vulputate
-                        iltricies etri elit class.
+                       {!! $item->content !!}
                       </p>
-                      <a href="blog_single.html"
+                      <a href="{{ route('client.blogsingle',[$item->id]) }}"
                         >Read More <i class="icon-right-4"></i
                       ></a>
                     </div>
                   </div>
-                  <div class="item dp-animation">
-                    <div class="feature-img">
-                      <img src="{{ url('asset') }}/images/feature2.jpg" alt="" class="animated" />
-                      <div class="date-feature">
-                        27 <br />
-                        <small>may</small>
-                      </div>
-                    </div>
-                    <div class="feature-info">
-                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
-                      <span><i class="icon-comment-5"></i> 5 Comments</span>
-                      <h5>COFFEE SHOP</h5>
-                      <p>
-                        Aptent taciti sociosqu ad litora euismod atras vulputate
-                        iltricies etri elit class.
-                      </p>
-                      <a href="blog_single.html"
-                        >Read More <i class="icon-right-4"></i
-                      ></a>
-                    </div>
-                  </div>
-                  <div class="item dp-animation">
-                    <div class="feature-img">
-                      <img src="{{ url('asset') }}/images/feature3.jpg" alt="" class="animated" />
-                      <div class="date-feature">
-                        27 <br />
-                        <small>may</small>
-                      </div>
-                    </div>
-                    <div class="feature-info">
-                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
-                      <span><i class="icon-comment-5"></i> 5 Comments</span>
-                      <h5>COFFEE BAR</h5>
-                      <p>
-                        Aptent taciti sociosqu ad litora euismod atras vulputate
-                        iltricies etri elit class.
-                      </p>
-                      <a href="blog_single.html"
-                        >Read More <i class="icon-right-4"></i
-                      ></a>
-                    </div>
-                  </div>
-                  <div class="item dp-animation">
-                    <div class="feature-img">
-                      <img src="{{ url('asset') }}/images/feature1.jpg" alt="" class="animated" />
-                      <div class="date-feature">
-                        27 <br />
-                        <small>may</small>
-                      </div>
-                    </div>
-                    <div class="feature-info">
-                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
-                      <span><i class="icon-comment-5"></i> 5 Comments</span>
-                      <h5>Make It SImple</h5>
-                      <p>
-                        Aptent taciti sociosqu ad litora euismod atras vulputate
-                        iltricies etri elit class.
-                      </p>
-                      <a href="blog_single.html"
-                        >Read More <i class="icon-right-4"></i
-                      ></a>
-                    </div>
-                  </div>
-                  <div class="item dp-animation">
-                    <div class="feature-img">
-                      <img src="{{ url('asset') }}/images/feature2.jpg" alt="" class="animated" />
-                      <div class="date-feature">
-                        27 <br />
-                        <small>may</small>
-                      </div>
-                    </div>
-                    <div class="feature-info">
-                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
-                      <span><i class="icon-comment-5"></i> 5 Comments</span>
-                      <h5>COFFEE SHOP</h5>
-                      <p>
-                        Aptent taciti sociosqu ad litora euismod atras vulputate
-                        iltricies etri elit class.
-                      </p>
-                      <a href="blog_single.html"
-                        >Read More <i class="icon-right-4"></i
-                      ></a>
-                    </div>
-                  </div>
-                  <div class="item dp-animation">
-                    <div class="feature-img">
-                      <img src="{{ url('asset') }}/images/feature3.jpg" alt="" class="animated" />
-                      <div class="date-feature">
-                        27 <br />
-                        <small>may</small>
-                      </div>
-                    </div>
-                    <div class="feature-info">
-                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
-                      <span><i class="icon-comment-5"></i> 5 Comments</span>
-                      <h5>COFFEE BAR</h5>
-                      <p>
-                        Aptent taciti sociosqu ad litora euismod atras vulputate
-                        iltricies etri elit class.
-                      </p>
-                      <a href="blog_single.html"
-                        >Read More <i class="icon-right-4"></i
-                      ></a>
-                    </div>
-                  </div>
+                @endforeach
                 </div>
               </div>
             </div>

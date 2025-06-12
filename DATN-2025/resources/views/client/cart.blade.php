@@ -330,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 discountHtml += `
                     <div class="product-cart-total coupon-applied-row" data-code="${coupon.code}">
-                        <small>Mã giảm giá (<span class="applied-coupon-code">${coupon.code}</span>)</small>
+                        <small>Mã giảm giá: <span class="applied-coupon-code">${coupon.code}</span></small>
                         <span class="applied-coupon-discount">- ${formatCurrency(discountAmount)}</span>
                     </div>
                 `;
@@ -665,7 +665,7 @@ document.addEventListener("DOMContentLoaded", function () {
 }
 
 .remove-applied-coupon-btn {
-    background-color: #dc3545;
+    background-color:rgb(181, 181, 181);
 }
 
 .selected-coupon {

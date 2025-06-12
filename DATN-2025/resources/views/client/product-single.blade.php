@@ -98,7 +98,7 @@
                             </div>
                             <button type="submit" class="filter-btn btn-large"><i class="fa fa-shopping-bag" aria-hidden="true"></i> Add to Cart</button>
                         </form>
-                        <div class="share-tag">
+                        <!-- <div class="share-tag">
                             <div class="row">
                                 <div class="col-md-12 col-sm-12 col-xs-12">
                                     <div class="social-wrap">
@@ -121,7 +121,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -160,15 +160,15 @@
                                             <img src="images/comment-img1.png" alt="">
                                         </div>
                                         <div class="comment-info">
-                                            <h5>{{ $item->user->name }}</h5>
-                                            <span class="comment-date">{{ $item->created_at }}</span>
-                                            <p>{{ $item->comment }}</p>
+                                            <h5> <img style="width: 50px; height: 50px; border-radius: 50px;" src="{{ asset('storage/'.$item->user->image) }}" alt=""> {{ $item->user->name }}</h5>
+                                            <span class="comment-date">{{ $item->created_at->format('d/m/Y') }}</span>
+                                            <input disabled type="text" name="product_id" value="{{ $item->comment }}">
                                         </div>
                                     </div>
                                 @endforeach
                                 @if (Auth::check())
                                     <div class="title text-center">
-                                        <h3 class="text-coffee">Leave a Reply</h3>
+                                        <h3 class="text-coffee">Nhập comment</h3>
                                     </div>
                                     <form class="form" method="post" action="{{ route('comment.store') }}">
                                         @csrf
@@ -178,7 +178,7 @@
                                                 <textarea placeholder="Comment" name="comment" required></textarea>
                                             </div>
                                             <input type="hidden" name="rating" id="rating" value="5">
-                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <!-- <div class="col-md-12 col-sm-12 col-xs-12">
                                                 <div class="star-review">
                                                     <p>
                                                         <span>Your Rating</span>
@@ -191,7 +191,7 @@
                                                     </span>
                                                     </p>
                                                 </div>
-                                            </div>
+                                            </div> -->
                                             <div class="col-md-12 col-sm-12 col-xs-12 text-center">
                                                 <input name="submit" value="POST COMMENT" class="submit-btn" type="submit">
                                             </div>

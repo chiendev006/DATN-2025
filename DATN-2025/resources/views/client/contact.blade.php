@@ -77,8 +77,6 @@
                     </div>
                 </section>
 
-                <!-- End Contact Part -->
-
             </div>
         </main> 
         @section('scripts')
@@ -123,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (data.success) {
         messageBox.innerHTML = `<div style='color: green; background-color: #e6ffe6; padding: 10px;'>${data.message}</div>`;
         form.reset();
-        $('#editor').summernote('reset');  // Reset Summernote editor
+        $('#editor').summernote('reset'); 
       } else {
         messageBox.innerHTML = `<div style='color: red; background-color: #ffe6e6; padding: 10px;'>${data.message || 'Gửi thất bại!'}</div>`;
       }
