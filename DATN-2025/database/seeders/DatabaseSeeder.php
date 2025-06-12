@@ -24,10 +24,13 @@ class DatabaseSeeder extends Seeder
             SanphamSeeder::class,
             UserSeeder::class,
             CouponSeeder::class,
+
             ProductAttributeSeeder::class,
             ProductToppingSeeder::class,
             ProductCommentSeeder::class,
             ToppingSeeder::class,
+            OrderSeeder::class,
+            OrderDetailSeeder::class,
         ]);
     }
 }
