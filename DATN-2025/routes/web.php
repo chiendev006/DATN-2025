@@ -156,6 +156,8 @@
                 Route::get('/edit/{id}', [AddressController::class, 'edit'])->name('address.edit');
                 Route::post('/update/{id}', [AddressController::class, 'update'])->name('address.update');
                 Route::post('/delete/{id}', [AddressController::class, 'delete'])->name('address.delete');
+                Route::get('/search', [AddressController::class, 'search'])->name('address.search');
+                
         });
 
         // Sản phẩm

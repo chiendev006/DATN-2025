@@ -47,9 +47,25 @@ class AddressController extends Controller
         $address->delete();
         return redirect()->route('address.index')->with('success', 'Xóa Khu vực thành công');
     }
+    public function search(Request $request)
+    {
+        $query = Address::query();
+
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        if ($request->filled('price_min')) {
+            $query->where('shipping_fee', '>=', $request->price_min);
+        }
+
+        if ($request->filled('price_max')) {
+            $query->where('shipping_fee', '<=', $request->price_max);
+        }
+        $address = $query->paginate(10)->appends($request->query());
+
+        return view('admin.address.index', compact('address'));
+    }
+
 }
-
-
-
-
 ?>
