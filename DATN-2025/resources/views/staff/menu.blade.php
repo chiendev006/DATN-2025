@@ -194,10 +194,6 @@
                             <div>Subtotal</div>
                             <div class="flex-1 text-end h6 mb-0"></div>
                         </div>
-                        <div class="d-flex align-items-center">
-                            <div>Taxes (6%)</div>
-                            <div class="flex-1 text-end h6 mb-0"></div>
-                        </div>
                         <hr class="opacity-1 my-10px"/>
                         <div class="d-flex align-items-center mb-2">
                             <div>Total</div>

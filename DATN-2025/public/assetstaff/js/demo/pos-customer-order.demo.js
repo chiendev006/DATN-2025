@@ -194,12 +194,10 @@ function updateTotalPrice() {
                 var itemTotal = $order.find('.order-total').text().replace(/[^\d]/g, '');
                 subtotal += parseInt(itemTotal) || 0;
             });
-            var taxRate = 0.06;
-            var taxes = subtotal * taxRate;
-            var total = subtotal + taxes;
+
+            var total = subtotal;
 
             $('.pos-sidebar-footer .text-end.h6.mb-0').eq(0).text(formatVND(subtotal));
-            $('.pos-sidebar-footer .text-end.h6.mb-0').eq(1).text(formatVND(taxes));
             $('.pos-sidebar-footer .text-end.h4.mb-0').text(formatVND(total));
         }
 
@@ -248,9 +246,7 @@ function updateTotalPrice() {
             // Tính tổng tiền
             let subtotal = 0;
             cart.forEach(item => subtotal += item.total);
-            let taxRate = 0.06;
-            let taxes = subtotal * taxRate;
-            let total = subtotal + taxes;
+            let total = subtotal;
 
             // Dữ liệu gửi lên server
             return {
@@ -258,7 +254,6 @@ function updateTotalPrice() {
                 payment_method: 'cash',
                 cart: cart,
                 subtotal: subtotal,
-                tax: taxes,
                 total: total,
             };
 
