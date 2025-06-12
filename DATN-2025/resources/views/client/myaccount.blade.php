@@ -286,7 +286,7 @@ document.querySelectorAll('.cancel-order').forEach(button => {
                 };
 
                 const statusText = statusLabel[data.status] || data.status;
-                alert(`❌ Đơn hàng này đang ở trạng thái "${statusText}". Không thể hủy.`);
+                alert(`Đơn hàng này đang ở trạng thái "${statusText}". Không thể hủy.`);
                 document.getElementById('cancelModal').classList.add('hidden');
                 return;
             }

@@ -48,7 +48,7 @@
 
                     <div class="row" id="product-display">
                         @foreach ($firstProducts as $product)
-                            <div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="700ms">
+                            <div class="col-md-10 col-sm-10 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="500ms">
                                 <div class="menu-fix-list">
                                     <span class="menu-fix-product">
                                         <img src="{{ url('storage/uploads/' . $product->image) }}" style="width: 100px; height: 100px; border-radius: 100px;" alt="{{ $product->name }}">
@@ -88,7 +88,7 @@
             <div class="container">
                 <div class="discount-part">
                     <div class="row">
-                        <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="700ms">
+                        <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="700ms" data-wow-delay="700ms">
                             <h6>HAPPY CUSTOMER EVENT</h6>
                             <h2 class="text-coffee">DISCOUNT <span>50%</span></h2>
                             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor int et lamp dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</p>
@@ -157,7 +157,7 @@ $(document).ready(function() {
                     }
 
                     let productHtml = `
-                        <div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="700ms">
+                        <div class="col-md-10 col-sm-10 col-xs-12 wow fadeInDown" data-wow-duration="700ms" data-wow-delay="500ms">
                             <div class="menu-fix-list">
                                 <span class="menu-fix-product">
                                     <img src="${imageUrl}" style="width: 100px; height: 100px; border-radius: 100px;" alt="${product.name}">

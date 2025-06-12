@@ -95,7 +95,7 @@
 
                                     <div class="col-md-6 mb-3">
                                         <label>Địa chỉ chi tiết <span class="text-danger">*</span></label>
-                                        <input type="text" name="address_detail" value="{{ old('address_detail') }}" placeholder="Nhập số nhà, tên đường..." required class="form-control" style="height: 45px; border-radius: 30px;">
+                                        <input type="text" name="address_detail" value="{{ old('address_detail') }}" placeholder="Nhập số nhà, tên đường..." class="form-control" style="height: 45px; border-radius: 30px;">
                                         @error('address_detail')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -116,7 +116,7 @@
                                         <h5>Phương thức thanh toán</h5>
                                         <div class="payment-methods">
                                             <div class="form-check d-flex align-items-center gap-2 mb-2">
-                                                <input class="form-check-input" type="radio" name="payment_method" value="cash" required {{ old('payment_method') === 'cash' ? 'checked' : '' }}>
+                                                <input class="form-check-input" type="radio" name="payment_method" value="cash" {{ old('payment_method') === 'cash' ? 'checked' : '' }}>
                                                 <img src="{{ url('asset') }}/images/cod.png" alt="COD" style="height: 24px;">
                                                 <label class="form-check-label">Thanh toán khi nhận hàng (COD)</label>
                                             </div>
@@ -135,7 +135,7 @@
                                 <div class="row mb-4">
                                     <div class="col-md-12">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="terms" required {{ old('terms') ? 'checked' : '' }}>
+                                            <input class="form-check-input" type="checkbox" name="terms" {{ old('terms') ? 'checked' : '' }}>
                                             <label class="form-check-label">Tôi đồng ý với các điều khoản và điều kiện *</label>
                                         </div>
                                         @error('terms')

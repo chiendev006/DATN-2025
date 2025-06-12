@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Blogs;
 use App\Models\Product_comment;
 use App\Models\sanpham;
 use App\Models\Danhmuc;
@@ -24,11 +25,12 @@ public function  danhmuc()
 {
     $danhmucs = Danhmuc::with('sanphams')->get();
     $sanpham = sanpham::take(8)->get();
+    $blog = Blogs::all();
     foreach ($sanpham as $sp) {
         $minPrice = Size::where('product_id', $sp->id)->min('price');
         $sp->min_price = $minPrice;
     }
-    return view('client.home', compact('danhmucs', 'sanpham'));
+    return view('client.home', compact('danhmucs', 'sanpham', 'blog'));
 }
  public function show(Request $request)
     {
@@ -41,7 +43,7 @@ public function  danhmuc()
             ? $danhmucs->firstWhere('id', $categoryId)
             : $danhmucs->first();
 
-        $perPage = 8; 
+        $perPage = 10; 
         $firstProducts = $firstDanhmuc
             ? $firstDanhmuc->sanphams()->withMin('sizes', 'price')->paginate($perPage)
             : collect([])->paginate($perPage);
@@ -147,4 +149,5 @@ public function postComment(Request $request)
 
     return back();
 }
+
 }
