@@ -107,7 +107,8 @@
                                         <th>Địa chỉ</th>
                                         <th>Trạng thái</th>
                                         <th>Trạng thái thanh toán</th>
-                                        <th>Ngày tạo</th>
+                                        <th>Ngày tạo</th> 
+                                        <th>Ghi chú</th>
                                         <th>Lí do hủy</th>
                                         <th>Tổng tiền</th>
                                         <th>Hành động</th>
@@ -152,7 +153,7 @@
                                             @endif
                                         </td>
                                         <td>{{ $order->created_at->format('d/m/Y') }}</td>
-                                        
+                                        <td>{{ $order->note }}</td>
                                      @if($order->status == 'cancelled' || $order->pay_status == 2)
                                      <td>{{ $order->cancel_reason }}</td>
                                      @else
@@ -280,7 +281,7 @@
                   <th>Topping</th>
                   <th>Số lượng</th>
                   <th>Thành tiền</th>
-                  <th>Ghi chú</th>
+                  
                 </tr>
               </thead>
               <tbody>
@@ -388,7 +389,6 @@ function openOrderModal(btn) {
             </td>
             <td>${product.quantity ?? ''}</td>
             <td>${product.total !== undefined ? parseInt(product.total).toLocaleString('vi-VN') + ' đ' : ''}</td>
-            <td>${product.note ?? ''}</td>
           </tr>`;
           tbody.innerHTML += row;
         });

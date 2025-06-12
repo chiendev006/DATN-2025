@@ -31,27 +31,23 @@ class OrderController extends Controller
         return redirect()->route('admin.order.index')->with('success', 'Cập nhật đơn hàng thành công!');
     }
 
-    public function delete($id)
+   public function delete($id)
     {
-        // Xóa order_detail trước
-        \App\Models\Orderdetail::where('order_id', $id)->delete();
-        // Xóa order
-        \App\Models\Order::where('id', $id)->delete();
-        return redirect()->route('admin.order.index')->with('success', 'Đã xóa đơn hàng thành công!');
+        \App\Models\Orderdetail::where('order_id', $id)->get()->each->delete();
+        \App\Models\Order::findOrFail($id)->delete();
+        return redirect()->route('admin.order.index')->with('success', 'Đã xóa mềm đơn hàng thành công!');
     }
+
 
     public function showJson($id)
     {
         $order = \App\Models\Order::with('details')->findOrFail($id);
         $details = $order->details->map(function($detail) {
-            // Lấy sản phẩm
             $product = \App\Models\sanpham::find($detail->product_id);
             $product_name = $product ? $product->name : '';
             $product_image = $product ? $product->image : '';
-            // Lấy size
             $size = $detail->size_id ? \App\Models\Size::find($detail->size_id) : null;
             $size_name = $size ? ($size->size . ' - ' . number_format($size->price) . ' VND') : '';
-            // Lấy topping (có thể nhiều)
             $topping_arr = [];
             if (!empty($detail->topping_id)) {
                 $topping_ids = array_filter(array_map('trim', explode(',', $detail->topping_id)));
@@ -74,8 +70,6 @@ class OrderController extends Controller
         });
         $orderArr = $order->toArray();
         $orderArr['details'] = $details;
-
-        // Thêm thông tin tính toán
         $orderArr['product_total'] = $order->total - $order->shipping_fee - $order->coupon_total_discount;
 
         return response()->json($orderArr);
@@ -100,7 +94,6 @@ class OrderController extends Controller
         } elseif ($hasStatus) {
             $query->where('status', $request->input('status'));
         }
-        // Nếu cả hai đều không có thì không where gì, trả về toàn bộ
         $orders = $query->paginate($perPage);
         return view('admin.order.index', ['orders' => $orders]);
     }

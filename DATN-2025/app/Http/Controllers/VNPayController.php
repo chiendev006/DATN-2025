@@ -168,7 +168,6 @@ class VNPayController extends Controller
                         $orderDetail->total = $detail['total'];
                         $orderDetail->size_id = $detail['size_id'] ?? null;
                         $orderDetail->topping_id = $detail['topping_id'] ?? null;
-                        $orderDetail->note = $detail['note'] ?? null;
                         $orderDetail->status = $detail['status'] ?? 'pending';
 
                         if (!$orderDetail->save()) {

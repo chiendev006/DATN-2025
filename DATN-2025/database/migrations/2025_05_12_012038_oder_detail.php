@@ -22,6 +22,7 @@ return new class extends Migration
         $table->unsignedBigInteger('size_id')->nullable();
         $table->string('topping_id')->nullable();
         $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
+        $table->softDeletes();
         $table->timestamps();
     });
 

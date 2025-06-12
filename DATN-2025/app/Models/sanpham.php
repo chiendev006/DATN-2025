@@ -40,7 +40,7 @@ public function product_images()
 }
 public function sizes()
 {
-    return $this->hasMany(\App\Models\Size::class, 'product_id');
+    return $this->hasMany(Size::class, 'product_id')->select(['id', 'product_id', 'price']);
 }
     public function comments()
     {
