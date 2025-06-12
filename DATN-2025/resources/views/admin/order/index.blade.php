@@ -139,7 +139,7 @@
                                                 <span>{{ $order->status }}</span>
                                             @endif
                                         </td>
-                                       
+
                                         <td>
                                             @if ($order->pay_status == 0)
                                                 <span style="color: orange;">Chờ thanh toán</span>
@@ -152,7 +152,7 @@
                                             @endif
                                         </td>
                                         <td>{{ $order->created_at->format('d/m') }}</td>
-                                        
+
                                      @if($order->status == 'cancelled' || $order->pay_status == 2)
                                      <td>{{ $order->cancel_reason }}</td>
                                      @else
@@ -174,8 +174,10 @@
                                                 data-product_total="{{ number_format(($order->total ?? 0) - ($order->shipping_fee ?? 0) - ($order->coupon_total_discount ?? 0), 0, ',', '.') }} đ"
                                                 data-cancel_reason="{{ $order->cancel_reason }}"
                                             >Xem</button>
-                                            <a href="{{ route('admin.order.delete', $order->id) }}" class="btn-action btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</a>
-                                        </td>
+                                            <a href="javascript:void(0)" onclick="deleteViaPost('{{ route('admin.order.delete', ['id' => $order->id]) }}', 'Bạn có chắc chắn muốn xóa đơn hàng này?')" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
+                                                            Xóa
+                                                                </a>
+                                                             </td>
                                     </tr>
                                     @endforeach
                                   @endif
