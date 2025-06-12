@@ -134,7 +134,6 @@ class CheckoutController extends Controller
             ]);
 
             DB::beginTransaction();
-
             $total = 0;
             $orderDetails = [];
 

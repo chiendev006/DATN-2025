@@ -17,4 +17,5 @@ class BlogController extends Controller
         $blog = Blogs::find($id);
         return view('client.blog-single', compact('blog'));
     }
+   
 }

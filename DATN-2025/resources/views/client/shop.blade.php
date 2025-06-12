@@ -57,7 +57,7 @@
                                 @foreach($bestDeals as $deal)
                                     <div class="best-deal-blog">
                                         <div class="best-deal-left">
-                                            <a href="{{ route('client.product.detail', $deal->id) }}">  <img src="{{ url('storage/uploads/' . $deal->image) }}" alt="{{ $deal->name }}" 
+                                            <a href="{{ route('client.product.detail', $deal->id) }}">  <img style="border-radius: 10px;" src="{{ url('storage/uploads/' . $deal->image) }}" alt="{{ $deal->name }}" 
                                             onerror="this.onerror=null;this.src='https://placehold.co/80x80/f8f8f8/ccc?text=Image';">
                                         </a>
                                           
