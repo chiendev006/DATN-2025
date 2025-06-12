@@ -41,6 +41,23 @@
         min-width: 28px;
     }
 
+
+
+    #copy-print-csv {
+        table-layout: fixed;
+        width: 100%;
+    }
+    #copy-print-csv th,
+    #copy-print-csv td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+
+    #copy-print-csv td:nth-child(11) {
+        max-width: 100px;
+    }
 </style>
   <div class="content-wrapper-scroll">
 
@@ -154,7 +171,7 @@
 
 
                                         <td>{{ $order->created_at->format('d/m/Y') }}</td>
-                                        
+
 
                                      @if($order->status == 'cancelled' || $order->pay_status == 2)
                                      <td>{{ $order->cancel_reason }}</td>

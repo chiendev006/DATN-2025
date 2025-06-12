@@ -27,13 +27,41 @@
     </div>
 
     <div style="margin-top: 10px;" class="row gutters">
-							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+							<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3" >
+                                <div class="card">
+									<div class="card-header">
+										<div class="card-title">Top sản phẩm</div>
+									</div>
+
+                                    <div class="card-body">
+										<div class="table-responsive">
+											<table class="table products-table">
+												<thead>
+													<tr>
+                                                        <th>Top </th>
+														<th>Sản phẩm</th>
+														<th>Sô lượt bán</th>
+													</tr>
+												</thead>
+												<tbody>
+                                                    @foreach ($topproduct as $key => $item)
+													<tr>
+														<td>{{ $key+1}}</td>
+														<td>{{ $item->product->name }}</td>
+														<td style="text-align: center;">{{ $item->total_quantity }}</td>
+													</tr>
+                                                    @endforeach
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+                            </div>
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-8">
 								<div class="card">
 									<div class="card-header">
 										<div class="card-title">Đơn gần đây</div>
-										<div class="graph-day-selection" role="group">
-											<button type="button" class="btn active">Export to Excel</button>
-										</div>
+
 									</div>
 									<div class="card-body">
 										<div class="table-responsive">
@@ -51,11 +79,11 @@
 												<tbody>
                                                     @foreach ($recentOrders as $order)
 													<tr>
-														<td>{{ $order->transaction_id }}</td>
+														<td>{{ $order->id }}</td>
 														<td>{{ $order->created_at }}</td>
 														<td>{{ $order->name }}</td>
 														<td>{{ $order->phone }}</td>
-														<td>{{ $order->total }}</td>
+														<td>{{ number_format($order->total) }} đ</td>
 														<td>{{ $order->status }}</td>
 													</tr>
                                                     @endforeach
