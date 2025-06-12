@@ -238,6 +238,7 @@
                 Route::get('/edit/{id}', [BlogsController::class, 'edit'])->name('blogs.edit');
                 Route::post('/update/{id}', [BlogsController::class, 'update'])->name('blogs.update');
                 Route::post('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
+                Route::get('/search', [BlogsController::class, 'search'])->name('blogs.search');
         });
  });
         Route::post('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->middleware(['auth', 'checkAdmin'])->name('product_img.delete');
