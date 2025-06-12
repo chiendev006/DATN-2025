@@ -22,28 +22,51 @@
   .btn-success:hover {
     background-color: rgb(0, 0, 217);
   }
+  
 </style>
-    <div class="content-wrapper-scroll">
-
-                    <div class="content-wrapper">
+            <div class="content-wrapper-scroll">
+                <div class="content-wrapper">
                     <div class="row gutters">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="card">
+                                <button type="button" id="btn-add-diachi" class="btn-success">Thêm Khu vực</button>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap" style="gap: 15px;">
+                                        <!-- Bên trái: chọn số bản ghi -->
+                                        <form method="GET" action="" class="d-flex align-items-center" style="gap: 10px;">
+                                                        <label for="per_page" style="margin-bottom: 0;">Bản/trang:</label>
+                                                        <select name="per_page" id="per_page" class="form-control" style="width: 80px;" onchange="this.form.submit()">
+                                                            <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản</option>
+                                                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 bản</option>
+                                                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản</option>
+                                                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
+                                                        </select>
+                                                        @foreach(request()->except(['per_page','page']) as $key => $val)
+                                                            <input type="hidden" name="{{ $key }}" value="{{ $val }}">
+                                                        @endforeach
+                                                    </form>
 
-                                <div class="card">
-                                    <button type="button" id="btn-add-diachi" class="btn-success">Thêm Khu vực</button>
-                                    <div class="card-body">
-                                        <form method="GET" action="" style="margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
-                                            <label for="per_page" style="margin-bottom:0;">Bản/trang:</label>
-                                            <select name="per_page" id="per_page" class="form-control" style="width: 80px;" onchange="this.form.submit()">
-                                                <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản</option>
-                                                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 bản</option>
-                                                <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản</option>
-                                                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
-                                            </select>
-                                            @foreach(request()->except(['per_page','page']) as $key => $val)
-                                                <input type="hidden" name="{{ $key }}" value="{{ $val }}">
-                                            @endforeach
-                                        </form>
+                                        <!-- Bên phải: các form tìm kiếm -->
+                                        <div class="d-flex align-items-center" style="gap: 15px;">
+
+                                            <form action="{{ route('address.search') }}" method="GET" class="d-flex align-items-center" style="gap: 8px;">
+                                                    <input type="text" name="name" class="form-control" placeholder="Tìm theo tên..." value="{{ request('name') }}" style="max-width: 220px;">
+                                                    <button type="submit" class="btn btn-primary d-flex align-items-center" style="gap: 5px;">
+                                                    <i class="fas fa-search"></i> Tìm
+                                            </button>
+                                                        </form>
+                                            <form action="{{ route('address.search') }}" method="GET" class="d-flex align-items-center" style="gap: 8px;">
+                                                    <input type="number" name="price_min" class="form-control" placeholder="Giá từ..." value="{{ request('price_min') }}" style="width: 100px;">
+                                                    <input type="number" name="price_max" class="form-control" placeholder="đến..." value="{{ request('price_max') }}" style="width: 100px;">
+                                                    <button type="submit" class="btn btn-success d-flex align-items-center" style="gap: 5px;">
+                                                    <i class="fas fa-filter"></i> Lọc
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+
+
                                         <div class="table-responsive">
                                             <table id="copy-print-csv" class="table v-middle">
                                                 <thead>
@@ -250,3 +273,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+<div class="text-muted mb-2" style="font-size:13px;">
+    @php
+        $from = $address->firstItem();
+        $to = $address->lastItem();
+        $total = $address->total();
+        $currentPage = $address->currentPage();
+        $lastPage = $address->lastPage();
+    @endphp
+    Trang {{ $currentPage }}/{{ $lastPage }},
+    Hiển thị {{ $from }}-{{ $to }}/{{ $total }} bản ghi
+</div>
+<div style="margin-top: 10px;">
+    {{ $address->links() }}
+</div>
