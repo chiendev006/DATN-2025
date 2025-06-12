@@ -30,6 +30,7 @@ return new class extends Migration
             $table->text('coupon_summary')->nullable();
             $table->decimal('coupon_total_discount', 10, 2)->default(0);
             $table->text('note')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

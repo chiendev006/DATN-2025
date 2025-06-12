@@ -50,18 +50,29 @@
                                 </div>
                                 <a href="#" id="btn-filter" class="filter-btn">FILTER</a>
                             </div>
-                            <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                <h5>Best Deals</h5>
-                                <div class="best-deal-blog">
-                                    <div class="best-deal-left">
-                                        <img src="{{ url('asset') }}/images/img20.png" alt="">
+                           <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                            <h5>Best Deals</h5>
+
+                            @if(isset($bestDeals) && !$bestDeals->isEmpty())
+                                @foreach($bestDeals as $deal)
+                                    <div class="best-deal-blog">
+                                        <div class="best-deal-left">
+                                            <a href="{{ route('client.product.detail', $deal->id) }}">  <img src="{{ url('storage/uploads/' . $deal->image) }}" alt="{{ $deal->name }}" 
+                                            onerror="this.onerror=null;this.src='https://placehold.co/80x80/f8f8f8/ccc?text=Image';">
+                                        </a>
+                                          
+                                        </div>
+                                        <div class="best-deal-right">
+                                            <a href="{{ route('client.product.detail', $deal->id) }}">{{ $deal->name }}</a> 
+                                            <p><strong>{{ number_format($deal->min_price) }} đ</strong></p>
+                                        </div>
                                     </div>
-                                    <div class="best-deal-right">
-                                        <p>Lasal Cheese</p>
-                                        <p><strong>$ 15</strong></p>
-                                    </div>
-                                </div>
-                            </div>
+                                @endforeach
+                            @else
+                                <p>No deals available at the moment.</p>
+                            @endif
+
+                        </div>
                             <div class="popular-tag blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                 <h5>Popular Tags</h5>
                                 <a href="#">Audio</a> <a href="#">Service</a> <a href="#">Online Order</a> <a href="#">Contact</a> <a href="#">Cupcake</a>

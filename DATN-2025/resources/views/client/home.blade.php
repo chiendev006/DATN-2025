@@ -696,9 +696,9 @@
                 data-autotime="4000"
               >
                 <div class="item">
-                  <h2 class="text-primary">What Clients Say</h2>
+                  <h2 class="text-primary">Lý Thông</h2>
                   <p>1500+ Satisfied Clients</p>
-                  <p><img src="{{ url('asset') }}/images/client1.png" alt="" /></p>
+                  <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/lythong.png" alt="" /></p>
                   <h5 class="text-primary">Alice Williams</h5>
                   <p>Kitchen Manager</p>
                   <p>
@@ -709,9 +709,9 @@
                   </p>
                 </div>
                 <div class="item">
-                  <h2 class="text-primary">What Clients Say</h2>
+                  <h2 class="text-primary">Nam Per</h2>
                   <p>1500+ Satisfied Clients</p>
-                  <p><img src="{{ url('asset') }}/images/client1.png" alt="" /></p>
+                  <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/sếp_tổng_Nam.jpg" alt="" /></p>
                   <h5 class="text-primary">Alice Williams</h5>
                   <p>Kitchen Manager</p>
                   <p>
@@ -722,9 +722,9 @@
                   </p>
                 </div>
                 <div class="item">
-                  <h2 class="text-primary">What Clients Say</h2>
+                  <h2 class="text-primary">Hoàng Kun</h2>
                   <p>1500+ Satisfied Clients</p>
-                  <p><img src="{{ url('asset') }}/images/client1.png" alt="" /></p>
+                  <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/anhmu.jpg" alt="" /></p>
                   <h5 class="text-primary">Alice Williams</h5>
                   <p>Kitchen Manager</p>
                   <p>
@@ -735,6 +735,19 @@
                   </p>
                 </div>
                 <div class="item">
+                  <h2 class="text-primary">Bố Nam per</h2>
+                  <p>1500+ Satisfied Clients</p>
+                  <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/senna.jpg" alt="" /></p>
+                  <h5 class="text-primary">Alice Williams</h5>
+                  <p>Kitchen Manager</p>
+                  <p>
+                    Success isn’t really that difficult. There is a significant
+                    portion of the <br />
+                    population here in North America, that actually want and
+                    need <br />success really no magic to be hard.
+                  </p>
+                </div>
+                <!-- <div class="item">
                   <h2 class="text-primary">What Clients Say</h2>
                   <p>1500+ Satisfied Clients</p>
                   <p><img src="{{ url('asset') }}/images/client1.png" alt="" /></p>
@@ -746,20 +759,7 @@
                     population here in North America, that actually want and
                     need <br />success really no magic to be hard.
                   </p>
-                </div>
-                <div class="item">
-                  <h2 class="text-primary">What Clients Say</h2>
-                  <p>1500+ Satisfied Clients</p>
-                  <p><img src="{{ url('asset') }}/images/client1.png" alt="" /></p>
-                  <h5 class="text-primary">Alice Williams</h5>
-                  <p>Kitchen Manager</p>
-                  <p>
-                    Success isn’t really that difficult. There is a significant
-                    portion of the <br />
-                    population here in North America, that actually want and
-                    need <br />success really no magic to be hard.
-                  </p>
-                </div>
+                </div> -->
               </div>
             </div>
           </section>
