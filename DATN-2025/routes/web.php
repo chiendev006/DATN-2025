@@ -112,7 +112,7 @@
         // Đơn hàng
         Route::get('/order', [\App\Http\Controllers\admin\OrderController::class, 'ordersIndex'])->name('admin.order.index');
         Route::post('/order/update/{id}', [\App\Http\Controllers\admin\OrderController::class, 'update'])->name('admin.order.update');
-        Route::get('/order/delete/{id}', [\App\Http\Controllers\admin\OrderController::class, 'delete'])->name('admin.order.delete');
+        Route::post('/order/delete/{id}', [\App\Http\Controllers\admin\OrderController::class, 'delete'])->name('admin.order.delete');
         Route::get('/order/json/{id}', [\App\Http\Controllers\admin\OrderController::class, 'showJson'])->name('admin.order.json');
         Route::get('/order/filter', [\App\Http\Controllers\admin\OrderController::class, 'filterOrders'])->name('admin.order.filter');
         Route::get('/order/search', [\App\Http\Controllers\admin\OrderController::class, 'searchByTransactionId'])->name('admin.order.search');

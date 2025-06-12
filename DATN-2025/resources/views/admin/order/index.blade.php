@@ -195,9 +195,8 @@
                                                 data-product_total="{{ number_format(($order->total ?? 0) - ($order->shipping_fee ?? 0) - ($order->coupon_total_discount ?? 0), 0, ',', '.') }} đ"
                                                 data-cancel_reason="{{ $order->cancel_reason }}"
                                             >Xem</button>
-                                            <a href="javascript:void(0)" onclick="deleteViaPost('{{ route('admin.order.delete', ['id' => $order->id]) }}', 'Bạn có chắc chắn muốn xóa đơn hàng này?')" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
-                                                            Xóa
-                                                                </a>
+                                            <a href="javascript:void(0)" onclick="deleteViaPost('{{ route('admin.order.delete', ['id' => $order->id]) }}', 'Bạn có chắc chắn muốn xóa đơn hàng này?')"  data-toggle="tooltip" class="btn-action btn-delete" data-placement="top" title="" data-original-title="Delete">Xóa</a>
+
                                                              </td>
                                     </tr>
                                     @endforeach
