@@ -8,6 +8,7 @@
             <div class="tp-banner-container">
               <div class="tp-banner">
                 <ul>
+
                   <li
                     data-transition="fade"
                     data-slotamount="2"
@@ -60,11 +61,7 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      <img
-                        src="{{ url('asset') }}/images/dummy.png"
-                        alt=""
-                        data-lazyload="{{ url('asset') }}/images/img2.png"
-                      />
+
                     </div>
 
                     <!-- LAYER NR. 3 -->
@@ -79,8 +76,8 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      SPECIAL COFFEE <br />
-                      <span class="v-light">BEANS</span>
+Cà phê - Cao cấp<br />
+                      <span class="v-light">Đậm</span>
                     </div>
 
                     <!-- LAYER NR. 4 -->
@@ -95,7 +92,7 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      best quaITY
+                     Mira café
                     </div>
 
                     <!-- LAYER NR. 5 -->
@@ -110,7 +107,7 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      Established in 1991
+                    2025
                     </div>
                   </li>
 
@@ -145,11 +142,7 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      <img
-                        src="{{ url('asset') }}/images/dummy.png"
-                        alt=""
-                        data-lazyload="{{ url('asset') }}/images/img1.png"
-                      />
+
                     </div>
 
                     <!-- LAYER NR. 2 -->
@@ -185,8 +178,8 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      SPECIAL COFFEE <br />
-                      <span class="v-light">BEANS</span>
+                      Sinh tố - Tự nhiên <br />
+                      <span class="v-light">Tươi</span>
                     </div>
 
                     <!-- LAYER NR. 4 -->
@@ -201,7 +194,7 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      best quaITY
+                  mira café
                     </div>
 
                     <!-- LAYER NR. 5 -->
@@ -216,113 +209,7 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      Established in 1991
-                    </div>
-                  </li>
-
-                  <li
-                    data-transition="fade"
-                    data-slotamount="2"
-                    data-masterspeed="500"
-                    data-thumb=""
-                    data-saveperformance="on"
-                    data-title="Slide"
-                  >
-                    <img
-                      src="{{ url('asset') }}/images/dummy.png"
-                      alt="slidebg1"
-                      data-lazyload="{{ url('asset') }}/images/bg1.jpg"
-                      data-bgposition="center top"
-                      data-bgfit="cover"
-                      data-bgrepeat="no-repeat"
-                    />
-
-                    <!-- LAYER NR. 1 -->
-                    <div
-                      class="tp-caption lft customout rs-parallaxlevel-0 left-slot"
-                      data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
-                      data-x="0"
-                      data-hoffset="0"
-                      data-y="bottom"
-                      data-speed="500"
-                      data-start="500"
-                      data-easing="Power3.easeInOut"
-                      data-endspeed="300"
-                      data-endeasing="Power1.easeIn"
-                      data-captionhidden="off"
-                    >
-                      <img
-                        src="{{ url('asset') }}/images/dummy.png"
-                        alt=""
-                        data-lazyload="{{ url('asset') }}/images/img1.png"
-                      />
-                    </div>
-
-                    <!-- LAYER NR. 2 -->
-                    <div
-                      class="tp-caption lft customout rs-parallaxlevel-0 right-slot"
-                      data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
-                      data-x="right"
-                      data-hoffset="0"
-                      data-y="bottom"
-                      data-speed="500"
-                      data-start="500"
-                      data-easing="Power3.easeInOut"
-                      data-endspeed="300"
-                      data-endeasing="Power1.easeIn"
-                      data-captionhidden="off"
-                    >
-                      <img
-                        src="{{ url('asset') }}/images/dummy.png"
-                        alt=""
-                        data-lazyload="{{ url('asset') }}/images/img2.png"
-                      />
-                    </div>
-
-                    <!-- LAYER NR. 3 -->
-                    <div
-                      class="tp-caption lft very_large_text text-center"
-                      data-x="center"
-                      data-y="320"
-                      data-speed="900"
-                      data-start="1000"
-                      data-easing="Power4.easeOut"
-                      data-endspeed="350"
-                      data-endeasing="Power1.easeIn"
-                      data-captionhidden="off"
-                    >
-                      SPECIAL COFFEE <br />
-                      <span class="v-light">BEANS</span>
-                    </div>
-
-                    <!-- LAYER NR. 4 -->
-                    <div
-                      class="tp-caption lft text-uppercase large_text text-center best-after"
-                      data-x="center"
-                      data-y="220"
-                      data-speed="800"
-                      data-start="900"
-                      data-easing="Power4.easeOut"
-                      data-endspeed="300"
-                      data-endeasing="Power1.easeIn"
-                      data-captionhidden="off"
-                    >
-                      best quaITY
-                    </div>
-
-                    <!-- LAYER NR. 5 -->
-                    <div
-                      class="tp-caption lft text-uppercase medium_text text-center"
-                      data-x="center"
-                      data-y="270"
-                      data-speed="800"
-                      data-start="900"
-                      data-easing="Power4.easeOut"
-                      data-endspeed="300"
-                      data-endeasing="Power1.easeIn"
-                      data-captionhidden="off"
-                    >
-                      Established in 1991
+                      2025
                     </div>
                   </li>
                 </ul>
