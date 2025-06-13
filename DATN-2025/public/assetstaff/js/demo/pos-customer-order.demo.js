@@ -1,9 +1,3 @@
-/*
-Template Name: STUDIO ASP - Responsive Bootstrap 5 Admin Template
-Version: 5.0.0
-Author: Sean Ngu
-Website: http://www.seantheme.com/studio/
-*/
 
 var handleFilter = function() {
 	"use strict";
@@ -25,8 +19,10 @@ var handleFilter = function() {
 };
 
 function formatVND(number) {
+    number = Number(number) || 0;
     return number.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 }
+
 
 function updateTotalPrice() {
     // Giá của size đang chọn
@@ -45,6 +41,8 @@ function updateTotalPrice() {
 }
 
     $(document).ready(function () {
+
+        loadCartFromLocalStorage();
 
         // Tăng giảm số lượng
         $(document).on('click', '#modalPosItem .qty-increase', function (e) {
@@ -124,39 +122,35 @@ function updateTotalPrice() {
         $(document).on('click', '#modalPosItem .add-to-cart', function(e) {
             e.preventDefault();
 
-            // Lấy thông tin sản phẩm vừa chọn
             var id = $('#modalPosItem .add-to-cart').data('id');
             var name = $('#modalPosItem .product-name').text();
             var image = $('#modalPosItem .product-image').attr('src');
             var qty = parseInt($('#modalPosItem input[name="qty"]').val()) || 1;
-            var sizeId = $('#modalPosItem input[name="size"]:checked').val(); // bây giờ là id (number)
+            var sizeId = $('#modalPosItem input[name="size"]:checked').val();
             var sizeText = $('#modalPosItem input[name="size"]:checked').data('size-name') || '';
             var sizePrice = parseFloat($('#modalPosItem input[name="size"]:checked').data('price')) || 0;
 
-            // Topping
-
-            // Tính tổng topping
             var toppingIds = [];
-            var toppingTextArr = [];
+            var toppingNames = [];
             var toppingTotal = 0;
             $('#modalPosItem input[name^="addon"]:checked').each(function () {
                 toppingIds.push($(this).val());
-                toppingTextArr.push($(this).siblings('label').find('.option-text').text());
+                toppingNames.push($(this).siblings('label').find('.option-text').text());
                 toppingTotal += parseFloat($(this).data('price')) || 0;
             });
-            var toppingText = toppingTextArr.join(', ');
+            var toppingText = toppingNames.join(', ');
 
-            // Tổng giá sản phẩm
             var total = (sizePrice + toppingTotal) * qty;
 
-            // Tạo HTML sản phẩm cho giỏ
             var html = `
                 <div class="pos-order mb-2"
                     data-id="${id}"
                     data-size="${sizeText}"
                     data-sizeid="${sizeId}"
                     data-sizeprice="${sizePrice}"
+                    data-image="${image}"
                     data-topping="${toppingText}"
+                    data-toppingnames="${toppingNames.join('|')}"
                     data-toppingids="${toppingIds.length ? toppingIds.join(',') : ''}"
                     data-toppingtotal="${toppingTotal}">
                     <div class="pos-order-product d-flex align-items-center">
@@ -178,11 +172,9 @@ function updateTotalPrice() {
                     </div>
                 </div>
             `;
-            // Thêm vào sidebar (append hoặc prepend tuỳ ý)
             $('#newOrderTab .pos-order-list').append(html);
             updateSidebarTotal();
-
-            // Đóng modal popup lại
+            saveCartToLocalStorage();
             $('#modalPosItem').modal('hide');
         });
 
@@ -205,6 +197,7 @@ function updateTotalPrice() {
             e.preventDefault();
             $(this).closest('.pos-order').remove();
             updateSidebarTotal();
+            saveCartToLocalStorage();
         });
 
         // Thu thập toàn bộ thông tin giỏ hàng từ sidebar
@@ -238,7 +231,7 @@ function updateTotalPrice() {
                     product_price: sizePrice,
                     toppings: toppingIds,
                     quantity: qty,
-                    total: total
+                    total: total,
                 });
             });
 
@@ -258,9 +251,7 @@ function updateTotalPrice() {
             };
 
         }
-        // console.log('Topping raw:', toppingIdsRaw, '→ array:', toppingIds);
 
-// Xử lý nút submit order
         $(document).on('click', '.btn-submit-order', function(e) {
             e.preventDefault();
 
@@ -281,11 +272,11 @@ function updateTotalPrice() {
                 },
                 success: function(res){
                     alert('Đặt hàng thành công!');
+                    localStorage.removeItem('pos_cart');
                     // Xóa giỏ trên giao diện
                     $('#newOrderTab .pos-order-list').empty();
                     // Reset subtotal, total về 0
                     $('.pos-sidebar-footer .text-end.h6.mb-0').eq(0).text(formatVND(0));
-                    $('.pos-sidebar-footer .text-end.h6.mb-0').eq(1).text(formatVND(0));
                     $('.pos-sidebar-footer .text-end.h4.mb-0').text(formatVND(0));
                 },
                 error: function(xhr){
@@ -305,4 +296,95 @@ function updateTotalPrice() {
                 }
             });
         });
+        function saveCartToLocalStorage() {
+            let cart = [];
+            $('#newOrderTab .pos-order-list .pos-order').each(function () {
+                let $order = $(this);
+                let product_id = $order.data('id');
+                let name = $order.find('.h6.mb-1').text();
+                let image = $order.data('image');
+                let size = $order.data('size');
+                let sizeId = $order.data('sizeid');
+                let sizePrice = parseFloat($order.data('sizeprice')) || 0;
+                let qty = parseInt($order.find('.order-qty').val()) || 1;
+                let toppingIdsRaw = $order.attr('data-toppingids');
+                let toppingNamesRaw = $order.attr('data-toppingnames') || '';
+                let toppingIds = [];
+                let toppingNames = [];
+                if (typeof toppingIdsRaw === 'string' && toppingIdsRaw.length > 0) {
+                    toppingIds = toppingIdsRaw.split(',').map(x => parseInt(x)).filter(x => !isNaN(x));
+                }
+                if (typeof toppingNamesRaw === 'string' && toppingNamesRaw.length > 0) {
+                    toppingNames = toppingNamesRaw.split('|');
+                }
+                let toppingTotal = parseFloat($order.data('toppingtotal')) || 0;
+                let total = (sizePrice + toppingTotal) * qty;
+
+                cart.push({
+                    product_id: product_id,
+                    product_name: name,
+                    size: size,
+                    size_id: sizeId,
+                    image: image,
+                    product_price: sizePrice,
+                    toppings: toppingIds,
+                    topping_names: toppingNames,
+                    quantity: qty,
+                    total: total
+                });
+            });
+            localStorage.setItem('pos_cart', JSON.stringify(cart));
+        }
+
+        function loadCartFromLocalStorage() {
+            let cart = [];
+            let saved = localStorage.getItem('pos_cart');
+            if (saved) {
+                try {
+                    cart = JSON.parse(saved);
+                } catch (e) {
+                    cart = [];
+                }
+            }
+            if (cart.length > 0) {
+                $('#newOrderTab .pos-order-list').empty();
+                cart.forEach(function(item) {
+                    var toppingsArr = Array.isArray(item.topping_names) ? item.topping_names : [];
+                    var toppingText = toppingsArr.length > 0 ? toppingsArr.join(', ') : '';
+                    var html = `
+                            <div class="pos-order mb-2"
+                                data-id="${item.product_id}"
+                                data-size="${item.size}"
+                                data-sizeid="${item.size_id}"
+                                data-sizeprice="${item.product_price}"
+                                data-image="${item.image || ''}"
+                                data-topping="${toppingText}"
+                                data-toppingnames="${toppingsArr.join('|')}"
+                                data-toppingids="${Array.isArray(item.toppings) ? item.toppings.join(',') : ''}"
+                                data-toppingtotal="${((item.total/item.quantity) - item.product_price).toFixed(0)}">
+                                <div class="pos-order-product d-flex align-items-center">
+                                    <div class="img" style="width:60px;height:60px;background-image:url('${item.image || ''}');background-size:cover;background-position:center;border-radius:8px;"></div>
+                                    <div class="flex-1 ms-3">
+                                        <div class="h6 mb-1">${item.product_name}</div>
+                                        <div class="small text-muted">${formatVND(item.product_price)}${item.size ? ' - size: ' + item.size : ''}</div>
+                                        ${toppingText ? `<div class="small text-muted">+ Topping: ${toppingText}</div>` : ''}
+                                        <div class="d-flex align-items-center mt-2">
+                                            <a href="#" class="btn btn-secondary btn-sm order-qty-decrease"><i class="fa fa-minus"></i></a>
+                                            <input type="text" class="form-control w-50px form-control-sm mx-2 text-center order-qty" value="${item.quantity}" />
+                                            <a href="#" class="btn btn-secondary btn-sm order-qty-increase"><i class="fa fa-plus"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="ms-2 text-end">
+                                        <div class="fw-bold order-total">${formatVND(item.total)}</div>
+                                        <a href="#" class="btn btn-default btn-sm order-remove mt-1" title="Xóa"><i class="fa fa-trash"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    $('#newOrderTab .pos-order-list').append(html);
+                });
+                updateSidebarTotal();
+            }
+        }
     });
+
