@@ -3,43 +3,45 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Topping;
 
 class ToppingSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('topping')->insert([
+        $toppings = [
             [
-                'name' => 'Trân châu đen',
+                'name' => 'Trân châu',
                 'price' => 5000,
-                'created_at' => now(),
-                'updated_at' => now(),
+
             ],
             [
-                'name' => 'Thạch dừa',
-                'price' => 6000,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'name' => 'Thạch rau câu',
+                'price' => 5000,
+
             ],
             [
-                'name' => 'Pudding trứng',
-                'price' => 7000,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'name' => 'Kem cheese',
+                'price' => 10000,
+
             ],
             [
-                'name' => 'Trân châu trắng',
-                'price' => 8000,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'name' => 'Kem phô mai',
+                'price' => 10000,
+
             ],
             [
-                'name' => 'Thạch trái cây',
-                'price' => 9000,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'name' => 'Kem phô mai',
+                'price' => 10000,
             ],
-        ]);
+            [
+                'name'=> 'Kem muối',
+                'price' => 10000,
+            ]
+        ];
+
+        foreach ($toppings as $topping) {
+            Topping::create($topping);
+        }
     }
 }

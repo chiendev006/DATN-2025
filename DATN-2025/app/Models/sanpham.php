@@ -25,7 +25,7 @@ class sanpham extends Model
 
 public function attributes()
 {
-    return $this->hasMany(\App\Models\Size::class, 'product_id');
+    return $this->hasMany(\App\Models\Size::class, 'product_id','id');
 }
 
 public function topping()

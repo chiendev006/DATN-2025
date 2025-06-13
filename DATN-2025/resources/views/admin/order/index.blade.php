@@ -58,6 +58,18 @@
     #copy-print-csv td:nth-child(11) {
         max-width: 100px;
     }
+    .btn-danger{
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 </style>
   <div class="content-wrapper-scroll">
 
@@ -128,7 +140,7 @@
                                         <th>Ghi chú</th>
                                         <th>Lí do hủy</th>
                                         <th>Tổng tiền</th>
-                                        <th>Hành động</th>
+                                        <th style="width:90px; text-align:center;" >Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -180,8 +192,9 @@
                                      <td></td>
                                      @endif
                                       <td>{{ number_format($order->total, 0, ',', '.') }} đ</td>
-                                        <td>
-                                            <button type="button" class="btn-action btn-view"
+                                        <td style="width:100px; text-align:center;">
+                                            <div style="display: flex; gap: 2px; justify-content: center;">
+                                            <button style=" background-color: rgb(76, 106, 175); color: white; border: none; border-radius: 5px; cursor: pointer;font-size: 12px;padding: 5px 10px;text-align: center;text-decoration: none;display: inline-block;" type="button" class="btn-action btn-view"
                                                 onclick="openOrderModal(this)"
                                                 data-id="{{ $order->id }}"
                                                 data-name="{{ $order->name }}"
@@ -198,9 +211,10 @@
                                             <form action="{{ route('admin.order.delete', ['id' => $order->id]) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
+                                                <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
                                             </form>
-                                                             </td>
+                                            </div>
+                                                    </td>
                                     </tr>
                                     @endforeach
                                   @endif
