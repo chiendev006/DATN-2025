@@ -16,6 +16,18 @@
   .btn-success:hover {
     background-color: rgb(0, 0, 217);
   }
+  .btn-danger{
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 </style>
     <div class="content-wrapper-scroll">
 
@@ -45,7 +57,7 @@
                                                         <th>STT</th>
                                                         <th>Tên topping</th>
                                                         <th>Giá</th>
-                                                        <th>Hành động</th>
+                                                        <th style="width:90px; text-align:center;">Hành động</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -64,20 +76,20 @@
                                                             {{ number_format($item['price'], 0, ',', '.') }} VNĐ
                                                         </td>
                                                         <td>
-                                                            <div class="actions">
+                                                            <div class="actions" style="display: flex; gap: 10px; justify-content: center;">
                                                             <button type="button" class="btn-edit-danhmuc"
                                                                 data-id="{{ $item->id }}"
                                                                 data-name="{{ $item->name }}"
                                                                 data-role="{{ $item->role }}"
                                                                 data-price="{{ $item->price }}"
-                                                                style="background:none;border:none;cursor:pointer;">
-                                                                    <i class="icon-edit1 text-info"></i>
+                                                                style=" background-color: rgb(76, 106, 175); color: white; border: none; border-radius: 5px; cursor: pointer;font-size: 12px;padding: 5px 10px;text-align: center;text-decoration: none;display: inline-block;">
+                                                                Sửa
                                                                 </button>
 
                                                                  <form action="{{ route('topping.delete', ['id' => $item->id]) }}" method="POST">
                                                                         @csrf
                                                                         @method('DELETE')
-                                                                        <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
+                                                                        <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
                                                                     </form>
                                                             </div>
                                                         </td>

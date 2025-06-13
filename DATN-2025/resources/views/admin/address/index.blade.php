@@ -22,7 +22,19 @@
   .btn-success:hover {
     background-color: rgb(0, 0, 217);
   }
-  
+
+.btn-danger{
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 </style>
             <div class="content-wrapper-scroll">
                 <div class="content-wrapper">
@@ -93,14 +105,16 @@
                                                          {{ $item['shipping_fee']  }} VNĐ
                                                         </td>
                                                         <td>
-                                                            <div class="actions">
-                                                            <button type="button" class="btn-edit-diachi" data-id="{{ $item->id }}" data-name="{{ $item->name }}" data-shipping_fee="{{ $item->shipping_fee }}" style="background:none;border:none;cursor:pointer;">
-                                                                    <i class="icon-edit1 text-info"></i>
+                                                            <div class="actions" style="display: flex; gap: 10px; justify-content: center;" >
+                                                            <button style=" background-color: rgb(76, 106, 175); color: white; border: none; border-radius: 5px; cursor: pointer;font-size: 12px;padding: 5px 10px;text-align: center;text-decoration: none;display: inline-block;" type="button" class="btn-edit-diachi" data-id="{{ $item->id }}" data-name="{{ $item->name }}" data-shipping_fee="{{ $item->shipping_fee }}" style="background:none;border:none;cursor:pointer;">
+                                                                Edit
                                                                 </button>
 
-                                                                <a href="javascript:void(0)" onclick="deleteViaPost('{{ route('address.delete', ['id' => $item->id]) }}', 'Bạn có chắc chắn muốn xóa?')" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
-                                                                    <i class="icon-x-circle text-danger"></i>
-                                                                </a>
+                                                                <form action="{{ route('address.delete', ['id' => $item->id]) }}" method="POST">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                            <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa Coupon này?')">Xóa</button>
+                                                                        </form>
                                                             </div>
                                                         </td>
                                                     </tr>

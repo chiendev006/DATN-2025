@@ -86,6 +86,30 @@
         margin-top: 20px;
         text-align: right; /* Căn nút submit sang phải */
     }
+    .btn-danger{
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-primary{
+    background-color: rgb(76, 106, 175);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 </style>
 
 <div class="content-wrapper-scroll">
@@ -158,12 +182,12 @@
                                     <td><img src="{{ asset('storage/'.$item->image) }}" alt="Ảnh bìa" style="width: 100px; height: 100px;"></td>
                                     <td>{{ $item->created_at }}</td>
                                     <td>{{ $item->updated_at }}</td>
-                                        <td style="width:90px; text-align:center;">
-                                            <a style="color: white; width: 60px; margin-bottom:4px;" href="{{ route('blogs.edit', $item->id) }}" class="btn-success">Sửa</a>
+                                        <td style="width:90px; text-align:center; display: flex; gap: 9px; justify-content: center;">
+                                            <a  href="{{ route('blogs.edit', $item->id) }}" class="btn-primary">Sửa</a>
                                             <form action="{{ route('blogs.destroy', ['id' => $item->id]) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này?')">Xóa</button>
+                                                <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này?')">Xóa</button>
                                             </form>
                                         </td>
                                     </tr>

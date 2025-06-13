@@ -16,6 +16,18 @@
   .btn-success:hover {
     background-color: rgb(0, 0, 217);
   }
+  .btn-danger{
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 </style>
     <div class="content-wrapper-scroll">
 
@@ -49,7 +61,7 @@
                                                         <th>Số lượng</th>
                                                         <th>Đã dùng</th>
                                                         <th>Ngày kết thúc</th>
-                                                        <th>Hành động</th>
+                                                        <th style="width:90px; text-align:center;">Hành động</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -88,7 +100,7 @@
                                                                     {{ $item['expires_at'] }}
                                                                 </td>
                                                                 <td>
-                                                                    <div class="actions">
+                                                                    <div  class="actions" style="display: flex; gap: 10px; justify-content: center;">
                                                                     <button type="button" class="btn-edit-coupon"
                                                                         data-id="{{ $item->id }}"
                                                                         data-code="{{ $item->code }}"
@@ -97,16 +109,17 @@
                                                                         data-min_order_value="{{ $item->min_order_value }}"
                                                                         data-usage_limit="{{ $item->usage_limit }}"
                                                                         data-expires_at="{{ $item->expires_at }}"
-                                                                        style="background:none;border:none;cursor:pointer;">
-                                                                            <i class="icon-edit1 text-info"></i>
-                                                                        </button>
+                                                                        style=" background-color: rgb(76, 106, 175); color: white; border: none; border-radius: 5px; cursor: pointer;font-size: 12px;padding: 5px 10px;text-align: center;text-decoration: none;display: inline-block;">
+                                                                        Sửa
 
                                                                         </button>
+
+
 
                                                                         <form action="{{ route('coupon.delete', ['id' => $item->id]) }}" method="POST">
                                                                             @csrf
                                                                             @method('DELETE')
-                                                                            <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa Coupon này?')">Xóa</button>
+                                                                            <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa Coupon này?')">Xóa</button>
                                                                         </form>
                                                             </div>
                                                         </td>

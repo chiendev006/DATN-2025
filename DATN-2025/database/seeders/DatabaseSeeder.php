@@ -20,17 +20,19 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-            Danhmuc::class,
-            SanphamSeeder::class,
             UserSeeder::class,
-            CouponSeeder::class,
-
+            DanhmucSeeder::class,
+            SanphamSeeder::class,
+            ToppingSeeder::class,
             ProductAttributeSeeder::class,
             ProductToppingSeeder::class,
+            CouponSeeder::class,
+            AddressSeeder::class,
+            ContactSeeder::class,
+            BlogsSeeder::class,
+            StaffSeeder::class,
+
             ProductCommentSeeder::class,
-            ToppingSeeder::class,
-            OrderSeeder::class,
-            OrderDetailSeeder::class,
         ]);
     }
 }

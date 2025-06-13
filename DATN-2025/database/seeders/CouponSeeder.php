@@ -3,66 +3,76 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use App\Models\Coupon; // Đảm bảo import model Coupon
+use Carbon\Carbon; // Import Carbon để dễ dàng làm việc với ngày tháng
 
 class CouponSeeder extends Seeder
 {
-    public function run()
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
     {
-        DB::table('coupons')->insert([
+        // Xóa tất cả các bản ghi cũ trong bảng coupons (tùy chọn)
+        Coupon::truncate();
+
+        // Định nghĩa 4 bản ghi voucher cụ thể
+        $couponsToInsert = [
             [
-                'code' => 'GIAM50K',
-                'discount' => 50000,
+                'code' => 'FIXED100K',
+                'discount' => 100000.00,
                 'type' => 'fixed',
-                'usage_limit' => 100,
+                'usage_limit' => null,
                 'used' => 0,
                 'user_id' => null,
-                'min_order_value' => 200000,
+                'min_order_value' => 300000.00,
                 'is_active' => true,
-                'expires_at' => Carbon::now()->addDays(30),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'expires_at' => null, // Không có ngày hết hạn
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ],
             [
-                'code' => 'GIAM10PHANTRAM',
-                'discount' => 10,
+                'code' => 'PERCENT10',
+                'discount' => 0.10, // 10%
                 'type' => 'percent',
                 'usage_limit' => null,
                 'used' => 0,
                 'user_id' => null,
-                'min_order_value' => 100000,
+                'min_order_value' => 0.00, // Áp dụng cho mọi giá trị đơn hàng
                 'is_active' => true,
-                'expires_at' => Carbon::now()->addDays(60),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'expires_at' => Carbon::now()->addMonths(3), // Hết hạn sau 3 tháng
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ],
             [
-                'code' => 'CHIENDACBIET',
-                'discount' => 20,
-                'type' => 'percent',
-                'usage_limit' => 1,
-                'used' => 0,
-                'user_id' => 1, // Áp dụng riêng cho user ID 1
-                'min_order_value' => null,
-                'is_active' => true,
-                'expires_at' => Carbon::now()->addDays(7),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'code' => 'VOHIEU',
-                'discount' => 100000,
+                'code' => 'NEWUSER20K',
+                'discount' => 20000.00,
                 'type' => 'fixed',
-                'usage_limit' => 10,
-                'used' => 10,
+                'usage_limit' => 100, // Giới hạn 100 lượt sử dụng
+                'used' => 0,
                 'user_id' => null,
-                'min_order_value' => 0,
-                'is_active' => false,
-                'expires_at' => Carbon::now()->subDays(1),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        ]);
+                'min_order_value' => 150000.00,
+                'is_active' => true,
+                'expires_at' => Carbon::now()->addYear(), // Hết hạn sau 1 năm
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+            [
+                'code' => 'FREESHIP50',
+                'discount' => 0.50, // 50% cho phí ship (ví dụ)
+                'type' => 'percent',
+                'usage_limit' => 50, // Giới hạn 50 lượt sử dụng
+                'used' => 0,
+                'user_id' => null,
+                'min_order_value' => 50000.00,
+                'is_active' => false, // Voucher này không hoạt động ngay lập tức
+                'expires_at' => Carbon::create(2025, 12, 31), // Hết hạn vào cuối năm 2025
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+        ];
+
+        // Chèn tất cả 4 bản ghi vào database chỉ với một truy vấn duy nhất
+        Coupon::insert($couponsToInsert);
     }
 }
