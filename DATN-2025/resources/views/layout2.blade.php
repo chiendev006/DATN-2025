@@ -257,7 +257,7 @@
               <div class="header-nav-inside">
                 <div class="logo">
                   <a href="/"
-                    ><span>Despına</span><small>1991</small></a
+                    ><span>mira</span><small>café</small></a
                   >
                 </div>
                 <div class="menu-top-part">
@@ -496,9 +496,9 @@
                                 @forelse ($items as $item)
                                     @php
                                         $productName = $item->product->name ?? $item->name;
-                                        $itemId = isset($item->product) 
-                                            ? $item->id 
-                                            : $loop->index; 
+                                        $itemId = isset($item->product)
+                                            ? $item->id
+                                            : $loop->index;
                                         $productImage = isset($item->product->image)
                                             ? asset('storage/uploads/' . $item->product->image)
                                             : (isset($item->image) ? asset('storage/uploads/' . $item->image) : asset('asset/images/img21.png'));
@@ -587,7 +587,7 @@
                 <div class="col-md-3 col-sm-3 col-xs-12">
                   <div class="logo">
                     <a href="/"
-                      ><span>Despına</span><small>1991</small></a
+                      ><span>mira</span><small>café</small></a
                     >
                   </div>
                   <p>
@@ -738,13 +738,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle quantity changes and delete
     cartBlog.addEventListener('click', async function(event) {
         const target = event.target;
-        
+
         if (target.classList.contains('increase-quantity') || target.classList.contains('decrease-quantity')) {
             const itemId = target.dataset.itemId;
             const cartItem = target.closest('.cart-item');
             const quantityInput = cartItem.querySelector('.item-quantity');
             const currentQuantity = parseInt(quantityInput.value);
-            
+
             let newQuantity = currentQuantity;
             if (target.classList.contains('increase-quantity')) {
                 newQuantity = currentQuantity + 1;
@@ -767,16 +767,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
 
                     const data = await response.json();
-                    
+
                     if (data.success) {
                         // Update quantity input
                         quantityInput.value = newQuantity;
-                        
+
                         // Update item price
                         const pricePerUnit = parseFloat(cartItem.dataset.itemPricePerUnit);
                         const newItemPrice = pricePerUnit * newQuantity;
                         cartItem.querySelector('.item-price').textContent = formatCurrency(newItemPrice);
-                        
+
                         // Update subtotal
                         updateCartSubtotal(data.subtotal);
                     } else {
@@ -790,7 +790,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (target.classList.contains('delete-icon')) {
             const itemId = target.dataset.itemId;
             const cartItem = target.closest('.cart-item');
-            
+
             if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?')) {
                 try {
                     const response = await fetch('/cart/remove-item', {
@@ -805,7 +805,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
 
                     const data = await response.json();
-                    
+
                     if (data.success) {
                         cartItem.remove();
                         updateCartSubtotal(data.subtotal);
