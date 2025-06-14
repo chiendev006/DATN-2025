@@ -18,19 +18,12 @@ class CouponController extends Controller
     public function store(Request $request)
     {
 
-        $request->validate([
-            'code' => 'required',
-            'discount' => 'required',
-            'min_order_value' => 'required',
-            'expires_at' => 'required',
-            'type' => 'required',
-            'usage_limit' => 'required',
-        ]);
 
        $coupon = Coupon::create([
         'code' => $request->code,
         'discount' => $request->discount,
         'min_order_value' => $request->min_order_value,
+        'created_at'=> $request->start_at,
         'expires_at' => $request->expires_at,
         'type' => $request->type,
         'usage_limit' => $request->usage_limit,

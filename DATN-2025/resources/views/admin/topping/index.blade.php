@@ -89,7 +89,7 @@
                                                                  <form action="{{ route('topping.delete', ['id' => $item->id]) }}" method="POST">
                                                                         @csrf
                                                                         @method('DELETE')
-                                                                        <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
+                                                                        <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa topping này?')">Xóa</button>
                                                                     </form>
                                                             </div>
                                                         </td>

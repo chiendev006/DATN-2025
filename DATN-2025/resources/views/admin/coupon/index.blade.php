@@ -60,6 +60,7 @@
                                                         <th>Giá trị đơn tối thiểu</th>
                                                         <th>Số lượng</th>
                                                         <th>Đã dùng</th>
+                                                        <th>Ngày bắt đầu</th>
                                                         <th>Ngày kết thúc</th>
                                                         <th style="width:90px; text-align:center;">Hành động</th>
                                                     </tr>
@@ -87,14 +88,17 @@
                                                                     {{ number_format($item['min_order_value'], 0, ',', '.') }} VNĐ
                                                                 </td>
                                                                 <td>
-                                                                   @if($item['usage_limit'] == 0)
-                                                                   Không giới hạn
+                                                                   @if($item['usage_limit'] ==0)
+                                                                    Hết lượt sử dụng
                                                                    @else
                                                                    {{ $item['usage_limit'] }}
                                                                    @endif
                                                                 </td>
                                                                 <td>
                                                                     {{ $item['used'] }}
+                                                                </td>
+                                                                <td>
+                                                                    {{ $item->created_at->format('Y-m-d') }}
                                                                 </td>
                                                                  <td>
                                                                     {{ $item['expires_at'] }}
@@ -106,6 +110,7 @@
                                                                         data-code="{{ $item->code }}"
                                                                         data-discount="{{ $item->discount }}"
                                                                         data-type="{{ $item->type }}"
+                                                                        date-start_at="{{ $item->start_at }}"
                                                                         data-min_order_value="{{ $item->min_order_value }}"
                                                                         data-usage_limit="{{ $item->usage_limit }}"
                                                                         data-expires_at="{{ $item->expires_at }}"
@@ -156,8 +161,7 @@
                                     <div class="field-body">
                                         <div class="field">
                                             <div class="control icons-left">
-                                                <input class="input" type="text" id="edit-code" name="code" placeholder="Code">
-                                                <span class="icon left"><i class="mdi mdi-account"></i></span>
+                                                <input required class="input" type="text" id="edit-code" name="code" placeholder="Code">
                                             </div>
                                         </div>
                                     </div>
@@ -166,7 +170,7 @@
                                 <div class="field-wrapper">
                                     <div class="field-placeholder">Giảm giá </div>
                                 <div class="control" style="display: flex; align-items: center; gap: 10px;">
-                                <input class="input" type="number" id="edit-discount" name="discount" placeholder="Trị giá">
+                                <input required class="input" type="number" id="edit-discount" name="discount" placeholder="Trị giá">
                                   <select name="type" name="type" id="edit-type">
                                     <option id="edit-type-percent" value="percent">Phần trăm (%)</option>
                                     <option id="edit-type-fixed" value="fixed">Cố định (VNĐ)</option>
@@ -175,16 +179,22 @@
                                 </div>
                                 <div class="field-wrapper">
                                     <div class="field-placeholder">Giá trị đơn tối thiểu </div>
-                                  <input class="input" type="number" id="edit-min_order_value" name="min_order_value" placeholder="Giá trị đơn tối thiểu">
+                                  <input required class="input" type="number" id="edit-min_order_value" name="min_order_value" placeholder="Giá trị đơn tối thiểu">
                                 </div>
                                 <div class="field-wrapper">
                                     <div class="field-placeholder">Số lượng </div>
-                                  <input class="input" type="number" id="edit-usage_limit" name="usage_limit" placeholder="Số lượng">
+                                  <input required class="input" type="number" id="edit-usage_limit" name="usage_limit" placeholder="Số lượng">
+                                </div>
+                               <div style="display:flex; justify-content:space-around">
+                               <div class="field-wrapper">
+                                    <div class="field-placeholder">Ngày Bắt đầu </div>
+                                  <input required class="input" type="date" id="edit-start_at" name="start_at" placeholder="Ngày bắt đầu">
                                 </div>
                                 <div class="field-wrapper">
                                     <div class="field-placeholder">Ngày kết thúc </div>
-                                  <input class="input" type="date" id="edit-expires_at" name="expires_at" placeholder="Ngày kết thúc">
+                                  <input required class="input" type="date" id="edit-expires_at" name="expires_at" placeholder="Ngày kết thúc">
                                 </div>
+                               </div>
                                 <div class="field grouped">
                                     <div class="control">
                                         <button type="submit" class="btn-success">Cập nhật</button>
@@ -214,6 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const editMinOrderValueInput = document.getElementById('edit-min_order_value');
     const editTypeInput = document.getElementById('edit-type');
     const editUsageLimitInput = document.getElementById('edit-usage_limit');
+    const editStartAtInput = document.getElementById('edit-start_at');
     const editExpiresAtInput = document.getElementById('edit-expires_at');
     const editForm = document.getElementById('editCouponForm');
 
@@ -246,6 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const itemType = this.dataset.type;
             const itemMinOrderValue = this.dataset.min_order_value;
             const itemUsageLimit = this.dataset.usage_limit;
+            const itemStartAt = this.dataset.start_at;
             const itemExpiresAt = this.dataset.expires_at;
 
             // Cập nhật action của form trong modal
@@ -266,6 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (editMinOrderValueInput) editMinOrderValueInput.value = Number(itemMinOrderValue);
             if (editUsageLimitInput) editUsageLimitInput.value = itemUsageLimit;
             if (editExpiresAtInput) editExpiresAtInput.value = itemExpiresAt;
+            if (editStartAtInput) editStartAtInput.value = itemStartAt;
 
             // Hiển thị modal
             editModal.style.display = 'flex';
@@ -295,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="field-body">
                     <div class="field">
                         <div class="control icons-left">
-                            <input class="input" type="text" id="add-name" name="code" placeholder="Code">
+                            <input required class="input" type="text" id="add-name" name="code" placeholder="Code">
                             <span class="icon left"><i class="mdi mdi-account"></i></span>
                         </div>
                     </div>
@@ -305,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="field-wrapper">
                 <div class="field-placeholder">Giảm giá</div>
                 <div style="display: flex; align-items: center; gap: 10px;" class="control" >
-                  <input class="input" type="number" id="add-price" name="discount" placeholder="Trị giá ">
+                  <input required class="input" type="number" id="add-price" name="discount" placeholder="Trị giá ">
                   <select name="type" name="type" id="type">
                     <option value="percent">Phần trăm (%)</option>
                     <option value="fixed">Cố định (VNĐ)</option>
@@ -315,23 +328,33 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="field-wrapper">
                 <div class="field-placeholder">Giá trị đơn tối thiểu</div>
                 <div style="display: flex; align-items: center; gap: 10px;" class="control" >
-                  <input class="input" type="number" id="add-price" name="min_order_value" placeholder="Giá trị đơn tối thiểu">
+                  <input required class="input" type="number" id="add-price" name="min_order_value" placeholder="Giá trị đơn tối thiểu">
                 </div>
             </div>
             <div class="field-wrapper">
                 <div class="field-placeholder">Số lượng</div>
                 <div style="display: flex; align-items: center; gap: 10px;" class="control" >
-                  <input class="input" type="number" id="add-
+                  <input required class="input" type="number" id="add-
                   " name="usage_limit" placeholder="Số lượng">
+                </div>
+            </div>
+
+
+           <div style="display:flex; justify-content:space-around">
+           <div class="field-wrapper ">
+                <div class="field-placeholder">Ngày bắt đầu</div>
+                <div style="display: flex; align-items: center; gap: 10px;" class="control" >
+                  <input required class="input" type="date" id="add-price" name="start_at" placeholder="Ngày bắt đầu">
                 </div>
             </div>
 
             <div class="field-wrapper">
                 <div class="field-placeholder">Ngày kết thúc</div>
                 <div style="display: flex; align-items: center; gap: 10px;" class="control" >
-                  <input class="input" type="date" id="add-price" name="expires_at" placeholder="Ngày kết thúc">
+                  <input required class="input" type="date" id="add-price" name="expires_at" placeholder="Ngày kết thúc">
                 </div>
             </div>
+           </div>
 
             <div class="field grouped">
                 <div class="control">

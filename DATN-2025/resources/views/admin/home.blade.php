@@ -6,35 +6,30 @@
                     <div class="row gutters">
                     <div class="container">
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-    <div style='display: flex; justify-items: stretch;' class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5">
+                    <div style="align-items: center;" class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
                     <h2>Thống kê 12 tháng gần nhất</h2>
                    <div style="background-color: white;" >
 
-                    <canvas id="lineChart"></canvas>
+                    <canvas style="width: 100%; height: 100%;" id="lineChart"></canvas>
                    </div>
                     </div>
 
-                    <div style="margin-left: 10px;" class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5">
-                    <h2>Đơn hàng trong tuần này</h2>
+                    <div style="display: flex; justify-content: space-between; " class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
+                  <div style="margin-top: 10px;" class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6" >
+                  <h2>Đơn hàng trong tuần này</h2>
                     <div style="background-color: white;" >
 
-                    <canvas id="barChart"></canvas>
+                    <canvas  id="barChart"></canvas>
                     </div>
-                    </div>
+                  </div>
 
-                    </div>
-    </div>
-
-    <div style="margin-top: 10px;" class="row gutters">
-							<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3" >
+                  <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5" >
+                    <h2 style="margin-top: 10px;">Top sản phẩm</h2>
                                 <div class="card">
-									<div class="card-header">
-										<div class="card-title">Top sản phẩm</div>
-									</div>
 
-                                    <div class="card-body">
-										<div class="table-responsive">
+
+                                    <div  class="card-body">
+										<div  style="margin-top: 10px;" class="table-responsive">
 											<table class="table products-table">
 												<thead>
 													<tr>
@@ -57,10 +52,17 @@
 									</div>
 								</div>
                             </div>
-                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-8">
+                    </div>
+
+
+    </div>
+
+    <div  style="margin-top: 10px;margin-left:3px" class="row gutters col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11" >
+
+                            <h2>Đơn hàng gần đây</h2>
 								<div class="card">
 									<div class="card-header">
-										<div class="card-title">Đơn gần đây</div>
+
 
 									</div>
 									<div class="card-body">
@@ -92,11 +94,11 @@
 										</div>
 									</div>
 								</div>
-							</div>
+
 						</div>
 
 
- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12"><h2>Xu hướng khách hàng</h2>
+ <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11"><h2>Xu hướng khách hàng</h2>
 <div id="chartContainer" class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3" style="width:100%;height:400px;"></div></div>
 <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </div>

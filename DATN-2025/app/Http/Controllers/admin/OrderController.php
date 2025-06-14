@@ -16,7 +16,7 @@ class OrderController extends Controller
         $perPage = $request->input('per_page', 10);
         $orders = Order::select(
             'orders.*'
-        )->paginate($perPage);
+        )->orderBy('created_at', 'desc')->paginate($perPage);
 
         return view('admin.order.index', ['orders' => $orders]);
     }
@@ -54,7 +54,7 @@ class OrderController extends Controller
                 if (!empty($topping_ids)) {
                     $toppings = \App\Models\Product_topping::whereIn('id', $topping_ids)->get();
                     foreach ($toppings as $tp) {
-                        $topping_arr[] = $tp->topping . ' - ' . number_format($tp->price) . ' VND';
+                        $topping_arr[] ="<p>". $tp->topping . ' - ' . number_format($tp->price) . ' VND</p>';
                     }
                 }
             }
@@ -62,7 +62,7 @@ class OrderController extends Controller
                 'product_name' => $product_name,
                 'product_image' => $product_image,
                 'size' => $size_name,
-                'topping' => implode(', ', $topping_arr),
+                'topping' => implode('', $topping_arr),
                 'quantity' => $detail->quantity,
                 'total' => $detail->total,
                 'note' => $detail->note,
@@ -70,7 +70,6 @@ class OrderController extends Controller
         });
         $orderArr = $order->toArray();
         $orderArr['details'] = $details;
-        $orderArr['product_total'] = $order->total - $order->shipping_fee - $order->coupon_total_discount;
 
         return response()->json($orderArr);
     }
