@@ -168,33 +168,47 @@
                    <div class="product-cart-detail">
                 <div class="coupon-selection-container">
                     <label class="coupon-label">Chọn mã giảm giá:</label>
-                    <div class="coupon-list-wrapper">
-                        @forelse($availableCoupons as $coupon)
-                            <div class="coupon-card @if(session('coupons') && array_key_exists($coupon->code, session('coupons'))) selected-coupon @endif" data-code="{{ $coupon->code }}">
-                                <div class="coupon-header">
-                                    <span class="coupon-code">{{ $coupon->code }}</span>
-                                    <span class="coupon-discount-type">{{ $coupon->type === 'percent' ? $coupon->discount . '%' : number_format($coupon->discount) . ' VND' }}</span>
-                                </div>
-                                <div class="coupon-details">
-                                    @if($coupon->min_order_value)
-                                        <p class="coupon-condition">Đơn hàng tối thiểu: {{ number_format($coupon->min_order_value) }}đ</p>
-                                    @endif
-                                    @if($coupon->expires_at)
-                                        <p class="coupon-expiry">HSD: {{ \Carbon\Carbon::parse($coupon->expires_at)->format('d/m/Y') }}</p>
-                                    @endif
-                                    @if(!is_null($coupon->used) && !is_null($coupon->usage_limit))
-                                        <p class="coupon-usage">Còn lại: {{ $coupon->used }} / {{ $coupon->usage_limit }} lần</p>
-                                    @endif
-                                </div>
-                                <button type="button" class="apply-coupon-btn" data-code="{{ $coupon->code }}">Áp dụng</button>
-                                @if(session('coupons') && array_key_exists($coupon->code, session('coupons')))
-                                    <button type="button" class="remove-applied-coupon-btn" data-code="{{ $coupon->code }}">Gỡ bỏ</button>
-                                @endif
-                            </div>
-                        @empty
-                            <p class="no-coupon-message">Không có mã giảm giá khả dụng nào.</p>
-                        @endforelse
-                    </div>
+                   @php
+    $filteredCoupons = $availableCoupons->filter(function ($coupon) {
+        return !$coupon->user_id || (Auth::check() && Auth::id() === $coupon->user_id);
+    });
+@endphp
+
+<div class="coupon-list-wrapper">
+    @forelse($filteredCoupons as $coupon)
+        <div class="coupon-card @if(session('coupons') && array_key_exists($coupon->code, session('coupons'))) selected-coupon @endif" data-code="{{ $coupon->code }}">
+            <div class="coupon-header">
+                <span class="coupon-code">{{ $coupon->code }}</span>
+                <span class="coupon-discount-type">
+                    {{ $coupon->type === 'percent' ? $coupon->discount . '%' : number_format($coupon->discount) . ' VND' }}
+                </span>
+            </div>
+            <div class="coupon-details">
+                @if($coupon->min_order_value)
+                    <p class="coupon-condition">Đơn hàng tối thiểu: {{ number_format($coupon->min_order_value) }}đ</p>
+                @endif
+                @if($coupon->starts_at)
+                    <p class="coupon-start">Bắt đầu: {{ \Carbon\Carbon::parse($coupon->starts_at)->format('d/m/Y') }}</p>
+                @endif
+                @if($coupon->expires_at)
+                    <p class="coupon-expiry">HSD: {{ \Carbon\Carbon::parse($coupon->expires_at)->format('d/m/Y') }}</p>
+                @endif
+                @if(!is_null($coupon->used) && !is_null($coupon->usage_limit))
+                    <p class="coupon-usage">
+                        Còn lại: {{ $coupon->usage_limit - $coupon->used }} / {{ $coupon->usage_limit }} lần
+                    </p>
+                @endif
+            </div>
+            <button type="button" class="apply-coupon-btn" data-code="{{ $coupon->code }}">Áp dụng</button>
+            @if(session('coupons') && array_key_exists($coupon->code, session('coupons')))
+                <button type="button" class="remove-applied-coupon-btn" data-code="{{ $coupon->code }}">Gỡ bỏ</button>
+            @endif
+        </div>
+    @empty
+        <p class="no-coupon-message">Không có mã giảm giá khả dụng nào.</p>
+    @endforelse
+</div>
+
 
         @if($expiredCoupons->count())
             <div class="expired-coupon-section">
