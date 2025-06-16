@@ -98,10 +98,13 @@
                                                                     {{ $item['used'] }}
                                                                 </td>
                                                                 <td>
-                                                                    {{ $item->created_at->format('Y-m-d') }}
+                                                              {{ $item->starts_at->format('Y-m-d') }}
                                                                 </td>
                                                                  <td>
-                                                                    {{ $item['expires_at'] }}
+                                                                @if ( $item->expires_at==null)
+                                                                Vô thời hạn                                                                @else
+                                                                 {{ $item->expires_at->format('Y-m-d') }}
+                                                                @endif
                                                                 </td>
                                                                 <td>
                                                                     <div  class="actions" style="display: flex; gap: 10px; justify-content: center;">
@@ -110,7 +113,7 @@
                                                                         data-code="{{ $item->code }}"
                                                                         data-discount="{{ $item->discount }}"
                                                                         data-type="{{ $item->type }}"
-                                                                        date-start_at="{{ $item->start_at }}"
+                                                                        data-starts_at="{{ $item->starts_at }}"
                                                                         data-min_order_value="{{ $item->min_order_value }}"
                                                                         data-usage_limit="{{ $item->usage_limit }}"
                                                                         data-expires_at="{{ $item->expires_at }}"
@@ -188,7 +191,7 @@
                                <div style="display:flex; justify-content:space-around">
                                <div class="field-wrapper">
                                     <div class="field-placeholder">Ngày Bắt đầu </div>
-                                  <input required class="input" type="date" id="edit-start_at" name="start_at" placeholder="Ngày bắt đầu">
+                                  <input required class="input" type="date" id="edit-starts_at" name="starts_at" placeholder="Ngày bắt đầu">
                                 </div>
                                 <div class="field-wrapper">
                                     <div class="field-placeholder">Ngày kết thúc </div>
@@ -224,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const editMinOrderValueInput = document.getElementById('edit-min_order_value');
     const editTypeInput = document.getElementById('edit-type');
     const editUsageLimitInput = document.getElementById('edit-usage_limit');
-    const editStartAtInput = document.getElementById('edit-start_at');
+    const editStartsAtInput = document.getElementById('edit-starts_at');
     const editExpiresAtInput = document.getElementById('edit-expires_at');
     const editForm = document.getElementById('editCouponForm');
 
@@ -257,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const itemType = this.dataset.type;
             const itemMinOrderValue = this.dataset.min_order_value;
             const itemUsageLimit = this.dataset.usage_limit;
-            const itemStartAt = this.dataset.start_at;
+            const itemStartsAt = this.dataset.starts_at;
             const itemExpiresAt = this.dataset.expires_at;
 
             // Cập nhật action của form trong modal
@@ -278,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (editMinOrderValueInput) editMinOrderValueInput.value = Number(itemMinOrderValue);
             if (editUsageLimitInput) editUsageLimitInput.value = itemUsageLimit;
             if (editExpiresAtInput) editExpiresAtInput.value = itemExpiresAt;
-            if (editStartAtInput) editStartAtInput.value = itemStartAt;
+            if (editStartsAtInput) editStartAtInput.value = itemStartsAt;
 
             // Hiển thị modal
             editModal.style.display = 'flex';
@@ -344,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
            <div class="field-wrapper ">
                 <div class="field-placeholder">Ngày bắt đầu</div>
                 <div style="display: flex; align-items: center; gap: 10px;" class="control" >
-                  <input required class="input" type="date" id="add-price" name="start_at" placeholder="Ngày bắt đầu">
+                  <input required class="input" type="date" id="add-price" name="starts_at" placeholder="Ngày bắt đầu">
                 </div>
             </div>
 

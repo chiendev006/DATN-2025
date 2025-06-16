@@ -94,7 +94,7 @@
                                                               <form action="{{ route('danhmuc.delete', ['id' => $item->id]) }}" method="POST">
                                                                     @csrf
                                                                     @method('DELETE')
-                                                                    <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
+                                                                    <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?')">Xóa</button>
                                                                 </form>
                                                             </div>
                                                         </td>
