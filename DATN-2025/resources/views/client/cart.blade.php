@@ -634,15 +634,16 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 <style>
-    .coupon-list-wrapper {
+.coupon-list-wrapper {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    justify-content: space-between;
+    gap: 8px;
+    justify-content: flex-start;
 }
 
 .coupon-card {
-    width: calc(25% - 10px); /* 4 cái trên 1 hàng */
+    flex: 1 0 200px; /* tối thiểu 200px, co giãn đều */
+    max-width: 250px;
     border: 1px solid #ddd;
     padding: 10px;
     border-radius: 8px;
@@ -653,7 +654,6 @@ document.addEventListener("DOMContentLoaded", function () {
     flex-direction: column;
     justify-content: space-between;
 }
-
 .coupon-header {
     display: flex;
     justify-content: space-between;

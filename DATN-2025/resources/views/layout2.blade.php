@@ -484,6 +484,7 @@
                             <ul class="drop-nav">
                                 <li><a href="{{ route('login') }}">Đăng nhập</a></li>
                                 <li><a href="{{ route('register') }}">Đăng ký</a></li>
+                                <li><a href="{{ route('order.search') }}">Tra cứu đơn hàng</a></li>
                             </ul>
                         </li>
                     @endauth
