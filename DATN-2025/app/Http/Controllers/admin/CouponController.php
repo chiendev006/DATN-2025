@@ -23,7 +23,7 @@ class CouponController extends Controller
         'code' => $request->code,
         'discount' => $request->discount,
         'min_order_value' => $request->min_order_value,
-        'created_at'=> $request->start_at,
+        'starts_at'=> $request->starts_at,
         'expires_at' => $request->expires_at,
         'type' => $request->type,
         'usage_limit' => $request->usage_limit,
