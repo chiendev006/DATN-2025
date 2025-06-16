@@ -141,7 +141,7 @@ class VNPayController extends Controller
                     $order->name = $vnpOrder['name'];
                     $order->phone = $vnpOrder['phone'];
                     $order->email = $vnpOrder['email'];
-                    $order->address_id = $vnpOrder['address_id']; 
+                    $order->address_id = $vnpOrder['address_id'];
                     $order->address_detail = $vnpOrder['address_detail'];
                     $order->district_name = $vnpOrder['district_name'];
                     $order->payment_method = 'banking';

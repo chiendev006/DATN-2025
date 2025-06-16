@@ -95,7 +95,39 @@
 									</div>
 								</div>
 
-						</div>
+						</div><div id="modal-revenue" style="margin-top: 10px;margin-left:3px; " class="row gutters col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11" >
+
+<h2>Doanh thu
+    <form id="revenueFilterForm" method="post">
+        @csrf
+        từ
+        <input type="date" name="start" id="start_date">
+        đến
+        <input type="date" name="end" id="end_date">
+        <button style="border-radius: 5px;" type="button" onclick="filterRevenue()">Lọc</button>
+    </form>
+</h2>
+    <div class="card">
+        <div class="card-header">
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table products-table">
+                    <thead>
+                        <tr>
+                            <th>Ngày </th>
+                            <th>Số lượng đơn</th>
+                            <th>Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="revenueTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 
  <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11"><h2>Xu hướng khách hàng</h2>
@@ -217,6 +249,57 @@ var chart = new CanvasJS.Chart("chartContainer", {
 });
 chart.render();
 
+}
+</script>
+
+<script>
+function filterRevenue() {
+    const startDate = document.getElementById('start_date').value;
+    const endDate = document.getElementById('end_date').value;
+
+    if (!startDate || !endDate) {
+        alert('Vui lòng chọn cả ngày bắt đầu và ngày kết thúc');
+        return;
+    }
+
+    // Show loading state
+    document.getElementById('revenueTableBody').innerHTML = '<tr><td colspan="3" class="text-center">Đang tải...</td></tr>';
+
+    // Make AJAX request
+    fetch('/admin/revenue/filter', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            start_date: startDate,
+            end_date: endDate
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        let html = '';
+        if (data.length === 0) {
+            html = '<tr><td colspan="3" class="text-center">Không có dữ liệu</td></tr>';
+        } else {
+            data.forEach(item => {
+                html += `
+                    <tr>
+                        <td>${item.date}</td>
+                        <td>${item.total_orders}</td>
+                        <td>${new Intl.NumberFormat('vi-VN').format(item.revenue)} đ</td>
+                    </tr>
+                `;
+            });
+        }
+        document.getElementById('revenueTableBody').innerHTML = html;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('revenueTableBody').innerHTML =
+            '<tr><td colspan="3" class="text-center">Có lỗi xảy ra khi tải dữ liệu</td></tr>';
+    });
 }
 </script>
 
