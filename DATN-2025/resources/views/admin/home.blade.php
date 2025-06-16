@@ -196,7 +196,7 @@
     new Chart(document.getElementById('barChart'), {
         type: 'bar',
         data: {
-            labels: ['Thành công', 'Chưa thanh toán', 'Đã hủy'],
+            labels: ['Thành công', 'Chưa thanh toán'],
             datasets: [{
                 label: 'Số đơn',
                 data: [orderStatusWeek.success, orderStatusWeek.pending, orderStatusWeek.cancel],
@@ -216,11 +216,7 @@
                     beginAtZero: true
                 }
             },
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
+
         }
     });
 

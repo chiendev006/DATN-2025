@@ -155,7 +155,11 @@
                                        <td width="5%">{{ ($orders->currentPage()-1) * $orders->perPage() + $key + 1 }}</td>
                                         <td>{{ $order->name }}</td>
 
-                                        <td>{{ $order->phone }}</td>
+                                     @if($order->phone=='N/A')
+                                     <td>Nhân viên</td>
+                                     @else
+                                     <td>{{ $order->phone }}</td>
+                                     @endif
 
                                         <td>
                                             @if ($order->status == 'pending' || $order->status == 0)
@@ -260,7 +264,7 @@
         <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
         <input type="hidden" name="id" id="modal_id">
       <div style="margin-bottom:10px;">
-        <div class="field-placeholder">Tên khách hàng</div>
+        <div class="field-placeholder">Tên khách hàng - mã đơn </div>
         <input type="text" class="form-control" name="name" id="modal_name" readonly />
       </div>
       </div>
@@ -304,7 +308,6 @@
         <select class="form-control" name="pay_status" id="modal_pay_status">
           <option value="0">Chờ thanh toán</option>
           <option value="1">Đã thanh toán</option>
-          <option value="2">Đã hủy</option>
         </select>
       </div>
       </div>
@@ -390,108 +393,167 @@
     </form>
   </div>
 </div>
-<script>
-function openOrderModal(btn) {
-  document.getElementById('orderModal').style.display = 'block';
-  document.getElementById('modal_id').value = btn.getAttribute('data-id');
-  document.getElementById('modal_name').value = btn.getAttribute('data-name');
-  document.getElementById('modal_phone').value = btn.getAttribute('data-phone');
-  document.getElementById('modal_email').value = btn.getAttribute('data-email');
-  document.getElementById('modal_payment_method').value = btn.getAttribute('data-payment_method');
-        // Đặt giá trị cho dropdown status
-  const statusText = btn.getAttribute('data-status');
-  const statusSelect = document.getElementById('modal_status');
-  if (statusText.includes('Chờ xử lý')) {
-    statusSelect.value = 'pending';
-  } else if (statusText.includes('Đã xác nhận')) {
-    statusSelect.value = 'processing';
-  } else if (statusText.includes('Hoàn thành')) {
-    statusSelect.value = 'completed';
-  } else if (statusText.includes('Đã hủy')) {
-    statusSelect.value = 'cancelled';
-  }
+<<script>
 
-  document.getElementById('modal_total').value = btn.getAttribute('data-total');
 
-  document.getElementById('modal_pay_status').value = btn.getAttribute('data-pay_status');
-  document.getElementById('modal_cancel_reason').value = btn.getAttribute('data-cancel_reason') || '';
+    function openOrderModal(btn) {
+        document.getElementById('orderModal').style.display = 'block';
+        document.getElementById('modal_id').value = btn.getAttribute('data-id');
+        document.getElementById('modal_name').value = btn.getAttribute('data-name') + ' - ' + btn.getAttribute('data-id');
+        if( btn.getAttribute('data-phone')=='N/A'){
+            document.getElementById('modal_phone').value = 'Nhân viên thu ngân';
+        } else {
+            document.getElementById('modal_phone').value = btn.getAttribute('data-phone');
+        }
 
-  // Thêm các trường mới
-  document.getElementById('modal_shipping_fee').value = btn.getAttribute('data-shipping_fee') || '0 đ';
-  document.getElementById('modal_coupon_total_discount').value = btn.getAttribute('data-coupon_total_discount') || '0 đ';
-  document.getElementById('modal_address_detail').value = btn.getAttribute('data-address_detail') || '';
-  document.getElementById('modal_product_total').value = btn.getAttribute('data-product_total') || '0 đ';
-  document.getElementById('modal_created_at').value = btn.getAttribute('data-created_at') || '';
-  document.getElementById('orderForm').action = "{{ url('admin/order/update') }}/" + btn.getAttribute('data-id');
 
-  // Kiểm tra trạng thái để hiển thị ô lí do hủy
-  checkCancelFields();
+            document.getElementById('modal_email').value =  btn.getAttribute('data-email') ||'Nhân viên thu ngân';
 
-  // Thêm event listeners cho các select
-  document.getElementById('modal_status').addEventListener('change', checkCancelFields);
-  document.getElementById('modal_pay_status').addEventListener('change', checkCancelFields);
+        document.getElementById('modal_payment_method').value = btn.getAttribute('data-payment_method');
 
-  // Lấy sản phẩm của đơn hàng
-  var orderId = btn.getAttribute('data-id');
-  fetch('/admin/order/json/' + orderId)
-    .then(function(response) { return response.json(); })
-    .then(function(data) {
-      var tbody = document.querySelector('#order_products_table tbody');
-      tbody.innerHTML = '';
-      // Kiểm tra có details không
-      if (data.details && Array.isArray(data.details) && data.details.length > 0) {
-        data.details.forEach(function(product) {
-          var row = `<tr>
-            <td>${product.product_name ?? ''}</td>
-            <td>${product.product_image ? `<img src='/storage/uploads/${product.product_image}' width='50'>` : ''}</td>
-            <td>${product.size ?? ''}</td>
-            <td>
-            ${product.topping ? `<p>${product.topping}</p>` : `<span style="color: red;">Không chọn</span>`}
-            </td>
-            <td>${product.quantity ?? ''}</td>
-            <td>${product.total !== undefined ? parseInt(product.total).toLocaleString('vi-VN') + ' đ' : ''}</td>
-          </tr>`;
-          tbody.innerHTML += row;
+        const statusSelect = document.getElementById('modal_status');
+        const payStatusSelect = document.getElementById('modal_pay_status');
+
+        const originalStatusFromButton = btn.getAttribute('data-status');
+        const originalPayStatusFromButton = btn.getAttribute('data-pay_status');
+
+        let initialStatusValue;
+        if (originalStatusFromButton.includes('Chờ xử lý')) {
+            initialStatusValue = 'pending';
+        } else if (originalStatusFromButton.includes('Đã xác nhận')) {
+            initialStatusValue = 'processing';
+        } else if (originalStatusFromButton.includes('Hoàn thành')) {
+            initialStatusValue = 'completed';
+        } else if (originalStatusFromButton.includes('Đã hủy')) {
+            initialStatusValue = 'cancelled';
+        } else {
+            initialStatusValue = originalStatusFromButton;
+        }
+
+        statusSelect.value = initialStatusValue;
+        payStatusSelect.value = originalPayStatusFromButton;
+
+        statusSelect.setAttribute('data-original-status', initialStatusValue);
+        payStatusSelect.setAttribute('data-original-pay-status', originalPayStatusFromButton);
+
+        // Disable invalid status options
+        disableInvalidStatusOptions(initialStatusValue);
+        disableInvalidPayStatusOptions(originalPayStatusFromButton);
+
+        document.getElementById('modal_total').value = btn.getAttribute('data-total');
+        document.getElementById('modal_cancel_reason').value = btn.getAttribute('data-cancel_reason') || '';
+        document.getElementById('modal_shipping_fee').value = btn.getAttribute('data-shipping_fee') || '0 đ';
+        document.getElementById('modal_coupon_total_discount').value = btn.getAttribute('data-coupon_total_discount') || '0 đ';
+        document.getElementById('modal_address_detail').value = btn.getAttribute('data-address_detail') || 'Nhân viên thu ngân';
+        document.getElementById('modal_product_total').value = btn.getAttribute('data-product_total') || '0 đ';
+        document.getElementById('modal_created_at').value = btn.getAttribute('data-created_at') || '';
+        document.getElementById('orderForm').action = "{{ url('admin/order/update') }}/" + btn.getAttribute('data-id');
+
+        checkCancelFields();
+
+        statusSelect.addEventListener('change', checkCancelFields);
+        payStatusSelect.addEventListener('change', checkCancelFields);
+
+        var orderId = btn.getAttribute('data-id');
+        fetch('/admin/order/json/' + orderId)
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('#order_products_table tbody');
+                tbody.innerHTML = '';
+                if (data.details && Array.isArray(data.details) && data.details.length > 0) {
+                    data.details.forEach(product => {
+                        const row = `<tr>
+                            <td>${product.product_name ?? ''}</td>
+                            <td>${product.product_image ? `<img src='/storage/uploads/${product.product_image}' width='50'>` : ''}</td>
+                            <td>${product.size ?? ''}</td>
+                            <td>${product.topping ? `<p>${product.topping}</p>` : `<span style="color: red;">Không chọn</span>`}</td>
+                            <td>${product.quantity ?? ''}</td>
+                            <td>${product.total !== undefined ? parseInt(product.total).toLocaleString('vi-VN') + ' đ' : ''}</td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Không có sản phẩm</td></tr>';
+                }
+            })
+            .catch(() => {
+                document.querySelector('#order_products_table tbody').innerHTML =
+                    '<tr><td colspan="8" style="text-align:center; color:red;">Lỗi lấy dữ liệu</td></tr>';
+            });
+    }
+
+    function closeOrderModal() {
+        document.getElementById('orderModal').style.display = 'none';
+        const statusSelect = document.getElementById('modal_status');
+        const payStatusSelect = document.getElementById('modal_pay_status');
+        statusSelect.replaceWith(statusSelect.cloneNode(true));
+        payStatusSelect.replaceWith(payStatusSelect.cloneNode(true));
+    }
+
+    function checkCancelFields() {
+        const status = document.getElementById('modal_status').value;
+        const payStatus = document.getElementById('modal_pay_status').value;
+        const cancelReasonContainer = document.getElementById('cancel_reason_container');
+
+        if (status === 'cancelled' || payStatus === '2') {
+            cancelReasonContainer.style.display = 'block';
+            document.getElementById('modal_cancel_reason').required = true;
+        } else {
+            cancelReasonContainer.style.display = 'none';
+            document.getElementById('modal_cancel_reason').required = false;
+        }
+    }
+
+    function disableInvalidStatusOptions(originalStatus) {
+        const select = document.getElementById('modal_status');
+        const statusOrder = { 'pending': 0, 'processing': 1, 'completed': 2, 'cancelled': 3 };
+
+        [...select.options].forEach(option => {
+            const val = option.value;
+            option.disabled = false;
+
+            if (originalStatus === 'cancelled' && val !== 'cancelled') {
+                option.disabled = true;
+            } else if (originalStatus === 'completed' && val !== 'completed') {
+                option.disabled = true;
+            } else if (
+                statusOrder[val] < statusOrder[originalStatus] && val !== 'cancelled'
+            ) {
+                option.disabled = true;
+            } else if (
+                statusOrder[val] > statusOrder[originalStatus] + 1 && val !== 'cancelled'
+            ) {
+                option.disabled = true;
+            }
         });
-      } else {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Không có sản phẩm</td></tr>';
-      }
-    })
-    .catch(function(err) {
-      var tbody = document.querySelector('#order_products_table tbody');
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:red;">Lỗi lấy dữ liệu</td></tr>';
-    });
-}
-function closeOrderModal() {
-  document.getElementById('orderModal').style.display = 'none';
-}
+    }
 
-// Kiểm tra và hiển thị ô lí do hủy
-function checkCancelFields() {
-  const status = document.getElementById('modal_status').value;
-  const payStatus = document.getElementById('modal_pay_status').value;
-  const cancelReasonContainer = document.getElementById('cancel_reason_container');
+    function disableInvalidPayStatusOptions(originalPayStatus) {
+        const select = document.getElementById('modal_pay_status');
+        const original = parseInt(originalPayStatus);
 
-  if (status === 'cancelled' || payStatus === '2') {
-    cancelReasonContainer.style.display = 'block';
-    document.getElementById('modal_cancel_reason').required = true;
-  } else {
-    cancelReasonContainer.style.display = 'none';
-    document.getElementById('modal_cancel_reason').required = false;
-  }
-}
+        [...select.options].forEach(option => {
+            const val = parseInt(option.value);
+            option.disabled = false;
 
-// Validate form trước khi submit
-function validateForm() {
-  const status = document.getElementById('modal_status').value;
-  const payStatus = document.getElementById('modal_pay_status').value;
-  const cancelReason = document.getElementById('modal_cancel_reason').value;
+            if (original === 1 && val !== 1) {
+                option.disabled = true;
+            }
+        });
+    }
 
-  if ((status === 'cancelled' || payStatus === '2') && !cancelReason.trim()) {
-    alert('Vui lòng nhập lý do hủy đơn hàng');
-    document.getElementById('modal_cancel_reason').focus();
-    return false;
-  }
-  return true;
-}
+    function validateForm() {
+        const status = document.getElementById('modal_status').value;
+        const payStatus = document.getElementById('modal_pay_status').value;
+        const cancelReason = document.getElementById('modal_cancel_reason').value;
+
+        if ((status === 'cancelled' || payStatus === '2') && !cancelReason.trim()) {
+            alert('Vui lòng nhập lý do hủy đơn hàng');
+            document.getElementById('modal_cancel_reason').focus();
+            return false;
+        }
+
+        return true;
+    }
 </script>
+
