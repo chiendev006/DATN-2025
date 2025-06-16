@@ -27,6 +27,7 @@ class CouponSeeder extends Seeder
                 'user_id' => null,
                 'min_order_value' => 300000.00,
                 'is_active' => true,
+                'starts_at' => Carbon::create(2025, 6, 19),
                 'expires_at' => null, // Không có ngày hết hạn
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
@@ -40,6 +41,7 @@ class CouponSeeder extends Seeder
                 'user_id' => null,
                 'min_order_value' => 0.00, // Áp dụng cho mọi giá trị đơn hàng
                 'is_active' => true,
+                'starts_at' => Carbon::create(2025, 6, 19),
                 'expires_at' => Carbon::now()->addMonths(3), // Hết hạn sau 3 tháng
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
@@ -53,6 +55,7 @@ class CouponSeeder extends Seeder
                 'user_id' => null,
                 'min_order_value' => 150000.00,
                 'is_active' => true,
+                'starts_at' => Carbon::create(2025, 6, 19),
                 'expires_at' => Carbon::now()->addYear(), // Hết hạn sau 1 năm
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
@@ -66,6 +69,7 @@ class CouponSeeder extends Seeder
                 'user_id' => null,
                 'min_order_value' => 50000.00,
                 'is_active' => false, // Voucher này không hoạt động ngay lập tức
+                'starts_at' => Carbon::create(2025, 6, 19),
                 'expires_at' => Carbon::create(2025, 12, 31), // Hết hạn vào cuối năm 2025
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),

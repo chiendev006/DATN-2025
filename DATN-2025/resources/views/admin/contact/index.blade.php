@@ -75,7 +75,7 @@
                                     <td>{{ $item['name'] }}</td>
                                     <td>{{ $item['email'] }}</td>
                                     <td>{{ $item['phone'] }}</td>
-                                    <td>{!! $item['message'] !!}</td>
+                                    <td>{!! $item['massage'] !!}</td>
                                     <td>{{ $item['created_at']->format('d/m/Y') }}</td>
                                         <td style="width:90px; text-align:center;">
                                         <form action="{{ route('contact.delete', ['id' => $item->id]) }}" method="POST">
