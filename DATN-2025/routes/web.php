@@ -343,3 +343,4 @@ use App\Http\Controllers\ShopController;
 Route::get('/tra-cuu-don-hang/check-status/{id}', [OrderSearchController::class, 'checkOrderStatus'])->name('order.search.checkStatus');
 Route::patch('/tra-cuu-don-hang/cancel/{id}', [OrderSearchController::class, 'cancelOrder'])->name('order.search.cancel');
 
+
