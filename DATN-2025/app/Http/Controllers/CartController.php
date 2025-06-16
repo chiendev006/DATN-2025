@@ -68,18 +68,18 @@ public function index()
 
     $now = now();
 
-    $availableCoupons = Coupon::where('is_active', true)
-        ->where(function ($q) use ($now) {
-            $q->whereNull('starts_at')->orWhere('starts_at', '<=', $now);
-        })
-        ->where(function ($q) use ($now) {
-            $q->whereNull('expires_at')->orWhere('expires_at', '>=', $now);
-        })
-        ->get()
-        ->filter(function ($coupon) use ($subtotal) {
-            return (!$coupon->usage_limit || $coupon->used < $coupon->usage_limit) &&
-                   (!$coupon->min_order_value || $subtotal >= $coupon->min_order_value);
-        });
+   $availableCoupons = Coupon::where('is_active', true)
+    ->where(function ($q) use ($now) {
+        $q->whereNull('starts_at')->orWhere('starts_at', '<=', $now);
+    })
+    ->where(function ($q) use ($now) {
+        $q->whereNull('expires_at')->orWhere('expires_at', '>=', $now);
+    })
+    ->get()
+    ->filter(function ($coupon) {
+        return !$coupon->usage_limit || $coupon->used < $coupon->usage_limit;
+    });
+
 
     $expiredCoupons = Coupon::where(function ($q) use ($now) {
         $q->where('expires_at', '<', $now)
