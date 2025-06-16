@@ -26,7 +26,8 @@
         use App\Http\Controllers\admin\PayrollController;
         use App\Http\Controllers\CheckoutController;
         use App\Http\Controllers\MyaccountController;
-        use App\Http\Controllers\ShopController;
+use App\Http\Controllers\OrderSearchController;
+use App\Http\Controllers\ShopController;
         use App\Http\Controllers\Staff\StaffController;
         use App\Http\Controllers\VNPayController;
         use App\Http\Controllers\Staff\AuthenController;
@@ -108,6 +109,7 @@
         Route::prefix('admin')->middleware(['auth', 'checkAdmin', 'check.valid.id'])->group(function () {
         // Trang chủ Admin
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
+        Route::post('/revenue/filter', [HomeController::class, 'filterRevenue'])->name('revenue.filter');
 
         // Đơn hàng
         Route::get('/order', [\App\Http\Controllers\admin\OrderController::class, 'ordersIndex'])->name('admin.order.index');
@@ -332,4 +334,12 @@
 
         // Cart mini
         Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+
+    
         Route::post('/cart/remove-item', [CartController::class, 'remove'])->name('cart.removeItem');
+
+        Route::get('/tra-cuu-don-hang', [OrderSearchController::class, 'search'])->name('order.search');
+        Route::post('/tra-cuu-don-hang/reorder/{id}', [OrderSearchController::class, 'reorder'])->name('order.search.reorder');
+Route::get('/tra-cuu-don-hang/check-status/{id}', [OrderSearchController::class, 'checkOrderStatus'])->name('order.search.checkStatus');
+Route::patch('/tra-cuu-don-hang/cancel/{id}', [OrderSearchController::class, 'cancelOrder'])->name('order.search.cancel');
+
