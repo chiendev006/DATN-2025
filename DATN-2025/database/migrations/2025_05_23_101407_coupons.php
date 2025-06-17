@@ -21,7 +21,7 @@ return new class extends Migration
         $table->unsignedBigInteger('user_id')->nullable();
         $table->decimal('min_order_value', 10, 2)->default(0);
         $table->boolean('is_active')->default(true);
-        
+
         // Thêm cột starts_at
         $table->dateTime('starts_at')->nullable(); // Có thể dùng date() nếu không cần giờ phút giây
 

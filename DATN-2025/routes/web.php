@@ -335,7 +335,7 @@ use App\Http\Controllers\ShopController;
         // Cart mini
         Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
 
-    
+
         Route::post('/cart/remove-item', [CartController::class, 'remove'])->name('cart.removeItem');
 
         Route::get('/tra-cuu-don-hang', [OrderSearchController::class, 'search'])->name('order.search');
