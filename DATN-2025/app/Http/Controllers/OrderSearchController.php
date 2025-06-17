@@ -22,6 +22,13 @@ class OrderSearchController extends Controller
         $phone = $request->input('phone');
         
         $orders = collect();
+        $orderStats = [
+            'all' => 0,
+            'pending' => 0,
+            'processing' => 0,
+            'completed' => 0,
+            'cancelled' => 0
+        ];
 
         if ($phone) {
             $request->validate([
@@ -32,11 +39,18 @@ class OrderSearchController extends Controller
                            ->where('phone', $phone)
                            ->orderBy('created_at', 'desc') 
                            ->get();
+
+            // Tính toán thống kê đơn hàng
+            $orderStats['all'] = $orders->count();
+            $orderStats['pending'] = $orders->where('status', 'pending')->count();
+            $orderStats['processing'] = $orders->where('status', 'processing')->count();
+            $orderStats['completed'] = $orders->where('status', 'completed')->count();
+            $orderStats['cancelled'] = $orders->where('status', 'cancelled')->count();
         }
 
         $toppings = Product_topping::all()->keyBy('id');
 
-        return view('client.order_search', compact('orders', 'phone', 'toppings'));
+        return view('client.order_search', compact('orders', 'phone', 'toppings', 'orderStats'));
     }
      public function cancelOrder($id, Request $request)
     {
@@ -101,7 +115,7 @@ class OrderSearchController extends Controller
                 }
 
                 // Lấy thông tin topping từ product_topping
-                $toppings = [];
+                $toppings = collect();
                 if (!empty($toppingIds)) {
                     $toppings = DB::table('product_topping')
                         ->whereIn('id', $toppingIds)
@@ -160,5 +174,43 @@ class OrderSearchController extends Controller
         }
 
         return [];
+    }
+
+    public function getOrderDetail($id)
+    {
+        $order = Order::find($id);
+        
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy đơn hàng'
+            ], 404);
+        }
+
+        $orderDetails = $order->orderDetails()->with(['product', 'size'])->get();
+        
+        // Format topping names
+        $orderDetails->transform(function ($item) {
+            $toppingNames = [];
+            if (!empty($item->topping_id)) {
+                $toppingIds = explode(',', trim($item->topping_id));
+                foreach ($toppingIds as $id) {
+                    $topping = Product_topping::find($id);
+                    if ($topping) {
+                        $toppingNames[] = $topping->topping;
+                    }
+                }
+            }
+            $item->topping_names = implode(', ', $toppingNames);
+            $item->product_image = $item->product ? asset('storage/uploads/' . $item->product->image) : null;
+            $item->size_name = $item->size ? $item->size->size : null;
+            return $item;
+        });
+
+        return response()->json([
+            'success' => true,
+            'order' => $order,
+            'orderDetails' => $orderDetails
+        ]);
     }
 }
