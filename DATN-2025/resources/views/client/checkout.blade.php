@@ -233,7 +233,7 @@
                                             <hr style="margin-top: 0px ">
                                             <div class="row" >
                                                 <div class="col-xs-7">
-                                                    <p><strong>{{ $name }} </strong>x{{ $quantity }}</p>
+                                                    <p><strong>{{ $name }} x{{ $quantity }} </strong></p>
                                                     @if(isset($desc[1]))
                                                         <p style="color: #666; font-size: 0.8em; font-weight: bold;">{{ $desc[1] }}</p>
                                                     @endif
