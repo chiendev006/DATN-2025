@@ -217,11 +217,7 @@
                                                 data-product_total="{{ number_format(($order->total ?? 0) - ($order->shipping_fee ?? 0) + ($order->coupon_total_discount ?? 0), 0, ',', '.') }} đ"
                                                 data-cancel_reason="{{ $order->cancel_reason }}"
                                             >Xem</button>
-                                            <form action="{{ route('admin.order.delete', ['id' => $order->id]) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
-                                            </form>
+
                                             </div>
                                                     </td>
                                     </tr>
