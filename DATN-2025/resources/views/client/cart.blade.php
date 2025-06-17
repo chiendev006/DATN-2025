@@ -168,6 +168,7 @@
                    <div class="product-cart-detail">
                 <div class="coupon-selection-container">
                     <label class="coupon-label">Chọn mã giảm giá:</label>
+                    <p>Lưu ý: Bạn chỉ được áp dụng 1 mã giảm giá cho 1 đơn hàng.</p>
                    @php
     $filteredCoupons = $availableCoupons->filter(function ($coupon) {
         return !$coupon->user_id || (Auth::check() && Auth::id() === $coupon->user_id);
