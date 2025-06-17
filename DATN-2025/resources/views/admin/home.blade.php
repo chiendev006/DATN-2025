@@ -84,7 +84,11 @@
 														<td>{{ $order->id }}</td>
 														<td>{{ $order->created_at }}</td>
 														<td>{{ $order->name }}</td>
-														<td>{{ $order->phone }}</td>
+														@if( $order->phone=="N/A")
+                                                        <td>Nhân viên order</td>
+                                                        @else
+                                                        <td>{{ $order->phone }}</td>
+                                                        @endif
 														<td>{{ number_format($order->total) }} đ</td>
 														<td>{{ $order->status }}</td>
 													</tr>

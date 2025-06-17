@@ -35,6 +35,9 @@
         use App\Http\ViewComposers\CartComposer;
         use Illuminate\Support\Facades\Auth;
 
+
+
+
         Route::get('login', [AuthenticationController::class, 'login'])->name('login');
         Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
         Route::get('register', [AuthenticationController::class, 'register'])->name('register');
@@ -107,10 +110,14 @@
 
         // Group Admin Route
         Route::prefix('admin')->middleware(['auth', 'checkAdmin', 'check.valid.id'])->group(function () {
+
+
         // Trang chủ Admin
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
         Route::post('/revenue/filter', [HomeController::class, 'filterRevenue'])->name('revenue.filter');
-
+        Route::fallback(function () {
+            return view('admin.errors404admin'); // Trả về view 'errors/404.blade.php'
+        });
         // Đơn hàng
         Route::get('/order', [\App\Http\Controllers\admin\OrderController::class, 'ordersIndex'])->name('admin.order.index');
         Route::post('/order/update/{id}', [\App\Http\Controllers\admin\OrderController::class, 'update'])->name('admin.order.update');
@@ -316,7 +323,7 @@
         Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
         Route::post('/cart/remove-item', [CartController::class, 'remove'])->name('cart.removeItem');
 
-        // Tra cứu đơn hàng người chưa đăng nhập 
+        // Tra cứu đơn hàng người chưa đăng nhập
         Route::get('/tra-cuu-don-hang', [OrderSearchController::class, 'search'])->name('order.search');
         Route::post('/tra-cuu-don-hang/reorder/{id}', [OrderSearchController::class, 'reorder'])->name('order.search.reorder');
         Route::get('/tra-cuu-don-hang/check-status/{id}', [OrderSearchController::class, 'checkOrderStatus'])->name('order.search.checkStatus');
@@ -324,3 +331,6 @@
         Route::get('/order-detail/{id}', [OrderSearchController::class, 'getOrderDetail'])->name('order.search.detail');
 
 
+        Route::fallback(function () {
+            return view('client.errors404'); // Trả về view 'errors/404.blade.php'
+        });

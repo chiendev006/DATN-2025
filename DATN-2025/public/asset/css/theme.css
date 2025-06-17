@@ -31,83 +31,14 @@ Sidebar heading : 18px 14px/42px Source Sans Pro, Graviola-Regular, QuicksandBoo
 
 /* Font Family Reset Here... */
 
-@font-face {
-    font-family: 'Graviola-Regular';
-    src: url('../fonts/Graviola-Regulard41d.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/Graviola-Regular.otf')  format('opentype'),
-       url('../fonts/Graviola-Regular.woff') format('woff'),
-       url('../fonts/Graviola-Regular.ttf')  format('truetype'),
-       url('../fonts/Graviola-Regular.svg#Graviola-Regular') format('svg');
-    font-weight: normal;
+.roboto-<uniquifier> {
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: <weight>;
     font-style: normal;
-}
-
-@font-face {
-    font-family: 'QuicksandBook-Regular';
-    src: url('../fonts/QuicksandBook-Regulard41d.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/QuicksandBook-Regular.otf')  format('opentype'),
-       url('../fonts/QuicksandBook-Regular.woff') format('woff'),
-       url('../fonts/QuicksandBook-Regular.ttf')  format('truetype'),
-       url('../fonts/QuicksandBook-Regular.svg#QuicksandBook-Regular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'GraviolaSoft-Medium';
-    src: url('../fonts/GraviolaSoft-Mediumd41d.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/GraviolaSoft-Medium.otf')  format('opentype'),
-       url('../fonts/GraviolaSoft-Medium.woff') format('woff'),
-       url('../fonts/GraviolaSoft-Medium.ttf')  format('truetype'),
-       url('../fonts/GraviolaSoft-Medium.svg#GraviolaSoft-Medium') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'QuicksandBold-Regular';
-    src: url('../fonts/QuicksandBold-Regulard41d.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/QuicksandBold-Regular.otf')  format('opentype'),
-       url('../fonts/QuicksandBold-Regular.woff') format('woff'),
-       url('../fonts/QuicksandBold-Regular.ttf')  format('truetype'),
-       url('../fonts/QuicksandBold-Regular.svg#QuicksandBold-Regular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'QuicksandLight-Regular';
-    src: url('../fonts/QuicksandLight-Regulard41d.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/QuicksandLight-Regular.otf')  format('opentype'),
-       url('../fonts/QuicksandLight-Regular.woff') format('woff'),
-       url('../fonts/QuicksandLight-Regular.ttf')  format('truetype'),
-       url('../fonts/QuicksandLight-Regular.svg#QuicksandLight-Regular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'jey';
-    src: url('../fonts/jeyd41d.eot?#iefix') format('embedded-opentype'),
-      url('../fonts/jey.woff') format('woff'),
-      url('../fonts/jey.ttf')  format('truetype'),
-      url('../fonts/jey.svg#jey') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'icomoon';
-    src: url('../fonts/icomoon.eot');
-    src: url('../fonts/icomoond41d.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/icomoon.woff2') format('woff2'),
-        url('../fonts/icomoon.woff') format('woff'),
-        url('../fonts/icomoon.ttf') format('truetype'),
-        url('../fonts/icomoon.svg#icomoon') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
+    font-variation-settings:
+      "wdth" 100;
+  }
 /*------------------------------------------------------------------
 [Table of contents]
 

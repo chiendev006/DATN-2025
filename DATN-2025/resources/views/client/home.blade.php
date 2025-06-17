@@ -284,7 +284,6 @@ Cà phê - Cao cấp<br />
             <div class="container">
               <div class="title text-center">
                 <h2 class="text-primary">Discover Menu</h2>
-                <h6>What Happens Here</h6>
               </div>
               <div class="item-list">
                 <div class="row">
@@ -297,7 +296,7 @@ Cà phê - Cao cấp<br />
 						<div class="item-right">
 						<div class="item-right-top">
 							<h5>{{ $sp->name }}</h5>
-							<span>$ {{ number_format($sp->min_price, 2) }}</span>
+							<span>{{ number_format($sp->min_price) }} VND</span>
 						</div>
 						<p>{{ $sp->description ?? 'Mô tả sản phẩm đang cập nhật.' }}</p>
 						</div>
@@ -326,7 +325,6 @@ Cà phê - Cao cấp<br />
             <div class="container">
               <div class="title text-center">
                 <h2 class="text-primary">Coffee Build Your Base</h2>
-                <h6>What Happens Here</h6>
               </div>
               <div class="product-wrapper">
 				<div
@@ -349,8 +347,8 @@ Cà phê - Cao cấp<br />
 						</a>
 					</div>
 					<h5>{{ $sp->name }}</h5>
-					<span>${{ number_format($sp->min_price, 2) }}</span>
-					<del>${{ number_format($sp->min_price + 20, 2) }}</del> {{-- giả lập giá cũ --}}
+					<span>{{ number_format($sp->min_price) }} VND</span>
+
 					</div>
 					@endforeach
 				</div>
