@@ -216,7 +216,23 @@
                 <p class="expired-coupon-title">Mã đã hết hạn:</p>
                 <ul class="expired-coupon-list">
                     @foreach($expiredCoupons as $coupon)
-                        <li>{{ $coupon->code }}</li>
+                        <li>
+                            {{ $coupon->code }}
+                            @php
+                                $reasons = [];
+                                $now = now();
+                                if ($coupon->expires_at && $coupon->expires_at < $now) {
+                                    $reasons[] = 'Đã hết hạn';
+                                } elseif ($coupon->starts_at && $coupon->starts_at > $now) {
+                                    $reasons[] = 'Chưa bắt đầu';
+                                } elseif (!$coupon->is_active) {
+                                    $reasons[] = 'Không hoạt động';
+                                } elseif ($coupon->usage_limit && $coupon->used >= $coupon->usage_limit) {
+                                    $reasons[] = 'Hết lượt sử dụng';
+                                }
+                                echo ' (' . implode(', ', $reasons) . ')';
+                            @endphp
+                        </li>
                     @endforeach
                 </ul>
             </div>
