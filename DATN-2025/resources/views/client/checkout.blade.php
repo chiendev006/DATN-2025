@@ -254,7 +254,6 @@
                                 </div>
 
                                 @php
-                                    // $discount và $appliedCoupons được truyền từ controller
                                     $shippingFee = 0;
                                     if (old('district')) {
                                         $selectedDistrict = $districts->firstWhere('id', old('district'));
@@ -262,15 +261,12 @@
                                             $shippingFee = $selectedDistrict->shipping_fee;
                                         }
                                     }
-                                    // $total được tính bằng tổng tạm tính + phí ship - tổng giảm giá
                                     $total = max(0, $subtotal + $shippingFee - $discount);
                                 @endphp
 
-                                {{-- === THAY ĐỔI TẠI ĐÂY: HIỂN THỊ CHI TIẾT MÃ GIẢM GIÁ === --}}
                                 @if(!empty($appliedCoupons))
                                     @foreach($appliedCoupons as $coupon)
                                         @php
-                                            // Tính toán lại giá trị của từng coupon để hiển thị
                                             $couponValue = ($coupon['type'] === 'percent')
                                                 ? ($subtotal * $coupon['discount'] / 100)
                                                 : $coupon['discount'];
@@ -280,7 +276,6 @@
                                         </div>
                                     @endforeach
                                 @endif
-                                {{-- === KẾT THÚC THAY ĐỔI === --}}
 
                                 <div class="checkout-total">
                                     <h6>Phí vận chuyển: <span id="shipping-fee-display-right">{{ $shippingFee > 0 ? number_format($shippingFee) . ' đ' : '0 đ' }}</span></h6>
@@ -376,9 +371,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const shippingFeeDisplayRight = document.getElementById("shipping-fee-display-right");
     const totalWithShippingElement = document.getElementById("total-with-shipping");
     
-    // Các giá trị này được truyền từ PHP vào Javascript
     const subtotal = parseFloat({{ $subtotal }});
-    const discount = parseFloat({{ $discount }}); // Tổng số tiền giảm giá
+    const discount = parseFloat({{ $discount }});
 
     function formatCurrency(amount) {
         return amount.toLocaleString('vi-VN') + " đ";
@@ -393,7 +387,6 @@ document.addEventListener("DOMContentLoaded", function () {
             shippingFeeDisplayRight.textContent = formatCurrency(shippingCost);
         }
 
-        // Tổng cuối cùng = Tạm tính + Phí vận chuyển - Tổng giảm giá
         const newTotal = subtotal + shippingCost - discount;
         if (totalWithShippingElement) {
             totalWithShippingElement.textContent = formatCurrency(Math.max(0, newTotal));
@@ -406,7 +399,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     districtSelect.addEventListener("change", updateShippingAndTotal);
-    // Chạy lần đầu khi tải trang để cập nhật giá trị ban đầu nếu có old('district')
     updateShippingAndTotal();
 
     document.getElementById("checkout-form").addEventListener("submit", function (event) {

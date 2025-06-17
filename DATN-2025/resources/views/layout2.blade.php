@@ -379,20 +379,10 @@
                       <li class="has-child">
                         <a href="/shop">Shop</a>
                         <ul class="drop-nav">
-                          <li><a href="/shop">Shop Page</a></li>
-                          <li><a href="shop_single.html">Shop Single</a></li>
-                          <li><a href="shop_cart.html">Shop Cart</a></li>
+                          <li><a href="/shop">Sản phẩm</a></li>
+                          <li><a href="/cart">Giỏ hàng </a></li>
                           <li>
-                            <a href="shop_checkout.html">Shop Checkout</a>
-                          </li>
-                          <li>
-                            <a href="order_complete.html">Order Complete</a>
-                          </li>
-                          <li>
-                            <a href="track_order.html">Track Your Order</a>
-                          </li>
-                          <li>
-                            <a href="login_register.html">Login & Register</a>
+                            <a href="/checkout">Thanh toán</a>
                           </li>
                         </ul>
                       </li>
@@ -452,12 +442,8 @@
                       <li >
                         <a href="/blog">Blog</a>
                       </li>
-                      <li class="has-child">
+                      <li>
                         <a href="/contact">Contact</a>
-                        <ul class="drop-nav">
-                          <li><a href="contact_1.html">Contact 1</a></li>
-                          <li><a href="contact_2.html">Contact 2</a></li>
-                        </ul>
                       </li>
                      @auth
                           <li class="has-child">
@@ -490,8 +476,8 @@
                     @endauth
                   </div>
                   <div class="cart animated">
-                       <span class="icon-basket fontello"></span
-                    ><span>{{ $cartCount }} sản phẩm - {{ number_format($subtotal, 0, ',', '.') }}₫</span>
+                       <span class="icon-basket fontello"></span>
+                       <span>{{ $cartCount }} sản phẩm - {{ number_format($subtotal, 0, ',', '.') }}₫</span>
                         <div class="cart-wrap">
                             <div class="cart-blog scrollable-cart">
                                 @forelse ($items as $item)
