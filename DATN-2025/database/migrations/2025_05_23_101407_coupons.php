@@ -20,10 +20,8 @@ return new class extends Migration
         $table->integer('used')->default(0);
         $table->unsignedBigInteger('user_id')->nullable();
         $table->decimal('min_order_value', 10, 2)->default(0);
-        $table->boolean('is_active')->default(true);
-        
+        $table->boolean('is_active')->default(true);        
         $table->dateTime('starts_at')->nullable(); 
-
         $table->dateTime('expires_at')->nullable();
         $table->timestamps();
 

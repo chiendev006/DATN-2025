@@ -97,17 +97,15 @@
                                                                 <td>
                                                                     {{ $item['used'] }}
                                                                 </td>
-                                                                <td>
-                                                              @if($item->starts_at == null)
-                                                                Chưa có ngày bắt đầu
-                                                              @else
-                                                                {{ $item->starts_at->format('d/m/Y') }}
-                                                              @endif
+                                                                <td>                                                   
+                                                                        {{ $item->starts_at->format('Y-m-d') }}
                                                                 </td>
-                                                                 <td>
-                                                                @if ( $item->expires_at==null)
-                                                                Vô thời hạn                                                                @else
-                                                                 {{ $item->expires_at->format('d/m/Y') }}
+                                                                <td>
+                                                                @if ( $item->expires_at!=null)
+                                                                {{ $item->expires_at->format('Y-m-d') }}
+                                                                @else
+                                                              Vô thời hạn
+
                                                                 @endif
                                                                 </td>
                                                                 <td>
@@ -117,10 +115,10 @@
                                                                         data-code="{{ $item->code }}"
                                                                         data-discount="{{ $item->discount }}"
                                                                         data-type="{{ $item->type }}"
-                                                                        data-starts_at="{{ $item->starts_at }}"
+                                                                        data-starts_at="{{ $item->starts_at->format('Y-m-d') }}"
                                                                         data-min_order_value="{{ $item->min_order_value }}"
                                                                         data-usage_limit="{{ $item->usage_limit }}"
-                                                                        data-expires_at="{{ $item->expires_at }}"
+                                                                        data-expires_at="{{ $item->expires_at ? $item->expires_at->format('Y-m-d') : '' }}"
                                                                         style=" background-color: rgb(76, 106, 175); color: white; border: none; border-radius: 5px; cursor: pointer;font-size: 12px;padding: 5px 10px;text-align: center;text-decoration: none;display: inline-block;">
                                                                         Sửa
 
@@ -199,7 +197,7 @@
                                 </div>
                                 <div class="field-wrapper">
                                     <div class="field-placeholder">Ngày kết thúc </div>
-                                  <input required class="input" type="date" id="edit-expires_at" name="expires_at" placeholder="Ngày kết thúc">
+                                  <input  class="input" type="date" id="edit-expires_at" name="expires_at" placeholder="Ngày kết thúc">
                                 </div>
                                </div>
                                 <div class="field grouped">
@@ -231,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const editMinOrderValueInput = document.getElementById('edit-min_order_value');
     const editTypeInput = document.getElementById('edit-type');
     const editUsageLimitInput = document.getElementById('edit-usage_limit');
-    const editStartsAtInput = document.getElementById('edit-starts_at');
+    const editStartAtInput = document.getElementById('edit-starts_at');
     const editExpiresAtInput = document.getElementById('edit-expires_at');
     const editForm = document.getElementById('editCouponForm');
 
@@ -264,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const itemType = this.dataset.type;
             const itemMinOrderValue = this.dataset.min_order_value;
             const itemUsageLimit = this.dataset.usage_limit;
-            const itemStartsAt = this.dataset.starts_at;
+            const itemStartAt = this.dataset.starts_at;
             const itemExpiresAt = this.dataset.expires_at;
 
             // Cập nhật action của form trong modal
@@ -285,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (editMinOrderValueInput) editMinOrderValueInput.value = Number(itemMinOrderValue);
             if (editUsageLimitInput) editUsageLimitInput.value = itemUsageLimit;
             if (editExpiresAtInput) editExpiresAtInput.value = itemExpiresAt;
-            if (editStartsAtInput) editStartAtInput.value = itemStartsAt;
+            if (editStartAtInput) editStartAtInput.value = itemStartAt;
 
             // Hiển thị modal
             editModal.style.display = 'flex';
@@ -358,7 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="field-wrapper">
                 <div class="field-placeholder">Ngày kết thúc</div>
                 <div style="display: flex; align-items: center; gap: 10px;" class="control" >
-                  <input required class="input" type="date" id="add-price" name="expires_at" placeholder="Ngày kết thúc">
+                  <input  class="input" type="date" id="add-price" name="expires_at" placeholder="Ngày kết thúc">
                 </div>
             </div>
            </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Coupon;
+use Carbon\Carbon;
 
 class CouponController extends Controller
 {
@@ -18,38 +19,52 @@ class CouponController extends Controller
     public function store(Request $request)
     {
 
+        $time=null;
+        if($request->expires_at){
+          $time = Carbon::parse($request->expires_at);
+      }
 
-       $coupon = Coupon::create([
+      Coupon::create([
         'code' => $request->code,
         'discount' => $request->discount,
         'min_order_value' => $request->min_order_value,
-        'starts_at'=> $request->starts_at,
-        'expires_at' => $request->expires_at,
+        'expires_at' =>$time ,
+        'starts_at'=>$request->starts_at,
         'type' => $request->type,
         'usage_limit' => $request->usage_limit,
-       ]);
+      ]);
+
+
 
         return redirect()->route('coupon.index')->with('success', 'Coupon created successfully');
     }
 
     public function update(Request $request, $id)
     {
+
         $request->validate([
             'code' => 'required',
             'discount' => 'required',
             'min_order_value' => 'required',
-            'expires_at' => 'required',
+
             'type' => 'required',
             'usage_limit' => 'required',
         ]);
-      Coupon::where('id', $id)->update([
-        'code' => $request->code,
-        'discount' => $request->discount,
-        'min_order_value' => $request->min_order_value,
-        'expires_at' => $request->expires_at,
-        'type' => $request->type,
-        'usage_limit' => $request->usage_limit,
-      ]);
+  $time=null;
+  if($request->expires_at){
+    $time = Carbon::parse($request->expires_at);
+}
+
+Coupon::where('id', $id)->update([
+    'code' => $request->code,
+    'discount' => $request->discount,
+    'min_order_value' => $request->min_order_value,
+    'expires_at' =>$time ,
+    'starts_at'=>$request->starts_at,
+    'type' => $request->type,
+    'usage_limit' => $request->usage_limit,
+  ]);
+
         return redirect()->route('coupon.index')->with('success', 'Coupon updated successfully');
     }
 
