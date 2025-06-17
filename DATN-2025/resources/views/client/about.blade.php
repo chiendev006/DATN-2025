@@ -15,8 +15,6 @@
                     </div>
                 </section>
 
-                <!-- Start About List -->   
-
                 <section class="default-section about">
                     <div class="container">
                         <div class="title text-center">
@@ -35,10 +33,6 @@
                         </div>
                     </div>
                 </section>
-
-                <!-- End About List -->
-
-                <!-- Start Partner Blog -->
                 
                 <section class="default-section partner-main text-center pad-top-remove">
                     <div class="container">
@@ -76,8 +70,6 @@
                         </div>
                     </div>
                 </section>
-
-                <!-- End Partner Blog -->
             </div>
         </main>  
 @endsection
