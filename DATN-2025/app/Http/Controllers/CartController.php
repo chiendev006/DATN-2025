@@ -62,7 +62,6 @@ public function index()
         }
     }
 
-    // ✅ Áp dụng coupon đúng với tổng thực tế đã tính
     $this->applyCouponsToCart($subtotal, $discount, $coupons);
     $total = max(0, $subtotal - $discount);
 
@@ -303,7 +302,7 @@ public function index()
 
             $coupons = session('coupons', []);
             $discount = 0;
-            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons); // Re-evaluate and update coupons
+            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons); 
 
             $total = max(0, $subtotal - $discount);
 
@@ -533,6 +532,15 @@ public function index()
         $code = $request->input('code');
         $cartSubtotal = $request->input('subtotal', 0); 
         $now = now();
+
+        $currentCoupons = session('coupons', []);
+        if (count($currentCoupons) >= 1) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Chỉ được áp dụng tối đa 1 mã giảm giá cho mỗi đơn hàng.'
+            ]);
+        }
+
         $coupon = Coupon::where('code', $code)
             ->where('is_active', true)
             ->where(function ($q) use ($now) {
@@ -566,6 +574,13 @@ public function index()
                 'success' => false,
                 'message' => 'Đơn hàng cần tối thiểu ' . number_format($coupon->min_order_value) . 'đ để áp dụng mã.',
                 'subtotal' => $cartSubtotal 
+            ]);
+        }
+
+        if (isset($currentCoupons[$code])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mã giảm giá này đã được áp dụng.'
             ]);
         }
 
@@ -706,7 +721,6 @@ public function index()
 
                 session(['cart' => $cartSession]);
 
-                // Calculate new subtotal
                 $subtotal = collect($cartSession)->sum(function($item) {
                     $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
                     return $unitPrice * ($item['quantity'] ?? 1);

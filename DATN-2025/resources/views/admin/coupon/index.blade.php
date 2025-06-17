@@ -97,14 +97,15 @@
                                                                 <td>
                                                                     {{ $item['used'] }}
                                                                 </td>
-                                                                <td>
-                                                                    {{ $item->starts_at->format('Y-m-d') }}
+                                                                <td>                                                   
+                                                                        {{ $item->starts_at->format('Y-m-d') }}
                                                                 </td>
                                                                 <td>
                                                                 @if ( $item->expires_at!=null)
                                                                 {{ $item->expires_at->format('Y-m-d') }}
                                                                 @else
                                                               Vô thời hạn
+
                                                                 @endif
                                                                 </td>
                                                                 <td>

@@ -26,8 +26,8 @@
         use App\Http\Controllers\admin\PayrollController;
         use App\Http\Controllers\CheckoutController;
         use App\Http\Controllers\MyaccountController;
-use App\Http\Controllers\OrderSearchController;
-use App\Http\Controllers\ShopController;
+        use App\Http\Controllers\OrderSearchController;
+        use App\Http\Controllers\ShopController;
         use App\Http\Controllers\Staff\StaffController;
         use App\Http\Controllers\VNPayController;
         use App\Http\Controllers\Staff\AuthenController;
@@ -205,8 +205,6 @@ use App\Http\Controllers\ShopController;
                 Route::delete('/{id}/delete', [ProductImageController::class, 'destroy'])->name('product-images.delete');
         });
 
-
-
         // Quản lý liên hệ từ Admin
         Route::prefix('contact')->group(function () {
                 Route::get('/', [ContactAdminController::class, 'index'])->name('contact.index');
@@ -222,7 +220,6 @@ use App\Http\Controllers\ShopController;
                 Route::post('/update/{id}', [ToppingController::class, 'update'])->name('topping.update');
                 Route::delete('/delete/{id}', [ToppingController::class, 'delete'])->name('topping.delete');
         });
-
 
         // Size
         Route::prefix('size')->group(function () {
@@ -243,8 +240,8 @@ use App\Http\Controllers\ShopController;
                 Route::post('/update/{id}', [BlogsController::class, 'update'])->name('blogs.update');
                 Route::delete('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
                 Route::get('/search', [BlogsController::class, 'search'])->name('blogs.search');
-            });
- });
+        });
+        });
         Route::delete('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->middleware(['auth', 'checkAdmin'])->name('product_img.delete');
         Route::delete('admin/topping_detail/delete/{id}', [Product_attributesController::class, 'deleteTopping'])->middleware(['auth', 'checkAdmin'])->name('topping_detail.delete');
         Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->middleware(['auth', 'checkAdmin'])->name('topping_detail.add');
@@ -261,7 +258,6 @@ use App\Http\Controllers\ShopController;
         Route::get('staff/login', [AuthenController::class, 'login'])->name('staff.login');
         Route::post('staff/postlogin', [AuthenController::class, 'postlogin'])->name('staff.postlogin');
         Route::get('staff/logout', [AuthenController::class, 'logout'])->name('staff.logout');
-
         Route::prefix('staff')->middleware('checkStaff')->group(function () {
         Route::get('/', [StaffController::class, 'index'])->name('staff.index');
         Route::get('/product/{id}', [StaffController::class, 'ajaxShow'])->name('staff.options');
@@ -270,34 +266,20 @@ use App\Http\Controllers\ShopController;
         Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
         Route::get('/orderdetailtoday', [StaffController::class, 'orderdetailtoday'])->name('staff.orderdetailtoday');
         Route::get('/staff/products/search', [StaffController::class, 'searchProducts'])->name('staff.products.search');
-
-
         });
 
         Route::prefix('bartender')->middleware('checkStaff')->group(function () {
-
             Route::get('/', [BartenderController::class, 'index'])->name('bartender.index');
-
             Route::get('/create', [BartenderController::class, 'create'])->name('bartender.create');
-
             Route::post('/store', [BartenderController::class, 'store'])->name('bartender.store');
-
             Route::get('/edit/{id}', [BartenderController::class, 'edit'])->name('bartender.edit');
-
             Route::post('/update/{id}', [BartenderController::class, 'update'])->name('bartender.update');
-
             Route::post('/delete/{id}', [BartenderController::class, 'delete'])->name('bartender.delete');
-
             Route::get('/order/{id}', [BartenderController::class, 'orderDetail'])->name('bartender.order.detail');
-
             Route::post('/order-detail/{id}/update-status', [BartenderController::class, 'updateOrderDetailStatus'])->name('bartender.order.detail.status');
-
             Route::get('/get-order-details/{id}', [BartenderController::class, 'getOrderDetails'])->name('bartender.get.order.details');
-
             Route::post('/update-order-status/{id}', [BartenderController::class, 'updateOrderStatus'])->name('bartender.update.order.status');
-
             Route::get('/get-incomplete-order-count', [BartenderController::class, 'getIncompleteOrderCount'])->name('bartender.get.incomplete.order.count');
-
             });
 
         // Test route for middleware
@@ -320,27 +302,25 @@ use App\Http\Controllers\ShopController;
         Route::patch('/order/cancel-multiple', [MyaccountController::class, 'cancelMultiple'])->name('client.order.cancelMultiple');
         Route::post('/myaccount/ajax-update', [MyAccountController::class, 'ajaxUpdate'])->name('myaccount.ajax-update');
         Route::get('/check-order-status/{id}', [MyaccountController::class, 'checkOrderStatus'])->name('client.order.checkStatus');
-
-
         Route::post('/order/reorder/{orderId}', [OrderController::class, 'reorder'])->name('client.order.reorder');
 
-        //
+        // blogs
         Route::get('/blog', [BlogController::class, 'index'])->name('client.blog');
         Route::get('/blog/{id}', [BlogController::class, 'show'])->name('client.blogsingle');
+
         // Discout
         Route::post('/cart/apply-coupon', [CartController::class, 'applyCoupon'])->name('cart.applyCoupon');
         Route::post('/cart/remove-coupon', [CartController::class, 'removeCoupon'])->name('cart.removeCoupon');
 
-
         // Cart mini
         Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
-
-
         Route::post('/cart/remove-item', [CartController::class, 'remove'])->name('cart.removeItem');
 
+        // Tra cứu đơn hàng người chưa đăng nhập 
         Route::get('/tra-cuu-don-hang', [OrderSearchController::class, 'search'])->name('order.search');
         Route::post('/tra-cuu-don-hang/reorder/{id}', [OrderSearchController::class, 'reorder'])->name('order.search.reorder');
-Route::get('/tra-cuu-don-hang/check-status/{id}', [OrderSearchController::class, 'checkOrderStatus'])->name('order.search.checkStatus');
-Route::patch('/tra-cuu-don-hang/cancel/{id}', [OrderSearchController::class, 'cancelOrder'])->name('order.search.cancel');
+        Route::get('/tra-cuu-don-hang/check-status/{id}', [OrderSearchController::class, 'checkOrderStatus'])->name('order.search.checkStatus');
+        Route::patch('/tra-cuu-don-hang/cancel/{id}', [OrderSearchController::class, 'cancelOrder'])->name('order.search.cancel');
+        Route::get('/order-detail/{id}', [OrderSearchController::class, 'getOrderDetail'])->name('order.search.detail');
 
 
