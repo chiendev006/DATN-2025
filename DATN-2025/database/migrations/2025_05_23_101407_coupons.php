@@ -22,10 +22,9 @@ return new class extends Migration
         $table->decimal('min_order_value', 10, 2)->default(0);
         $table->boolean('is_active')->default(true);
         
-        // Thêm cột starts_at
-        $table->dateTime('starts_at')->nullable(); // Có thể dùng date() nếu không cần giờ phút giây
+        $table->dateTime('starts_at')->nullable(); 
 
-        $table->dateTime('expires_at')->nullable(); // Đổi thành dateTime để đồng bộ
+        $table->dateTime('expires_at')->nullable();
         $table->timestamps();
 
         $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');

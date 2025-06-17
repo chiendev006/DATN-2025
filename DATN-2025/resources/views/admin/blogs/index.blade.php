@@ -180,7 +180,7 @@
                                     <td>{{ $item->title }}</td>
                                     <td style="max-width:400px; word-break:break-word;">{!!  $item->content !!}</td>
                                     <td><img src="{{ asset('storage/'.$item->image) }}" alt="Ảnh bìa" style="width: 100px; height: 100px;"></td>
-                                    <td>{{ $item->created_at }}</td>
+                                    <td>{{ $item->created_at->format('d/m/Y') }}</td>
                                     <td>{{ $item->updated_at }}</td>
                                         <td style="width:90px; text-align:center; display: flex; gap: 9px; justify-content: center;">
                                             <a  href="{{ route('blogs.edit', $item->id) }}" class="btn-primary">Sửa</a>
