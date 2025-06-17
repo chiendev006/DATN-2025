@@ -38,7 +38,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -207,6 +207,7 @@
 
 
   <body>
+    <div id="app">
     <!-- Page pre loader -->
     <div id="pre-loader">
       <div class="loader-holder">
@@ -694,6 +695,7 @@
     <!-- Bootstrap Slider JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/bootstrap-slider.min.js"></script>
     @yield('scripts')
+    </div>
   </body>
   <!-- jQuery (bắt buộc) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
