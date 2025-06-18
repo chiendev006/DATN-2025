@@ -43,11 +43,6 @@
                     </div>
                     <div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                         <h4 class="text-coffee">{{ $sanpham->name }}</h4>
-                        <div class="star-review-collect">
-                            <div class="star-rating">
-                                <span class="star-rating-customer" style="width: 50%"></span>
-                            </div>
-                        </div>
                         <p>{!! strip_tags($sanpham->mota, '<p><br><strong><em>') !!}</p>
                         <h3 class="text-coffee">
                             <span id="display-price" data-base="{{ $sanpham->price }}">{{ number_format($sanpham->price) }} VND</span>

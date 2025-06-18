@@ -379,7 +379,7 @@
       <div class="field-wrapper col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" id="cancel_reason_container" style="display:none;">
         <div style="margin-bottom:10px;">
           <div class="field-placeholder">Lý do hủy <span style="color:red;">*</span></div>
-          <input type="text" class="form-control" name="cancel_reason" id="modal_cancel_reason" />
+          <input type="text" class="form-control" name="cancel_reason" id="modal_cancel_reason" {{ isset($order) && $order->cancel_reason ? 'disabled' : '' }} />
         </div>
       </div>
 
@@ -551,5 +551,11 @@
 
         return true;
     }
+document.getElementById('modal_cancel_reason').value = btn.getAttribute('data-cancel_reason') || '';
+if (btn.getAttribute('data-cancel_reason')) {
+    document.getElementById('modal_cancel_reason').setAttribute('disabled', 'disabled');
+} else {
+    document.getElementById('modal_cancel_reason').removeAttribute('disabled');
+}
 </script>
 

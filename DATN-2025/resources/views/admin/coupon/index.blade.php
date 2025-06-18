@@ -128,11 +128,11 @@
                                                                     {{ $item['used'] }}
                                                                 </td>
                                                                 <td>                                                   
-                                                                        {{ $item->starts_at->format('Y-m-d') }}
+                                                                        {{ $item->starts_at->format('d/m/Y') }}
                                                                 </td>
                                                                 <td>
                                                                 @if ( $item->expires_at!=null)
-                                                                {{ $item->expires_at->format('Y-m-d') }}
+                                                                {{ $item->expires_at->format('d/m/Y') }}
                                                                 @else
                                                               Vô thời hạn
 
@@ -145,7 +145,7 @@
                                                                         data-code="{{ $item->code }}"
                                                                         data-discount="{{ $item->discount }}"
                                                                         data-type="{{ $item->type }}"
-                                                                        data-starts_at="{{ $item->starts_at->format('Y-m-d') }}"
+                                                                        data-starts_at="{{ $item->starts_at->format('d/m/Y') }}"
                                                                         data-min_order_value="{{ $item->min_order_value }}"
                                                                         data-usage_limit="{{ $item->usage_limit }}"
                                                                         data-expires_at="{{ $item->expires_at ? $item->expires_at->format('Y-m-d') : '' }}"
@@ -262,13 +262,11 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Modal Thêm
     const addModal = document.getElementById('addCouponModal');
     const closeAddBtn = document.getElementById('close-add-Coupon-modal');
-    const addNameInput = document.getElementById('add-name'); // This is 'code' not 'name' in your form
+    const addNameInput = document.getElementById('add-name'); 
     const addForm = document.getElementById('addCouponForm');
 
-    // Modal Sửa
     const editModal = document.getElementById('editCouponModal');
     const closeEditBtn = document.getElementById('close-edit-Coupon-modal');
     const editCodeInput = document.getElementById('edit-code');
@@ -280,14 +278,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const editExpiresAtInput = document.getElementById('edit-expires_at');
     const editForm = document.getElementById('editCouponForm');
 
-    // Function to populate and show the Add Coupon modal
     function showAddCouponModalWithOldData() {
-        // Populate fields from old input
-        // Ensure to use the correct IDs from your add form
-        if (document.getElementById('add-name')) { // This is actually 'code'
+        if (document.getElementById('add-name')) { 
             document.getElementById('add-name').value = "{{ old('code') }}";
         }
-        if (document.getElementById('add-price')) { // This is 'discount'
+        if (document.getElementById('add-price')) { 
             document.getElementById('add-price').value = "{{ old('discount') }}";
         }
         if (document.querySelector('#addCouponForm select[name="type"]')) {
@@ -308,16 +303,14 @@ document.addEventListener('DOMContentLoaded', function() {
         addModal.style.display = 'flex';
     }
 
-    // Function to populate and show the Edit Coupon modal
     function showEditCouponModalWithOldData(couponId) {
-        // Populate fields from old input for the edit form
         editForm.action = `coupon/update/${couponId}`;
         document.getElementById('edit-id').value = couponId;
 
         if (editCodeInput) editCodeInput.value = "{{ old('code') }}";
         if (editDiscountInput) editDiscountInput.value = "{{ old('discount') }}";
         if (editMinOrderValueInput) editMinOrderValueInput.value = "{{ old('min_order_value') }}";
-        if (editTypeInput) editTypeInput.value = "{{ old('type', 'percent') }}"; // Default to percent
+        if (editTypeInput) editTypeInput.value = "{{ old('type', 'percent') }}"; 
         if (editUsageLimitInput) editUsageLimitInput.value = "{{ old('usage_limit') }}";
         if (editStartAtInput) editStartAtInput.value = "{{ old('starts_at') }}";
         if (editExpiresAtInput) editExpiresAtInput.value = "{{ old('expires_at') }}";
@@ -326,14 +319,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    // Check if we need to show the Add Coupon modal after validation failure
     @if (session('showAddCouponModal'))
         showAddCouponModalWithOldData();
     @endif
 
-    // Check if we need to show the Edit Coupon modal after validation failure
     @if (session('showEditCouponModal'))
-        // Get the ID of the coupon that caused the validation error
         const couponIdForEditError = "{{ session('showEditCouponModal') }}";
         showEditCouponModalWithOldData(couponIdForEditError);
     @endif
@@ -350,14 +340,11 @@ document.addEventListener('DOMContentLoaded', function() {
             element.classList.remove('is-invalid');
         });
 
-        // Hiển thị modal
         addModal.style.display = 'flex';
     });
 
-    // Đóng popup Thêm
     closeAddBtn.onclick = function() {
         addModal.style.display = 'none';
-        // Clear errors when closing the modal manually
         addModal.querySelectorAll('.text-danger').forEach(function(element) {
             element.textContent = '';
         });
@@ -368,7 +355,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('click', function(event) {
         if (event.target == addModal) {
             addModal.style.display = "none";
-            // Clear errors when clicking outside to close
             addModal.querySelectorAll('.text-danger').forEach(function(element) {
                 element.textContent = '';
             });
@@ -378,7 +364,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Sự kiện cho các nút sửa
     document.querySelectorAll('.btn-edit-coupon').forEach(function(btnEdit) {
         btnEdit.addEventListener('click', function() {
             const itemId = this.dataset.id;
@@ -390,7 +375,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const itemStartAt = this.dataset.starts_at;
             const itemExpiresAt = this.dataset.expires_at;
 
-            // Clear any previous validation messages
             editModal.querySelectorAll('.text-danger').forEach(function(element) {
                 element.textContent = '';
             });
@@ -398,30 +382,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 element.classList.remove('is-invalid');
             });
 
-            // Cập nhật action của form trong modal
             editForm.action = `coupon/update/${itemId}`;
             document.getElementById('edit-id').value = itemId;
 
-            // Điền dữ liệu vào các trường input trong modal
             if (editCodeInput) editCodeInput.value = itemCode;
             if (editDiscountInput) editDiscountInput.value = Number(itemDiscount);
             if (editTypeInput) {
-                editTypeInput.value = itemType; // Set directly based on data attribute
+                editTypeInput.value = itemType;
             }
             if (editMinOrderValueInput) editMinOrderValueInput.value = Number(itemMinOrderValue);
             if (editUsageLimitInput) editUsageLimitInput.value = itemUsageLimit;
             if (editExpiresAtInput) editExpiresAtInput.value = itemExpiresAt;
             if (editStartAtInput) editStartAtInput.value = itemStartAt;
 
-            // Hiển thị modal
             editModal.style.display = 'flex';
         });
     });
 
-    // Đóng popup Sửa
     closeEditBtn.onclick = function() {
         editModal.style.display = 'none';
-        // Clear errors when closing the modal manually
         editModal.querySelectorAll('.text-danger').forEach(function(element) {
             element.textContent = '';
         });
@@ -432,7 +411,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('click', function(event) {
         if (event.target == editModal) {
             editModal.style.display = "none";
-            // Clear errors when clicking outside to close
             editModal.querySelectorAll('.text-danger').forEach(function(element) {
                 element.textContent = '';
             });

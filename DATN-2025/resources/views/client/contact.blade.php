@@ -56,8 +56,8 @@
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <label>Tin nhắn <span class="text-danger">*</span></label>
-                                          <textarea id="editor" name="massage" placeholder="Nhập tin nhắn của bạn (ít nhất 10 ký tự)" class="form-control @error('massage') is-invalid @enderror">{{ old('massage') }}</textarea>
-                                          @error('massage')
+                                          <textarea id="editor" name="message" placeholder="Nhập tin nhắn của bạn (ít nhất 10 ký tự)" class="form-control @error('message') is-invalid @enderror">{{ old('message') }}</textarea>
+                                          @error('message')
                                               <span class="text-danger">{{ $message }}</span>
                                           @enderror
                                         </div>  

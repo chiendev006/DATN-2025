@@ -16,7 +16,7 @@ class ContactController extends Controller
         'name' => 'required|string|max:255|min:2',
         'email' => 'required|email|max:255',
         'phone' => 'nullable|string|regex:/^[0-9]{10,11}$/',
-        'massage' => 'required|string|min:10|max:1000',
+        'message' => 'required|string|min:10|max:1000',
     ], [
         'name.required' => 'Vui lòng nhập họ tên',
         'name.string' => 'Họ tên phải là chuỗi ký tự',
@@ -27,17 +27,17 @@ class ContactController extends Controller
         'email.max' => 'Email không được quá 255 ký tự',
         'phone.regex' => 'Số điện thoại phải có 10-11 chữ số',
         'phone.max' => 'Số điện thoại không được quá 20 ký tự',
-        'massage.required' => 'Vui lòng nhập tin nhắn',
-        'massage.string' => 'Tin nhắn phải là chuỗi ký tự',
-        'massage.min' => 'Tin nhắn phải có ít nhất 10 ký tự',
-        'massage.max' => 'Tin nhắn không được quá 1000 ký tự'
+        'message.required' => 'Vui lòng nhập tin nhắn',
+        'message.string' => 'Tin nhắn phải là chuỗi ký tự',
+        'message.min' => 'Tin nhắn phải có ít nhất 10 ký tự',
+        'message.max' => 'Tin nhắn không được quá 1000 ký tự'
     ]);
 
     Contact::create([
         'name' => $request->name,
         'email' => $request->email,
         'phone' => $request->phone,
-        'massage' => $request->massage,
+        'message' => $request->message,
     ]);
 
     if ($request->ajax()) {
