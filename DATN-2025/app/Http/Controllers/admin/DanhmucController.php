@@ -55,7 +55,7 @@ class DanhmucController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255|min:2|unique:danhmuc,name',
+            'name' => 'required|string|max:255|min:2|unique:danhmucs,name',
             'has_topping' => 'required|in:0,1',
         ], [
             'name.required' => 'Vui lòng nhập tên danh mục',
@@ -95,7 +95,7 @@ class DanhmucController extends Controller
     public function update(Request $request,$id)
     {
         $request->validate([
-            'name' => 'required|string|max:255|min:2|unique:danhmuc,name,' . $id,
+            'name' => 'required|string|max:255|min:2|unique:danhmucs,name,' . $id,
             'has_topping' => 'required|in:0,1',
         ], [
             'name.required' => 'Vui lòng nhập tên danh mục',
