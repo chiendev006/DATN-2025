@@ -38,17 +38,47 @@
                                 <div class="card">
                                 <button type="button" id="btn-add-Coupon" class="btn-success">Thêm Coupon</button>
                                     <div class="card-body">
-                                        <form method="GET" action="" style="margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
-                                            <label for="per_page" style="margin-bottom:0;">Bản/trang:</label>
-                                            <select name="per_page" id="per_page" class="form-control" style="width: 80px;" onchange="this.form.submit()">
-                                                <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản</option>
-                                                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 bản</option>
-                                                <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản</option>
-                                                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
-                                            </select>
-                                            @foreach(request()->except(['per_page','page']) as $key => $val)
-                                                <input type="hidden" name="{{ $key }}" value="{{ $val }}">
-                                            @endforeach
+                                        <form method="GET" action="" style="margin-bottom: 20px;">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <label for="code" style="font-weight: 500;">Mã coupon</label>
+                                                    <input type="text" name="code" id="code" class="form-control" value="{{ request('code') }}" placeholder="Nhập mã coupon...">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label for="type" style="font-weight: 500;">Loại giảm giá</label>
+                                                    <select name="type" id="type" class="form-control">
+                                                        <option value="">Tất cả</option>
+                                                        <option value="percent" {{ request('type') == 'percent' ? 'selected' : '' }}>%</option>
+                                                        <option value="fixed" {{ request('type') == 'fixed' ? 'selected' : '' }}>VNĐ</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label for="status" style="font-weight: 500;">Trạng thái</label>
+                                                    <select name="status" id="status" class="form-control">
+                                                        <option value="">Tất cả</option>
+                                                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Còn hạn</option>
+                                                        <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Hết hạn</option>
+                                                        <option value="used_up" {{ request('status') == 'used_up' ? 'selected' : '' }}>Đã dùng hết</option>
+                                                        <option value="not_used" {{ request('status') == 'not_used' ? 'selected' : '' }}>Chưa dùng</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label for="starts_at" style="font-weight: 500;">Ngày bắt đầu từ</label>
+                                                    <input type="date" name="starts_at" id="starts_at" class="form-control" value="{{ request('starts_at') }}">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label for="expires_at" style="font-weight: 500;">Ngày kết thúc đến</label>
+                                                    <input type="date" name="expires_at" id="expires_at" class="form-control" value="{{ request('expires_at') }}">
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <label for="usage_left" style="font-weight: 500;">Số lượng &ge;</label>
+                                                    <input type="number" name="usage_left" id="usage_left" class="form-control" value="{{ request('usage_left') }}" min="0">
+                                                </div>
+                                                <div class="col-md-1" style="display: flex; align-items: end; gap: 10px;">
+                                                    <button type="submit" class="btn btn-primary" style="height: 38px;">Lọc</button>
+                                                    <a href="{{ route('coupon.index') }}" class="btn btn-secondary" style="height: 38px;">Làm mới</a>
+                                                </div>
+                                            </div>
                                         </form>
                                         <div class="table-responsive">
                                             <table id="copy-print-csv" class="table v-middle">
@@ -153,7 +183,6 @@
                         </div>
 
                     @include('footer')
-                    <!-- Modal popup edit Coupon, chỉ 1 lần duy nhất ngoài vòng lặp -->
                     <div id="editCouponModal" class="custom-modal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);align-items:center;justify-content:center;">
                         <div class="custom-modal-content" style="background:#fff;border-radius:10px;padding:32px 24px 24px 24px;min-width:320px;max-width:90vw;box-shadow:0 4px 24px 0 rgba(0,0,0,0.08),0 1.5px 4px 0 rgba(0,0,0,0.03);position:relative;">
                             <span class="custom-modal-close" id="close-edit-Coupon-modal" style="position:absolute;top:12px;right:18px;font-size:2rem;color:#888;cursor:pointer;font-weight:bold;z-index:2;">&times;</span>
@@ -162,44 +191,64 @@
                                 @csrf
                                 <input type="hidden" name="id" id="edit-id">
                                 <div class="field-wrapper ">
-                                    <div class="field-placeholder">Code </div>
+                                    <div class="field-placeholder">Mã Code <span class="text-danger">*</span></div>
                                     <div class="field-body">
                                         <div class="field">
                                             <div class="control icons-left">
-                                                <input required class="input" type="text" id="edit-code" name="code" placeholder="Code">
+                                                <input class="input @error('code') is-invalid @enderror" type="text" id="edit-code" name="code" placeholder="Code" value="{{ old('code') }}">
                                             </div>
+                                            @error('code')
+                                                <span class="text-danger">{{ $message }}</span>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="field-wrapper">
-                                    <div class="field-placeholder">Giảm giá </div>
-                                <div class="control" style="display: flex; align-items: center; gap: 10px;">
-                                <input required class="input" type="number" id="edit-discount" name="discount" placeholder="Trị giá">
-                                  <select name="type" name="type" id="edit-type">
-                                    <option id="edit-type-percent" value="percent">Phần trăm (%)</option>
-                                    <option id="edit-type-fixed" value="fixed">Cố định (VNĐ)</option>
-                                  </select>
-                                </div>
-                                </div>
-                                <div class="field-wrapper">
-                                    <div class="field-placeholder">Giá trị đơn tối thiểu </div>
-                                  <input required class="input" type="number" id="edit-min_order_value" name="min_order_value" placeholder="Giá trị đơn tối thiểu">
-                                </div>
-                                <div class="field-wrapper">
-                                    <div class="field-placeholder">Số lượng </div>
-                                  <input required class="input" type="number" id="edit-usage_limit" name="usage_limit" placeholder="Số lượng">
-                                </div>
-                               <div style="display:flex; justify-content:space-around">
-                               <div class="field-wrapper">
-                                    <div class="field-placeholder">Ngày Bắt đầu </div>
-                                  <input required class="input" type="date" id="edit-starts_at" name="starts_at" placeholder="Ngày bắt đầu">
+                                    <div class="field-placeholder">Giảm giá <span class="text-danger">*</span></div>
+                                    <div class="control" style="display: flex; align-items: center; gap: 10px;">
+                                        <input class="input @error('discount') is-invalid @enderror" type="number" id="edit-discount" name="discount" placeholder="Trị giá" value="{{ old('discount') }}">
+                                        <select name="type" id="edit-type" class="form-control @error('type') is-invalid @enderror">
+                                            <option id="edit-type-percent" value="percent" {{ old('type') == 'percent' ? 'selected' : '' }}>Phần trăm (%)</option>
+                                            <option id="edit-type-fixed" value="fixed" {{ old('type') == 'fixed' ? 'selected' : '' }}>Cố định (VNĐ)</option>
+                                        </select>
+                                    </div>
+                                    @error('discount')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                    @error('type')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                                 <div class="field-wrapper">
-                                    <div class="field-placeholder">Ngày kết thúc </div>
-                                  <input  class="input" type="date" id="edit-expires_at" name="expires_at" placeholder="Ngày kết thúc">
+                                    <div class="field-placeholder">Giá trị đơn tối thiểu <span class="text-danger">*</span></div>
+                                    <input class="input @error('min_order_value') is-invalid @enderror" type="number" id="edit-min_order_value" name="min_order_value" placeholder="Giá trị đơn tối thiểu" value="{{ old('min_order_value') }}">
+                                    @error('min_order_value')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
-                               </div>
+                                <div class="field-wrapper">
+                                    <div class="field-placeholder">Số lượng <span class="text-danger">*</span></div>
+                                    <input class="input @error('usage_limit') is-invalid @enderror" type="number" id="edit-usage_limit" name="usage_limit" placeholder="Số lượng" value="{{ old('usage_limit') }}">
+                                    @error('usage_limit')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div style="display:flex; justify-content:space-around">
+                                    <div class="field-wrapper">
+                                        <div class="field-placeholder">Ngày Bắt đầu <span class="text-danger">*</span></div>
+                                        <input class="input @error('starts_at') is-invalid @enderror" type="date" id="edit-starts_at" name="starts_at" placeholder="Ngày bắt đầu" value="{{ old('starts_at') }}">
+                                        @error('starts_at')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="field-wrapper">
+                                        <div class="field-placeholder">Ngày kết thúc</div>
+                                        <input class="input @error('expires_at') is-invalid @enderror" type="date" id="edit-expires_at" name="expires_at" placeholder="Ngày kết thúc" value="{{ old('expires_at') }}">
+                                        @error('expires_at')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
                                 <div class="field grouped">
                                     <div class="control">
                                         <button type="submit" class="btn-success">Cập nhật</button>
@@ -216,9 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Modal Thêm
     const addModal = document.getElementById('addCouponModal');
     const closeAddBtn = document.getElementById('close-add-Coupon-modal');
-    const addNameInput = document.getElementById('add-name');
-    const addHasCouponRadio1 = document.getElementById('addInlineRadio1');
-    const addHasCouponRadio2 = document.getElementById('addInlineRadio2');
+    const addNameInput = document.getElementById('add-name'); // This is 'code' not 'name' in your form
     const addForm = document.getElementById('addCouponForm');
 
     // Modal Sửa
@@ -233,12 +280,76 @@ document.addEventListener('DOMContentLoaded', function() {
     const editExpiresAtInput = document.getElementById('edit-expires_at');
     const editForm = document.getElementById('editCouponForm');
 
+    // Function to populate and show the Add Coupon modal
+    function showAddCouponModalWithOldData() {
+        // Populate fields from old input
+        // Ensure to use the correct IDs from your add form
+        if (document.getElementById('add-name')) { // This is actually 'code'
+            document.getElementById('add-name').value = "{{ old('code') }}";
+        }
+        if (document.getElementById('add-price')) { // This is 'discount'
+            document.getElementById('add-price').value = "{{ old('discount') }}";
+        }
+        if (document.querySelector('#addCouponForm select[name="type"]')) {
+            document.querySelector('#addCouponForm select[name="type"]').value = "{{ old('type', 'percent') }}"; // Default to percent
+        }
+        if (document.getElementById('add-min_order_value')) {
+            document.getElementById('add-min_order_value').value = "{{ old('min_order_value') }}";
+        }
+        if (document.getElementById('add-usage_limit')) {
+            document.getElementById('add-usage_limit').value = "{{ old('usage_limit') }}";
+        }
+        if (document.getElementById('add-starts_at')) {
+            document.getElementById('add-starts_at').value = "{{ old('starts_at') }}";
+        }
+        if (document.getElementById('add-expires_at')) {
+            document.getElementById('add-expires_at').value = "{{ old('expires_at') }}";
+        }
+        addModal.style.display = 'flex';
+    }
+
+    // Function to populate and show the Edit Coupon modal
+    function showEditCouponModalWithOldData(couponId) {
+        // Populate fields from old input for the edit form
+        editForm.action = `coupon/update/${couponId}`;
+        document.getElementById('edit-id').value = couponId;
+
+        if (editCodeInput) editCodeInput.value = "{{ old('code') }}";
+        if (editDiscountInput) editDiscountInput.value = "{{ old('discount') }}";
+        if (editMinOrderValueInput) editMinOrderValueInput.value = "{{ old('min_order_value') }}";
+        if (editTypeInput) editTypeInput.value = "{{ old('type', 'percent') }}"; // Default to percent
+        if (editUsageLimitInput) editUsageLimitInput.value = "{{ old('usage_limit') }}";
+        if (editStartAtInput) editStartAtInput.value = "{{ old('starts_at') }}";
+        if (editExpiresAtInput) editExpiresAtInput.value = "{{ old('expires_at') }}";
+
+        editModal.style.display = 'flex';
+    }
+
+
+    // Check if we need to show the Add Coupon modal after validation failure
+    @if (session('showAddCouponModal'))
+        showAddCouponModalWithOldData();
+    @endif
+
+    // Check if we need to show the Edit Coupon modal after validation failure
+    @if (session('showEditCouponModal'))
+        // Get the ID of the coupon that caused the validation error
+        const couponIdForEditError = "{{ session('showEditCouponModal') }}";
+        showEditCouponModalWithOldData(couponIdForEditError);
+    @endif
+
+
     // Sự kiện cho nút "Thêm Coupon"
     document.getElementById('btn-add-Coupon').addEventListener('click', function() {
-        // Reset form về trạng thái rỗng
-        if (addNameInput) addNameInput.value = '';
-        if (addHasCouponRadio1) addHasCouponRadio1.checked = false;
-        if (addHasCouponRadio2) addHasCouponRadio2.checked = false;
+        // Reset form và clear lỗi
+        addForm.reset();
+        addModal.querySelectorAll('.text-danger').forEach(function(element) {
+            element.textContent = '';
+        });
+        addModal.querySelectorAll('.is-invalid').forEach(function(element) {
+            element.classList.remove('is-invalid');
+        });
+
         // Hiển thị modal
         addModal.style.display = 'flex';
     });
@@ -246,10 +357,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // Đóng popup Thêm
     closeAddBtn.onclick = function() {
         addModal.style.display = 'none';
+        // Clear errors when closing the modal manually
+        addModal.querySelectorAll('.text-danger').forEach(function(element) {
+            element.textContent = '';
+        });
+        addModal.querySelectorAll('.is-invalid').forEach(function(element) {
+            element.classList.remove('is-invalid');
+        });
     };
     window.addEventListener('click', function(event) {
         if (event.target == addModal) {
             addModal.style.display = "none";
+            // Clear errors when clicking outside to close
+            addModal.querySelectorAll('.text-danger').forEach(function(element) {
+                element.textContent = '';
+            });
+            addModal.querySelectorAll('.is-invalid').forEach(function(element) {
+                element.classList.remove('is-invalid');
+            });
         }
     });
 
@@ -265,8 +390,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const itemStartAt = this.dataset.starts_at;
             const itemExpiresAt = this.dataset.expires_at;
 
-            // Cập nhật action của form trong modal
+            // Clear any previous validation messages
+            editModal.querySelectorAll('.text-danger').forEach(function(element) {
+                element.textContent = '';
+            });
+            editModal.querySelectorAll('.is-invalid').forEach(function(element) {
+                element.classList.remove('is-invalid');
+            });
 
+            // Cập nhật action của form trong modal
             editForm.action = `coupon/update/${itemId}`;
             document.getElementById('edit-id').value = itemId;
 
@@ -274,11 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (editCodeInput) editCodeInput.value = itemCode;
             if (editDiscountInput) editDiscountInput.value = Number(itemDiscount);
             if (editTypeInput) {
-                if (itemType == 'percent') {
-                    document.getElementById('edit-type-percent').selected = true;
-                } else if (itemType == 'fixed') {
-                    document.getElementById('edit-type-fixed').selected = true;
-                }
+                editTypeInput.value = itemType; // Set directly based on data attribute
             }
             if (editMinOrderValueInput) editMinOrderValueInput.value = Number(itemMinOrderValue);
             if (editUsageLimitInput) editUsageLimitInput.value = itemUsageLimit;
@@ -293,10 +421,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // Đóng popup Sửa
     closeEditBtn.onclick = function() {
         editModal.style.display = 'none';
+        // Clear errors when closing the modal manually
+        editModal.querySelectorAll('.text-danger').forEach(function(element) {
+            element.textContent = '';
+        });
+        editModal.querySelectorAll('.is-invalid').forEach(function(element) {
+            element.classList.remove('is-invalid');
+        });
     };
     window.addEventListener('click', function(event) {
         if (event.target == editModal) {
             editModal.style.display = "none";
+            // Clear errors when clicking outside to close
+            editModal.querySelectorAll('.text-danger').forEach(function(element) {
+                element.textContent = '';
+            });
+            editModal.querySelectorAll('.is-invalid').forEach(function(element) {
+                element.classList.remove('is-invalid');
+            });
         }
     });
 });
@@ -309,55 +451,74 @@ document.addEventListener('DOMContentLoaded', function() {
         <form id="addCouponForm" method="post" action="{{ route('coupon.store') }}">
             @csrf
             <div class="field-wrapper ">
-                <div class="field-placeholder">Mã Code</div>
+                <div class="field-placeholder">Mã Code <span class="text-danger">*</span></div>
                 <div class="field-body">
                     <div class="field">
                         <div class="control icons-left">
-                            <input required class="input" type="text" id="add-name" name="code" placeholder="Code">
+                            <input class="input @error('code') is-invalid @enderror" type="text" id="add-name" name="code" placeholder="Code" value="{{ old('code') }}">
                             <span class="icon left"><i class="mdi mdi-account"></i></span>
                         </div>
+                        @error('code')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
             </div>
 
             <div class="field-wrapper">
-                <div class="field-placeholder">Giảm giá</div>
+                <div class="field-placeholder">Giảm giá <span class="text-danger">*</span></div>
                 <div style="display: flex; align-items: center; gap: 10px;" class="control" >
-                  <input required class="input" type="number" id="add-price" name="discount" placeholder="Trị giá ">
-                  <select name="type" name="type" id="type">
-                    <option value="percent">Phần trăm (%)</option>
-                    <option value="fixed">Cố định (VNĐ)</option>
+                  <input class="input @error('discount') is-invalid @enderror" type="number" id="add-price" name="discount" placeholder="Trị giá " value="{{ old('discount') }}">
+                  <select name="type" id="type" class="form-control @error('type') is-invalid @enderror">
+                    <option value="percent" {{ old('type') == 'percent' ? 'selected' : '' }}>Phần trăm (%)</option>
+                    <option value="fixed" {{ old('type') == 'fixed' ? 'selected' : '' }}>Cố định (VNĐ)</option>
                   </select>
                 </div>
+                @error('discount')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
+                @error('type')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
             </div>
             <div class="field-wrapper">
-                <div class="field-placeholder">Giá trị đơn tối thiểu</div>
+                <div class="field-placeholder">Giá trị đơn tối thiểu <span class="text-danger">*</span></div>
                 <div style="display: flex; align-items: center; gap: 10px;" class="control" >
-                  <input required class="input" type="number" id="add-price" name="min_order_value" placeholder="Giá trị đơn tối thiểu">
+                  <input class="input @error('min_order_value') is-invalid @enderror" type="number" id="add-min_order_value" name="min_order_value" placeholder="Giá trị đơn tối thiểu" value="{{ old('min_order_value') }}">
                 </div>
+                @error('min_order_value')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
             </div>
             <div class="field-wrapper">
-                <div class="field-placeholder">Số lượng</div>
+                <div class="field-placeholder">Số lượng <span class="text-danger">*</span></div>
                 <div style="display: flex; align-items: center; gap: 10px;" class="control" >
-                  <input required class="input" type="number" id="add-
-                  " name="usage_limit" placeholder="Số lượng">
+                  <input class="input @error('usage_limit') is-invalid @enderror" type="number" id="add-usage_limit" name="usage_limit" placeholder="Số lượng" value="{{ old('usage_limit') }}">
                 </div>
+                @error('usage_limit')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
             </div>
-
 
            <div style="display:flex; justify-content:space-around">
            <div class="field-wrapper ">
-                <div class="field-placeholder">Ngày bắt đầu</div>
+                <div class="field-placeholder">Ngày bắt đầu <span class="text-danger">*</span></div>
                 <div style="display: flex; align-items: center; gap: 10px;" class="control" >
-                  <input required class="input" type="date" id="add-price" name="starts_at" placeholder="Ngày bắt đầu">
+                  <input class="input @error('starts_at') is-invalid @enderror" type="date" id="add-starts_at" name="starts_at" placeholder="Ngày bắt đầu" value="{{ old('starts_at') }}">
                 </div>
+                @error('starts_at')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="field-wrapper">
                 <div class="field-placeholder">Ngày kết thúc</div>
                 <div style="display: flex; align-items: center; gap: 10px;" class="control" >
-                  <input  class="input" type="date" id="add-price" name="expires_at" placeholder="Ngày kết thúc">
+                  <input  class="input @error('expires_at') is-invalid @enderror" type="date" id="add-expires_at" name="expires_at" placeholder="Ngày kết thúc" value="{{ old('expires_at') }}">
                 </div>
+                @error('expires_at')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
             </div>
            </div>
 

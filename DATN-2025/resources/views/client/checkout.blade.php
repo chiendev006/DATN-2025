@@ -54,7 +54,7 @@
                                     <!-- Name & Phone -->
                                     <div class="col-md-6 mb-3">
                                          <label>Họ tên: <span class="text-danger">*</span></label>
-                                        <input type="text" name="name" value="{{ old('name', Auth::check() ? Auth::user()->name : '') }}" placeholder="Họ và tên" required class="form-control @error('name') is-invalid @enderror" style="height: 45px; border-radius: 30px;">
+                                        <input type="text" name="name" value="{{ old('name', Auth::check() ? Auth::user()->name : '') }}" placeholder="Họ và tên" class="form-control @error('name') is-invalid @enderror" style="height: 45px; border-radius: 30px;">
                                         @error('name')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -62,7 +62,7 @@
 
                                     <div class="col-md-6 mb-3">
                                           <label>Số điện thoại: <span class="text-danger">*</span></label>
-                                        <input type="text" name="phone_raw" value="{{ old('phone_raw', Auth::check() ? Auth::user()->phone : '') }}" placeholder="Số điện thoại (10-11 số)" required class="form-control @error('phone_raw') is-invalid @enderror" style="height: 45px; border-radius: 30px;">
+                                        <input type="text" name="phone_raw" value="{{ old('phone_raw', Auth::check() ? Auth::user()->phone : '') }}" placeholder="Số điện thoại (10-11 số)" class="form-control @error('phone_raw') is-invalid @enderror" style="height: 45px; border-radius: 30px;">
                                         @error('phone_raw')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
