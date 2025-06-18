@@ -17,41 +17,48 @@ class OrderSearchController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\View\View
      */
-    public function search(Request $request)
-    {
+   public function search(Request $request)
+{
+    $orders = collect();
+    $orderStats = [
+        'all' => 0,
+        'pending' => 0,
+        'processing' => 0,
+        'completed' => 0,
+        'cancelled' => 0
+    ];
+
+    if ($request->has('phone')) {
+       $request->validate([
+        'phone' => 'required|numeric|digits_between:9,11',
+    ], [
+        'phone.required' => 'Vui lòng nhập số điện thoại.',
+        'phone.numeric' => 'Số điện thoại chỉ được chứa số.',
+        'phone.digits_between' => 'Số điện thoại phải từ 9 đến 11 chữ số.',
+    ]);
+
+
         $phone = $request->input('phone');
-        
-        $orders = collect();
-        $orderStats = [
-            'all' => 0,
-            'pending' => 0,
-            'processing' => 0,
-            'completed' => 0,
-            'cancelled' => 0
-        ];
 
-        if ($phone) {
-            $request->validate([
-                'phone' => 'required|numeric|digits_between:9,11',
-            ]);
+        $orders = Order::with(['orderDetails.product', 'orderDetails.size'])
+                       ->where('phone', $phone)
+                       ->orderBy('created_at', 'desc')
+                       ->get();
 
-            $orders = Order::with(['orderDetails.product', 'orderDetails.size'])
-                           ->where('phone', $phone)
-                           ->orderBy('created_at', 'desc') 
-                           ->get();
-
-            // Tính toán thống kê đơn hàng
-            $orderStats['all'] = $orders->count();
-            $orderStats['pending'] = $orders->where('status', 'pending')->count();
-            $orderStats['processing'] = $orders->where('status', 'processing')->count();
-            $orderStats['completed'] = $orders->where('status', 'completed')->count();
-            $orderStats['cancelled'] = $orders->where('status', 'cancelled')->count();
-        }
-
-        $toppings = Product_topping::all()->keyBy('id');
-
-        return view('client.order_search', compact('orders', 'phone', 'toppings', 'orderStats'));
+        $orderStats['all'] = $orders->count();
+        $orderStats['pending'] = $orders->where('status', 'pending')->count();
+        $orderStats['processing'] = $orders->where('status', 'processing')->count();
+        $orderStats['completed'] = $orders->where('status', 'completed')->count();
+        $orderStats['cancelled'] = $orders->where('status', 'cancelled')->count();
+    } else {
+        $phone = null;
     }
+
+    $toppings = Product_topping::all()->keyBy('id');
+
+    return view('client.order_search', compact('orders', 'phone', 'toppings', 'orderStats'));
+}
+
      public function cancelOrder($id, Request $request)
     {
         $order = Order::where('id', $id)

@@ -636,7 +636,7 @@
                 <div class="col-md-3 col-sm-3 col-xs-12">
                   <h5>Despina Video</h5>
                   <a
-                    href="https://www.youtube.com/watch?v=bnQ5BwLCH3U"
+                    href="https://www.youtube.com/watch?v=wDKaIVAqx8A"
                     class="magnific-youtube"
                     ><img src="{{ url('asset') }}/images/video-bg.png" alt=""
                   /></a>

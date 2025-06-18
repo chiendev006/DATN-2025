@@ -53,16 +53,16 @@
 
                                     <!-- Name & Phone -->
                                     <div class="col-md-6 mb-3">
-                                         <label>Họ tên: <span class="text-danger"></span></label>
-                                        <input type="text" name="name" value="{{ old('name', Auth::check() ? Auth::user()->name : '') }}" placeholder="Họ và tên" required class="form-control" style="height: 45px; border-radius: 30px;">
+                                         <label>Họ tên: <span class="text-danger">*</span></label>
+                                        <input type="text" name="name" value="{{ old('name', Auth::check() ? Auth::user()->name : '') }}" placeholder="Họ và tên" required class="form-control @error('name') is-invalid @enderror" style="height: 45px; border-radius: 30px;">
                                         @error('name')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                          <label>Số điện thoại: <span class="text-danger"></span></label>
-                                        <input type="text" name="phone_raw" value="{{ old('phone_raw', Auth::check() ? Auth::user()->phone : '') }}" placeholder="Số điện thoại" required class="form-control" style="height: 45px; border-radius: 30px;">
+                                          <label>Số điện thoại: <span class="text-danger">*</span></label>
+                                        <input type="text" name="phone_raw" value="{{ old('phone_raw', Auth::check() ? Auth::user()->phone : '') }}" placeholder="Số điện thoại (10-11 số)" required class="form-control @error('phone_raw') is-invalid @enderror" style="height: 45px; border-radius: 30px;">
                                         @error('phone_raw')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -70,8 +70,8 @@
 
                                     <!-- Email -->
                                     <div class="col-md-12 mb-3">
-                                          <label>Email: <span class="text-danger"></span></label>
-                                        <input type="email" name="email" value="{{ old('email', Auth::check() ? Auth::user()->email : '') }}" placeholder="Email" class="form-control" style="height: 45px; border-radius: 30px;">
+                                          <label>Email: <span class="text-muted">(Không bắt buộc)</span></label>
+                                        <input type="email" name="email" value="{{ old('email', Auth::check() ? Auth::user()->email : '') }}" placeholder="Email" class="form-control @error('email') is-invalid @enderror" style="height: 45px; border-radius: 30px;">
                                         @error('email')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -80,7 +80,7 @@
                                     <!-- District & Address -->
                                     <div class="col-md-6 mb-3">
                                         <label>Chọn huyện (tỉnh Hải Phòng) <span class="text-danger">*</span></label>
-                                        <select name="district" id="district-select" class="form-control" style="height: 45px; border-radius: 30px;">
+                                        <select name="district" id="district-select" class="form-control @error('district') is-invalid @enderror" style="height: 45px; border-radius: 30px;">
                                             <option value="" disabled selected>-- Chọn huyện --</option>
                                             @foreach($districts as $districtOption)
                                                 <option value="{{ $districtOption->id }}" data-ship="{{ $districtOption->shipping_fee }}" {{ old('district') == $districtOption->id ? 'selected' : '' }}>
@@ -95,7 +95,7 @@
 
                                     <div class="col-md-6 mb-3">
                                         <label>Địa chỉ chi tiết <span class="text-danger">*</span></label>
-                                        <input type="text" name="address_detail" value="{{ old('address_detail') }}" placeholder="Nhập số nhà, tên đường..." class="form-control" style="height: 45px; border-radius: 30px;">
+                                        <input type="text" name="address_detail" value="{{ old('address_detail') }}" placeholder="Nhập số nhà, tên đường..." class="form-control @error('address_detail') is-invalid @enderror" style="height: 45px; border-radius: 30px;">
                                         @error('address_detail')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -106,25 +106,32 @@
                                 </div>
                                 <div class="row mb-4">
                                     <div class="col-md-12">
-                                        <label>Ghi chú đơn hàng</label>
-                                        <textarea name="note" class="form-control" rows="3" placeholder="Nhập ghi chú cho đơn hàng (nếu có)">{{ old('note') }}</textarea>
+                                        <label>Ghi chú đơn hàng <span class="text-muted">(Không bắt buộc)</span></label>
+                                        <textarea name="note" class="form-control @error('note') is-invalid @enderror" rows="3" placeholder="Nhập ghi chú cho đơn hàng (nếu có)">{{ old('note') }}</textarea>
+                                        @error('note')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                     </div>
                                 </div>
 
                                 <div class="row mb-4">
                                     <div class="col-md-12">
-                                        <h5>Phương thức thanh toán</h5>
-                                        <div class="payment-methods">
-                                            <div class="form-check d-flex align-items-center gap-2 mb-2">
+                                        <h5>Phương thức thanh toán <span class="text-danger">*</span></h5>
+                                        <div class="payment-methods @error('payment_method') is-invalid @enderror">
+                                            <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="payment_method" value="cash" {{ old('payment_method') === 'cash' ? 'checked' : '' }}>
-                                                <img src="{{ url('asset') }}/images/cod.png" alt="COD" style="height: 24px;">
-                                                <label class="form-check-label">Thanh toán khi nhận hàng (COD)</label>
+                                                <label class="form-check-label">
+                                                    <img src="{{ url('asset') }}/images/cod.png" alt="COD" style="height: 24px;">
+                                                    Thanh toán khi nhận hàng (COD)
+                                                </label>
                                             </div>
 
-                                            <div class="form-check d-flex align-items-center gap-2 mb-2">
+                                            <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="payment_method" value="banking" {{ old('payment_method') === 'banking' ? 'checked' : '' }}>
-                                                <img src="{{ url('asset') }}/images/vnpay.jpg" alt="VNPAY" style="height: 24px;">
-                                                <label class="form-check-label">Chuyển khoản ngân hàng (qua VNPAY)</label>
+                                                <label class="form-check-label">
+                                                    <img src="{{ url('asset') }}/images/vnpay.jpg" alt="VNPAY" style="height: 24px;">
+                                                    Chuyển khoản ngân hàng (qua VNPAY)
+                                                </label>
                                             </div>
                                             @error('payment_method')
                                                 <span class="text-danger">{{ $message }}</span>
@@ -134,9 +141,9 @@
                                 </div>
                                 <div class="row mb-4">
                                     <div class="col-md-12">
-                                        <div class="form-check">
+                                        <div class="form-check @error('terms') is-invalid @enderror">
                                             <input class="form-check-input" type="checkbox" name="terms" {{ old('terms') ? 'checked' : '' }}>
-                                            <label class="form-check-label">Tôi đồng ý với các điều khoản và điều kiện *</label>
+                                            <label class="form-check-label">Tôi đồng ý với các điều khoản và điều kiện <span class="text-danger">*</span></label>
                                         </div>
                                         @error('terms')
                                             <span class="text-danger">{{ $message }}</span>
@@ -298,6 +305,12 @@
     color: #dc3545;
     font-size: 0.875rem;
     margin-top: 0.25rem;
+    display: block;
+}
+
+.text-muted {
+    color: #6c757d;
+    font-size: 0.875rem;
 }
 
 .mt-4 {
@@ -306,6 +319,37 @@
 
 .payment-methods {
     margin: 1rem 0;
+}
+
+.payment-methods .form-check {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    transition: background-color 0.2s;
+}
+
+.payment-methods .form-check:hover {
+    background-color: rgba(199, 161, 122, 0.1);
+}
+
+.payment-methods .form-check-input {
+    margin-right: 0.75rem;
+    margin-top: 0;
+}
+
+.payment-methods .form-check-label {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.payment-methods img {
+    margin-right: 0.5rem;
+    vertical-align: middle;
 }
 
 .payment-method {
@@ -363,6 +407,71 @@
     font-size: 1.25rem;
     color: #c7a17a;
 }
+
+/* Validation styles */
+.is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.is-invalid:focus {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.form-control.is-invalid {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='m5.8 4.6 2.4 2.4m0-2.4L5.8 7'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.payment-methods.is-invalid {
+    border: 1px solid #dc3545;
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+    background-color: rgba(220, 53, 69, 0.05);
+}
+
+.form-check.is-invalid {
+    border: 1px solid #dc3545;
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+    background-color: rgba(220, 53, 69, 0.05);
+}
+
+/* Label styles */
+label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Required field indicator */
+.text-danger {
+    font-weight: bold;
+}
+
+/* Form group spacing */
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+/* Input focus styles */
+.form-control:focus {
+    border-color: #c7a17a;
+    box-shadow: 0 0 0 0.2rem rgba(199, 161, 122, 0.25);
+}
+
+/* Select focus styles */
+select.form-control:focus {
+    border-color: #c7a17a;
+    box-shadow: 0 0 0 0.2rem rgba(199, 161, 122, 0.25);
+}
 </style>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -370,6 +479,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const shippingCostElement = document.getElementById("shipping-fee-display");
     const shippingFeeDisplayRight = document.getElementById("shipping-fee-display-right");
     const totalWithShippingElement = document.getElementById("total-with-shipping");
+    const checkoutForm = document.getElementById("checkout-form");
     
     const subtotal = parseFloat({{ $subtotal }});
     const discount = parseFloat({{ $discount }});
@@ -398,15 +508,291 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    districtSelect.addEventListener("change", updateShippingAndTotal);
-    updateShippingAndTotal();
+    // Client-side validation functions
+    function validateName(name) {
+        if (!name || name.trim().length < 2) {
+            return 'Họ tên phải có ít nhất 2 ký tự';
+        }
+        if (name.length > 255) {
+            return 'Họ tên không được quá 255 ký tự';
+        }
+        return null;
+    }
 
-    document.getElementById("checkout-form").addEventListener("submit", function (event) {
-        if (!districtSelect.value) {
-            event.preventDefault();
-            alert("Vui lòng chọn huyện.");
+    function validatePhone(phone) {
+        const phoneRegex = /^[0-9]{10,11}$/;
+        if (!phone) {
+            return 'Vui lòng nhập số điện thoại';
+        }
+        if (!phoneRegex.test(phone)) {
+            return 'Số điện thoại phải có 10-11 chữ số';
+        }
+        return null;
+    }
+
+    function validateEmail(email) {
+        if (email && email.trim()) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return 'Email không đúng định dạng';
+            }
+            if (email.length > 255) {
+                return 'Email không được quá 255 ký tự';
+            }
+        }
+        return null;
+    }
+
+    function validateDistrict(district) {
+        if (!district) {
+            return 'Vui lòng chọn huyện';
+        }
+        return null;
+    }
+
+    function validateAddress(address) {
+        if (!address || address.trim().length < 10) {
+            return 'Địa chỉ phải có ít nhất 10 ký tự';
+        }
+        if (address.length > 255) {
+            return 'Địa chỉ không được quá 255 ký tự';
+        }
+        return null;
+    }
+
+    function validatePaymentMethod() {
+        const selectedMethod = document.querySelector('input[name="payment_method"]:checked');
+        if (!selectedMethod) {
+            return 'Vui lòng chọn phương thức thanh toán';
+        }
+        return null;
+    }
+
+    function validateTerms() {
+        const termsChecked = document.querySelector('input[name="terms"]:checked');
+        if (!termsChecked) {
+            return 'Bạn phải đồng ý với điều khoản và điều kiện';
+        }
+        return null;
+    }
+
+    function validateNote(note) {
+        if (note && note.length > 1000) {
+            return 'Ghi chú không được quá 1000 ký tự';
+        }
+        return null;
+    }
+
+    function showError(field, message) {
+        field.classList.add('is-invalid');
+        let errorElement = field.parentNode.querySelector('.text-danger');
+        if (!errorElement) {
+            errorElement = document.createElement('span');
+            errorElement.className = 'text-danger';
+            field.parentNode.appendChild(errorElement);
+        }
+        errorElement.textContent = message;
+    }
+
+    function clearError(field) {
+        field.classList.remove('is-invalid');
+        const errorElement = field.parentNode.querySelector('.text-danger');
+        if (errorElement) {
+            errorElement.remove();
+        }
+    }
+
+    // Real-time validation
+    const nameInput = document.querySelector('input[name="name"]');
+    const phoneInput = document.querySelector('input[name="phone_raw"]');
+    const emailInput = document.querySelector('input[name="email"]');
+    const addressInput = document.querySelector('input[name="address_detail"]');
+    const noteInput = document.querySelector('textarea[name="note"]');
+
+    nameInput.addEventListener('blur', function() {
+        const error = validateName(this.value);
+        if (error) {
+            showError(this, error);
+        } else {
+            clearError(this);
         }
     });
+
+    phoneInput.addEventListener('blur', function() {
+        const error = validatePhone(this.value);
+        if (error) {
+            showError(this, error);
+        } else {
+            clearError(this);
+        }
+    });
+
+    emailInput.addEventListener('blur', function() {
+        const error = validateEmail(this.value);
+        if (error) {
+            showError(this, error);
+        } else {
+            clearError(this);
+        }
+    });
+
+    districtSelect.addEventListener('change', function() {
+        updateShippingAndTotal();
+        const error = validateDistrict(this.value);
+        if (error) {
+            showError(this, error);
+        } else {
+            clearError(this);
+        }
+    });
+
+    addressInput.addEventListener('blur', function() {
+        const error = validateAddress(this.value);
+        if (error) {
+            showError(this, error);
+        } else {
+            clearError(this);
+        }
+    });
+
+    noteInput.addEventListener('blur', function() {
+        const error = validateNote(this.value);
+        if (error) {
+            showError(this, error);
+        } else {
+            clearError(this);
+        }
+    });
+
+    // Payment method validation
+    const paymentMethods = document.querySelectorAll('input[name="payment_method"]');
+    paymentMethods.forEach(method => {
+        method.addEventListener('change', function() {
+            const paymentContainer = document.querySelector('.payment-methods');
+            const error = validatePaymentMethod();
+            if (error) {
+                paymentContainer.classList.add('is-invalid');
+                let errorElement = paymentContainer.querySelector('.text-danger');
+                if (!errorElement) {
+                    errorElement = document.createElement('span');
+                    errorElement.className = 'text-danger';
+                    paymentContainer.appendChild(errorElement);
+                }
+                errorElement.textContent = error;
+            } else {
+                paymentContainer.classList.remove('is-invalid');
+                const errorElement = paymentContainer.querySelector('.text-danger');
+                if (errorElement) {
+                    errorElement.remove();
+                }
+            }
+        });
+    });
+
+    // Terms validation
+    const termsCheckbox = document.querySelector('input[name="terms"]');
+    termsCheckbox.addEventListener('change', function() {
+        const termsContainer = document.querySelector('.form-check');
+        const error = validateTerms();
+        if (error) {
+            termsContainer.classList.add('is-invalid');
+            let errorElement = termsContainer.querySelector('.text-danger');
+            if (!errorElement) {
+                errorElement = document.createElement('span');
+                errorElement.className = 'text-danger';
+                termsContainer.appendChild(errorElement);
+            }
+            errorElement.textContent = error;
+        } else {
+            termsContainer.classList.remove('is-invalid');
+            const errorElement = termsContainer.querySelector('.text-danger');
+            if (errorElement) {
+                errorElement.remove();
+            }
+        }
+    });
+
+    // Form submission validation
+    checkoutForm.addEventListener("submit", function (event) {
+        let hasErrors = false;
+
+        // Validate all fields
+        const nameError = validateName(nameInput.value);
+        if (nameError) {
+            showError(nameInput, nameError);
+            hasErrors = true;
+        }
+
+        const phoneError = validatePhone(phoneInput.value);
+        if (phoneError) {
+            showError(phoneInput, phoneError);
+            hasErrors = true;
+        }
+
+        const emailError = validateEmail(emailInput.value);
+        if (emailError) {
+            showError(emailInput, emailError);
+            hasErrors = true;
+        }
+
+        const districtError = validateDistrict(districtSelect.value);
+        if (districtError) {
+            showError(districtSelect, districtError);
+            hasErrors = true;
+        }
+
+        const addressError = validateAddress(addressInput.value);
+        if (addressError) {
+            showError(addressInput, addressError);
+            hasErrors = true;
+        }
+
+        const paymentError = validatePaymentMethod();
+        if (paymentError) {
+            const paymentContainer = document.querySelector('.payment-methods');
+            paymentContainer.classList.add('is-invalid');
+            let errorElement = paymentContainer.querySelector('.text-danger');
+            if (!errorElement) {
+                errorElement = document.createElement('span');
+                errorElement.className = 'text-danger';
+                paymentContainer.appendChild(errorElement);
+            }
+            errorElement.textContent = paymentError;
+            hasErrors = true;
+        }
+
+        const termsError = validateTerms();
+        if (termsError) {
+            const termsContainer = document.querySelector('.form-check');
+            termsContainer.classList.add('is-invalid');
+            let errorElement = termsContainer.querySelector('.text-danger');
+            if (!errorElement) {
+                errorElement = document.createElement('span');
+                errorElement.className = 'text-danger';
+                termsContainer.appendChild(errorElement);
+            }
+            errorElement.textContent = termsError;
+            hasErrors = true;
+        }
+
+        const noteError = validateNote(noteInput.value);
+        if (noteError) {
+            showError(noteInput, noteError);
+            hasErrors = true;
+        }
+
+        if (hasErrors) {
+            event.preventDefault();
+            // Scroll to first error
+            const firstError = document.querySelector('.is-invalid');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    });
+
+    districtSelect.addEventListener("change", updateShippingAndTotal);
+    updateShippingAndTotal();
 });
 </script>
 @endsection
