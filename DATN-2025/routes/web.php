@@ -226,6 +226,8 @@
         Route::get('/edit/{id}', [ToppingController::class, 'edit'])->name('topping.edit');
         Route::post('/update/{id}', [ToppingController::class, 'update'])->name('topping.update');
         Route::delete('/delete/{id}', [ToppingController::class, 'delete'])->name('topping.delete');
+        Route::get('/filter', [ToppingController::class, 'searchtopping'])->name('topping.search');
+
         });
 
         // Size

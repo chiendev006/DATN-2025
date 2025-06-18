@@ -97,7 +97,7 @@
 
             <!-- Filter Sidebar -->
             <div class="lg:col-span-1">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-36">
                     <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
                         <i class="fas fa-filter mr-3 text-blue-500"></i>
                         Lọc đơn hàng

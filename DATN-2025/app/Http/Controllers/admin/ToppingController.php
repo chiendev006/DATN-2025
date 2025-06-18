@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ToppingRequest;
 use App\Models\Topping;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,14 @@ class ToppingController extends Controller
         $request->validate([
             'name' => 'required|string',
             'price' => 'required|numeric',
-        ]);
+        ],
+    [
+        'name.required' => 'Tên toping không được để trống',
+        'name.string' => 'Tên topping phải là một chuỗi kí tự',
+        'price.required' => 'Giá topping phải là một chuỗi kí tự',
+        'price.numeric' => 'Giá topping phải là dạng số',
+
+    ]);
         $name = $request->name;
         $price = $request->price;
         Topping::insert([
@@ -52,5 +60,20 @@ class ToppingController extends Controller
           \App\Models\Product_topping::where('topping', $topping->name)->delete();
            Topping::destroy($id);
         return redirect()->route('topping.index')->with('success', 'Xóa thành công!');
+    }
+
+    public function searchtopping( Request $request){
+    $perPage = $request->input('per_page', 5);
+            $request->validate([
+            'name' => 'required|string',
+                   ],
+    [
+        'name.required' => 'Tên toping không được để trống',
+        'name.string' => 'Tên topping phải là một chuỗi kí tự',
+    ]);
+         $toppings = topping::select('topping.*')
+            ->where('name', 'like', "%$request->name%")
+            ->paginate($perPage);
+        return view('admin.topping.index', ['topping' => $toppings]);
     }
 }

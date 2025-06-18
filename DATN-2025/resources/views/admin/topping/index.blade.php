@@ -37,6 +37,10 @@
 
                                 <div class="card">
                                 <button type="button" id="btn-add-topping" class="btn-success">Thêm topping</button>
+                                   <form method="GET" action="{{ route('topping.search') }}" class="form-inline" style="float: right; display: flex; align-items: center;">
+                                                    <input type="text" name="name" class="form-control" placeholder="Tìm kiếm tên và số điện thoại ..." value="{{ request('name') }}" style="width: 220px; margin-right: 8px;">
+                                                    <button type="submit" class="btn btn-success">Tìm kiếm</button>
+                                                </form>
                                     <div class="card-body">
                                         <form method="GET" action="" style="margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
                                             <label for="per_page" style="margin-bottom:0;">Bản/trang:</label>
@@ -127,15 +131,20 @@
                                         <div class="field">
                                             <div class="control icons-left">
                                                 <input class="input" type="text" id="edit-name" name="name" placeholder="Name">
-                                                <span class="icon left"><i class="mdi mdi-account"></i></span>
+                                                @error('name')
+                                    <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <br>
+
                                 <div class="field-wrapper">
                                     <div class="field-placeholder">Giá </div>
-                                  <input class="input" type="text" id="edit-price" name="price" placeholder="Giá">
+                                  <input class="input" type="number" id="edit-price" name="price" placeholder="Giá">
+                                    @error('price')
+                                    <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="field grouped">
                                     <div class="control">
@@ -233,18 +242,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="field">
                         <div class="control icons-left">
                             <input class="input" type="text" id="add-name" name="name" placeholder="Name">
-                            <span class="icon left"><i class="mdi mdi-account"></i></span>
                         </div>
+                        <span class="icon left"><i class="mdi mdi-account"></i></span>
+                            @error('name')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
                     </div>
                 </div>
             </div>
-            <br>
             <div class="field-wrapper">
                 <div class="field-placeholder">Giá</div>
-                <br>
+
                 <div class="control" style="margin-top: 8px;">
-                  <input class="input" type="text" id="add-price" name="price" placeholder="Giá">
+                  <input class="input" type="number" id="add-price" name="price" placeholder="Giá">
                 </div>
+                @error('name')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
             </div>
             <div class="field grouped">
                 <div class="control">
