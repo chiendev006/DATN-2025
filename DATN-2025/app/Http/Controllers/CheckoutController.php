@@ -123,14 +123,34 @@ class CheckoutController extends Controller
     {
         try {
             $request->validate([
-                'name' => 'required|string|max:255',
-                'phone_raw' => 'required|string|max:15', 
+                'name' => 'required|string|max:255|min:2',
+                'phone_raw' => 'required|string|regex:/^[0-9]{10,11}$/', 
                 'district' => 'required|exists:address,id',
-                'address_detail' => 'required|string|max:255',
+                'address_detail' => 'required|string|max:255|min:10',
                 'payment_method' => 'required|in:cash,banking',
                 'terms' => 'required|accepted',
                 'email' => 'nullable|email|max:255',
                 'note' => 'nullable|string|max:1000'
+            ], [
+                'name.required' => 'Vui lòng nhập họ tên',
+                'name.string' => 'Họ tên phải là chuỗi ký tự',
+                'name.max' => 'Họ tên không được quá 255 ký tự',
+                'name.min' => 'Họ tên phải có ít nhất 2 ký tự',
+                'phone_raw.required' => 'Vui lòng nhập số điện thoại',
+                'phone_raw.regex' => 'Số điện thoại phải có 10-11 chữ số',
+                'district.required' => 'Vui lòng chọn huyện',
+                'district.exists' => 'Huyện không hợp lệ',
+                'address_detail.required' => 'Vui lòng nhập địa chỉ chi tiết',
+                'address_detail.string' => 'Địa chỉ phải là chuỗi ký tự',
+                'address_detail.max' => 'Địa chỉ không được quá 255 ký tự',
+                'address_detail.min' => 'Địa chỉ phải có ít nhất 10 ký tự',
+                'payment_method.required' => 'Vui lòng chọn phương thức thanh toán',
+                'payment_method.in' => 'Phương thức thanh toán không hợp lệ',
+                'terms.required' => 'Vui lòng đồng ý với điều khoản và điều kiện',
+                'terms.accepted' => 'Bạn phải đồng ý với điều khoản và điều kiện',
+                'email.email' => 'Email không đúng định dạng',
+                'email.max' => 'Email không được quá 255 ký tự',
+                'note.max' => 'Ghi chú không được quá 1000 ký tự'
             ]);
 
             DB::beginTransaction();

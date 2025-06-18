@@ -128,88 +128,88 @@
 
         // Danh mục
         Route::prefix('danhmuc')->group(function () {
-                Route::get('/', [DanhmucController::class, 'index'])->name('danhmuc.index');
-                Route::get('/create', [DanhmucController::class, 'create'])->name('danhmuc.create');
-                Route::post('/store', [DanhmucController::class, 'store'])->name('danhmuc.store');
-                Route::get('/edit/{id}', [DanhmucController::class, 'edit'])->name('danhmuc.edit');
-                Route::post('/update/{id}', [DanhmucController::class, 'update'])->name('danhmuc.update');
-                Route::delete('/delete/{id}', [DanhmucController::class, 'delete'])->name('danhmuc.delete');
+        Route::get('/', [DanhmucController::class, 'index'])->name('danhmuc.index');
+        Route::get('/create', [DanhmucController::class, 'create'])->name('danhmuc.create');
+        Route::post('/store', [DanhmucController::class, 'store'])->name('danhmuc.store');
+        Route::get('/edit/{id}', [DanhmucController::class, 'edit'])->name('danhmuc.edit');
+        Route::post('/update/{id}', [DanhmucController::class, 'update'])->name('danhmuc.update');
+        Route::delete('/delete/{id}', [DanhmucController::class, 'delete'])->name('danhmuc.delete');
         });
 
         // Quản lý ảnh theo sản phẩm
         Route::prefix('sanpham')->name('sanpham.')->group(function () {
-                Route::get('{id}/images', [SanphamController::class, 'listImages'])->name('images');
-                Route::get('{id}/images/create', [SanphamController::class, 'createImage'])->name('images.create');
-                Route::post('{id}/images', [SanphamController::class, 'storeImage'])->name('images.store');
-                Route::get('images/{image}/edit', [SanphamController::class, 'editImage'])->name('images.edit');
-                Route::post('images/{image}', [SanphamController::class, 'updateImage'])->name('images.update');
-                Route::delete('images/{image}/delete', [SanphamController::class, 'deleteImage'])->name('images.delete');
-                Route::get('/filter-category', [SanphamController::class, 'filterByCategory'])->name('filterCategory');
+        Route::get('{id}/images', [SanphamController::class, 'listImages'])->name('images');
+        Route::get('{id}/images/create', [SanphamController::class, 'createImage'])->name('images.create');
+        Route::post('{id}/images', [SanphamController::class, 'storeImage'])->name('images.store');
+        Route::get('images/{image}/edit', [SanphamController::class, 'editImage'])->name('images.edit');
+        Route::post('images/{image}', [SanphamController::class, 'updateImage'])->name('images.update');
+        Route::delete('images/{image}/delete', [SanphamController::class, 'deleteImage'])->name('images.delete');
+        Route::get('/filter-category', [SanphamController::class, 'filterByCategory'])->name('filterCategory');
         });
 
         // Coupon
         Route::prefix('coupon')->group(function () {
-                Route::get('/', [CouponController::class, 'index'])->name('coupon.index');
-                Route::get('/create', [CouponController::class, 'create'])->name('coupon.create');
-                Route::post('/store', [CouponController::class, 'store'])->name('coupon.store');
-                Route::get('/edit/{id}', [CouponController::class, 'edit'])->name('coupon.edit');
-                Route::post('/update/{id}', [CouponController::class, 'update'])->name('coupon.update');
-                Route::delete('/delete/{id}', [CouponController::class, 'delete'])->name('coupon.delete');
+        Route::get('/', [CouponController::class, 'index'])->name('coupon.index');
+        Route::get('/create', [CouponController::class, 'create'])->name('coupon.create');
+        Route::post('/store', [CouponController::class, 'store'])->name('coupon.store');
+        Route::get('/edit/{id}', [CouponController::class, 'edit'])->name('coupon.edit');
+        Route::post('/update/{id}', [CouponController::class, 'update'])->name('coupon.update');
+        Route::delete('/delete/{id}', [CouponController::class, 'delete'])->name('coupon.delete');
         });
 
         // địa chỉ
         Route::prefix('address')->group(function () {
-                Route::get('/', [AddressController  ::class, 'index'])->name('address.index');
-                Route::get('/create', [AddressController::class, 'create'])->name('address.create');
-                Route::post('/store', [AddressController::class, 'store'])->name('address.store');
-                Route::get('/edit/{id}', [AddressController::class, 'edit'])->name('address.edit');
-                Route::post('/update/{id}', [AddressController::class, 'update'])->name('address.update');
-                Route::delete('/delete/{id}', [AddressController::class, 'delete'])->name('address.delete');
-                Route::get('/search', [AddressController::class, 'search'])->name('address.search');
+        Route::get('/', [AddressController  ::class, 'index'])->name('address.index');
+        Route::get('/create', [AddressController::class, 'create'])->name('address.create');
+        Route::post('/store', [AddressController::class, 'store'])->name('address.store');
+        Route::get('/edit/{id}', [AddressController::class, 'edit'])->name('address.edit');
+        Route::post('/update/{id}', [AddressController::class, 'update'])->name('address.update');
+        Route::delete('/delete/{id}', [AddressController::class, 'delete'])->name('address.delete');
+        Route::get('/search', [AddressController::class, 'search'])->name('address.search');
 
         });
 
         // Sản phẩm
         Route::prefix('sanpham')->group(function () {
-                Route::get('/', [SanphamController::class, 'index'])->name('sanpham.index');
-                Route::get('/search', [SanphamController::class, 'search'])->name('sanpham.search');
-                Route::get('/create', [SanphamController::class, 'create'])->name('sanpham.create');
-                Route::post('/store', [SanphamController::class, 'store'])->name('sanpham.store');
-                Route::get('/edit/{id}', [SanphamController::class, 'edit'])->name('sanpham.edit');
-                Route::post( '/update/{id}', [SanphamController::class, 'update'])->name('sanpham.update');
-                Route::delete('/delete/{id}', [SanphamController::class, 'delete'])->name('sanpham.delete');
+        Route::get('/', [SanphamController::class, 'index'])->name('sanpham.index');
+        Route::get('/search', [SanphamController::class, 'search'])->name('sanpham.search');
+        Route::get('/create', [SanphamController::class, 'create'])->name('sanpham.create');
+        Route::post('/store', [SanphamController::class, 'store'])->name('sanpham.store');
+        Route::get('/edit/{id}', [SanphamController::class, 'edit'])->name('sanpham.edit');
+        Route::post( '/update/{id}', [SanphamController::class, 'update'])->name('sanpham.update');
+        Route::delete('/delete/{id}', [SanphamController::class, 'delete'])->name('sanpham.delete');
         });
 
         // payroll
         Route::prefix('payroll')->group(function () {
-                Route::get('/', [PayrollController::class, 'index'])->name('payroll.index');
-                Route::get('/create', [PayrollController::class, 'create'])->name('payroll.create');
-                Route::post('/store', [PayrollController::class, 'store'])->name('payroll.store');
-                Route::get('/show/{id}', [PayrollController::class, 'show'])->name('payroll.show');
-                Route::post('/toggle-workday', [PayrollController::class, 'toggleWorkDay'])->name('payroll.toggleWorkDay');
-                Route::get('/attendance/form', [\App\Http\Controllers\admin\PayrollController::class, 'getAttendanceForm'])->name('attendance.form');
-                Route::post('/attendance/store', [\App\Http\Controllers\admin\PayrollController::class, 'storeAttendance'])->name('attendance.store');
-                Route::post('/pay/{id}', [PayrollController::class, 'pay'])->name('payroll.pay');
+        Route::get('/', [PayrollController::class, 'index'])->name('payroll.index');
+        Route::get('/create', [PayrollController::class, 'create'])->name('payroll.create');
+        Route::post('/store', [PayrollController::class, 'store'])->name('payroll.store');
+        Route::get('/show/{id}', [PayrollController::class, 'show'])->name('payroll.show');
+        Route::post('/toggle-workday', [PayrollController::class, 'toggleWorkDay'])->name('payroll.toggleWorkDay');
+        Route::get('/attendance/form', [\App\Http\Controllers\admin\PayrollController::class, 'getAttendanceForm'])->name('attendance.form');
+        Route::post('/attendance/store', [\App\Http\Controllers\admin\PayrollController::class, 'storeAttendance'])->name('attendance.store');
+        Route::post('/pay/{id}', [PayrollController::class, 'pay'])->name('payroll.pay');
         });
         // Staff
         Route::prefix('staff')->group(function () {
-                Route::get('/', [AdminStaffController::class, 'staffIndex'])->name('admin.staff.index');
-                Route::get('/create', [AdminStaffController::class, 'create'])->name('admin.staff.create');
-                Route::post('/store', [AdminStaffController::class, 'store'])->name('admin.staff.store');
-                Route::get('/edit/{id}', [AdminStaffController::class, 'edit'])->name('admin.staff.edit');
-                Route::post('/update/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
-                Route::delete('/delete/{id}', [AdminStaffController::class, 'delete'])->name('admin.staff.delete');
+        Route::get('/', [AdminStaffController::class, 'staffIndex'])->name('admin.staff.index');
+        Route::get('/create', [AdminStaffController::class, 'create'])->name('admin.staff.create');
+        Route::post('/store', [AdminStaffController::class, 'store'])->name('admin.staff.store');
+        Route::get('/edit/{id}', [AdminStaffController::class, 'edit'])->name('admin.staff.edit');
+        Route::post('/update/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
+        Route::delete('/delete/{id}', [AdminStaffController::class, 'delete'])->name('admin.staff.delete');
         });
 
 
         // Ảnh sản phẩm
         Route::prefix('product-images')->group(function () {
-                Route::get('/', [ProductImageController::class, 'index'])->name('product-images.index');
-                Route::get('/create', [ProductImageController::class, 'create'])->name('product-images.create');
-                Route::post('/', [ProductImageController::class, 'store'])->name('product-images.store');
-                Route::get('/{id}/edit', [ProductImageController::class, 'edit'])->name('product-images.edit');
-                Route::post('/{id}', [ProductImageController::class, 'update'])->name('product-images.update');
-                Route::delete('/{id}/delete', [ProductImageController::class, 'destroy'])->name('product-images.delete');
+        Route::get('/', [ProductImageController::class, 'index'])->name('product-images.index');
+        Route::get('/create', [ProductImageController::class, 'create'])->name('product-images.create');
+        Route::post('/', [ProductImageController::class, 'store'])->name('product-images.store');
+        Route::get('/{id}/edit', [ProductImageController::class, 'edit'])->name('product-images.edit');
+        Route::post('/{id}', [ProductImageController::class, 'update'])->name('product-images.update');
+        Route::delete('/{id}/delete', [ProductImageController::class, 'destroy'])->name('product-images.delete');
         });
 
         // Quản lý liên hệ từ Admin
@@ -220,33 +220,33 @@
 
         // Topping
         Route::prefix('topping')->group(function () {
-                Route::get('/', [ToppingController::class, 'index'])->name('topping.index');
-                Route::get('/create', [ToppingController::class, 'create'])->name('topping.create');
-                Route::post('/store', [ToppingController::class, 'store'])->name('topping.store');
-                Route::get('/edit/{id}', [ToppingController::class, 'edit'])->name('topping.edit');
-                Route::post('/update/{id}', [ToppingController::class, 'update'])->name('topping.update');
-                Route::delete('/delete/{id}', [ToppingController::class, 'delete'])->name('topping.delete');
+        Route::get('/', [ToppingController::class, 'index'])->name('topping.index');
+        Route::get('/create', [ToppingController::class, 'create'])->name('topping.create');
+        Route::post('/store', [ToppingController::class, 'store'])->name('topping.store');
+        Route::get('/edit/{id}', [ToppingController::class, 'edit'])->name('topping.edit');
+        Route::post('/update/{id}', [ToppingController::class, 'update'])->name('topping.update');
+        Route::delete('/delete/{id}', [ToppingController::class, 'delete'])->name('topping.delete');
         });
 
         // Size
         Route::prefix('size')->group(function () {
-                Route::get('/', [Product_attributesController::class, 'index'])->name('size.index');
-                Route::get('/create', [Product_attributesController::class, 'create'])->name('size.add');
-                Route::post('/store', [Product_attributesController::class, 'store'])->name('size.store');
-                Route::get('/edit/{id}', [Product_attributesController::class, 'edit'])->name('size.edit');
-                Route::post('/update/{id}', [Product_attributesController::class, 'update'])->name('size.update');
-                Route::delete('/delete/{id}', [Product_attributesController::class, 'delete'])->name('size.delete');
+        Route::get('/', [Product_attributesController::class, 'index'])->name('size.index');
+        Route::get('/create', [Product_attributesController::class, 'create'])->name('size.add');
+        Route::post('/store', [Product_attributesController::class, 'store'])->name('size.store');
+        Route::get('/edit/{id}', [Product_attributesController::class, 'edit'])->name('size.edit');
+        Route::post('/update/{id}', [Product_attributesController::class, 'update'])->name('size.update');
+        Route::delete('/delete/{id}', [Product_attributesController::class, 'delete'])->name('size.delete');
         });
 
         // Blogs
         Route::prefix('blogs')->group(function () {
-                Route::get('/', [BlogsController::class, 'index'])->name('blogs.index');
-                Route::get('/create', [BlogsController::class, 'create'])->name('blogs.create');
-                Route::post('/store', [BlogsController::class, 'store'])->name('blogs.store');
-                Route::get('/edit/{id}', [BlogsController::class, 'edit'])->name('blogs.edit');
-                Route::post('/update/{id}', [BlogsController::class, 'update'])->name('blogs.update');
-                Route::delete('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
-                Route::get('/search', [BlogsController::class, 'search'])->name('blogs.search');
+        Route::get('/', [BlogsController::class, 'index'])->name('blogs.index');
+        Route::get('/create', [BlogsController::class, 'create'])->name('blogs.create');
+        Route::post('/store', [BlogsController::class, 'store'])->name('blogs.store');
+        Route::get('/edit/{id}', [BlogsController::class, 'edit'])->name('blogs.edit');
+        Route::post('/update/{id}', [BlogsController::class, 'update'])->name('blogs.update');
+        Route::delete('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
+        Route::get('/search', [BlogsController::class, 'search'])->name('blogs.search');
         });
         });
         Route::delete('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->middleware(['auth', 'checkAdmin'])->name('product_img.delete');
@@ -277,18 +277,18 @@
         });
 
         Route::prefix('bartender')->middleware('checkStaff')->group(function () {
-            Route::get('/', [BartenderController::class, 'index'])->name('bartender.index');
-            Route::get('/create', [BartenderController::class, 'create'])->name('bartender.create');
-            Route::post('/store', [BartenderController::class, 'store'])->name('bartender.store');
-            Route::get('/edit/{id}', [BartenderController::class, 'edit'])->name('bartender.edit');
-            Route::post('/update/{id}', [BartenderController::class, 'update'])->name('bartender.update');
-            Route::post('/delete/{id}', [BartenderController::class, 'delete'])->name('bartender.delete');
-            Route::get('/order/{id}', [BartenderController::class, 'orderDetail'])->name('bartender.order.detail');
-            Route::post('/order-detail/{id}/update-status', [BartenderController::class, 'updateOrderDetailStatus'])->name('bartender.order.detail.status');
-            Route::get('/get-order-details/{id}', [BartenderController::class, 'getOrderDetails'])->name('bartender.get.order.details');
-            Route::post('/update-order-status/{id}', [BartenderController::class, 'updateOrderStatus'])->name('bartender.update.order.status');
-            Route::get('/get-incomplete-order-count', [BartenderController::class, 'getIncompleteOrderCount'])->name('bartender.get.incomplete.order.count');
-            });
+        Route::get('/', [BartenderController::class, 'index'])->name('bartender.index');
+        Route::get('/create', [BartenderController::class, 'create'])->name('bartender.create');
+        Route::post('/store', [BartenderController::class, 'store'])->name('bartender.store');
+        Route::get('/edit/{id}', [BartenderController::class, 'edit'])->name('bartender.edit');
+        Route::post('/update/{id}', [BartenderController::class, 'update'])->name('bartender.update');
+        Route::post('/delete/{id}', [BartenderController::class, 'delete'])->name('bartender.delete');
+        Route::get('/order/{id}', [BartenderController::class, 'orderDetail'])->name('bartender.order.detail');
+        Route::post('/order-detail/{id}/update-status', [BartenderController::class, 'updateOrderDetailStatus'])->name('bartender.order.detail.status');
+        Route::get('/get-order-details/{id}', [BartenderController::class, 'getOrderDetails'])->name('bartender.get.order.details');
+        Route::post('/update-order-status/{id}', [BartenderController::class, 'updateOrderStatus'])->name('bartender.update.order.status');
+        Route::get('/get-incomplete-order-count', [BartenderController::class, 'getIncompleteOrderCount'])->name('bartender.get.incomplete.order.count');
+        });
 
         // Test route for middleware
         Route::get('/test-middleware', function() {

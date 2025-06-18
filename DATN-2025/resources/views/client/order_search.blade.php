@@ -14,14 +14,13 @@
                         name="phone"
                         class="w-full px-4 py-2 text-gray-700 focus:outline-none"
                         placeholder="Nhập số điện thoại..."
-                        value="{{ $phone ?? '' }}"
-                        required>
+                        value="{{ $phone ?? '' }}">
                     <button style="margin-left:10px;margin-top:0px; width:150px ; padding: 12px; border-radius: 30px;" type="submit" class="px-6 py-2 bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors">
                         Tìm kiếm
                     </button>
                 </div>
                 @error('phone')
-                    <p class="text-red-500 text-sm mt-2 text-center">{{ $message }}</p>
+                    <h3 class="text-red-500 text-sm mt-2 text-center">{{ $message }}</h3>
                 @enderror
             </form>
         </div>
