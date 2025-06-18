@@ -111,6 +111,7 @@ function updateTotalPrice() {
                     $('#modalPosItem .product-description').text(data.mota);
                     $('#modalPosItem .product-price').text(data.price ? data.price + 'đ' : '');
                     $('#modalPosItem .add-to-cart').data('id', data.id);
+                    $('#modalPosItem input[name="qty"]').val(1);
                 },
                 error: function() {
                     alert('Không lấy được thông tin sản phẩm!');
