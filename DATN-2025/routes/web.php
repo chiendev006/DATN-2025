@@ -266,6 +266,7 @@
         Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
         Route::get('/orderdetailtoday', [StaffController::class, 'orderdetailtoday'])->name('staff.orderdetailtoday');
         Route::get('/staff/products/search', [StaffController::class, 'searchProducts'])->name('staff.products.search');
+        Route::put('/orders/{id}/status', [StaffController::class, 'updateStatus'])->name('orders.updateStatus');
         });
 
         Route::prefix('bartender')->middleware('checkStaff')->group(function () {

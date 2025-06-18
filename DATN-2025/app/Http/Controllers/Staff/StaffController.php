@@ -14,6 +14,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\ProductAttribute;
+use App\Models\ProductTopping;
 
 class StaffController extends Controller
 {
@@ -112,19 +114,45 @@ class StaffController extends Controller
         }
         return view('staff.menu', compact('sanpham', 'danhmuc', 'selectedDanhmuc', 'message'));
     }
-     public function orderdetailtoday()
-    {
-        $donhangs = Order::with('details')
-            ->whereDate('created_at', Carbon::today())
-            ->orderBy('created_at', 'desc')
-            ->get();
+    public function orderdetailtoday()
+{
+    $donhangs = Order::with([
+        'details.product',
+        'details.size'
+    ])->whereDate('created_at', Carbon::today())
+    ->orderBy('created_at', 'desc')
+    ->get();
 
-        $danhmuc = DanhMuc::all();
-        $sanpham = SanPham::all();
-
-        return view('staff.orderdetail', compact('donhangs', 'danhmuc', 'sanpham'));
-
+    // Load thông tin topping cho nhiều topping
+    foreach($donhangs as $donhang) {
+        foreach($donhang->details as $detail) {
+            if($detail->topping_id) {
+                // Xử lý trường hợp nhiều topping (ngăn cách bởi dấu phẩy)
+                $toppingIds = explode(',', $detail->topping_id);
+                $toppings = [];
+                
+                foreach($toppingIds as $id) {
+                    $id = trim($id); // Loại bỏ khoảng trắng
+                    if($id) {
+                        $topping = Product_topping::find($id);
+                        if($topping) {
+                            $toppings[] = $topping;
+                        }
+                    }
+                }
+                
+                $detail->topping_list = $toppings;
+            } else {
+                $detail->topping_list = [];
+            }
+        }
     }
+
+    $danhmuc = DanhMuc::all();
+    $sanpham = SanPham::all();
+
+    return view('staff.orderdetail', compact('donhangs', 'danhmuc', 'sanpham'));
+}
     public function searchProducts(Request $request)
     {
         $danhmuc = DanhMuc::all();
@@ -140,4 +168,13 @@ class StaffController extends Controller
 
         return view('staff.menu', compact('sanpham', 'keyword' , 'danhmuc'));
     }
+    public function updateStatus(Request $request, $id)
+{
+    $order = Order::findOrFail($id);
+    $order->status = $request->input('status');
+    $order->save();
+
+    return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');
+}
+
 }
