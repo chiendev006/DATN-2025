@@ -1,4 +1,5 @@
 <?php
+
         use App\Http\Controllers\AboutController;
         use App\Http\Controllers\admin\AddressController;
         use App\Http\Controllers\admin\AdminStaffController;
@@ -318,6 +319,15 @@
         Route::get('/blog', [BlogController::class, 'index'])->name('client.blog');
         Route::get('/blog/{id}', [BlogController::class, 'show'])->name('client.blogsingle');
 
+
+Route::post('/order/reorder/{orderId}', [OrderController::class, 'reorder'])->name('client.order.reorder');
+
+//
+Route::get('/blog', [BlogController::class, 'index'])->name('client.blog');
+Route::get('/blog/search', [BlogController::class, 'search'])->name('blog.search');
+Route::get('/blog/{id}', [BlogController::class, 'show'])->name('client.blogsingle');
+Route::get('/blog/category/{id}', [BlogController::class, 'showByCategory'])->name('blog.category');
+
         // Discout
         Route::post('/cart/apply-coupon', [CartController::class, 'applyCoupon'])->name('cart.applyCoupon');
         Route::post('/cart/remove-coupon', [CartController::class, 'removeCoupon'])->name('cart.removeCoupon');
@@ -337,3 +347,4 @@
         Route::fallback(function () {
             return view('client.errors404'); // Trả về view 'errors/404.blade.php'
         });
+

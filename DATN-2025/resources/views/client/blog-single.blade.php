@@ -27,15 +27,23 @@
                                         <input type="text" name="txt" placeholder="Search">
                                         <input type="submit" name="submit" value="&#xf002;">
                                     </div>
-                                    <div class="blog-left-categories blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                  <div
+                                        class="blog-left-categories blog-common-wide wow fadeInDown"
+                                        data-wow-duration="1000ms"
+                                        data-wow-delay="300ms"
+                                    >
                                         <h5>Categories</h5>
                                         <ul class="list">
-                                            <li><a href="#">Catering</a></li>
-                                            <li><a href="#">Community</a></li>
-                                            <li><a href="#">Employment</a></li>
-                                            <li><a href="#">Franchise</a></li>
-                                            <li><a href="#">Kids Corner</a></li>
-                                            <li><a href="#">Our Recipes</a></li>
+                                            @foreach($categories as $category)
+                                            <li>
+                                                <a href="{{ route('blog.category', $category->id) }}"
+                                                    class="{{ (isset($currentCategory) && $currentCategory->id == $category->id) ? 'active' : '' }}"
+                                                >
+                                                    {{ $category->name }}
+                                                    ({{ $category->blogs->count() }})
+                                                </a>
+                                            </li>
+                                            @endforeach
                                         </ul>
                                     </div>
                                     <div class="blog-recent-post blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
@@ -51,10 +59,7 @@
                                             <h6>Disclosue - Real food here</h6>
                                         </div>
                                     </div>
-                                    <div class="popular-tag blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <h5>Popular Tags</h5>
-                                        <a href="#">Audio</a> <a href="#">Service</a> <a href="#">Cupcake</a> <a href="#">Online Order</a> <a href="#">Contact</a>
-                                    </div>
+                                    
                                     <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <h5>Best Deals</h5>
                                         <div class="best-deal-blog">

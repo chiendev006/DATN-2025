@@ -23,19 +23,44 @@
                             <div class="col-md-4 col-sm-4 col-xs-12">
                                 <div class="blog-left-section">
                                     <div class="blog-left-search blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <input type="text" name="txt" placeholder="Search">
-                                        <input type="submit" name="submit" value="&#xf002;">
+                                        <form action="{{ route('blog.search') }}" method="GET">
+                                            <input type="text" name="keyword" placeholder="Search..." value="{{ request('keyword') }}">
+                                            <input type="submit" name="submit" value="&#xf002;" style="font-family: FontAwesome;">
+                                        </form>
                                     </div>
-                                    <div class="blog-left-categories blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                    <div
+                                        class="blog-left-categories blog-common-wide wow fadeInDown"
+                                        data-wow-duration="1000ms"
+                                        data-wow-delay="300ms"
+                                    >
                                         <h5>Categories</h5>
                                         <ul class="list">
-                                            <li><a href="#">Catering</a></li>
-                                            <li><a href="#">Community</a></li>
-                                            <li><a href="#">Employment</a></li>
-                                            <li><a href="#">Franchise</a></li>
-                                            <li><a href="#">Kids Corner</a></li>
-                                            <li><a href="#">Our Recipes</a></li>
+                                            @foreach($categories as $category)
+                                            <li>
+                                                <a href="{{ route('blog.category', $category->id) }}"
+                                                    class="{{ (isset($currentCategory) && $currentCategory->id == $category->id) ? 'active' : '' }}"
+                                                >
+                                                    {{ $category->name }}
+                                                    ({{ $category->blogs->count() }})
+                                                </a>
+                                            </li>
+                                            @endforeach
                                         </ul>
+                                    </div>
+
+                                    <div class="blog-posts-area">
+                                        @if(isset($currentCategory))
+                                        @endif
+
+                                        @if($blogs->isEmpty())
+                                        <p>Chưa có bài viết nào để hiển thị.</p>
+                                        @else @foreach($blogs as $blogItem)
+                                        @endforeach
+
+                                        <div class="mt-8">
+                                            {{ $blogs->links() }}
+                                        </div>
+                                        @endif
                                     </div>
                                     <div class="blog-recent-post blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <h5>Recent Posts</h5>
@@ -50,10 +75,7 @@
                                             <h6>Disclosue - Real food here</h6>
                                         </div>
                                     </div>
-                                    <div class="popular-tag blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <h5>Popular Tags</h5>
-                                        <a href="#">Audio</a> <a href="#">Service</a> <a href="#">Cupcake</a> <a href="#">Online Order</a> <a href="#">Contact</a>
-                                    </div>
+                                    
                                     <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <h5>Best Deals</h5>
                                         <div class="best-deal-blog">
@@ -89,7 +111,7 @@
                                                       
                             <div class="col-md-8 col-sm-8 col-xs-12">
                                 <div class="blog-right-section">
-                                  @foreach ($blog as $item)
+                                  @foreach ($blogs as $item)
                                     <div class="blog-right-listing wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <div class="feature-img">
                                             <a href="{{route('client.blogsingle',$item->id)}}">
@@ -103,7 +125,7 @@
                                             <span><i class="icon-comment-5"></i> 5 Comments</span>
                                             <h5>{{$item->title}}</h5>
                                             <p>{!!$item->content!!}</p>
-                                            <a href="blog_single.html">Read More <i class="icon-right-4"></i></a>
+                                            <a href="{{route('client.blogsingle',$item->id)}}" >Read More <i class="icon-right-4"></i></a>
                                         </div>
                                     </div>
                                     @endforeach
