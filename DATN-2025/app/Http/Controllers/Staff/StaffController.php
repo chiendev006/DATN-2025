@@ -171,7 +171,32 @@ class StaffController extends Controller
     public function updateStatus(Request $request, $id)
 {
     $order = Order::findOrFail($id);
-    $order->status = $request->input('status');
+    $oldStatus = $order->status; 
+
+    $newStatus = $request->input('status');
+    $order->status = $newStatus;
+
+    // Nếu trạng thái là hủy (cancelled hoặc 4), xử lý lý do hủy
+    if ($newStatus == 'cancelled' || $newStatus == 4) {
+        $request->validate([
+            'cancel_reason' => 'required|string|max:255'
+        ], [
+            'cancel_reason.required' => 'Vui lòng nhập lý do hủy đơn hàng',
+            'cancel_reason.max' => 'Lý do hủy không được quá 255 ký tự'
+        ]);
+
+        $cancelReason = $request->input('cancel_reason');
+
+        // Thêm tiền tố nếu chưa có
+        if (!str_contains($cancelReason, '(Nhân viên hủy)')) {
+            $cancelReason = '(Nhân viên hủy) ' . $cancelReason;
+        }
+
+        $order->cancel_reason = $cancelReason;
+    } else {
+        $order->cancel_reason = null;
+    }
+
     $order->save();
 
     return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');
