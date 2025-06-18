@@ -62,7 +62,7 @@ public function cancelOrder($id, Request $request)
     $reason = $request->input('cancel_reason', 'Người dùng không cung cấp lý do');
 
     $order->status = 'cancelled';
-    $order->cancel_reason = $reason . ' (Khách hàng hủy)';
+    $order->cancel_reason = '(Khách hàng hủy) ' . $reason;
     $order->save();
 
     return response()->json([

@@ -75,7 +75,7 @@ class OrderSearchController extends Controller
         $reason = $request->input('cancel_reason', 'Khách hàng hủy đơn');
 
         $order->status = 'cancelled';
-        $order->cancel_reason = $reason . ' (Khách hàng hủy)';
+        $order->cancel_reason = '(Khách hàng hủy) ' . $reason;
         $order->save();
 
         return response()->json([

@@ -29,15 +29,15 @@ class OrderController extends Controller
         $order->status = $request->input('status');
 
         if ($request->input('status') === 'cancelled') {
-            if ($order->cancel_reason && $oldStatus === 'cancelled') {
-            } else {
-                $cancelReason = $request->input('cancel_reason');
-                if (!str_contains($cancelReason, '(Admin hủy)')) {
-                    $cancelReason .= ' (Admin hủy)';
-                }
-                $order->cancel_reason = $cancelReason;
-            }
+        if ($order->cancel_reason && $oldStatus === 'cancelled') {
         } else {
+            $cancelReason = $request->input('cancel_reason');
+            if (!str_contains($cancelReason, '(Admin hủy)')) {
+                $cancelReason = '(Admin hủy) ' . $cancelReason;
+            }
+            $order->cancel_reason = $cancelReason;
+        }
+    } else {
             $order->cancel_reason = $request->input('cancel_reason');
         }
 

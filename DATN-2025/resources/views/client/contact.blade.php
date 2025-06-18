@@ -21,13 +21,12 @@
                     
                     <div class="container">
                         <div class="title text-center">
-                            <h2 class="text-coffee">Contact Us</h2>
-                            <h6>We are a second-generation family business established in 1972</h6>
+                            <h2 class="text-coffee">Liên hệ với chúng tôi</h2>
+                            <h6>Chúng tôi luôn đặt lợi ích của khách hàng lên hàng đầu nếu bạn có thắc măc gì hãy liên hệ với chúng tôi.</h6>
                         </div>
                         <div class="row">
                             <div class="col-md-8 col-sm-8 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                <h5 class="text-coffee">Leave us a Message</h5>
-                                <p>Aenean massa diam, viverra vitae luctus sed, gravida eget est. Etiam nec ipsum porttitor, consequat libero eu, dignissim eros. Nulla auctor lacinia enim id mollis.</p>
+                                <h5 class="text-coffee">Để lại cho chúng tôi mộ tin nhắn</h5>
                                  <div id="success-message"></div>
                                 <form id="contact-form" action="{{ route('contact.store') }}" method="POST">
                                   @csrf
@@ -69,19 +68,19 @@
                             </div>
                             <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                 <address>
-                                    <span class="text-primary co-title">Our Address</span>
-                                    <p>329 Queensberry Street, North Melbourne  VIC 3051, Australia.</p>
-                                    <p><a href="tel:1234567890">123 456 7890</a> <br> <a href="mailto:support@despina.com">support@despina.com</a></p>
+                                    <span class="text-primary co-title">Địa chỉ của chúng tôi</span>
+                                    <p>55 Lương Khánh Thiện, Ngô Quyền, Hải Phòng</p>
+                                    <p><a href="tel:1234567890">0377 888 999</a> <br> <a href="mailto:support@despina.com">mira99@gmail.com</a></p>
                                 </address>
-                                <h5 class="text-coffee">Opening Hours</h5>
+                                <h5 class="text-coffee">Giờ mở cửa</h5>
                                 <ul class="time-list">
-                                    <li><span class="week-name">Monday</span> <span>12-6 PM</span></li>
-                                    <li><span class="week-name">Tuesday</span> <span>12-6 PM</span></li>
-                                    <li><span class="week-name">Wednesday</span> <span>12-6 PM</span></li>
-                                    <li><span class="week-name">Thursday</span> <span>12-6 PM</span></li>
-                                    <li><span class="week-name">Friday</span> <span>12-6 PM</span></li>
-                                    <li><span class="week-name">Saturday</span> <span>12-6 PM</span></li>
-                                    <li><span class="week-name">Sunday</span> <span>Closed</span></li>
+                                    <li><span class="week-name">Thứ hai</span> <span>12-6 giờ</span></li>
+                                    <li><span class="week-name">Thứ ba</span> <span>12-6 giờ</span></li>
+                                    <li><span class="week-name">Thứ tư</span> <span>12-6 giờ</span></li>
+                                    <li><span class="week-name">Thứ năm</span> <span>12-6 giờ</span></li>
+                                    <li><span class="week-name">Thứ sáu</span> <span>12-6 giờ</span></li>
+                                    <li><span class="week-name">Thứ bảy</span> <span>12-6 giờ</span></li>
+                                    <li><span class="week-name">Thứ tám</span> <span>Đóng cửa</span></li>
                                 </ul>
                             </div>
                         </div>

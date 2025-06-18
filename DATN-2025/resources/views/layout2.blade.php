@@ -583,9 +583,8 @@
                     >
                   </div>
                   <p  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
-                    We have a hankering for some really in good melt in a mouth
-                    variety. Floury is the best choice to taste food and
-                    dessert.
+                   Chúng tôi thèm một số loại thực sự tan chảy trong miệng.
+                    Bột là lựa chọn tốt nhất để nếm thức ăn và món tráng miệng.
                   </p>
                   <ul class="footer-social">
                     <li>
@@ -621,24 +620,23 @@
                   </ul>
                 </div>
                 <div  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="col-md-3 col-sm-3 col-xs-12">
-                  <h5>Contact</h5>
+                  <h5>Liên hệ</h5>
                   <p>
-                    329 Queensberry Street, North Melbourne <br />
-                    VIC 3051, Australia. <br />
-                    <a href="tel:1234567890">123 456 7890</a> <br />
-                    <a href="mailto:support@despina.com">support@despina.com</a>
+                    55 Lương Khánh Thiện, Ngô Quyền Hải Phòng <br />
+                    <a href="tel:1234567890">0377 888 999</a> <br />
+                    <a href="mailto:support@despina.com">mira99@gmail.com</a>
                   </p>
                 </div>
                 <div  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="col-md-3 col-sm-3 col-xs-12">
-                  <h5>Opening Hour</h5>
+                  <h5>Giờ mở cửa</h5>
                   <p>
-                    Monday - Friday: ........6am - 9pm <br />
-                    Saturday - Sunday: ........6am - 10pm <br />
-                    Close on special days
+                    Thứ hai - Thứ sáu: ........6h sáng - 9h tối <br />
+                    Thứ bảy - Chủ nhật: ........6h sáng - 10h tối <br />
+                    Nghỉ ngày đặc biệt
                   </p>
                 </div>
                 <div class="col-md-3 col-sm-3 col-xs-12">
-                  <h5>Despina Video</h5>
+                  <h5>Video giớ thiệu</h5>
                   <a
                     href="https://www.youtube.com/watch?v=wDKaIVAqx8A"
                     class="magnific-youtube"
