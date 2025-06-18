@@ -48,7 +48,7 @@
 
                     <div class="row" id="product-display">
                         @foreach ($firstProducts as $product)
-                            <div class="col-md-10 col-sm-10 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="500ms">
+                            <div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="500ms">
                                 <div class="menu-fix-list">
                                     <span class="menu-fix-product">
                                         <img src="{{ url('storage/uploads/' . $product->image) }}" style="width: 100px; height: 100px; border-radius: 100px;" alt="{{ $product->name }}">
@@ -112,27 +112,22 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
-    // Category click handler
     $('#category-list a').click(function(e) {
         e.preventDefault();
         var categoryId = $(this).data('id');
-        
-        // Update active class
         $('#category-list li').removeClass('current');
         $(this).parent().addClass('current');
 
-        // Load first page of products
         loadProducts(categoryId, 1);
     });
 
-    // Pagination click handler
     $(document).on('click', '.gallery-pagination a', function(e) {
         e.preventDefault();
         if ($(this).hasClass('disabled')) return;
 
         var page = $(this).data('page');
         var categoryId = $('#category-list li.current a').data('id');
-        
+
         loadProducts(categoryId, page);
     });
 
@@ -142,14 +137,11 @@ $(document).ready(function() {
             method: 'GET',
             dataType: 'json',
             success: function(response) {
-                // Update category name and description
                 $('#category-name').text(response.category_name);
                 $('#category-description').text(response.category_description);
 
-                // Clear existing products
                 $('#product-display').empty();
 
-                // Add new products
                 $.each(response.products, function(index, product) {
                     let imageUrl = product.image;
                     if (!imageUrl.startsWith('http')) {
@@ -157,7 +149,7 @@ $(document).ready(function() {
                     }
 
                     let productHtml = `
-                        <div class="col-md-10 col-sm-10 col-xs-12 wow fadeInDown" data-wow-duration="700ms" data-wow-delay="500ms">
+                        <div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-12 wow fadeInDown" data-wow-duration="700ms" data-wow-delay="500ms">
                             <div class="menu-fix-list">
                                 <span class="menu-fix-product">
                                     <img src="${imageUrl}" style="width: 100px; height: 100px; border-radius: 100px;" alt="${product.name}">
@@ -170,10 +162,8 @@ $(document).ready(function() {
                     $('#product-display').append(productHtml);
                 });
 
-                // Update pagination
                 updatePagination(response.pagination);
 
-                // Re-initialize WOW.js if used
                 if (typeof WOW === 'function') {
                     new WOW().init();
                 }
@@ -195,7 +185,6 @@ $(document).ready(function() {
                     </li>
         `;
 
-        // Generate page numbers
         for (let i = 1; i <= pagination.last_page; i++) {
             paginationHtml += `
                 <li class="${i === pagination.current_page ? 'active' : ''}">
