@@ -179,7 +179,7 @@
                                                 <form action="{{ route('admin.staff.delete', ['id' => $staff->id]) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
+                                                <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa nhân viên này?')">Xóa</button>
                                             </form>
                                             </div>
                                         </td>

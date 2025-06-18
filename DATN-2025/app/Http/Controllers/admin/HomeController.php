@@ -80,4 +80,23 @@ class HomeController extends Controller
             'topproduct'=>$topProducts
         ]);
     }
+
+    public function filterRevenue(Request $request)
+    {
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+
+        $revenueData = Order::whereBetween('created_at', [$startDate, $endDate])
+            ->where('pay_status', 1) // Only count paid orders
+            ->select(
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('COUNT(*) as total_orders'),
+                DB::raw('SUM(total) as revenue')
+            )
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        return response()->json($revenueData);
+    }
 }

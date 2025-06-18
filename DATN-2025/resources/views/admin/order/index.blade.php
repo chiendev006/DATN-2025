@@ -105,6 +105,7 @@
                                                    <div  class="field-wrapper">
                                                    <div class="field-placeholder">Đơn/trang</div>
                                                     <select name="per_page" class="form-control" style="width: 80px; margin-left: 12px;" onchange="this.form.submit()">
+                                                        <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản </option>
                                                         <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 bản </option>
                                                         <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản  </option>
                                                         <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
@@ -129,17 +130,17 @@
                                             <table id="copy-print-csv" class="table v-middle">
                                                 <thead>
                                     <tr>
-                                        <th>STT</th>
+                                        <th width="5%">STT</th>
                                         <th>Tên khách hàng</th>
-                                        <th>Email</th>
+
                                         <th>Số điện thoại</th>
-                                        <th>Địa chỉ</th>
+
                                         <th>Trạng thái</th>
                                         <th>Trạng thái thanh toán</th>
-                                        <th>Ngày tạo</th>
+                                        <th>Tổng tiền</th>
                                         <th>Ghi chú</th>
                                         <th>Lí do hủy</th>
-                                        <th>Tổng tiền</th>
+                                        <th>Ngày tạo</th>
                                         <th style="width:90px; text-align:center;" >Hành động</th>
                                     </tr>
                                 </thead>
@@ -151,11 +152,15 @@
                                   @else
                                   @foreach ($orders as $key => $order)
                                     <tr>
-                                       <td>{{ ($orders->currentPage()-1) * $orders->perPage() + $key + 1 }}</td>
+                                       <td width="5%">{{ ($orders->currentPage()-1) * $orders->perPage() + $key + 1 }}</td>
                                         <td>{{ $order->name }}</td>
-                                        <td>{{ $order->email }}</td>
-                                        <td>{{ $order->phone }}</td>
-                                        <td>{{ $order->address_detail }}, {{ $order->district_name }}</td>
+
+                                     @if($order->phone=='N/A')
+                                     <td>Nhân viên</td>
+                                     @else
+                                     <td>{{ $order->phone }}</td>
+                                     @endif
+
                                         <td>
                                             @if ($order->status == 'pending' || $order->status == 0)
                                                 <span style="color: orange;">Chờ xử lý</span>
@@ -181,9 +186,9 @@
                                                 <span>{{ $order->pay_status }}</span>
                                             @endif
                                         </td>
+                                         <td>{{ number_format($order->total, 0, ',', '.') }} đ</td>
 
 
-                                        <td>{{ $order->created_at->format('d/m/Y') }}</td>
                                         <td>{{ $order->note }}</td>
 
                                      @if($order->status == 'cancelled' || $order->pay_status == 2)
@@ -191,28 +196,28 @@
                                      @else
                                      <td></td>
                                      @endif
-                                      <td>{{ number_format($order->total, 0, ',', '.') }} đ</td>
+                                           <td>{{ $order->created_at->format('d/m/Y') }}</td>
+
                                         <td style="width:100px; text-align:center;">
                                             <div style="display: flex; gap: 2px; justify-content: center;">
                                             <button style=" background-color: rgb(76, 106, 175); color: white; border: none; border-radius: 5px; cursor: pointer;font-size: 12px;padding: 5px 10px;text-align: center;text-decoration: none;display: inline-block;" type="button" class="btn-action btn-view"
                                                 onclick="openOrderModal(this)"
                                                 data-id="{{ $order->id }}"
+                                                data-phone="{{ $order->phone }}"
+                                                data-email="{{ $order->email }}"
+                                                data-payment_method="{{ $order->payment_method }}"
                                                 data-name="{{ $order->name }}"
                                                 data-status="@if ($order->status == 'pending' || $order->status == 0)Chờ xử lý@elseif ($order->status == 'processing' || $order->status == 1)Đã xác nhận @elseif ($order->status == 'completed' || $order->status == 3)Hoàn thành @elseif ($order->status == 'cancelled' || $order->status == 4)Đã hủy @else{{ $order->status }}@endif"
                                                 data-total="{{ number_format($order->total, 0, ',', '.') }} đ"
                                                 data-pay_status="{{ $order->pay_status }}"
-                                                data-created_at="{{ $order->created_at }}"
+                                                data-created_at="{{ $order->created_at->format('d/m/Y') }}"
                                                 data-shipping_fee="{{ number_format($order->shipping_fee ?? 0, 0, ',', '.') }} đ"
                                                 data-coupon_total_discount="{{ number_format($order->coupon_total_discount ?? 0, 0, ',', '.') }} đ"
                                                 data-address_detail="{{ $order->district_name ? $order->district_name . ', ' : '' }}{{ $order->address_detail }}"
-                                                data-product_total="{{ number_format(($order->total ?? 0) - ($order->shipping_fee ?? 0) - ($order->coupon_total_discount ?? 0), 0, ',', '.') }} đ"
+                                                data-product_total="{{ number_format(($order->total ?? 0) - ($order->shipping_fee ?? 0) + ($order->coupon_total_discount ?? 0), 0, ',', '.') }} đ"
                                                 data-cancel_reason="{{ $order->cancel_reason }}"
                                             >Xem</button>
-                                            <form action="{{ route('admin.order.delete', ['id' => $order->id]) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
-                                            </form>
+
                                             </div>
                                                     </td>
                                     </tr>
@@ -252,15 +257,15 @@
       @csrf
       <div class="row">
 
-        <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+        <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
         <input type="hidden" name="id" id="modal_id">
       <div style="margin-bottom:10px;">
-        <div class="field-placeholder">Tên khách hàng</div>
+        <div class="field-placeholder">Tên khách hàng - mã đơn </div>
         <input type="text" class="form-control" name="name" id="modal_name" readonly />
       </div>
       </div>
 
-      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
       <div style="margin-bottom:10px;">
         <div class="field-placeholder">Trạng thái</div>
         <select name="status" id="modal_status" class="form-control">
@@ -272,35 +277,47 @@
       </div>
       </div>
 
-      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+
+
+      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
       <div style="margin-bottom:10px;">
-        <div class="field-placeholder">Tổng tiền</div>
-        <input type="text" class="form-control" name="total" id="modal_total" readonly />
+        <div class="field-placeholder">Số điện thoại</div>
+        <input type="text" class="form-control" name="phone" id="modal_phone" readonly />
+      </div>
+      </div>
+      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Email</div>
+        <input type="text" class="form-control" name="email" id="modal_email" readonly />
       </div>
       </div>
 
-      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
       <div style="margin-bottom:10px;">
-        <div class="field-placeholder">Mã giao dịch</div>
-        <input type="text" class="form-control" name="transaction_id" id="modal_transaction_id" readonly />
+        <div class="field-placeholder">Hình thức thanh toán</div>
+        <input type="text" class="form-control" name="payment_method" id="modal_payment_method" readonly />
       </div>
       </div>
-
-      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
       <div style="margin-bottom:10px;">
         <div class="field-placeholder">Trạng thái thanh toán</div>
         <select class="form-control" name="pay_status" id="modal_pay_status">
           <option value="0">Chờ thanh toán</option>
           <option value="1">Đã thanh toán</option>
-          <option value="2">Đã hủy</option>
         </select>
       </div>
       </div>
 
-      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
       <div style="margin-bottom:10px;">
         <div class="field-placeholder">Địa chỉ</div>
                 <input type="text" class="form-control" name="address_detail" id="modal_address_detail" readonly />
+      </div>
+      </div>
+      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Ngày tạo</div>
+                <input type="text" class="form-control" name="created_at" id="modal_created_at" readonly />
       </div>
       </div>
 
@@ -331,22 +348,28 @@
       </div>
 
 
-
-      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Tổng tiền</div>
+        <input type="text" class="form-control" name="total" id="modal_total" readonly />
+      </div>
+      </div>
+    <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Tiền sản phẩm</div>
+            <input type="text" class="form-control" name="product_total" id="modal_product_total" readonly />
+      </div>
+      </div>
+      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
       <div style="margin-bottom:10px;">
         <div class="field-placeholder">Tiền ship</div>
         <input type="text" class="form-control" name="shipping_fee" id="modal_shipping_fee" readonly />
       </div>
       </div>
 
-      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
-      <div style="margin-bottom:10px;">
-        <div class="field-placeholder">Tiền sản phẩm</div>
-            <input type="text" class="form-control" name="product_total" id="modal_product_total" readonly />
-      </div>
-      </div>
 
-      <div class="field-wrapper col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+
+      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
       <div style="margin-bottom:10px;">
         <div class="field-placeholder">Tiền giảm giá</div>
         <input type="text" class="form-control" name="coupon_total_discount" id="modal_coupon_total_discount" readonly />
@@ -366,109 +389,167 @@
     </form>
   </div>
 </div>
-<script>
-function openOrderModal(btn) {
-  document.getElementById('orderModal').style.display = 'block';
-  document.getElementById('modal_id').value = btn.getAttribute('data-id');
-  document.getElementById('modal_name').value = btn.getAttribute('data-name');
+<<script>
 
-  // Đặt giá trị cho dropdown status
-  const statusText = btn.getAttribute('data-status');
-  const statusSelect = document.getElementById('modal_status');
-  if (statusText.includes('Chờ xử lý')) {
-    statusSelect.value = 'pending';
-  } else if (statusText.includes('Đã xác nhận')) {
-    statusSelect.value = 'processing';
-  } else if (statusText.includes('Hoàn thành')) {
-    statusSelect.value = 'completed';
-  } else if (statusText.includes('Đã hủy')) {
-    statusSelect.value = 'cancelled';
-  }
 
-  document.getElementById('modal_total').value = btn.getAttribute('data-total');
-  document.getElementById('modal_transaction_id').value = btn.getAttribute('data-transaction_id');
-  document.getElementById('modal_pay_status').value = btn.getAttribute('data-pay_status');
-  document.getElementById('modal_cancel_reason').value = btn.getAttribute('data-cancel_reason') || '';
+    function openOrderModal(btn) {
+        document.getElementById('orderModal').style.display = 'block';
+        document.getElementById('modal_id').value = btn.getAttribute('data-id');
+        document.getElementById('modal_name').value = btn.getAttribute('data-name') + ' - ' + btn.getAttribute('data-id');
+        if( btn.getAttribute('data-phone')=='N/A'){
+            document.getElementById('modal_phone').value = 'Nhân viên thu ngân';
+        } else {
+            document.getElementById('modal_phone').value = btn.getAttribute('data-phone');
+        }
 
-  // Thêm các trường mới
-  document.getElementById('modal_shipping_fee').value = btn.getAttribute('data-shipping_fee') || '0 đ';
-  document.getElementById('modal_coupon_total_discount').value = btn.getAttribute('data-coupon_total_discount') || '0 đ';
-  document.getElementById('modal_address_detail').value = btn.getAttribute('data-address_detail') || '';
-  document.getElementById('modal_product_total').value = btn.getAttribute('data-product_total') || '0 đ';
 
-  document.getElementById('orderForm').action = "{{ url('admin/order/update') }}/" + btn.getAttribute('data-id');
+            document.getElementById('modal_email').value =  btn.getAttribute('data-email') ||'Nhân viên thu ngân';
 
-  // Kiểm tra trạng thái để hiển thị ô lí do hủy
-  checkCancelFields();
+        document.getElementById('modal_payment_method').value = btn.getAttribute('data-payment_method');
 
-  // Thêm event listeners cho các select
-  document.getElementById('modal_status').addEventListener('change', checkCancelFields);
-  document.getElementById('modal_pay_status').addEventListener('change', checkCancelFields);
+        const statusSelect = document.getElementById('modal_status');
+        const payStatusSelect = document.getElementById('modal_pay_status');
 
-  // Lấy sản phẩm của đơn hàng
-  var orderId = btn.getAttribute('data-id');
-  fetch('/admin/order/json/' + orderId)
-    .then(function(response) { return response.json(); })
-    .then(function(data) {
-      var tbody = document.querySelector('#order_products_table tbody');
-      tbody.innerHTML = '';
-      // Kiểm tra có details không
-      if (data.details && Array.isArray(data.details) && data.details.length > 0) {
-        data.details.forEach(function(product) {
-          var row = `<tr>
-            <td>${product.product_name ?? ''}</td>
-            <td>${product.product_image ? `<img src='/storage/uploads/${product.product_image}' width='50'>` : ''}</td>
-            <td>${product.size ?? ''}</td>
-            <td>
-            ${product.topping ?
-                product.topping :
-                `<span style="color: red;">Không chọn</span>`
+        const originalStatusFromButton = btn.getAttribute('data-status');
+        const originalPayStatusFromButton = btn.getAttribute('data-pay_status');
+
+        let initialStatusValue;
+        if (originalStatusFromButton.includes('Chờ xử lý')) {
+            initialStatusValue = 'pending';
+        } else if (originalStatusFromButton.includes('Đã xác nhận')) {
+            initialStatusValue = 'processing';
+        } else if (originalStatusFromButton.includes('Hoàn thành')) {
+            initialStatusValue = 'completed';
+        } else if (originalStatusFromButton.includes('Đã hủy')) {
+            initialStatusValue = 'cancelled';
+        } else {
+            initialStatusValue = originalStatusFromButton;
+        }
+
+        statusSelect.value = initialStatusValue;
+        payStatusSelect.value = originalPayStatusFromButton;
+
+        statusSelect.setAttribute('data-original-status', initialStatusValue);
+        payStatusSelect.setAttribute('data-original-pay-status', originalPayStatusFromButton);
+
+        // Disable invalid status options
+        disableInvalidStatusOptions(initialStatusValue);
+        disableInvalidPayStatusOptions(originalPayStatusFromButton);
+
+        document.getElementById('modal_total').value = btn.getAttribute('data-total');
+        document.getElementById('modal_cancel_reason').value = btn.getAttribute('data-cancel_reason') || '';
+        document.getElementById('modal_shipping_fee').value = btn.getAttribute('data-shipping_fee') || '0 đ';
+        document.getElementById('modal_coupon_total_discount').value = btn.getAttribute('data-coupon_total_discount') || '0 đ';
+        document.getElementById('modal_address_detail').value = btn.getAttribute('data-address_detail') || 'Nhân viên thu ngân';
+        document.getElementById('modal_product_total').value = btn.getAttribute('data-product_total') || '0 đ';
+        document.getElementById('modal_created_at').value = btn.getAttribute('data-created_at') || '';
+        document.getElementById('orderForm').action = "{{ url('admin/order/update') }}/" + btn.getAttribute('data-id');
+
+        checkCancelFields();
+
+        statusSelect.addEventListener('change', checkCancelFields);
+        payStatusSelect.addEventListener('change', checkCancelFields);
+
+        var orderId = btn.getAttribute('data-id');
+        fetch('/admin/order/json/' + orderId)
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('#order_products_table tbody');
+                tbody.innerHTML = '';
+                if (data.details && Array.isArray(data.details) && data.details.length > 0) {
+                    data.details.forEach(product => {
+                        const row = `<tr>
+                            <td>${product.product_name ?? ''}</td>
+                            <td>${product.product_image ? `<img src='/storage/uploads/${product.product_image}' width='50'>` : ''}</td>
+                            <td>${product.size ?? ''}</td>
+                            <td>${product.topping ? `<p>${product.topping}</p>` : `<span style="color: red;">Không chọn</span>`}</td>
+                            <td>${product.quantity ?? ''}</td>
+                            <td>${product.total !== undefined ? parseInt(product.total).toLocaleString('vi-VN') + ' đ' : ''}</td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Không có sản phẩm</td></tr>';
+                }
+            })
+            .catch(() => {
+                document.querySelector('#order_products_table tbody').innerHTML =
+                    '<tr><td colspan="8" style="text-align:center; color:red;">Lỗi lấy dữ liệu</td></tr>';
+            });
+    }
+
+    function closeOrderModal() {
+        document.getElementById('orderModal').style.display = 'none';
+        const statusSelect = document.getElementById('modal_status');
+        const payStatusSelect = document.getElementById('modal_pay_status');
+        statusSelect.replaceWith(statusSelect.cloneNode(true));
+        payStatusSelect.replaceWith(payStatusSelect.cloneNode(true));
+    }
+
+    function checkCancelFields() {
+        const status = document.getElementById('modal_status').value;
+        const payStatus = document.getElementById('modal_pay_status').value;
+        const cancelReasonContainer = document.getElementById('cancel_reason_container');
+
+        if (status === 'cancelled' || payStatus === '2') {
+            cancelReasonContainer.style.display = 'block';
+            document.getElementById('modal_cancel_reason').required = true;
+        } else {
+            cancelReasonContainer.style.display = 'none';
+            document.getElementById('modal_cancel_reason').required = false;
+        }
+    }
+
+    function disableInvalidStatusOptions(originalStatus) {
+        const select = document.getElementById('modal_status');
+        const statusOrder = { 'pending': 0, 'processing': 1, 'completed': 2, 'cancelled': 3 };
+
+        [...select.options].forEach(option => {
+            const val = option.value;
+            option.disabled = false;
+
+            if (originalStatus === 'cancelled' && val !== 'cancelled') {
+                option.disabled = true;
+            } else if (originalStatus === 'completed' && val !== 'completed') {
+                option.disabled = true;
+            } else if (
+                statusOrder[val] < statusOrder[originalStatus] && val !== 'cancelled'
+            ) {
+                option.disabled = true;
+            } else if (
+                statusOrder[val] > statusOrder[originalStatus] + 1 && val !== 'cancelled'
+            ) {
+                option.disabled = true;
             }
-            </td>
-            <td>${product.quantity ?? ''}</td>
-            <td>${product.total !== undefined ? parseInt(product.total).toLocaleString('vi-VN') + ' đ' : ''}</td>
-          </tr>`;
-          tbody.innerHTML += row;
         });
-      } else {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Không có sản phẩm</td></tr>';
-      }
-    })
-    .catch(function(err) {
-      var tbody = document.querySelector('#order_products_table tbody');
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:red;">Lỗi lấy dữ liệu</td></tr>';
-    });
-}
-function closeOrderModal() {
-  document.getElementById('orderModal').style.display = 'none';
-}
+    }
 
-// Kiểm tra và hiển thị ô lí do hủy
-function checkCancelFields() {
-  const status = document.getElementById('modal_status').value;
-  const payStatus = document.getElementById('modal_pay_status').value;
-  const cancelReasonContainer = document.getElementById('cancel_reason_container');
+    function disableInvalidPayStatusOptions(originalPayStatus) {
+        const select = document.getElementById('modal_pay_status');
+        const original = parseInt(originalPayStatus);
 
-  if (status === 'cancelled' || payStatus === '2') {
-    cancelReasonContainer.style.display = 'block';
-    document.getElementById('modal_cancel_reason').required = true;
-  } else {
-    cancelReasonContainer.style.display = 'none';
-    document.getElementById('modal_cancel_reason').required = false;
-  }
-}
+        [...select.options].forEach(option => {
+            const val = parseInt(option.value);
+            option.disabled = false;
 
-// Validate form trước khi submit
-function validateForm() {
-  const status = document.getElementById('modal_status').value;
-  const payStatus = document.getElementById('modal_pay_status').value;
-  const cancelReason = document.getElementById('modal_cancel_reason').value;
+            if (original === 1 && val !== 1) {
+                option.disabled = true;
+            }
+        });
+    }
 
-  if ((status === 'cancelled' || payStatus === '2') && !cancelReason.trim()) {
-    alert('Vui lòng nhập lý do hủy đơn hàng');
-    document.getElementById('modal_cancel_reason').focus();
-    return false;
-  }
-  return true;
-}
+    function validateForm() {
+        const status = document.getElementById('modal_status').value;
+        const payStatus = document.getElementById('modal_pay_status').value;
+        const cancelReason = document.getElementById('modal_cancel_reason').value;
+
+        if ((status === 'cancelled' || payStatus === '2') && !cancelReason.trim()) {
+            alert('Vui lòng nhập lý do hủy đơn hàng');
+            document.getElementById('modal_cancel_reason').focus();
+            return false;
+        }
+
+        return true;
+    }
 </script>
+

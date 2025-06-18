@@ -216,46 +216,18 @@
                 </div>
                 <div class="product-wrapper">
                     <div class="owl-carousel owl-theme" data-items="4" data-tablet="3" data-mobile="2" data-nav="false" data-dots="true" data-autoplay="true" data-speed="1800" data-autotime="5000">
+                        @foreach($relatedProducts as $relatedProduct)
                         <div class="item">
                             <div class="product-img">
-                                <a href="shop_single.html">
-                                    <img src="images/product1.png" alt="">
+                                <a href="{{ route('client.product.detail', $relatedProduct->id) }}">
+                                    <img src="{{ asset('storage/uploads/'.$relatedProduct->image) }}" alt="{{ $relatedProduct->name }}">
                                     <span class="icon-basket fontello"></span>
                                 </a>
                             </div>
-                            <h5>PLASTIC POUCH</h5>
-                            <span>$79.00</span><del>$99.00</del>
+                            <h5>{{ $relatedProduct->name }}</h5>
+                            <span>{{ number_format($relatedProduct->min_price) }} VND</span>
                         </div>
-                        <div class="item">
-                            <div class="product-img">
-                                <a href="shop_single.html">
-                                    <img src="images/product2.png" alt="">
-                                    <span class="icon-basket fontello"></span>
-                                </a>
-                            </div>
-                            <h5>PAPER BAG</h5>
-                            <span>$50.00</span><del>$70.00</del>
-                        </div>
-                        <div class="item">
-                            <div class="product-img">
-                                <a href="shop_single.html">
-                                    <img src="images/product3.png" alt="">
-                                    <span class="icon-basket fontello"></span>
-                                </a>
-                            </div>
-                            <h5>PLASTIC POUCH</h5>
-                            <span>$99.00</span><del>$120.00</del>
-                        </div>
-                        <div class="item">
-                            <div class="product-img">
-                                <a href="shop_single.html">
-                                    <img src="images/product4.png" alt="">
-                                    <span class="icon-basket fontello"></span>
-                                </a>
-                            </div>
-                            <h5>COFFEE POT</h5>
-                            <span>$40.00</span><del>$55.00</del>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>

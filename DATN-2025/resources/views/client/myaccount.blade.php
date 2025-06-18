@@ -178,6 +178,11 @@
                 </form>
                 @endif
 
+                <button type="button" class="view-details bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        data-id="{{ $orderId }}">
+                    Chi tiết đơn hàng
+                </button>
+
                 @if($status === 'pending')
                 <button type="button" class="cancel-order bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                             data-id="{{ $orderId }}">
@@ -190,6 +195,53 @@
 </div>
     </div>
 </div>
+
+<!-- Modal Chi tiết đơn hàng -->
+<div id="orderDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-[9999] flex items-center justify-center">
+    <div class="bg-white p-6 rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">Chi tiết đơn hàng</h2>
+            <button id="closeOrderDetailModal" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Thông tin khách hàng -->
+        <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+            <h3 class="text-lg font-semibold mb-3">Thông tin khách hàng</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p><strong>Họ tên:</strong> <span id="detail-name"></span></p>
+                    <p><strong>Số điện thoại:</strong> <span id="detail-phone"></span></p>
+                    <p><strong>Email:</strong> <span id="detail-email"></span></p>
+                </div>
+                <div>
+                    <p><strong>Địa chỉ:</strong> <span id="detail-address"></span></p>
+                    <p><strong>Phương thức thanh toán:</strong> <span id="detail-payment"></span></p>
+                    <p><strong>Trạng thái thanh toán:</strong> <span id="detail-pay-status"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chi tiết sản phẩm -->
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold mb-3">Chi tiết sản phẩm</h3>
+            <div id="detail-products" class="space-y-4">
+                <!-- Sản phẩm sẽ được thêm vào đây bằng JavaScript -->
+            </div>
+        </div>
+
+        <!-- Tổng tiền -->
+        <div class="border-t pt-4">
+            <div class="text-right space-y-2">
+                <p>Phí vận chuyển: <span id="detail-shipping-fee"></span></p>
+                <p>Giảm giá: <span id="detail-discount"></span></p>
+                <p class="text-xl font-bold text-red-600">Tổng cộng: <span id="detail-total"></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="cancelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
     <div class="bg-white p-6 rounded-xl w-full max-w-md">
         <h2 class="text-lg font-semibold mb-4 text-red-600">Xác nhận hủy đơn</h2>
@@ -381,6 +433,75 @@ document.querySelectorAll('.cancel-order').forEach(button => {
             });
         });
     }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Xử lý nút xem chi tiết
+        document.querySelectorAll('.view-details').forEach(button => {
+            button.addEventListener('click', function() {
+                const orderId = this.getAttribute('data-id');
+                const modal = document.getElementById('orderDetailModal');
+                modal.classList.remove('hidden');
+
+                // Lấy thông tin đơn hàng
+                fetch(`/order-detail/${orderId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Cập nhật thông tin khách hàng
+                            document.getElementById('detail-name').textContent = data.order.name;
+                            document.getElementById('detail-phone').textContent = data.order.phone;
+                            document.getElementById('detail-email').textContent = data.order.email || 'Không có';
+                            document.getElementById('detail-address').textContent = data.order.address_detail;
+                            document.getElementById('detail-payment').textContent = data.order.payment_method === 'cash' ? 'Tiền mặt' : 'Chuyển khoản';
+                            document.getElementById('detail-pay-status').textContent = data.order.pay_status === '1' ? 'Đã thanh toán' : 'Chưa thanh toán';
+
+                            // Cập nhật thông tin sản phẩm
+                            const productsContainer = document.getElementById('detail-products');
+                            productsContainer.innerHTML = '';
+                            data.orderDetails.forEach(item => {
+                                const productHtml = `
+                                    <div class="flex gap-4 border rounded p-4">
+                                        <div class="w-24 h-24">
+                                            <img src="${item.product_image || 'https://via.placeholder.com/150x150.png?text=Product'}" 
+                                                 alt="${item.product_name}" 
+                                                 class="w-full h-full object-cover rounded">
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="font-semibold">${item.product_name}</h4>
+                                            <p>Số lượng: ${item.quantity}</p>
+                                            <p>Giá: ${new Intl.NumberFormat('vi-VN').format(item.product_price)}đ</p>
+                                            <p>Size: ${item.size_name || 'Không có'}</p>
+                                            <p>Topping: ${item.topping_names || 'Không có'}</p>
+                                            <p class="font-semibold">Tổng: ${new Intl.NumberFormat('vi-VN').format(item.total)}đ</p>
+                                        </div>
+                                    </div>
+                                `;
+                                productsContainer.innerHTML += productHtml;
+                            });
+
+                            // Cập nhật tổng tiền
+                            document.getElementById('detail-shipping-fee').textContent = 
+                                new Intl.NumberFormat('vi-VN').format(data.order.shipping_fee) + 'đ';
+                            document.getElementById('detail-discount').textContent = 
+                                '-' + new Intl.NumberFormat('vi-VN').format(data.order.coupon_total_discount) + 'đ';
+                            document.getElementById('detail-total').textContent = 
+                                new Intl.NumberFormat('vi-VN').format(data.order.total) + 'đ';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Lỗi:', error);
+                        alert('Không thể tải thông tin chi tiết đơn hàng');
+                    });
+            });
+        });
+
+        // Đóng modal chi tiết
+        document.getElementById('closeOrderDetailModal').addEventListener('click', () => {
+            document.getElementById('orderDetailModal').classList.add('hidden');
+        });
+    });
 </script>
 
 <script src="https://cdn.tailwindcss.com"></script>

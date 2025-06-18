@@ -19,101 +19,88 @@ class CartController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $coupons = session('coupons', []);
-        $discount = 0;
-        $subtotal = 0;
-        $total = 0;
-        $items = collect([]);
+public function index()
+{
+    $coupons = session('coupons', []);
+    $discount = 0;
+    $subtotal = 0;
+    $total = 0;
+    $items = collect([]);
 
-        if (Auth::check()) {
-            $cart = Cart::where('user_id', Auth::id())->first();
+    if (Auth::check()) {
+        $cart = Cart::with(['cartdetails.product', 'cartdetails.size'])->where('user_id', Auth::id())->first();
 
-            if (!$cart) {
-                $cart = Cart::create([
-                    'user_id' => Auth::id(),
-                    'total' => 0
-                ]);
-            }
-
-            $cart->load(['cartdetails.product', 'cartdetails.size']);
-            $items = $cart->cartdetails;
-
-            foreach ($items as $item) {
-                if (!$item->product) continue;
-
-                $size = $item->size;
-                $basePrice = $size ? $size->price : $item->product->price;
-
-                $toppingPrice = 0;
-                if (!empty($item->topping_id)) {
-                    $toppingIdString = (string) $item->topping_id;
-                    $toppingIds = array_filter(array_map('trim', explode(',', $toppingIdString)));
-                    if (!empty($toppingIds)) {
-                        $toppingPrice = Product_topping::whereIn('id', $toppingIds)->sum('price');
-                    }
-                }
-
-                $subtotal += ($basePrice + $toppingPrice) * $item->quantity;
-            }
-        } else {
-            $cartSession = session('cart', []);
-            foreach ($cartSession as $key => $item) {
-                $items->push((object) $item);
-
-                $basePrice = $item['size_price'] ?? 0;
-                $toppingPrice = 0;
-
-                if (isset($item['topping_ids'])) {
-                    $sessionToppingIdsString = (string) $item['topping_ids'];
-                    if ($sessionToppingIdsString !== '') {
-                        $sessionToppingIdsArray = array_map('intval', array_filter(array_map('trim', explode(',', $sessionToppingIdsString))));
-
-                        if (!empty($sessionToppingIdsArray)) {
-                            $toppingPrice = Product_topping::whereIn('id', $sessionToppingIdsArray)->sum('price');
-                        }
-                    }
-                }
-                $subtotal += ($basePrice + $toppingPrice) * ($item['quantity'] ?? 1);
-            }
+        if (!$cart) {
+            $cart = Cart::create([
+                'user_id' => Auth::id(),
+                'total' => 0
+            ]);
         }
 
-        $this->applyCouponsToCart($subtotal, $discount, $coupons);
+        $items = $cart->cartdetails;
 
-        $total = max(0, $subtotal - $discount);
+        foreach ($items as $item) {
+            if (!$item->product) continue;
 
-        $now = now();
+            $basePrice = $item->size ? $item->size->price : $item->product->price;
+            $toppingPrice = 0;
 
-        $availableCoupons = \App\Models\Coupon::where('is_active', true)
-            ->where(function ($q) use ($now) {
-                $q->whereNull('expires_at')->orWhere('expires_at', '>=', $now);
-            })
-            ->get()
-            ->filter(function ($coupon) {
-                return is_null($coupon->usage_limit) || $coupon->used < $coupon->usage_limit;
-            });
+            if (!empty($item->topping_id)) {
+                $toppingIds = array_filter(explode(',', $item->topping_id));
+                $toppingPrice = Product_topping::whereIn('id', $toppingIds)->sum('price');
+            }
 
-        $expiredCoupons = \App\Models\Coupon::where(function ($q) use ($now) {
-                $q->where('expires_at', '<', $now)
-                  ->orWhere('is_active', false);
-            })
-            ->orWhere(function ($q) {
-                $q->whereNotNull('usage_limit')
-                  ->whereColumn('used', '>=', 'usage_limit');
-            })
-            ->get();
-
-        return view('client.cart', compact(
-            'items',
-            'subtotal',
-            'discount',
-            'total',
-            'coupons',
-            'availableCoupons',
-            'expiredCoupons'
-        ));
+            $subtotal += ($basePrice + $toppingPrice) * $item->quantity;
+        }
+    } else {
+        $cartSession = session('cart', []);
+        foreach ($cartSession as $key => $item) {
+            $items->push((object) $item);
+            $basePrice = $item['size_price'] ?? 0;
+            $toppingPrice = array_sum($item['topping_prices'] ?? []);
+            $subtotal += ($basePrice + $toppingPrice) * ($item['quantity'] ?? 1);
+        }
     }
+
+    $this->applyCouponsToCart($subtotal, $discount, $coupons);
+    $total = max(0, $subtotal - $discount);
+
+    $now = now();
+
+   $availableCoupons = Coupon::where('is_active', true)
+    ->where(function ($q) use ($now) {
+        $q->whereNull('starts_at')->orWhere('starts_at', '<=', $now);
+    })
+    ->where(function ($q) use ($now) {
+        $q->whereNull('expires_at')->orWhere('expires_at', '>=', $now);
+    })
+    ->get()
+    ->filter(function ($coupon) {
+        return !$coupon->usage_limit || $coupon->used < $coupon->usage_limit;
+    });
+
+
+    $expiredCoupons = Coupon::where(function ($q) use ($now) {
+        $q->where('expires_at', '<', $now)
+          ->orWhere('is_active', false)
+          ->orWhere('starts_at', '>', $now);
+    })
+    ->orWhere(function ($q) {
+        $q->whereNotNull('usage_limit')
+          ->whereColumn('used', '>=', 'usage_limit');
+    })
+    ->get();
+    return view('client.cart', compact(
+        'items',
+        'subtotal',
+        'discount',
+        'total',
+        'coupons',
+        'availableCoupons',
+        'expiredCoupons'
+    ));
+}
+
 
 
     /**
@@ -315,7 +302,7 @@ class CartController extends Controller
 
             $coupons = session('coupons', []);
             $discount = 0;
-            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons); // Re-evaluate and update coupons
+            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons); 
 
             $total = max(0, $subtotal - $discount);
 
@@ -484,49 +471,54 @@ class CartController extends Controller
      * @param array $currentCoupons (session coupons data)
      * @return array The updated list of applied coupons (only valid ones)
      */
-    private function applyCouponsToCart(float $subtotal, float &$discount, array $currentCoupons)
-    {
-        $discount = 0; 
-        $updatedCoupons = [];
-        $now = now();
+ private function applyCouponsToCart(float $subtotal, float &$discount, array $currentCoupons)
+{
+    $discount = 0; 
+    $updatedCoupons = [];
+    $now = now();
 
-        foreach ($currentCoupons as $code => $couponData) {
-            $coupon = Coupon::where('code', $code)
-                ->where('is_active', true)
-                ->where(function ($q) use ($now) {
-                    $q->whereNull('expires_at')->orWhere('expires_at', '>=', $now);
-                })
-                ->first();
+    foreach ($currentCoupons as $code => $couponData) {
+        $coupon = Coupon::where('code', $code)
+            ->where('is_active', true)
+            ->where(function ($q) use ($now) {
+                $q->whereNull('starts_at')->orWhere('starts_at', '<=', $now);
+            })
+            ->where(function ($q) use ($now) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>=', $now);
+            })
+            ->first();
 
-            $isValid = true;
-            if (!$coupon) {
-                $isValid = false; 
-            } elseif ($coupon->usage_limit && $coupon->used >= $coupon->usage_limit) {
-                $isValid = false; 
-            } elseif ($coupon->user_id && Auth::check() && Auth::id() !== $coupon->user_id) {
-                $isValid = false; 
-            } elseif ($coupon->user_id && !Auth::check()) {
-                $isValid = false; 
-            } elseif ($coupon->min_order_value && $subtotal < $coupon->min_order_value) {
-                $isValid = false; 
-            }
+        $isValid = true;
 
-            if ($isValid) {
-                if ($coupon->type === 'percent') {
-                    $discount += ($subtotal * $coupon->discount) / 100;
-                } elseif ($coupon->type === 'fixed') {
-                    $discount += $coupon->discount;
-                }
-                $updatedCoupons[$coupon->code] = [
-                    'code' => $coupon->code,
-                    'discount' => $coupon->discount,
-                    'type' => $coupon->type
-                ];
-            }
+        if (!$coupon) {
+            $isValid = false; 
+        } elseif ($coupon->usage_limit && $coupon->used >= $coupon->usage_limit) {
+            $isValid = false; 
+        } elseif ($coupon->user_id && (!Auth::check() || Auth::id() !== $coupon->user_id)) {
+            $isValid = false;
+        } elseif ($coupon->min_order_value && $subtotal < $coupon->min_order_value) {
+            $isValid = false; 
         }
-        session(['coupons' => $updatedCoupons]);
-        return $updatedCoupons;
+
+        if ($isValid) {
+            if ($coupon->type === 'percent') {
+                $discount += ($subtotal * $coupon->discount) / 100;
+            } elseif ($coupon->type === 'fixed') {
+                $discount += $coupon->discount;
+            }
+
+            $updatedCoupons[$coupon->code] = [
+                'code' => $coupon->code,
+                'discount' => $coupon->discount,
+                'type' => $coupon->type
+            ];
+        }
     }
+
+    session(['coupons' => $updatedCoupons]);
+    return $updatedCoupons;
+}
+
 
 
     /**
@@ -539,16 +531,28 @@ class CartController extends Controller
     {
         $code = $request->input('code');
         $cartSubtotal = $request->input('subtotal', 0); 
+        $now = now();
+
+        $currentCoupons = session('coupons', []);
+        if (count($currentCoupons) >= 1) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Chỉ được áp dụng tối đa 1 mã giảm giá cho mỗi đơn hàng.'
+            ]);
+        }
 
         $coupon = Coupon::where('code', $code)
             ->where('is_active', true)
-            ->where(function ($q) {
-                $q->whereNull('expires_at')->orWhere('expires_at', '>=', now());
+            ->where(function ($q) use ($now) {
+                $q->whereNull('starts_at')->orWhere('starts_at', '<=', $now);
+            })
+            ->where(function ($q) use ($now) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>=', $now);
             })
             ->first();
 
         if (!$coupon) {
-            return response()->json(['success' => false, 'message' => 'Mã không hợp lệ hoặc đã hết hạn.']);
+            return response()->json(['success' => false, 'message' => 'Mã không hợp lệ hoặc chưa đến thời gian áp dụng.']);
         }
 
         if ($coupon->usage_limit && $coupon->used >= $coupon->usage_limit) {
@@ -570,6 +574,13 @@ class CartController extends Controller
                 'success' => false,
                 'message' => 'Đơn hàng cần tối thiểu ' . number_format($coupon->min_order_value) . 'đ để áp dụng mã.',
                 'subtotal' => $cartSubtotal 
+            ]);
+        }
+
+        if (isset($currentCoupons[$code])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mã giảm giá này đã được áp dụng.'
             ]);
         }
 
@@ -710,7 +721,6 @@ class CartController extends Controller
 
                 session(['cart' => $cartSession]);
 
-                // Calculate new subtotal
                 $subtotal = collect($cartSession)->sum(function($item) {
                     $unitPrice = ($item['size_price'] ?? 0) + array_sum($item['topping_prices'] ?? []);
                     return $unitPrice * ($item['quantity'] ?? 1);

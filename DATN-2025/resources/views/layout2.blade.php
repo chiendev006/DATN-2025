@@ -38,7 +38,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -207,6 +207,7 @@
 
 
   <body>
+    <div id="app">
     <!-- Page pre loader -->
     <div id="pre-loader">
       <div class="loader-holder">
@@ -379,20 +380,10 @@
                       <li class="has-child">
                         <a href="/shop">Shop</a>
                         <ul class="drop-nav">
-                          <li><a href="/shop">Shop Page</a></li>
-                          <li><a href="shop_single.html">Shop Single</a></li>
-                          <li><a href="shop_cart.html">Shop Cart</a></li>
+                          <li><a href="/shop">Sản phẩm</a></li>
+                          <li><a href="/cart">Giỏ hàng </a></li>
                           <li>
-                            <a href="shop_checkout.html">Shop Checkout</a>
-                          </li>
-                          <li>
-                            <a href="order_complete.html">Order Complete</a>
-                          </li>
-                          <li>
-                            <a href="track_order.html">Track Your Order</a>
-                          </li>
-                          <li>
-                            <a href="login_register.html">Login & Register</a>
+                            <a href="/checkout">Thanh toán</a>
                           </li>
                         </ul>
                       </li>
@@ -452,12 +443,8 @@
                       <li >
                         <a href="/blog">Blog</a>
                       </li>
-                      <li class="has-child">
+                      <li>
                         <a href="/contact">Contact</a>
-                        <ul class="drop-nav">
-                          <li><a href="contact_1.html">Contact 1</a></li>
-                          <li><a href="contact_2.html">Contact 2</a></li>
-                        </ul>
                       </li>
                      @auth
                           <li class="has-child">
@@ -484,13 +471,14 @@
                             <ul class="drop-nav">
                                 <li><a href="{{ route('login') }}">Đăng nhập</a></li>
                                 <li><a href="{{ route('register') }}">Đăng ký</a></li>
+                                <li><a href="{{ route('order.search') }}">Tra cứu đơn hàng</a></li>
                             </ul>
                         </li>
                     @endauth
                   </div>
                   <div class="cart animated">
-                       <span class="icon-basket fontello"></span
-                    ><span>{{ $cartCount }} sản phẩm - {{ number_format($subtotal, 0, ',', '.') }}₫</span>
+                       <span class="icon-basket fontello"></span>
+                       <span>{{ $cartCount }} sản phẩm - {{ number_format($subtotal, 0, ',', '.') }}₫</span>
                         <div class="cart-wrap">
                             <div class="cart-blog scrollable-cart">
                                 @forelse ($items as $item)
@@ -707,6 +695,7 @@
     <!-- Bootstrap Slider JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/bootstrap-slider.min.js"></script>
     @yield('scripts')
+    </div>
   </body>
   <!-- jQuery (bắt buộc) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

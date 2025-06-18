@@ -83,7 +83,7 @@
         <script>
   $(document).ready(function() {
     $('#editor').summernote({
-      height: 300,             // Chiều cao khung soạn thảo
+      height: 300,       
       placeholder: 'Nhập mô tả sản phẩm ở đây...',
       toolbar: [
         ['style', ['style']],

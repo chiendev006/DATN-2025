@@ -77,7 +77,7 @@
                 return false;
             }
         </script>
-
+</div>
 	</body>
   <!-- jQuery (bắt buộc) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -20,12 +20,13 @@ return new class extends Migration
         $table->integer('used')->default(0);
         $table->unsignedBigInteger('user_id')->nullable();
         $table->decimal('min_order_value', 10, 2)->default(0);
-        $table->boolean('is_active')->default(true);
-        $table->date('expires_at')->nullable();
+        $table->boolean('is_active')->default(true);        
+        $table->dateTime('starts_at')->nullable(); 
+        $table->dateTime('expires_at')->nullable();
         $table->timestamps();
 
         $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
-        });
+    });
     }
 
     /**
