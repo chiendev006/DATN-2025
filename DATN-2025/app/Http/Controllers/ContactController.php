@@ -13,15 +13,31 @@ class ContactController extends Controller
     }
    public function store(Request $request) {
     $request->validate([
-        'name' => 'required|string',
-        'email' => 'required|string|email',
-        'massage' => 'required|string',
+        'name' => 'required|string|max:255|min:2',
+        'email' => 'required|email|max:255',
+        'phone' => 'nullable|string|regex:/^[0-9]{10,11}$/',
+        'message' => 'required|string|min:10|max:1000',
+    ], [
+        'name.required' => 'Vui lòng nhập họ tên',
+        'name.string' => 'Họ tên phải là chuỗi ký tự',
+        'name.max' => 'Họ tên không được quá 255 ký tự',
+        'name.min' => 'Họ tên phải có ít nhất 2 ký tự',
+        'email.required' => 'Vui lòng nhập email',
+        'email.email' => 'Email không đúng định dạng',
+        'email.max' => 'Email không được quá 255 ký tự',
+        'phone.regex' => 'Số điện thoại phải có 10-11 chữ số',
+        'phone.max' => 'Số điện thoại không được quá 20 ký tự',
+        'message.required' => 'Vui lòng nhập tin nhắn',
+        'message.string' => 'Tin nhắn phải là chuỗi ký tự',
+        'message.min' => 'Tin nhắn phải có ít nhất 10 ký tự',
+        'message.max' => 'Tin nhắn không được quá 1000 ký tự'
     ]);
 
     Contact::create([
         'name' => $request->name,
         'email' => $request->email,
-        'massage' => $request->massage,
+        'phone' => $request->phone,
+        'message' => $request->message,
     ]);
 
     if ($request->ajax()) {

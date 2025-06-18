@@ -83,6 +83,18 @@
         margin-top: 20px;
         text-align: right; /* Căn nút submit sang phải */
     }
+    .btn-danger{
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 </style>
 
 <div class="content-wrapper-scroll">
@@ -151,7 +163,7 @@
                                         </td>
 
                                         <td>
-                                            <div class="actions">
+                                            <div class="actions" style="display: flex; gap: 10px; justify-content: center;">
                                                 <button type="button" class="btn-edit-staff"
                                                     data-id="{{ $staff->id }}"
                                                     data-name="{{ $staff->name }}"
@@ -160,13 +172,15 @@
                                                     data-email="{{ $staff->email }}"
                                                     data-salary_per_day="{{ number_format($staff->salary_per_day, 0, ',', '.') }}"
                                                     data-role="{{ $staff->role }}" {{-- Đã thêm data-role ở đây --}}
-                                                    style="background:none;border:none;cursor:pointer;">
-                                                    <i class="icon-edit1 text-info"></i>
+                                                    style=" background-color: rgb(76, 106, 175); color: white; border: none; border-radius: 5px; cursor: pointer;font-size: 12px;padding: 5px 10px;text-align: center;text-decoration: none;display: inline-block;" >
+                                                    Sửa
                                                 </button>
 
-                                                <a href="{{ route('admin.staff.delete', ['id' => $staff->id]) }}" onclick="return confirm('Bạn có chắc chắn muốn xóa ?')" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
-                                                    <i class="icon-x-circle text-danger"></i>
-                                                </a>
+                                                <form action="{{ route('admin.staff.delete', ['id' => $staff->id]) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa nhân viên này?')">Xóa</button>
+                                            </form>
                                             </div>
                                         </td>
                                     </tr>

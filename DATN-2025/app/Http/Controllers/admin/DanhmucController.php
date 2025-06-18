@@ -17,11 +17,31 @@ class DanhmucController extends Controller
     public function index(Request $request)
     {
        $perPage = $request->input('per_page', 5);
-       $danhmuc = Danhmuc::paginate($perPage);
-       return view('admin.danhmuc.index',['danhmuc'=>$danhmuc]);
+       $search = $request->input('search', '');
+       $filterType = $request->input('filter_type', '');
+       
+       $query = Danhmuc::query();
+       
+       // Lọc theo tên
+       if (!empty($search)) {
+           $query->where('name', 'like', '%' . $search . '%');
+       }
+       
+       // Lọc theo loại danh mục
+       if ($filterType !== '') {
+           $query->where('role', $filterType);
+       }
+       
+       $danhmuc = $query->paginate($perPage);
+       
+       return view('admin.danhmuc.index', [
+           'danhmuc' => $danhmuc,
+           'search' => $search,
+           'filterType' => $filterType
+       ]);
     }
 
-    /**e
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -34,15 +54,23 @@ class DanhmucController extends Controller
      */
     public function store(Request $request)
     {
-
         $request->validate([
-            'name' => 'required|string',
-            'has_topping' => 'required|boolean',
+            'name' => 'required|string|max:255|min:2|unique:danhmucs,name',
+            'has_topping' => 'required|in:0,1',
+        ], [
+            'name.required' => 'Vui lòng nhập tên danh mục',
+            'name.string' => 'Tên danh mục phải là chuỗi ký tự',
+            'name.max' => 'Tên danh mục không được quá 255 ký tự',
+            'name.min' => 'Tên danh mục phải có ít nhất 2 ký tự',
+            'name.unique' => 'Tên danh mục đã tồn tại',
+            'has_topping.required' => 'Vui lòng chọn loại danh mục',
+            'has_topping.in' => 'Loại danh mục không hợp lệ'
         ]);
+
         $name = $request->name;
         Danhmuc::insert([
             'name' => $name,
-            'role'=>$request->has_topping
+            'role' => $request->has_topping
         ]);
         return redirect()->route('danhmuc.index')->with('success', 'Thêm thành công!');
     }
@@ -67,12 +95,22 @@ class DanhmucController extends Controller
     public function update(Request $request,$id)
     {
         $request->validate([
-            'name' => 'required|string',
+            'name' => 'required|string|max:255|min:2|unique:danhmucs,name,' . $id,
+            'has_topping' => 'required|in:0,1',
+        ], [
+            'name.required' => 'Vui lòng nhập tên danh mục',
+            'name.string' => 'Tên danh mục phải là chuỗi ký tự',
+            'name.max' => 'Tên danh mục không được quá 255 ký tự',
+            'name.min' => 'Tên danh mục phải có ít nhất 2 ký tự',
+            'name.unique' => 'Tên danh mục đã tồn tại',
+            'has_topping.required' => 'Vui lòng chọn loại danh mục',
+            'has_topping.in' => 'Loại danh mục không hợp lệ'
         ]);
+
         $name = $request->name;
         Danhmuc::where('id', $id)->update([
             'name' => $name,
-            "role"=>$request->has_topping
+            "role" => $request->has_topping
         ]);
         return redirect()->route('danhmuc.index')->with('success', 'Sửa thành công!');
     }

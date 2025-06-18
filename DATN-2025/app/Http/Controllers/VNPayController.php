@@ -136,15 +136,22 @@ class VNPayController extends Controller
                         return redirect()->route('checkout.index')->with('error', 'Giao dịch này đã được xử lý trước đó');
                     }
 
-                    $order = new \App\Models\Order();
+                   $order = new \App\Models\Order();
                     $order->user_id = $vnpOrder['user_id'];
                     $order->name = $vnpOrder['name'];
                     $order->phone = $vnpOrder['phone'];
-                    $order->address = $vnpOrder['address'];
+                    $order->email = $vnpOrder['email'];
+                    $order->address_id = $vnpOrder['address_id'];
+                    $order->address_detail = $vnpOrder['address_detail'];
+                    $order->district_name = $vnpOrder['district_name'];
                     $order->payment_method = 'banking';
                     $order->status =  'pending';
                     $order->total = $vnpOrder['total'];
-                    $order->pay_status=1;
+                    $order->shipping_fee = $vnpOrder['shipping_fee'];
+                    $order->pay_status = 1;
+                    $order->coupon_summary = $vnpOrder['coupon_summary'];
+                    $order->coupon_total_discount = $vnpOrder['coupon_total_discount'];
+                    $order->note = $vnpOrder['note'];
                     $order->transaction_id = $vnpData['vnp_TransactionNo'];
 
                     if (!$order->save()) {
@@ -161,7 +168,6 @@ class VNPayController extends Controller
                         $orderDetail->total = $detail['total'];
                         $orderDetail->size_id = $detail['size_id'] ?? null;
                         $orderDetail->topping_id = $detail['topping_id'] ?? null;
-                        $orderDetail->note = $detail['note'] ?? null;
                         $orderDetail->status = $detail['status'] ?? 'pending';
 
                         if (!$orderDetail->save()) {

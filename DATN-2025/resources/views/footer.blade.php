@@ -54,6 +54,30 @@
 		<!-- Main Js Required -->
 		<script src="{{ url('assetadmin') }}/js/main.js"></script>
 
+        <script>
+            // Function to handle delete operations via POST method
+            function deleteViaPost(route, message = 'Bạn có chắc chắn muốn xóa?') {
+                if (confirm(message)) {
+                    // Create a form element
+                    var form = document.createElement('form');
+                    form.setAttribute('method', 'post');
+                    form.setAttribute('action', route);
+
+                    // Add CSRF token
+                    var csrfToken = document.createElement('input');
+                    csrfToken.setAttribute('type', 'hidden');
+                    csrfToken.setAttribute('name', '_token');
+                    csrfToken.setAttribute('value', '{{ csrf_token() }}');
+                    form.appendChild(csrfToken);
+
+                    // Append form to body and submit
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+                return false;
+            }
+        </script>
+</div>
 	</body>
   <!-- jQuery (bắt buộc) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -65,5 +89,5 @@
 <!-- Summernote JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
 <!-- Mirrored from www.bootstrapget.com/demos/themeforest/unipro-admin-template/demos/01-design-blue/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 25 May 2025 08:58:21 GMT -->
- 
+
 </html>

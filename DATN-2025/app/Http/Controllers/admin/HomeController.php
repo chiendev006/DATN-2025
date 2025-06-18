@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use PhpParser\Node\Stmt\Return_;
 use App\Models\Order;
+use App\Models\Orderdetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 
@@ -58,6 +59,12 @@ class HomeController extends Controller
         })->count();
 
         $recentOrders = Order::orderBy('created_at', 'desc')->limit(5)->get();
+         $topProducts = Orderdetail::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+        ->groupBy('product_id')
+        ->orderByDesc('total_quantity')
+        ->take(5)
+        ->with('product') // eager load nếu có quan hệ với model Product
+        ->get();
         return view('admin.home', [
             'months' => $months,
             'ordersPerMonth' => $ordersPerMonth,
@@ -70,6 +77,26 @@ class HomeController extends Controller
             'muaThang' => $muaThang,
             'muaTaiKhoan' => $muaTaiKhoan,
             'recentOrders' => $recentOrders,
+            'topproduct'=>$topProducts
         ]);
+    }
+
+    public function filterRevenue(Request $request)
+    {
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+
+        $revenueData = Order::whereBetween('created_at', [$startDate, $endDate])
+            ->where('pay_status', 1) // Only count paid orders
+            ->select(
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('COUNT(*) as total_orders'),
+                DB::raw('SUM(total) as revenue')
+            )
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        return response()->json($revenueData);
     }
 }

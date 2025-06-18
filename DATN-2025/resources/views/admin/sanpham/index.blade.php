@@ -59,6 +59,7 @@
 											<table id="copy-print-csv" class="table v-middle">
 												<thead>
 													<tr>
+                                                        <th>STT</th>
 													    <th>Tên sản phẩm</th>
                                                         <th>Ảnh sản phẩm</th>
                                                         <th>Size - Giá (nhỏ nhất)</th>
@@ -69,15 +70,16 @@
 												</thead>
 												<tbody>
                                                     @if($sanpham->count() > 0)
-                                                        @foreach($sanpham as $sp)
+                                                        @foreach($sanpham as $key => $sp)
                                                             <tr>
+                                                                <td>{{ ($sanpham->currentPage()-1) * $sanpham->perPage() + $key + 1 }}</td>
                                                                <td>
                                                                	{{ $sp['name'] }}
                                                                </td>
                                                                <td><img src="{{ url("/storage/uploads/$sp->image") }}"  width="100px" alt=""></td>
                                                                <td>
                                                                	@php
-                                                               		$minSize = $sp->sizes->sortBy('price')->first();
+                                                               		$minSize = $sp->attributes->sortBy('price')->first();
                                                                	@endphp
                                                                	@if($minSize)
                                                                		{{ $minSize->size }} - {{ number_format($minSize->price) }}đ
@@ -88,13 +90,15 @@
                                                                <td>{!! $sp['mota'] !!}</td>
                                                                <td>{{ $sp->danhmuc->name ?? 'Không có danh mục' }}</td>
                                                                <td>
-                                                               	<div class="actions">
-                                                               		<a href="{{ route('sanpham.edit', ['id' => $sp->id]) }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit">
-                                                               			<i class="icon-edit1 text-info"></i>
+                                                               	<div class="actions" style="display: flex; gap: 10px; justify-content: center;">
+                                                               		<a style=" background-color: rgb(76, 106, 175); color: white; border: none; border-radius: 5px; cursor: pointer;font-size: 12px;padding: 5px 10px;text-align: center;text-decoration: none;display: inline-block;" href="{{ route('sanpham.edit', ['id' => $sp->id]) }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit">
+                                                               			Sửa
                                                                		</a>
-                                                               		<a href="{{ route('sanpham.delete', ['id' => $sp->id]) }}" onclick="return confirm('Bạn có chắc chắn muốn xóa ?')"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
-                                                               			<i class="icon-x-circle text-danger"></i>
-                                                               		</a>
+                                                               		 <form action="{{ route('sanpham.delete', ['id' => $sp->id]) }}" method="POST">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">Xóa</button>
+                                                                    </form>
                                                                	</div>
                                                                </td>
                                                             </tr>
@@ -162,5 +166,17 @@
     button:active {
         background-color:rgb(50, 100, 144); /* Màu nền khi nhấn */
     }
+    .btn-danger{
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 </style>
 @include('footer')

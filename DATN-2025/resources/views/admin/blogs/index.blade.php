@@ -86,6 +86,30 @@
         margin-top: 20px;
         text-align: right; /* Căn nút submit sang phải */
     }
+    .btn-danger{
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-primary{
+    background-color: rgb(76, 106, 175);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 </style>
 
 <div class="content-wrapper-scroll">
@@ -95,25 +119,47 @@
                 <div class="card">
                     <a href="{{ route('blogs.create') }}" class="btn-success">Thêm bài viết</a>
                     <div class="card-body">
-                        <div style="margin-bottom: 10px;">
-                            <form method="GET" style="display:inline-block;">
-                                <label for="per_page">Hiển thị</label>
-                                <select name="per_page" id="per_page" class="form-control" style="width: 80px; display:inline-block;" onchange="this.form.submit()">
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap" style="gap: 15px;">
+                            <!-- Bên trái: chọn số bản ghi -->
+                            <form method="GET" class="d-flex align-items-center" style="gap: 8px;">
+                                <label for="per_page" class="mb-0">Hiển thị</label>
+                                <select name="per_page" id="per_page" class="form-control" style="width: 80px;" onchange="this.form.submit()">
                                     <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
                                     <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
                                     <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
                                     <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
-                                </select> bản ghi/trang
+                                </select>
+                                <span>bản ghi/trang</span>
                                 @foreach(request()->except(['per_page','page']) as $key => $val)
                                     <input type="hidden" name="{{ $key }}" value="{{ $val }}">
                                 @endforeach
                             </form>
+
+                            <!-- Bên phải: các form tìm kiếm -->
+                            <div class="d-flex align-items-center" style="gap: 15px;">
+                                <!-- Tìm theo tên -->
+                                <form action="{{ route('blogs.search') }}" method="GET" class="d-flex" style="gap: 8px;">
+                                    <input type="text" name="name" class="form-control" placeholder="Tìm theo tên..." value="{{ request('name') }}" style="max-width: 250px;">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search">Tìm</i>
+                                    </button>
+                                </form>
+
+                                <!-- Tìm theo ngày -->
+                                <form action="{{ route('blogs.search') }}" method="GET" class="d-flex" style="gap: 8px;">
+                                    <input type="date" name="date" class="form-control" value="{{ request('date') }}" style="max-width: 180px;">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-search">Tìm</i>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
 
                         <div class="table-responsive">
                             <table id="copy-print-csv" class="table v-middle">
                                 <thead>
                                     <tr>
+                                        <th>STT</th>
                                         <th>Tên bài</th>
                                         <th style="width:30%">Nội dung</th>
                                         <th>Ảnh bìa</th>
@@ -128,8 +174,9 @@
                                 <td colspan="6" class="text-center">Không có dữ liệu</td>
                                </tr>
                                @else
-                               @foreach ($blogs as $item)
+                               @foreach ($blogs as $key => $item)
                                     <tr>
+                                    <td>{{ ($blogs->currentPage()-1) * $blogs->perPage() + $key + 1 }}</td>
                                     <td>{{ $item->title }}</td>
                                     <td style="max-width:400px; word-break:break-word;">{!!  $item->content !!}</td>
                                     <td><img src="{{ asset('storage/'.$item->image) }}" alt="Ảnh bìa" style="width: 100px; height: 100px;"></td>
@@ -138,6 +185,7 @@
                                         <td style="width:90px; text-align:center;">
                                             <a style="color: white; width: 60px; margin-bottom:4px;" href="{{ route('blogs.edit', $item->id) }}" class="btn-success">Sửa</a>
                                             <a style="color: white; width: 60px;" href="{{ route('blogs.destroy', $item->id) }}" onclick="return confirm('  Xác nhận xóa bài viết?')" class="btn-success1">Xóa</a>
+
                                         </td>
                                     </tr>
                                 @endforeach

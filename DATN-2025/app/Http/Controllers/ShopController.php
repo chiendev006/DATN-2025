@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Danhmuc;
+use App\Models\sanpham;
 use App\Models\Size;
 use Illuminate\Http\Request;
 
@@ -17,6 +18,7 @@ class ShopController extends Controller
         $danhmucId = $request->input('danhmuc_id', $danhmucs->first()->id ?? null);
         $page = $request->input('page', 1);
         $perPage = 12;
+        $sort = $request->input('sort', '');
 
         $firstDanhmuc = $danhmucs->where('id', $danhmucId)->first();
         $firstProducts = $firstDanhmuc ? $firstDanhmuc->sanphams()->withMin('sizes', 'price')->paginate($perPage) : [];
@@ -24,6 +26,12 @@ class ShopController extends Controller
         foreach ($firstProducts as $sp) {
             $sp->min_price = $sp->sizes_min_price ?? 0;
         }
+
+        // Add best deals
+        $bestDeals = sanpham::withMin('sizes as min_price', 'price')
+                        ->orderBy('min_price', 'asc')
+                        ->take(3)
+                        ->get();
 
         if ($request->ajax()) {
             return response()->json([
@@ -36,7 +44,7 @@ class ShopController extends Controller
             ]);
         }
 
-        return view('client.shop', compact('danhmucs', 'firstDanhmuc', 'firstProducts'));
+        return view('client.shop', compact('danhmucs', 'firstDanhmuc', 'firstProducts', 'bestDeals', 'sort'));
     }
     public function getByCategory($id)
     {
@@ -51,5 +59,4 @@ class ShopController extends Controller
             'category_name' => $danhmuc->name,
         ]);
     }
-    
 }

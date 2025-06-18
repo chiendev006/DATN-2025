@@ -76,4 +76,5 @@ class BlogController extends Controller
 
         return view('client.blog', compact('blogs', 'categories', 'currentCategory'));
     }
+   
 }

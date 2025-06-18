@@ -34,14 +34,14 @@ public function index(Request $request)
         });
 
     $orders = $query->get()->groupBy('order_id');
-
+    $oder = Order::all();
     $toppings = Product_topping::all()->keyBy('id');
 
     if ($request->ajax()) {
         return view('client.partials.order_list', compact('orders', 'toppings'))->render();
     }
 
-    return view('client.myaccount', compact('orders', 'toppings', 'orderStats', 'user')); // <--- Truyền $user vào view
+    return view('client.myaccount', compact('orders', 'toppings', 'orderStats', 'user', 'oder')); // <--- Truyền $user vào view
 }
 
 
@@ -62,7 +62,7 @@ public function cancelOrder($id, Request $request)
     $reason = $request->input('cancel_reason', 'Người dùng không cung cấp lý do');
 
     $order->status = 'cancelled';
-    $order->cancel_reason = $reason;
+    $order->cancel_reason = '(Khách hàng hủy) ' . $reason;
     $order->save();
 
     return response()->json([

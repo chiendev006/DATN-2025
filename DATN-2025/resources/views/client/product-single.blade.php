@@ -43,11 +43,6 @@
                     </div>
                     <div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                         <h4 class="text-coffee">{{ $sanpham->name }}</h4>
-                        <div class="star-review-collect">
-                            <div class="star-rating">
-                                <span class="star-rating-customer" style="width: 50%"></span>
-                            </div>
-                        </div>
                         <p>{!! strip_tags($sanpham->mota, '<p><br><strong><em>') !!}</p>
                         <h3 class="text-coffee">
                             <span id="display-price" data-base="{{ $sanpham->price }}">{{ number_format($sanpham->price) }} VND</span>
@@ -98,7 +93,7 @@
                             </div>
                             <button type="submit" class="filter-btn btn-large"><i class="fa fa-shopping-bag" aria-hidden="true"></i> Add to Cart</button>
                         </form>
-                        <div class="share-tag">
+                        <!-- <div class="share-tag">
                             <div class="row">
                                 <div class="col-md-12 col-sm-12 col-xs-12">
                                     <div class="social-wrap">
@@ -121,7 +116,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -160,15 +155,15 @@
                                             <img src="images/comment-img1.png" alt="">
                                         </div>
                                         <div class="comment-info">
-                                            <h5>{{ $item->user->name }}</h5>
-                                            <span class="comment-date">{{ $item->created_at }}</span>
-                                            <p>{{ $item->comment }}</p>
+                                            <h5> <img style="width: 50px; height: 50px; border-radius: 50px;" src="{{ asset('storage/'.$item->user->image) }}" alt=""> {{ $item->user->name }}</h5>
+                                            <span class="comment-date">{{ $item->created_at->format('d/m/Y') }}</span>
+                                            <input disabled type="text" name="product_id" value="{{ $item->comment }}">
                                         </div>
                                     </div>
                                 @endforeach
                                 @if (Auth::check())
                                     <div class="title text-center">
-                                        <h3 class="text-coffee">Leave a Reply</h3>
+                                        <h3 class="text-coffee">Nhập comment</h3>
                                     </div>
                                     <form class="form" method="post" action="{{ route('comment.store') }}">
                                         @csrf
@@ -178,7 +173,7 @@
                                                 <textarea placeholder="Comment" name="comment" required></textarea>
                                             </div>
                                             <input type="hidden" name="rating" id="rating" value="5">
-                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <!-- <div class="col-md-12 col-sm-12 col-xs-12">
                                                 <div class="star-review">
                                                     <p>
                                                         <span>Your Rating</span>
@@ -191,7 +186,7 @@
                                                     </span>
                                                     </p>
                                                 </div>
-                                            </div>
+                                            </div> -->
                                             <div class="col-md-12 col-sm-12 col-xs-12 text-center">
                                                 <input name="submit" value="POST COMMENT" class="submit-btn" type="submit">
                                             </div>
@@ -216,46 +211,18 @@
                 </div>
                 <div class="product-wrapper">
                     <div class="owl-carousel owl-theme" data-items="4" data-tablet="3" data-mobile="2" data-nav="false" data-dots="true" data-autoplay="true" data-speed="1800" data-autotime="5000">
+                        @foreach($relatedProducts as $relatedProduct)
                         <div class="item">
                             <div class="product-img">
-                                <a href="shop_single.html">
-                                    <img src="images/product1.png" alt="">
+                                <a href="{{ route('client.product.detail', $relatedProduct->id) }}">
+                                    <img src="{{ asset('storage/uploads/'.$relatedProduct->image) }}" alt="{{ $relatedProduct->name }}">
                                     <span class="icon-basket fontello"></span>
                                 </a>
                             </div>
-                            <h5>PLASTIC POUCH</h5>
-                            <span>$79.00</span><del>$99.00</del>
+                            <h5>{{ $relatedProduct->name }}</h5>
+                            <span>{{ number_format($relatedProduct->min_price) }} VND</span>
                         </div>
-                        <div class="item">
-                            <div class="product-img">
-                                <a href="shop_single.html">
-                                    <img src="images/product2.png" alt="">
-                                    <span class="icon-basket fontello"></span>
-                                </a>
-                            </div>
-                            <h5>PAPER BAG</h5>
-                            <span>$50.00</span><del>$70.00</del>
-                        </div>
-                        <div class="item">
-                            <div class="product-img">
-                                <a href="shop_single.html">
-                                    <img src="images/product3.png" alt="">
-                                    <span class="icon-basket fontello"></span>
-                                </a>
-                            </div>
-                            <h5>PLASTIC POUCH</h5>
-                            <span>$99.00</span><del>$120.00</del>
-                        </div>
-                        <div class="item">
-                            <div class="product-img">
-                                <a href="shop_single.html">
-                                    <img src="images/product4.png" alt="">
-                                    <span class="icon-basket fontello"></span>
-                                </a>
-                            </div>
-                            <h5>COFFEE POT</h5>
-                            <span>$40.00</span><del>$55.00</del>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>

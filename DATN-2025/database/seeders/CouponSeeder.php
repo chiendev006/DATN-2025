@@ -3,53 +3,63 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Coupon; // Đảm bảo import model Coupon
+use Carbon\Carbon; // Import Carbon để dễ dàng làm việc với ngày tháng
 
 class CouponSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        DB::table('coupons')->insert([
+        // Xóa tất cả các bản ghi cũ trong bảng coupons (tùy chọn)
+        Coupon::truncate();
+
+        // Định nghĩa 4 bản ghi voucher cụ thể
+        $couponsToInsert = [
             [
-                'code' => 'SALE10',
-                'discount' => 10,
+                'code' => 'HESANSALE',
+                'discount' => 20,
                 'type' => 'percent',
-                'expires_at' => now()->addDays(30),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'usage_limit' => 100,
+                'used' => 0,
+                'user_id' => null,
+                'min_order_value' => 200000,
+                'is_active' => true,
+                'starts_at' => Carbon::create(2025, 6, 19),
+                'expires_at' => Carbon::create(2025, 8, 19)
+
             ],
             [
-                'code' => 'SALE20',
-                'discount' => 20000,
+                'code' => 'MIRAKHAICHUONG',
+                'discount' => 30000,
                 'type' => 'fixed',
-                'expires_at' => now()->addDays(15),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'usage_limit' => 100,
+                'used' => 0,
+                'user_id' => null,
+                'min_order_value' => 150000,
+                'is_active' => true,
+                'starts_at' => Carbon::create(2025, 6, 19),
+                'expires_at' => Carbon::create(2025, 6, 21),
             ],
-            [
-                'code' => 'FREESHIP',
-                'discount' => 0,
+             [
+                'code' => 'MIRASALE',
+                'discount' => 10000,
                 'type' => 'fixed',
-                'expires_at' => now()->addDays(10),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'usage_limit' => 100,
+                'used' => 0,
+                'user_id' => null,
+                'min_order_value' => 30000,
+                'is_active' => true,
+                'starts_at' => Carbon::create(2025, 6, 19),
+                'expires_at' => null,
+
             ],
-            [
-                'code' => 'WELCOME',
-                'discount' => 5,
-                'type' => 'percent',
-                'expires_at' => now()->addDays(20),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'code' => 'SUMMER',
-                'discount' => 15000,
-                'type' => 'fixed',
-                'expires_at' => now()->addDays(25),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+
+        ];
+
+        // Chèn tất cả 4 bản ghi vào database chỉ với một truy vấn duy nhất
+        Coupon::insert($couponsToInsert);
     }
 }

@@ -7,7 +7,9 @@ use App\Models\OrderDetail;
 use App\Models\Cart;
 use App\Models\Cartdetail;
 use App\Models\sanpham;
-use App\Models\Topping;
+use App\Models\Product_topping; 
+use App\Models\Address; 
+use App\Models\Coupon; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +18,12 @@ use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
-    public function index()
+ public function index()
     {
         $items = [];
         $cart = [];
+        $subtotal = 0; 
+        $discount = 0; 
 
         if (Auth::check()) {
             $userCart = Cart::where('user_id', Auth::id())->first();
@@ -27,270 +31,371 @@ class CheckoutController extends Controller
                 $items = Cartdetail::with(['product', 'size'])
                     ->where('cart_id', $userCart->id)
                     ->get();
+                foreach ($items as $item) {
+                    if (!$item->product) continue;
+
+                    $productBasePrice = 0;
+                    if ($item->size) {
+                        $productBasePrice = $item->size->price ?? 0;
+                    } else {
+                        $minSizeAttribute = DB::table('product_attributes')
+                            ->where('product_id', $item->product->id)
+                            ->orderBy('price')
+                            ->first();
+                        $productBasePrice = $minSizeAttribute->price ?? 0;
+                    }
+
+                    $toppingPrice = 0;
+                    if (!empty($item->topping_id)) {
+                        $toppingIdString = (string) $item->topping_id;
+                        $toppingIds = array_map('intval', array_filter(array_map('trim', explode(',', $toppingIdString))));
+                        if (!empty($toppingIds)) {
+                            $toppingPrice = Product_topping::whereIn('id', $toppingIds)->sum('price');
+                        }
+                    }
+                    $unitPrice = $productBasePrice + $toppingPrice;
+                    $subtotal += $unitPrice * $item->quantity;
+                }
             }
+            Log::info('User cart fetched for checkout index', [
+                'user_id' => Auth::id(),
+                'cart_exists' => !is_null($userCart),
+                'items_count' => count($items)
+            ]);
         } else {
             $cart = session()->get('cart', []);
+            foreach ($cart as $cartItem) {
+                if (!isset($cartItem['sanpham_id']) || !isset($cartItem['quantity'])) {
+                    continue;
+                }
+                $product = Sanpham::select(['id', 'name'])->where('id', $cartItem['sanpham_id'])->first();
+                if (!$product) continue;
+
+                $basePrice = 0;
+                if (isset($cartItem['size_id'])) {
+                    $selectedSizeAttribute = DB::table('product_attributes')
+                        ->where('product_id', $product->id)
+                        ->where('id', $cartItem['size_id'])
+                        ->first();
+                    $basePrice = $selectedSizeAttribute->price ?? 0;
+                } else {
+                    $minSizeAttribute = DB::table('product_attributes')
+                        ->where('product_id', $product->id)
+                        ->orderBy('price')
+                        ->first();
+                    $basePrice = $minSizeAttribute->price ?? 0;
+                }
+
+                $toppingTotal = 0;
+                if (!empty($cartItem['topping_ids'])) {
+                    $toppingIdsArray = array_map('intval', array_filter(array_map('trim', explode(',', $cartItem['topping_ids']))));
+                    if (!empty($toppingIdsArray)) {
+                        $toppingTotal = Product_topping::whereIn('id', $toppingIdsArray)->sum('price');
+                    }
+                }
+                $unitPrice = $basePrice + $toppingTotal;
+                $quantity = intval($cartItem['quantity'] ?? 1);
+                $subtotal += $unitPrice * $quantity;
+            }
+            Log::info('Guest cart fetched for checkout index', [
+                'cart_data' => $cart,
+                'cart_count' => count($cart)
+            ]);
         }
+
+        $appliedCoupons = session()->get('coupons', []);
+        foreach ($appliedCoupons as $coupon) {
+            $discount += ($coupon['type'] === 'percent')
+                ? round($subtotal * $coupon['discount'] / 100)
+                : round($coupon['discount']);
+        }
+        $totalAfterDiscount = max(0, round($subtotal - $discount));
+
+        $districts = Address::all(); 
+        Log::info('Districts fetched', ['districts_count' => $districts->count()]);
 
         session()->forget('_old_input');
 
-        return view('client.checkout', compact('items', 'cart'));
+        return view('client.checkout', compact('items', 'cart', 'districts', 'subtotal', 'discount', 'appliedCoupons', 'totalAfterDiscount'));
     }
 
-
-
-public function process(Request $request)
-{
-    $request->merge([
-        'address' => ($request->address_detail ?? '') . ', ' . ($request->district ?? '')
-    ]);
-
-    try {
-        Log::info('Starting checkout process', [
-            'is_logged_in' => Auth::check(),
-            'request_data' => $request->all()
-        ]);
-
-        $shippingFees = [
-            'Lê Chân' => 10000,
-            'Ngô Quyền' => 12000,
-            'Hồng Bàng' => 15000,
-            'Kiến An' => 18000,
-            'Dương Kinh' => 20000,
-        ];
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:15',
-            'address' => 'required|string|max:255',
-            'payment_method' => 'required|in:cash,banking',
-            'terms' => 'required|accepted'
-        ]);
-
-        DB::beginTransaction();
-
-        $total = 0;
-        $orderDetails = [];
-
-        if (Auth::check()) {
-            $userCart = Cart::where('user_id', Auth::id())->first();
-            if (!$userCart) {
-                throw new \Exception('Giỏ hàng không tồn tại');
-            }
-
-            $cartDetails = Cartdetail::with(['product', 'size'])
-                ->where('cart_id', $userCart->id)
-                ->get();
-
-           foreach ($cartDetails as $item) {
-                if (!$item->product) continue;
-
-                $sizePrice = $item->size ? ($item->size->price ?? 0) : 0;
-                $toppingPrice = 0;
-                $toppingIds = [];
-
-                if (!empty($item->topping_id)) {
-                    $toppingIds = array_map('intval', explode(',', str_replace(' ', '', $item->topping_id)));
-
-                    if (!empty($toppingIds)) {
-                        $toppingPrice = \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price');
-                    }
-                }
-
-                $unitPrice = $sizePrice + $toppingPrice;
-                $itemTotal = $unitPrice * $item->quantity;
-
-                $total += $itemTotal;
-
-                $orderDetails[] = [
-                    'product_id' => $item->product->id,
-                    'product_name' => $item->product->name,
-                    'product_price' => $sizePrice,
-                    'quantity' => $item->quantity,
-                    'total' => ($sizePrice+$toppingPrice)*$item->quantity,
-                    'size_id' => $item->size_id ?? null,
-                    'topping_id' => implode(',', $toppingIds),
-                    'note' => $request->note ?? null,
-                    'status' => 'pending',
-                ];
-            }
-
-        } else {
-            $sessionCart = session()->get('cart', []);
-            if (empty($sessionCart)) {
-                throw new \Exception('Giỏ hàng trống');
-            }
-
-            foreach ($sessionCart as $cartItem) {
-                $product = DB::table('sanphams')
-                    ->select(['id', 'name'])
-                    ->where('id', $cartItem['sanpham_id'])
-                    ->first();
-
-                if (!$product) continue;
-
-                $basePrice = DB::table('product_attributes')
-                    ->where('product_id', $product->id)
-                    ->where('id', $cartItem['size_id'])
-                    ->value('price') ?? 0;
-
-                $toppingTotal = isset($cartItem['topping_prices']) && is_array($cartItem['topping_prices'])
-                    ? array_sum(array_map('floatval', $cartItem['topping_prices']))
-                    : 0;
-
-                $unitPrice = $basePrice + $toppingTotal;
-                $quantity = intval($cartItem['quantity'] ?? 1);
-                $itemTotal = $unitPrice * $quantity;
-                $total += $itemTotal;
-
-                Log::debug('Item Pricing (Guest)', [
-                    'product_id' => $product->id,
-                    'product_name' => $product->name,
-                    'base_price' => $basePrice,
-                    'topping_total' => $toppingTotal,
-                    'unit_price' => $unitPrice,
-                    'quantity' => $quantity,
-                    'item_total' => $itemTotal
-                ]);
-
-                $orderDetails[] = [
-                    'product_id' => $product->id,
-                    'product_name' => $product->name,
-                    'product_price' => $unitPrice,
-                    'quantity' => $quantity,
-                    'total' => $itemTotal,
-                    'size_id' => $cartItem['size_id'] ?? null,
-                    'topping_id' => !empty($cartItem['topping_ids']) ? implode(',', $cartItem['topping_ids']) : null,
-                ];
-            }
-        }
-
-        $coupons = session()->get('coupons', []);
-        $discount = 0;
-        foreach ($coupons as $coupon) {
-            $discount += ($coupon['type'] === 'percent')
-                ? round($total * $coupon['discount'] / 100)
-                : round($coupon['discount']);
-        }
-
-        $total = max(0, round($total - $discount));
-
-
-        $address = $request->address;
-        $normalizedAddress = Str::ascii(mb_strtolower($address));
-        $district = null;
-
-        foreach ($shippingFees as $name => $fee) {
-            if (Str::contains($normalizedAddress, Str::ascii(mb_strtolower($name)))) {
-                $district = $name;
-                break;
-            }
-        }
-
-        $shippingFee = $district ? $shippingFees[$district] : 20000;
-        $total += $shippingFee;
-
-        Log::debug('Shipping Fee Info', [
-            'address' => $address,
-            'district' => $district,
-            'shipping_fee' => $shippingFee,
-            'total_with_shipping' => $total,
-        ]);
-
-        if ($request->payment_method === 'banking') {
-            DB::commit();
-
-            session([
-                'vnp_order' => [
-                    'name' => $request->name,
-                    'phone' => $request->phone,
-                    'address' => $request->address,
-                    'total' => $total,
-                    'details' => $orderDetails,
-                    'discount' => $discount,
-                    'shipping_fee' => $shippingFee,
-                    'user_id' => Auth::check() ? Auth::id() : null,
-                    'note' => $request->note ?? null,
-                    'status' => 'completed',
-                ]
+    public function process(Request $request)
+    {
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255|min:2',
+                'phone_raw' => 'required|string|regex:/^[0-9]{10,11}$/', 
+                'district' => 'required|exists:address,id',
+                'address_detail' => 'required|string|max:255|min:10',
+                'payment_method' => 'required|in:cash,banking',
+                'terms' => 'required|accepted',
+                'email' => 'nullable|email|max:255',
+                'note' => 'nullable|string|max:1000'
+            ], [
+                'name.required' => 'Vui lòng nhập họ tên',
+                'name.string' => 'Họ tên phải là chuỗi ký tự',
+                'name.max' => 'Họ tên không được quá 255 ký tự',
+                'name.min' => 'Họ tên phải có ít nhất 2 ký tự',
+                'phone_raw.required' => 'Vui lòng nhập số điện thoại',
+                'phone_raw.regex' => 'Số điện thoại phải có 10-11 chữ số',
+                'district.required' => 'Vui lòng chọn huyện',
+                'district.exists' => 'Huyện không hợp lệ',
+                'address_detail.required' => 'Vui lòng nhập địa chỉ chi tiết',
+                'address_detail.string' => 'Địa chỉ phải là chuỗi ký tự',
+                'address_detail.max' => 'Địa chỉ không được quá 255 ký tự',
+                'address_detail.min' => 'Địa chỉ phải có ít nhất 10 ký tự',
+                'payment_method.required' => 'Vui lòng chọn phương thức thanh toán',
+                'payment_method.in' => 'Phương thức thanh toán không hợp lệ',
+                'terms.required' => 'Vui lòng đồng ý với điều khoản và điều kiện',
+                'terms.accepted' => 'Bạn phải đồng ý với điều khoản và điều kiện',
+                'email.email' => 'Email không đúng định dạng',
+                'email.max' => 'Email không được quá 255 ký tự',
+                'note.max' => 'Ghi chú không được quá 1000 ký tự'
             ]);
 
-            return redirect()->route('vnpay.redirect');
-        }
+            DB::beginTransaction();
+            $total = 0;
+            $orderDetails = [];
 
-        $order = new Order();
-        $order->user_id = Auth::check() ? Auth::id() : null;
-        $order->name = $request->name;
-        $order->phone = $request->phone;
-        $order->address = $request->address;
-        $order->payment_method = $request->payment_method;
-        $order->status = 'pending';
-        $order->shipping_fee = $shippingFee;
-        $order->total = $total;
+            if (Auth::check()) {
+                $userCart = Cart::where('user_id', Auth::id())->first();
+                if (!$userCart) {
+                    throw new \Exception('Giỏ hàng không tồn tại');
+                }
 
-        if (!$order->save()) {
-            throw new \Exception('Không thể lưu đơn hàng');
-        }
+                $cartDetails = Cartdetail::with(['product', 'size'])
+                    ->where('cart_id', $userCart->id)
+                    ->get();
+                foreach ($cartDetails as $item) {
+                    if (!$item->product) {
+                        continue;
+                    }
+                    $productBasePrice = 0;
+                    if ($item->size) {
+                        $productBasePrice = $item->size->price ?? 0;
+                    } else {
+                        $minSizeAttribute = DB::table('product_attributes')
+                            ->where('product_id', $item->product->id)
+                            ->orderBy('price')
+                            ->first();
+                        $productBasePrice = $minSizeAttribute->price ?? 0;
+                    }
+                    $toppingPrice = 0;
+                    $toppingIds = [];
+                    if (!empty($item->topping_id)) {
+                        $toppingIdString = (string) $item->topping_id;
+                        $toppingIds = array_map('intval', array_filter(array_map('trim', explode(',', $toppingIdString)))); // Sanitize input
+                        if (!empty($toppingIds)) {
+                            $toppingPrice = Product_topping::whereIn('id', $toppingIds)->sum('price');
+                        }
+                    }
+                    $unitPrice = $productBasePrice + $toppingPrice;
+                    $itemTotal = $unitPrice * $item->quantity;
+                    $total += $itemTotal;
+                    $orderDetails[] = [
+                        'product_id' => $item->product->id,
+                        'product_name' => $item->product->name,
+                        'product_price' => $unitPrice, 
+                        'quantity' => $item->quantity,
+                        'total' => $itemTotal,
+                        'size_id' => $item->size_id ?? null,
+                        'topping_id' => implode(',', $toppingIds),
+                        'status' => 'pending',
+                    ];
+                }
+            } else {
+                $sessionCart = session()->get('cart', []);
+                if (empty($sessionCart)) {
+                    throw new \Exception('Giỏ hàng trống');
+                }
+                foreach ($sessionCart as $index => $cartItem) {
+                    if (!isset($cartItem['sanpham_id']) || !isset($cartItem['quantity'])) {
+                        continue;
+                    }
+                    $product = Sanpham::select(['id', 'name'])
+                        ->where('id', $cartItem['sanpham_id'])
+                        ->first();
+                    if (!$product) {
+                        continue;
+                    }
+                    $basePrice = 0;
+                    if (isset($cartItem['size_id'])) {
+                        $selectedSizeAttribute = DB::table('product_attributes')
+                            ->where('product_id', $product->id)
+                            ->where('id', $cartItem['size_id'])
+                            ->first();
+                        $basePrice = $selectedSizeAttribute->price ?? 0;
+                    } else {
+                        $minSizeAttribute = DB::table('product_attributes')
+                            ->where('product_id', $product->id)
+                            ->orderBy('price')
+                            ->first(); 
+                        $basePrice = $minSizeAttribute->price ?? 0;
+                    }
 
-        foreach ($orderDetails as $detail) {
-            $orderDetail = new OrderDetail();
-            $orderDetail->order_id = $order->id;
-            $orderDetail->product_id = $detail['product_id'];
-            $orderDetail->product_name = $detail['product_name'];
-            $orderDetail->product_price = $detail['product_price'];
-            $orderDetail->quantity = $detail['quantity'];
-            $orderDetail->total = $detail['total'];
-            $orderDetail->size_id = $detail['size_id'] ?? null;
-            $orderDetail->topping_id = $detail['topping_id'];
-            $orderDetail->note = $detail['note'] ?? null;
-            $orderDetail->status = $detail['status'] ?? 'pending';
+                    $toppingTotal = 0;
+                    $toppingIdsArray = [];
 
-            if (!$orderDetail->save()) {
-                throw new \Exception('Không thể lưu chi tiết đơn hàng');
+                    if (!empty($cartItem['topping_ids'])) {
+                        $toppingIdsArray = array_map('intval', array_filter(array_map('trim', explode(',', $cartItem['topping_ids'])))); // Sanitize input
+                        if (!empty($toppingIdsArray)) {
+                            $toppingTotal = Product_topping::whereIn('id', $toppingIdsArray)->sum('price');
+                        }
+                    }
+
+                    $unitPrice = $basePrice + $toppingTotal;
+                    $quantity = intval($cartItem['quantity'] ?? 1);
+                    $itemTotal = $unitPrice * $quantity;
+                    $total += $itemTotal;
+                    $orderDetails[] = [
+                        'product_id' => $product->id,
+                        'product_name' => $product->name,
+                        'product_price' => $unitPrice,
+                        'quantity' => $quantity,
+                        'total' => $itemTotal,
+                        'size_id' => $cartItem['size_id'] ?? null,
+                        'topping_id' => !empty($toppingIdsArray) ? implode(',', $toppingIdsArray) : null,
+                        'status' => 'pending',
+                    ];
+                }
             }
-        }
 
-        if (Auth::check()) {
-            $userCart = Cart::where('user_id', Auth::id())->first();
-            if ($userCart) {
-                Cartdetail::where('cart_id', $userCart->id)->delete();
-                $userCart->delete();
+            if (empty($orderDetails)) {
+                throw new \Exception('Không có sản phẩm hợp lệ trong giỏ hàng');
             }
+            $appliedCouponsData = session()->get('coupons', []);
+            $couponSummaryArray = [];
+            $couponTotalDiscount = 0; 
+
+            foreach ($appliedCouponsData as $couponData) {
+                $couponSummaryArray[] = [
+                    'code' => $couponData['code'],
+                    'discount_value' => $couponData['discount'],
+                    'type' => $couponData['type']
+                ];
+            }
+            $couponSummaryJson = json_encode($couponSummaryArray);
+            $discount = 0;
+            foreach ($appliedCouponsData as $coupon) {
+                $discount += ($coupon['type'] === 'percent')
+                    ? round($total * $coupon['discount'] / 100)
+                    : round($coupon['discount']);
+            }
+            $couponTotalDiscount = $discount; 
+            $total = max(0, round($total - $discount)); 
+
+            $selectedAddress = Address::find($request->district);
+            if (!$selectedAddress) {
+                throw new \Exception('Địa chỉ không hợp lệ.');
+            }
+            $shippingFee = $selectedAddress->shipping_fee;
+            $districtName = $selectedAddress->name;
+            $total += $shippingFee; 
+            if ($request->payment_method === 'banking') {
+                session([
+                    'vnp_order' => [
+                        'name' => $request->name,
+                        'phone' => $request->phone_raw, 
+                        'email' => $request->email,
+                        'address_id' => $selectedAddress->id,
+                        'address_detail' => $request->address_detail,
+                        'district_name' => $districtName,
+                        'total' => $total,
+                        'details' => $orderDetails,
+                        'discount' => $discount,
+                        'shipping_fee' => $shippingFee,
+                        'user_id' => Auth::check() ? Auth::id() : null,
+                        'note' => $request->note,
+                        'status' => 'pending_payment',
+                        'coupon_summary' => $couponSummaryJson, 
+                        'coupon_total_discount' => $couponTotalDiscount,
+                    ]
+                ]);
+                DB::commit();
+                return redirect()->route('vnpay.redirect');
+            }
+
+            $order = new Order();
+            $order->user_id = Auth::check() ? Auth::id() : null;
+            $order->name = $request->name;
+            $order->phone = $request->phone_raw; 
+            $order->email = $request->email;
+            $order->address_id = $selectedAddress->id;
+            $order->address_detail = $request->address_detail;
+            $order->district_name = $districtName;
+            $order->payment_method = $request->payment_method;
+            $order->status = 'pending';
+            $order->shipping_fee = $shippingFee;
+            $order->total = $total;
+            $order->coupon_summary = $couponSummaryJson; 
+            $order->coupon_total_discount = $couponTotalDiscount;
+            $order->note = $request->note;
+
+            if (!$order->save()) {
+                throw new \Exception('Không thể lưu đơn hàng');
+            }
+            foreach ($orderDetails as $detail) {
+                $orderDetail = new OrderDetail();
+                $orderDetail->order_id = $order->id;
+                $orderDetail->product_id = $detail['product_id'];
+                $orderDetail->product_name = $detail['product_name'];
+                $orderDetail->product_price = $detail['product_price'];
+                $orderDetail->quantity = $detail['quantity'];
+                $orderDetail->total = $detail['total'];
+                $orderDetail->size_id = $detail['size_id'] ?? null;
+                $orderDetail->topping_id = $detail['topping_id'];
+                $orderDetail->status = $detail['status'] ?? 'pending';
+
+                if (!$orderDetail->save()) {
+                    throw new \Exception('Không thể lưu chi tiết đơn hàng');
+                }
+            }
+
+            if (!empty($appliedCouponsData)) {
+                foreach ($appliedCouponsData as $couponData) {
+                    $couponModel = Coupon::where('code', $couponData['code'])->first();
+                    if ($couponModel) {
+
+                        $order->coupons()->attach($couponModel->id);
+
+                        $couponModel->increment('used');
+                    } else {
+                    }
+                }
+            }
+
+
+            if (Auth::check()) {
+                $userCart = Cart::where('user_id', Auth::id())->first();
+                if ($userCart) {
+                    Cartdetail::where('cart_id', $userCart->id)->delete();
+                    $userCart->delete();
+                    Log::info('User cart cleared', ['user_id' => Auth::id()]);
+                }
+            }
+
+            session()->forget(['cart', 'coupons', '_old_input']);
+
+            DB::commit();
+            return redirect()->route('order.complete', $order->id)
+                ->with('success', 'Đặt hàng thành công!')
+                ->with('order_number', $order->id);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())
+                ->withInput();
         }
-
-        session()->forget(['cart', 'coupons', '_old_input']);
-
-        DB::commit();
-        return redirect()->route('order.complete', $order->id)
-            ->with('success', 'Đặt hàng thành công!')
-            ->with('order_number', $order->id);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('Checkout Error: ' . $e->getMessage(), [
-            'exception' => $e,
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        return back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())
-            ->withInput();
     }
-}
 
-
-
-  public function success($orderId)
-{
-    try {
-        $order = Order::with('orderDetails.size', 'orderDetails.product')->findOrFail($orderId);
-        $allToppings = \App\Models\Product_topping::all()->keyBy('id');
-        \Log::info('All Toppings', ['toppings' => $allToppings->toArray()]);
-        return view('client.order-complete', compact('order', 'allToppings'));
-
-    } catch (\Exception $e) {
-        Log::error('Order Complete Page Error: ' . $e->getMessage());
-        return redirect()->route('home')->with('error', 'Không tìm thấy đơn hàng');
+    public function success($orderId)
+    {
+        try {
+            $order = Order::with('orderDetails.size', 'orderDetails.product')->findOrFail($orderId);
+            $allToppings = Product_topping::all()->keyBy('id');
+            return view('client.order-complete', compact('order', 'allToppings'));
+        } catch (\Exception $e) {
+            return redirect()->route('home')->with('error', 'Không tìm thấy đơn hàng');
+        }
     }
-}
-
 }

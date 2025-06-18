@@ -473,8 +473,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const sizeId = this.getAttribute('data-id');
                 const element = this;
                 fetch(`/admin/size/delete/${sizeId}`, {
-                    method: 'GET',
+                    method: 'DELETE',
                     headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
@@ -499,8 +501,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const toppingId = this.getAttribute('data-id');
                 const element = this;
                 fetch(`/admin/topping_detail/delete/${toppingId}`, {
-                    method: 'GET',
+                    method: 'DELETE',
                     headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
@@ -520,29 +524,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Xóa ảnh sản phẩm
     document.querySelectorAll('.product-gallery-img').forEach(function(img) {
-        img.addEventListener('click', function() {
-            if (confirm('Bạn có chắc muốn xóa ảnh này?')) {
-                const imgId = this.getAttribute('data-id');
-                const element = this.closest('.product-item');
-                fetch(`/admin/product_img/delete/${imgId}`, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                       showCustomSuccess('Xóa Ảnh thành công!');
-                       element.remove();
-                    } else {
-                        alert('Xóa Ảnh thất bại!');
-                    }
-                })
-                .catch(() => alert('Có lỗi xảy ra!'));
-            }
-        });
+    img.addEventListener('click', function () {
+        if (confirm('Bạn có chắc muốn xóa ảnh này?')) {
+            const imgId = this.getAttribute('data-id');
+            const element = this.closest('.product-item');
+
+            fetch(`/admin/product_img/delete/${imgId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({}) // Laravel cần có body để parse, kể cả rỗng
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Network error');
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showCustomSuccess('Xóa Ảnh thành công!');
+                    element.remove();
+                } else {
+                    window.alert('Xóa Ảnh thất bại!');
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                window.alert('Có lỗi xảy ra!');
+            });
+        }
     });
+});
+
 
     const coverInput = document.getElementById('cover-image-input');
     const coverPreview = document.getElementById('cover-image-preview');

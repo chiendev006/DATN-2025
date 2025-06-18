@@ -16,6 +16,18 @@
   .btn-success:hover {
     background-color: rgb(0, 0, 217);
   }
+  .btn-danger{
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 </style>
     <div class="content-wrapper-scroll">
 
@@ -25,6 +37,10 @@
 
                                 <div class="card">
                                 <button type="button" id="btn-add-topping" class="btn-success">Thêm topping</button>
+                                   <form method="GET" action="{{ route('topping.search') }}" class="form-inline" style="float: right; display: flex; align-items: center;">
+                                                    <input type="text" name="name" class="form-control" placeholder="Tìm kiếm tên và số điện thoại ..." value="{{ request('name') }}" style="width: 220px; margin-right: 8px;">
+                                                    <button type="submit" class="btn btn-success">Tìm kiếm</button>
+                                                </form>
                                     <div class="card-body">
                                         <form method="GET" action="" style="margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
                                             <label for="per_page" style="margin-bottom:0;">Bản/trang:</label>
@@ -42,9 +58,10 @@
                                             <table id="copy-print-csv" class="table v-middle">
                                                 <thead>
                                                     <tr>
+                                                        <th>STT</th>
                                                         <th>Tên topping</th>
                                                         <th>Giá</th>
-                                                        <th>Hành động</th>
+                                                        <th style="width:90px; text-align:center;">Hành động</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -53,8 +70,9 @@
                                                         <td colspan="3" class="text-center">Không có dữ liệu</td>
                                                     </tr>
                                                     @else
-                                                    @foreach ($topping as $item)
+                                                    @foreach ($topping as $key => $item)
                                                     <tr>
+                                                         <td>{{ ($topping->currentPage()-1) * $topping->perPage() + $key + 1 }}</td>
                                                         <td>
                                                          {{ $item['name'] }}
                                                         </td>
@@ -62,19 +80,21 @@
                                                             {{ number_format($item['price'], 0, ',', '.') }} VNĐ
                                                         </td>
                                                         <td>
-                                                            <div class="actions">
+                                                            <div class="actions" style="display: flex; gap: 10px; justify-content: center;">
                                                             <button type="button" class="btn-edit-danhmuc"
                                                                 data-id="{{ $item->id }}"
                                                                 data-name="{{ $item->name }}"
                                                                 data-role="{{ $item->role }}"
                                                                 data-price="{{ $item->price }}"
-                                                                style="background:none;border:none;cursor:pointer;">
-                                                                    <i class="icon-edit1 text-info"></i>
+                                                                style=" background-color: rgb(76, 106, 175); color: white; border: none; border-radius: 5px; cursor: pointer;font-size: 12px;padding: 5px 10px;text-align: center;text-decoration: none;display: inline-block;">
+                                                                Sửa
                                                                 </button>
 
-                                                                <a href="{{ route('topping.delete', ['id' => $item->id]) }}" onclick="return confirm('Ngừng phục vụ topping này?')"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
-                                                                    <i class="icon-x-circle text-danger"></i>
-                                                                </a>
+                                                                 <form action="{{ route('topping.delete', ['id' => $item->id]) }}" method="POST">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa topping này?')">Xóa</button>
+                                                                    </form>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -111,15 +131,20 @@
                                         <div class="field">
                                             <div class="control icons-left">
                                                 <input class="input" type="text" id="edit-name" name="name" placeholder="Name">
-                                                <span class="icon left"><i class="mdi mdi-account"></i></span>
+                                                @error('name')
+                                    <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <br>
+
                                 <div class="field-wrapper">
                                     <div class="field-placeholder">Giá </div>
-                                  <input class="input" type="text" id="edit-price" name="price" placeholder="Giá">
+                                  <input class="input" type="number" id="edit-price" name="price" placeholder="Giá">
+                                    @error('price')
+                                    <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="field grouped">
                                     <div class="control">
@@ -217,18 +242,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="field">
                         <div class="control icons-left">
                             <input class="input" type="text" id="add-name" name="name" placeholder="Name">
-                            <span class="icon left"><i class="mdi mdi-account"></i></span>
                         </div>
+                        <span class="icon left"><i class="mdi mdi-account"></i></span>
+                            @error('name')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
                     </div>
                 </div>
             </div>
-            <br>
             <div class="field-wrapper">
                 <div class="field-placeholder">Giá</div>
-                <br>
+
                 <div class="control" style="margin-top: 8px;">
-                  <input class="input" type="text" id="add-price" name="price" placeholder="Giá">
+                  <input class="input" type="number" id="add-price" name="price" placeholder="Giá">
                 </div>
+                @error('name')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
             </div>
             <div class="field grouped">
                 <div class="control">

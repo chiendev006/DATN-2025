@@ -14,7 +14,10 @@ class OrderController extends Controller
     public function ordersIndex(Request $request)
     {
         $perPage = $request->input('per_page', 10);
-        $orders = Order::paginate($perPage);
+        $orders = Order::select(
+            'orders.*'
+        )->orderBy('created_at', 'desc')->paginate($perPage);
+
         return view('admin.order.index', ['orders' => $orders]);
     }
 
@@ -22,38 +25,50 @@ class OrderController extends Controller
     {
         $order = \App\Models\Order::findOrFail($id);
         $order->pay_status = $request->input('pay_status');
+        $oldStatus = $order->status;
+        $order->status = $request->input('status');
+
+        if ($request->input('status') === 'cancelled') {
+        if ($order->cancel_reason && $oldStatus === 'cancelled') {
+        } else {
+            $cancelReason = $request->input('cancel_reason');
+            if (!str_contains($cancelReason, '(Admin hủy)')) {
+                $cancelReason = '(Admin hủy) ' . $cancelReason;
+            }
+            $order->cancel_reason = $cancelReason;
+        }
+    } else {
+            $order->cancel_reason = $request->input('cancel_reason');
+        }
+
         $order->save();
-        return redirect()->route('admin.order.index')->with('success', 'Cập nhật trạng thái thanh toán thành công!');
+        return redirect()->route('admin.order.index')->with('success', 'Cập nhật đơn hàng thành công!');
     }
 
-    public function delete($id)
+   public function delete($id)
     {
-        // Xóa order_detail trước
-        \App\Models\Orderdetail::where('order_id', $id)->delete();
-        // Xóa order
-        \App\Models\Order::where('id', $id)->delete();
-        return redirect()->route('admin.order.index')->with('success', 'Đã xóa đơn hàng thành công!');
+        \App\Models\Orderdetail::where('order_id', $id)->get()->each->delete();
+        \App\Models\Order::findOrFail($id)->delete();
+        return redirect()->route('admin.order.index')->with('success', 'Đã xóa mềm đơn hàng thành công!');
     }
+
 
     public function showJson($id)
     {
         $order = \App\Models\Order::with('details')->findOrFail($id);
         $details = $order->details->map(function($detail) {
-            // Lấy sản phẩm
             $product = \App\Models\sanpham::find($detail->product_id);
             $product_name = $product ? $product->name : '';
             $product_image = $product ? $product->image : '';
-            // Lấy size
             $size = $detail->size_id ? \App\Models\Size::find($detail->size_id) : null;
             $size_name = $size ? ($size->size . ' - ' . number_format($size->price) . ' VND') : '';
-            // Lấy topping (có thể nhiều)
             $topping_arr = [];
             if (!empty($detail->topping_id)) {
                 $topping_ids = array_filter(array_map('trim', explode(',', $detail->topping_id)));
                 if (!empty($topping_ids)) {
                     $toppings = \App\Models\Product_topping::whereIn('id', $topping_ids)->get();
                     foreach ($toppings as $tp) {
-                        $topping_arr[] = $tp->topping . ' - ' . number_format($tp->price) . ' VND';
+                        $topping_arr[] ="<p>". $tp->topping . ' - ' . number_format($tp->price) . ' VND</p>';
                     }
                 }
             }
@@ -61,7 +76,7 @@ class OrderController extends Controller
                 'product_name' => $product_name,
                 'product_image' => $product_image,
                 'size' => $size_name,
-                'topping' => implode(', ', $topping_arr),
+                'topping' => implode('', $topping_arr),
                 'quantity' => $detail->quantity,
                 'total' => $detail->total,
                 'note' => $detail->note,
@@ -69,6 +84,7 @@ class OrderController extends Controller
         });
         $orderArr = $order->toArray();
         $orderArr['details'] = $details;
+
         return response()->json($orderArr);
     }
 
@@ -79,7 +95,7 @@ class OrderController extends Controller
     public function filterOrders(Request $request)
     {
         $perPage = $request->input('per_page', 10);
-        $query = Order::query();
+        $query = Order::query()->select('orders.*');
         $hasPayStatus = $request->filled('pay_status');
         $hasStatus = $request->filled('status');
 
@@ -91,20 +107,21 @@ class OrderController extends Controller
         } elseif ($hasStatus) {
             $query->where('status', $request->input('status'));
         }
-        // Nếu cả hai đều không có thì không where gì, trả về toàn bộ
         $orders = $query->paginate($perPage);
         return view('admin.order.index', ['orders' => $orders]);
     }
 
     /**
-     * Tìm kiếm đơn hàng theo transaction_id (mã đơn hàng).
-     * Truyền query string: ?transaction_id=xxxx
+     *
+     * 
      */
     public function searchByTransactionId(Request $request)
     {
         $perPage = $request->input('per_page', 10);
         $transactionId = $request->input('transaction_id');
-        $orders = Order::where('transaction_id', 'like', "%$transactionId%")
+        $orders = Order::select('orders.*')
+            ->where('name', 'like', "%$transactionId%")
+            ->orWhere('phone', 'like', "%$transactionId%")
             ->paginate($perPage);
         return view('admin.order.index', ['orders' => $orders]);
     }

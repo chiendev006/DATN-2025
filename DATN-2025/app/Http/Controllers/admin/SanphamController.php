@@ -24,6 +24,8 @@ class SanphamController extends Controller
         $perPage = $request->input('per_page', 10);
         $sanpham = Sanpham::with('danhmuc')->paginate($perPage);
         $danhmucs = Danhmuc::all();
+
+
         return view('admin.sanpham.index', ['sanpham' => $sanpham, 'danhmucs' => $danhmucs]);
     }
 

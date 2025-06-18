@@ -8,6 +8,7 @@
             <div class="tp-banner-container">
               <div class="tp-banner">
                 <ul>
+
                   <li
                     data-transition="fade"
                     data-slotamount="2"
@@ -60,11 +61,7 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      <img
-                        src="{{ url('asset') }}/images/dummy.png"
-                        alt=""
-                        data-lazyload="{{ url('asset') }}/images/img2.png"
-                      />
+
                     </div>
 
                     <!-- LAYER NR. 3 -->
@@ -79,8 +76,8 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      SPECIAL COFFEE <br />
-                      <span class="v-light">BEANS</span>
+Cà phê - Cao cấp<br />
+                      <span class="v-light">Đậm</span>
                     </div>
 
                     <!-- LAYER NR. 4 -->
@@ -95,7 +92,7 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      best quaITY
+                     Mira café
                     </div>
 
                     <!-- LAYER NR. 5 -->
@@ -110,7 +107,7 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      Established in 1991
+                    2025
                     </div>
                   </li>
 
@@ -145,11 +142,7 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      <img
-                        src="{{ url('asset') }}/images/dummy.png"
-                        alt=""
-                        data-lazyload="{{ url('asset') }}/images/img1.png"
-                      />
+
                     </div>
 
                     <!-- LAYER NR. 2 -->
@@ -185,8 +178,8 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      SPECIAL COFFEE <br />
-                      <span class="v-light">BEANS</span>
+                      Sinh tố - Tự nhiên <br />
+                      <span  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="v-light">Tươi</span>
                     </div>
 
                     <!-- LAYER NR. 4 -->
@@ -201,7 +194,7 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      best quaITY
+                  mira café
                     </div>
 
                     <!-- LAYER NR. 5 -->
@@ -216,113 +209,7 @@
                       data-endeasing="Power1.easeIn"
                       data-captionhidden="off"
                     >
-                      Established in 1991
-                    </div>
-                  </li>
-
-                  <li
-                    data-transition="fade"
-                    data-slotamount="2"
-                    data-masterspeed="500"
-                    data-thumb=""
-                    data-saveperformance="on"
-                    data-title="Slide"
-                  >
-                    <img
-                      src="{{ url('asset') }}/images/dummy.png"
-                      alt="slidebg1"
-                      data-lazyload="{{ url('asset') }}/images/bg1.jpg"
-                      data-bgposition="center top"
-                      data-bgfit="cover"
-                      data-bgrepeat="no-repeat"
-                    />
-
-                    <!-- LAYER NR. 1 -->
-                    <div
-                      class="tp-caption lft customout rs-parallaxlevel-0 left-slot"
-                      data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
-                      data-x="0"
-                      data-hoffset="0"
-                      data-y="bottom"
-                      data-speed="500"
-                      data-start="500"
-                      data-easing="Power3.easeInOut"
-                      data-endspeed="300"
-                      data-endeasing="Power1.easeIn"
-                      data-captionhidden="off"
-                    >
-                      <img
-                        src="{{ url('asset') }}/images/dummy.png"
-                        alt=""
-                        data-lazyload="{{ url('asset') }}/images/img1.png"
-                      />
-                    </div>
-
-                    <!-- LAYER NR. 2 -->
-                    <div
-                      class="tp-caption lft customout rs-parallaxlevel-0 right-slot"
-                      data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
-                      data-x="right"
-                      data-hoffset="0"
-                      data-y="bottom"
-                      data-speed="500"
-                      data-start="500"
-                      data-easing="Power3.easeInOut"
-                      data-endspeed="300"
-                      data-endeasing="Power1.easeIn"
-                      data-captionhidden="off"
-                    >
-                      <img
-                        src="{{ url('asset') }}/images/dummy.png"
-                        alt=""
-                        data-lazyload="{{ url('asset') }}/images/img2.png"
-                      />
-                    </div>
-
-                    <!-- LAYER NR. 3 -->
-                    <div
-                      class="tp-caption lft very_large_text text-center"
-                      data-x="center"
-                      data-y="320"
-                      data-speed="900"
-                      data-start="1000"
-                      data-easing="Power4.easeOut"
-                      data-endspeed="350"
-                      data-endeasing="Power1.easeIn"
-                      data-captionhidden="off"
-                    >
-                      SPECIAL COFFEE <br />
-                      <span class="v-light">BEANS</span>
-                    </div>
-
-                    <!-- LAYER NR. 4 -->
-                    <div
-                      class="tp-caption lft text-uppercase large_text text-center best-after"
-                      data-x="center"
-                      data-y="220"
-                      data-speed="800"
-                      data-start="900"
-                      data-easing="Power4.easeOut"
-                      data-endspeed="300"
-                      data-endeasing="Power1.easeIn"
-                      data-captionhidden="off"
-                    >
-                      best quaITY
-                    </div>
-
-                    <!-- LAYER NR. 5 -->
-                    <div
-                      class="tp-caption lft text-uppercase medium_text text-center"
-                      data-x="center"
-                      data-y="270"
-                      data-speed="800"
-                      data-start="900"
-                      data-easing="Power4.easeOut"
-                      data-endspeed="300"
-                      data-endeasing="Power1.easeIn"
-                      data-captionhidden="off"
-                    >
-                      Established in 1991
+                      2025
                     </div>
                   </li>
                 </ul>
@@ -346,12 +233,7 @@
                   <div class="blog-list dp-animation">
                     <img src="{{ url('asset') }}/images/img3.png" alt="" class="animated" />
                     <div class="blog-over-info">
-                      <h3>New coffee flavours</h3>
-                      <a
-                        href="about.html"
-                        class="button-default button-default-white"
-                        >Read More</a
-                      >
+                      <h3>Hương vị cà phê mới</h3>
                     </div>
                   </div>
                 </div>
@@ -364,19 +246,15 @@
                     <img src="{{ url('asset') }}/images/img4.png" alt="" class="animated" />
                     <div class="blog-over-info">
                       <h3>
-                        Thıs frıday <span class="round-price">25%</span> off
+                        Caffee chồn giảm  <span class="round-price">25%</span>
                       </h3>
                     </div>
                   </div>
                   <div class="blog-list dp-animation">
                     <img src="{{ url('asset') }}/images/img5.png" alt="" class="animated" />
                     <div class="blog-over-info">
-                      <h3>ENJOYING GREAT</h3>
-                      <a
-                        href="about.html"
-                        class="button-default button-default-white"
-                        >Read More</a
-                      >
+                      <h3>Thưởng thức tuyệt vời</h3>
+
                     </div>
                   </div>
                 </div>
@@ -396,8 +274,9 @@
           >
             <div class="container">
               <div class="title text-center">
-                <h2 class="text-primary">Discover Menu</h2>
-                <h6>What Happens Here</h6>
+                <h2 class="text-primary">Danh sách Menu</h2>
+                <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Mời bạn tham khảo nhé ^^</h6>
+
               </div>
               <div class="item-list">
                 <div class="row">
@@ -410,7 +289,8 @@
 						<div class="item-right">
 						<div class="item-right-top">
 							<h5>{{ $sp->name }}</h5>
-							<span>$ {{ number_format($sp->min_price, 2) }}</span>
+							<span> {{ number_format($sp->min_price) }} VNĐ</span>
+
 						</div>
 						<p>{{ $sp->description ?? 'Mô tả sản phẩm đang cập nhật.' }}</p>
 						</div>
@@ -423,7 +303,7 @@
                   data-wow-duration="1000ms"
                   data-wow-delay="300ms"
                 >
-                  <a href="menu_fixed.html" class="button-default"
+                  <a  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="/menu" class="button-default"
                     >Explore Full Menu</a
                   >
                 </div>
@@ -438,8 +318,9 @@
           <section class="default-section">
             <div class="container">
               <div class="title text-center">
-                <h2 class="text-primary">Coffee Build Your Base</h2>
-                <h6>What Happens Here</h6>
+                <h2 class="text-primary">Một số sản phẩm nổi bật</h2>
+                <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Mời bạn tham khảo nhé ^^</h6>
+
               </div>
               <div class="product-wrapper">
 				<div
@@ -462,8 +343,9 @@
 						</a>
 					</div>
 					<h5>{{ $sp->name }}</h5>
-					<span>${{ number_format($sp->min_price, 2) }}</span>
-					<del>${{ number_format($sp->min_price + 20, 2) }}</del> {{-- giả lập giá cũ --}}
+
+					<span>{{ number_format($sp->min_price) }} VNĐ</span>
+
 					</div>
 					@endforeach
 				</div>
@@ -474,20 +356,16 @@
                   <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="product-single-left bg-skin text-white">
                       <div class="product-single-detail">
-                        <h2>TRY THE BEST COFFEE <span>IN THE CITY</span></h2>
-                        <p>
-                          Alienum phaedrum torquatos nec eu, vis detraxit
-                          periculis ex, nihil expetendis in mei. Mei an at
-                          dictum lacu pericula uni euripidis.
+                        <h2>THỬ CÀ PHÊ NGON <span><br> HẢI PHÒNG</span></h2>
+                        <p  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+                          Được thiết kế với tone màu ấm cúng, ánh đèn vàng nhẹ và những bản nhạc chill,
+                           quán đem lại cảm giác thư giãn nhẹ nhàng,
+                            thích hợp để "chạy trốn" khỏi guồng quay đô thị.
                         </p>
                         <div class="item-product">
                           <img src="{{ url('asset') }}/images/img10.png" alt="" class="animated" />
                         </div>
-                        <a
-                          href="menu.html"
-                          class="button-default button-default-white margin-top-30"
-                          >Explore Full Menu</a
-                        >
+
                       </div>
                     </div>
                   </div>
@@ -528,7 +406,7 @@
             <div class="container">
               <div class="title text-center">
                 <h2 class="text-coffee">Feature Blog</h2>
-                <h6>Read Latest Delicious Posts And News</h6>
+                <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Read Latest Delicious Posts And News</h6>
               </div>
               <div class="feature-blog">
                 <div
@@ -542,9 +420,10 @@
                   data-speed="2500"
                   data-autotime="6000"
                 >
+                @foreach ($blog as $item)
                   <div class="item dp-animation">
                     <div class="feature-img">
-                      <img src="{{ url('asset') }}/images/feature1.jpg" alt="" class="animated" />
+                      <img style="height: auto;" src="{{ asset('storage/'.$item->image) }}" alt="" class="animated" />
                       <div class="date-feature">
                         27 <br />
                         <small>may</small>
@@ -553,121 +432,16 @@
                     <div class="feature-info">
                       <span><i class="icon-user-1"></i> By Ali TUFAN</span>
                       <span><i class="icon-comment-5"></i> 5 Comments</span>
-                      <h5>Make It SImple</h5>
+                      <h5>{{ $item->title }}</h5>
                       <p>
-                        Aptent taciti sociosqu ad litora euismod atras vulputate
-                        iltricies etri elit class.
+                       {!! $item->content !!}
                       </p>
-                      <a href="blog_single.html"
+                      <a href="{{ route('client.blogsingle',[$item->id]) }}"
                         >Read More <i class="icon-right-4"></i
                       ></a>
                     </div>
                   </div>
-                  <div class="item dp-animation">
-                    <div class="feature-img">
-                      <img src="{{ url('asset') }}/images/feature2.jpg" alt="" class="animated" />
-                      <div class="date-feature">
-                        27 <br />
-                        <small>may</small>
-                      </div>
-                    </div>
-                    <div class="feature-info">
-                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
-                      <span><i class="icon-comment-5"></i> 5 Comments</span>
-                      <h5>COFFEE SHOP</h5>
-                      <p>
-                        Aptent taciti sociosqu ad litora euismod atras vulputate
-                        iltricies etri elit class.
-                      </p>
-                      <a href="blog_single.html"
-                        >Read More <i class="icon-right-4"></i
-                      ></a>
-                    </div>
-                  </div>
-                  <div class="item dp-animation">
-                    <div class="feature-img">
-                      <img src="{{ url('asset') }}/images/feature3.jpg" alt="" class="animated" />
-                      <div class="date-feature">
-                        27 <br />
-                        <small>may</small>
-                      </div>
-                    </div>
-                    <div class="feature-info">
-                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
-                      <span><i class="icon-comment-5"></i> 5 Comments</span>
-                      <h5>COFFEE BAR</h5>
-                      <p>
-                        Aptent taciti sociosqu ad litora euismod atras vulputate
-                        iltricies etri elit class.
-                      </p>
-                      <a href="blog_single.html"
-                        >Read More <i class="icon-right-4"></i
-                      ></a>
-                    </div>
-                  </div>
-                  <div class="item dp-animation">
-                    <div class="feature-img">
-                      <img src="{{ url('asset') }}/images/feature1.jpg" alt="" class="animated" />
-                      <div class="date-feature">
-                        27 <br />
-                        <small>may</small>
-                      </div>
-                    </div>
-                    <div class="feature-info">
-                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
-                      <span><i class="icon-comment-5"></i> 5 Comments</span>
-                      <h5>Make It SImple</h5>
-                      <p>
-                        Aptent taciti sociosqu ad litora euismod atras vulputate
-                        iltricies etri elit class.
-                      </p>
-                      <a href="blog_single.html"
-                        >Read More <i class="icon-right-4"></i
-                      ></a>
-                    </div>
-                  </div>
-                  <div class="item dp-animation">
-                    <div class="feature-img">
-                      <img src="{{ url('asset') }}/images/feature2.jpg" alt="" class="animated" />
-                      <div class="date-feature">
-                        27 <br />
-                        <small>may</small>
-                      </div>
-                    </div>
-                    <div class="feature-info">
-                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
-                      <span><i class="icon-comment-5"></i> 5 Comments</span>
-                      <h5>COFFEE SHOP</h5>
-                      <p>
-                        Aptent taciti sociosqu ad litora euismod atras vulputate
-                        iltricies etri elit class.
-                      </p>
-                      <a href="blog_single.html"
-                        >Read More <i class="icon-right-4"></i
-                      ></a>
-                    </div>
-                  </div>
-                  <div class="item dp-animation">
-                    <div class="feature-img">
-                      <img src="{{ url('asset') }}/images/feature3.jpg" alt="" class="animated" />
-                      <div class="date-feature">
-                        27 <br />
-                        <small>may</small>
-                      </div>
-                    </div>
-                    <div class="feature-info">
-                      <span><i class="icon-user-1"></i> By Ali TUFAN</span>
-                      <span><i class="icon-comment-5"></i> 5 Comments</span>
-                      <h5>COFFEE BAR</h5>
-                      <p>
-                        Aptent taciti sociosqu ad litora euismod atras vulputate
-                        iltricies etri elit class.
-                      </p>
-                      <a href="blog_single.html"
-                        >Read More <i class="icon-right-4"></i
-                      ></a>
-                    </div>
-                  </div>
+                @endforeach
                 </div>
               </div>
             </div>
@@ -696,9 +470,9 @@
                 data-autotime="4000"
               >
                 <div class="item">
-                  <h2 class="text-primary">What Clients Say</h2>
+                  <h2 class="text-primary">Lý Thông</h2>
                   <p>1500+ Satisfied Clients</p>
-                  <p><img src="{{ url('asset') }}/images/client1.png" alt="" /></p>
+                  <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/lythong.png" alt="" /></p>
                   <h5 class="text-primary">Alice Williams</h5>
                   <p>Kitchen Manager</p>
                   <p>
@@ -709,9 +483,9 @@
                   </p>
                 </div>
                 <div class="item">
-                  <h2 class="text-primary">What Clients Say</h2>
+                  <h2 class="text-primary">Nam Per</h2>
                   <p>1500+ Satisfied Clients</p>
-                  <p><img src="{{ url('asset') }}/images/client1.png" alt="" /></p>
+                  <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/sếp_tổng_Nam.jpg" alt="" /></p>
                   <h5 class="text-primary">Alice Williams</h5>
                   <p>Kitchen Manager</p>
                   <p>
@@ -722,9 +496,9 @@
                   </p>
                 </div>
                 <div class="item">
-                  <h2 class="text-primary">What Clients Say</h2>
+                  <h2 class="text-primary">Hoàng Kun</h2>
                   <p>1500+ Satisfied Clients</p>
-                  <p><img src="{{ url('asset') }}/images/client1.png" alt="" /></p>
+                  <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/anhmu.jpg" alt="" /></p>
                   <h5 class="text-primary">Alice Williams</h5>
                   <p>Kitchen Manager</p>
                   <p>
@@ -735,6 +509,19 @@
                   </p>
                 </div>
                 <div class="item">
+                  <h2 class="text-primary">Bố Nam per</h2>
+                  <p>1500+ Satisfied Clients</p>
+                  <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/senna.jpg" alt="" /></p>
+                  <h5 class="text-primary">Alice Williams</h5>
+                  <p>Kitchen Manager</p>
+                  <p>
+                    Success isn’t really that difficult. There is a significant
+                    portion of the <br />
+                    population here in North America, that actually want and
+                    need <br />success really no magic to be hard.
+                  </p>
+                </div>
+                <!-- <div class="item">
                   <h2 class="text-primary">What Clients Say</h2>
                   <p>1500+ Satisfied Clients</p>
                   <p><img src="{{ url('asset') }}/images/client1.png" alt="" /></p>
@@ -746,20 +533,7 @@
                     population here in North America, that actually want and
                     need <br />success really no magic to be hard.
                   </p>
-                </div>
-                <div class="item">
-                  <h2 class="text-primary">What Clients Say</h2>
-                  <p>1500+ Satisfied Clients</p>
-                  <p><img src="{{ url('asset') }}/images/client1.png" alt="" /></p>
-                  <h5 class="text-primary">Alice Williams</h5>
-                  <p>Kitchen Manager</p>
-                  <p>
-                    Success isn’t really that difficult. There is a significant
-                    portion of the <br />
-                    population here in North America, that actually want and
-                    need <br />success really no magic to be hard.
-                  </p>
-                </div>
+                </div> -->
               </div>
             </div>
           </section>
@@ -771,45 +545,40 @@
           <section class="default-section">
             <div class="container">
               <div class="title text-center">
-                <h2 class="text-primary">Our Some Feature</h2>
-                <h6 class="text-turkish">
-                  The role of a good cook ware in the preparation of a sumptuous
-                  meal cannot be over <br />
-                  emphasized then one consider white bread
+                <h2 class="text-primary">Một số tính năng của chúng tôi</h2>
+                <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="text-turkish">
+                 Vai trò của một dụng cụ nấu ăn tốt trong việc chuẩn bị một bữa ăn thịnh soạn không thể được
+                nhấn mạnh hơn so với bánh mì trắng.
                 </h6>
               </div>
               <div class="feature-list">
                 <div class="row">
                   <div class="col-md-3 col-sm-6 col-xs-12">
                     <img src="{{ url('asset') }}/images/icon/icon1.png" alt="" />
-                    <h5 class="text-coffee">COFFEE MAKER</h5>
+                    <h5 class="text-coffee">MÁY PHA CÀ PHÊ</h5>
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                      sed do eiusmod tempor incididunt
+                    "Thiết kế hiện đại, dễ sử dụng – phù hợp cho cả gia đình và quán nhỏ."
                     </p>
                   </div>
                   <div class="col-md-3 col-sm-6 col-xs-12">
                     <img src="{{ url('asset') }}/images/icon/icon2.png" alt="" />
-                    <h5 class="text-coffee">COFFEE GRINDER</h5>
+                    <h5 class="text-coffee">MÁY XAY CÀ PHÊ</h5>
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                      sed do eiusmod tempor incididunt
+                   "Xay nhanh – giữ trọn hương vị nguyên bản của hạt cà phê."
                     </p>
                   </div>
                   <div class="col-md-3 col-sm-6 col-xs-12">
                     <img src="{{ url('asset') }}/images/icon/icon3.png" alt="" />
-                    <h5 class="text-coffee">COFFEE CUPS</h5>
+                    <h5 class="text-coffee">TÁCH CÀ PHÊ</h5>
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                      sed do eiusmod tempor incididunt
+                     "Tách sứ cao cấp, giữ nhiệt tốt – giúp bạn thưởng thức trọn vẹn từng ngụm cà phê."
                     </p>
                   </div>
                   <div class="col-md-3 col-sm-6 col-xs-12">
                     <img src="{{ url('asset') }}/images/icon/icon4.png" alt="" />
-                    <h5 class="text-coffee">ESPRESSO MACHINE</h5>
+                    <h5 class="text-coffee">MÁY PHA CÀ PHÊ ESPRESSO</h5>
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                      sed do eiusmod tempor incididunt
+                  "Mang lại trải nghiệm cà phê chuyên nghiệp ngay tại nhà."
                     </p>
                   </div>
                 </div>
@@ -825,9 +594,8 @@
             <div class="container">
               <div class="title text-center">
                 <h2 class="text-primary">#coffeedespina</h2>
-                <h6 class="text-turkish">
-                  Enjoyed your stay at Despina? Share your moments with us.
-                  Follow us on Instagram and use
+                <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="text-turkish">
+                 Bạn có thích kỳ nghỉ của mình tại Despina không? Hãy chia sẻ những khoảnh khắc của bạn với chúng tôi. Theo dõi chúng tôi trên Instagram và sử dụng
                 </h6>
               </div>
             </div>

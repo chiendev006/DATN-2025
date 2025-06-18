@@ -11,14 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('coupons', function (Blueprint $table) {
+    Schema::create('coupons', function (Blueprint $table) {
         $table->id();
         $table->string('code')->unique();
-        $table->decimal('discount', 10, 2); // số tiền giảm hoặc %
-        $table->enum('type', ['percent', 'fixed'])->default('fixed'); // loại giảm giá
-        $table->date('expires_at')->nullable();
+        $table->decimal('discount', 10, 2);
+        $table->enum('type', ['percent', 'fixed'])->default('fixed');
+        $table->integer('usage_limit')->nullable();
+        $table->integer('used')->default(0);
+        $table->unsignedBigInteger('user_id')->nullable();
+        $table->decimal('min_order_value', 10, 2)->default(0);
+        $table->boolean('is_active')->default(true);        
+        $table->dateTime('starts_at')->nullable(); 
+        $table->dateTime('expires_at')->nullable();
         $table->timestamps();
-});
+
+        $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+    });
     }
 
     /**

@@ -32,6 +32,7 @@
 		<!-- *************
 			************ Vendor Css Files *************
 		************ -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
 		<!-- Mega Menu -->
 		<link rel="stylesheet" href="{{ url('assetadmin') }}/vendor/megamenu/css/megamenu.css">
@@ -44,11 +45,11 @@
 <!-- Summernote JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
-
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 	</head>
 	<body>
 @php
-    $isHomeTab = request()->is('admin') ||request()->is('admin/contact') || request()->is('admin/danhmuc*')|| request()->is('admin/blogs*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*');
+    $isHomeTab = request()->is('admin') ||request()->is('admin/contact') ||request()->is('admin/address') ||request()->is('admin/address/search') ||request()->is('admin/coupon') || request()->is('admin/danhmuc*')|| request()->is('admin/blogs*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*');
     $isAuthTab = request()->is('admin/staff*') || request()->is('admin/payroll*');
 @endphp
 
@@ -71,7 +72,7 @@
 					<!-- Tabs nav start -->
 					<div class="nav" role="tablist" aria-orientation="vertical">
 						<a href="#" class="logo">
-							<img src="img/logo.svg" alt="Uni Pro Admin">
+							<img width="100px" src="{{ url('assetadmin') }}/img/cards/M-removebg-preview.png" alt="Uni Pro Admin">
 						</a>
 						<a class="nav-link {{ $isHomeTab ? 'active' : '' }}" id="home-tab" data-bs-toggle="tab" href="#tab-home" role="tab" aria-controls="tab-home" aria-selected="true">
 							<i class="icon-home2"></i>
@@ -80,7 +81,7 @@
 
 						<a class="nav-link {{ $isAuthTab ? 'active' : '' }}" id="authentication-tab" data-bs-toggle="tab" href="#tab-authentication" role="tab" aria-controls="tab-authentication" aria-selected="false">
 							<i class="icon-unlock"></i>
-							<span class="nav-link-text">Tài khoản</span>
+							<span class="nav-link-text">Tài khoản - Điều hướng</span>
 						</a>
 						<a class="nav-link settings" id="settings-tab" data-bs-toggle="tab" href="#tab-settings" role="tab" aria-controls="tab-authentication" aria-selected="false">
 							<i class="icon-settings1"></i>
@@ -121,10 +122,16 @@
 											<a href="{{ route('admin.order.index') }}" class="{{ request()->is('admin/order*') ? 'current-page' : '' }}">Đơn hàng</a>
 										</li>
 										<li>
-                                        <a href="{{ route('contact.index') }}" class="{{ request()->is('admin/contact*') ? 'current-page' : '' }}">Bình luận</a>
+                                        <a href="{{ route('contact.index') }}" class="{{ request()->is('admin/contact*') ? 'current-page' : '' }}">Hỗ trợ</a>
+										</li>
+                                        <li>
+                                        <a href="{{ route('coupon.index') }}" class="{{ request()->is('admin/coupon*') ? 'current-page' : '' }}">Mã giảm giá</a>
 										</li>
 										<li>
 											<a href="{{ route('blogs.index') }}" class="{{ request()->is('admin/blogs*') ? 'current-page' : '' }}">Bài viết</a>
+										</li>
+                                        <li>
+											<a href="{{ route('address.index') }}" class="{{ request()->is('admin/address*') ? 'current-page' : '' }}">Ship</a>
 										</li>
 
 
@@ -171,7 +178,17 @@
 										<li>
 											<a href="{{ route('payroll.index') }}" class="{{ request()->is('admin/payroll*') ? 'current-page' : '' }}">Bảng lương</a>
 										</li>
-										<li>
+
+                                        <li>
+											<a href="{{ route('staff.index') }}">Trang thu ngân</a>
+										</li>
+                                        <li>
+											<a href="{{ route('bartender.index') }}">Trang pha chế</a>
+										</li>
+                                        <li>
+											<a href="{{ route('danhmuc1.index') }}">Trang cửa hàng</a>
+										</li>
+                                        <li>
 											<a href="{{ route('admin.logout') }}">Logout</a>
 										</li>
 

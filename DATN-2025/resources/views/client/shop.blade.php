@@ -14,7 +14,7 @@
             </div>
         </section>
 
-        <!-- Start Blog List -->   
+        <!-- Start Blog List -->
         <section class="default-section shop-page">
             <div class="container">
                 <div class="row">
@@ -38,48 +38,41 @@
                             </div>
                             <div class="blog-left-filter blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                 <h5>Filter</h5>
-                                <p>Price: <span id="price-range-label">50.000₫ — 10.000.000₫</span></p>
+                                <p>Price: <span id="price-range-label">30.000₫ — 100.000₫</span></p>
                                 <div class="slider-wrapper">
-                                    <input id="price-range" type="text" class="span2" value="" 
-                                        data-slider-min="50000" 
-                                        data-slider-max="10000000" 
-                                        data-slider-step="50000" 
-                                        data-slider-value="[50000,2000000]"
+                                    <input id="price-range" type="text" class="span2" value=""
+                                        data-slider-min="30000"
+                                        data-slider-max="100000"
+                                        data-slider-step="1000"
+                                        data-slider-value="[30000,200000]"
                                         data-slider-tooltip="hide"
                                     />
                                 </div>
                                 <a href="#" id="btn-filter" class="filter-btn">FILTER</a>
                             </div>
-                            <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                <h5>Best Deals</h5>
-                                <div class="best-deal-blog">
-                                    <div class="best-deal-left">
-                                        <img src="{{ url('asset') }}/images/img20.png" alt="">
+                           <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                            <h5>Best Deals</h5>
+
+                            @if(isset($bestDeals) && !$bestDeals->isEmpty())
+                                @foreach($bestDeals as $deal)
+                                    <div class="best-deal-blog">
+                                        <div class="best-deal-left">
+                                            <a href="{{ route('client.product.detail', $deal->id) }}">  <img style="border-radius: 10px;" src="{{ url('storage/uploads/' . $deal->image) }}" alt="{{ $deal->name }}"
+                                            onerror="this.onerror=null;this.src='https://placehold.co/80x80/f8f8f8/ccc?text=Image';">
+                                        </a>
+
+                                        </div>
+                                        <div class="best-deal-right">
+                                            <a href="{{ route('client.product.detail', $deal->id) }}">{{ $deal->name }}</a>
+                                            <p><strong>{{ number_format($deal->min_price) }} đ</strong></p>
+                                        </div>
                                     </div>
-                                    <div class="best-deal-right">
-                                        <p>Lasal Cheese</p>
-                                        <p><strong>$ 15</strong></p>
-                                    </div>
-                                </div>
-                                <div class="best-deal-blog">
-                                    <div class="best-deal-left">
-                                        <img src="{{ url('asset') }}/images/img21.png" alt="">
-                                    </div>
-                                    <div class="best-deal-right">
-                                        <p>Lasal Cheese</p>
-                                        <p><strong>$ 15</strong></p>
-                                    </div>
-                                </div>
-                                <div class="best-deal-blog">
-                                    <div class="best-deal-left">
-                                        <img src="{{ url('asset') }}/images/img22.png" alt="">
-                                    </div>
-                                    <div class="best-deal-right">
-                                        <p>Lasal Cheese</p>
-                                        <p><strong>$ 15</strong></p>
-                                    </div>
-                                </div>
-                            </div>
+                                @endforeach
+                            @else
+                                <p>No deals available at the moment.</p>
+                            @endif
+
+                        </div>
                             <div class="popular-tag blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                 <h5>Popular Tags</h5>
                                 <a href="#">Audio</a> <a href="#">Service</a> <a href="#">Online Order</a> <a href="#">Contact</a> <a href="#">Cupcake</a>
@@ -103,7 +96,7 @@
                                         </select>
                                     </div>
                                 </div>
-                            </div> 
+                            </div>
                             <div class="row" id="product-list">
                                 @foreach ($firstProducts as $product)
                                     <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
@@ -115,7 +108,7 @@
                                                 <div class="cart-overlay-wrap">
                                                     <div class="cart-overlay">
                                                         <a href="{{ route('client.product.detail', $product->id) }}" class="shop-cart-btn">ADD TO CART</a>
-                                                    </div> 
+                                                    </div>
                                                 </div>
                                             </div>
                                             <a href="{{ route('client.product.detail', $product->id) }}"><h5>{{ $product->name }}</h5></a>
@@ -286,8 +279,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize slider
     var slider = new Slider('#price-range', {
         formatter: function(value) {
-            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 }).format(value[0]) + 
-                   ' — ' + 
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 }).format(value[0]) +
+                   ' — ' +
                    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 }).format(value[1]);
         }
     });
@@ -295,8 +288,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Update price range label
     slider.on('slide', function(value) {
         $("#price-range-label").text(
-            new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 }).format(value[0]) + 
-            ' — ' + 
+            new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 }).format(value[0]) +
+            ' — ' +
             new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 }).format(value[1])
         );
     });
@@ -304,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Handle price filter
     $('#btn-filter').on('click', function (e) {
         e.preventDefault();
-        
+
         let range = slider.getValue();
         let minPrice = range[0];
         let maxPrice = range[1];
