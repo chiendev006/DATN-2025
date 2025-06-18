@@ -76,6 +76,7 @@
             @endforeach
         </tbody>
     </table>
+    <button style="margin-left:10px; margin-bottom:10px ; border-radius: 15px; margin-top: 20px;"  class="btn btn-primary col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2"><a style="color:white;" href="{{ route('payroll.index') }}">Trở lại danh sách</a></button>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>

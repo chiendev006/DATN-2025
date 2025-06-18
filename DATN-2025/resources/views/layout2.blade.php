@@ -33,6 +33,9 @@
   <!-- Bootstrap Slider CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/css/bootstrap-slider.min.css">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
@@ -60,6 +63,7 @@
       }
     @endphp
     <style>
+
       .search-input-wrapper {
     position: relative;
     width: 100%;
@@ -479,7 +483,7 @@
                   <div class="cart animated">
                        <span class="icon-basket fontello"></span>
                        <span>{{ $cartCount }} sản phẩm - {{ number_format($subtotal, 0, ',', '.') }}₫</span>
-                        <div class="cart-wrap">
+                       <div class="cart-wrap">
                             <div class="cart-blog scrollable-cart">
                                 @forelse ($items as $item)
                                     @php

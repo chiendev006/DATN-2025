@@ -276,6 +276,7 @@ Cà phê - Cao cấp<br />
               <div class="title text-center">
                 <h2 class="text-primary">Danh sách Menu</h2>
                 <h6>Mời bạn tham khảo nhé ^^</h6>
+
               </div>
               <div class="item-list">
                 <div class="row">
@@ -289,6 +290,7 @@ Cà phê - Cao cấp<br />
 						<div class="item-right-top">
 							<h5>{{ $sp->name }}</h5>
 							<span> {{ number_format($sp->min_price) }} VNĐ</span>
+
 						</div>
 						<p>{{ $sp->description ?? 'Mô tả sản phẩm đang cập nhật.' }}</p>
 						</div>
@@ -318,6 +320,7 @@ Cà phê - Cao cấp<br />
               <div class="title text-center">
                 <h2 class="text-primary">Một số sản phẩm nổi bật</h2>
                 <h6>Mời bạn tham khảo nhé ^^</h6>
+
               </div>
               <div class="product-wrapper">
 				<div
@@ -340,7 +343,9 @@ Cà phê - Cao cấp<br />
 						</a>
 					</div>
 					<h5>{{ $sp->name }}</h5>
+
 					<span>{{ number_format($sp->min_price) }} VNĐ</span>
+
 					</div>
 					@endforeach
 				</div>
