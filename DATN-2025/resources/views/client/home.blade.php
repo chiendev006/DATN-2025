@@ -179,7 +179,7 @@ Cà phê - Cao cấp<br />
                       data-captionhidden="off"
                     >
                       Sinh tố - Tự nhiên <br />
-                      <span class="v-light">Tươi</span>
+                      <span  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="v-light">Tươi</span>
                     </div>
 
                     <!-- LAYER NR. 4 -->
@@ -246,7 +246,7 @@ Cà phê - Cao cấp<br />
                     <img src="{{ url('asset') }}/images/img4.png" alt="" class="animated" />
                     <div class="blog-over-info">
                       <h3>
-                        Caffee chồn giảm  <span class="round-price">25%</span> 
+                        Caffee chồn giảm  <span class="round-price">25%</span>
                       </h3>
                     </div>
                   </div>
@@ -254,7 +254,7 @@ Cà phê - Cao cấp<br />
                     <img src="{{ url('asset') }}/images/img5.png" alt="" class="animated" />
                     <div class="blog-over-info">
                       <h3>Thưởng thức tuyệt vời</h3>
-                     
+
                     </div>
                   </div>
                 </div>
@@ -275,7 +275,7 @@ Cà phê - Cao cấp<br />
             <div class="container">
               <div class="title text-center">
                 <h2 class="text-primary">Danh sách Menu</h2>
-                <h6>Mời bạn tham khảo nhé ^^</h6>
+                <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Mời bạn tham khảo nhé ^^</h6>
 
               </div>
               <div class="item-list">
@@ -303,7 +303,7 @@ Cà phê - Cao cấp<br />
                   data-wow-duration="1000ms"
                   data-wow-delay="300ms"
                 >
-                  <a href="/menu" class="button-default"
+                  <a  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="/menu" class="button-default"
                     >Explore Full Menu</a
                   >
                 </div>
@@ -319,7 +319,7 @@ Cà phê - Cao cấp<br />
             <div class="container">
               <div class="title text-center">
                 <h2 class="text-primary">Một số sản phẩm nổi bật</h2>
-                <h6>Mời bạn tham khảo nhé ^^</h6>
+                <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Mời bạn tham khảo nhé ^^</h6>
 
               </div>
               <div class="product-wrapper">
@@ -357,7 +357,7 @@ Cà phê - Cao cấp<br />
                     <div class="product-single-left bg-skin text-white">
                       <div class="product-single-detail">
                         <h2>THỬ CÀ PHÊ NGON <span><br> HẢI PHÒNG</span></h2>
-                        <p>
+                        <p  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
                           Được thiết kế với tone màu ấm cúng, ánh đèn vàng nhẹ và những bản nhạc chill,
                            quán đem lại cảm giác thư giãn nhẹ nhàng,
                             thích hợp để "chạy trốn" khỏi guồng quay đô thị.
@@ -365,7 +365,7 @@ Cà phê - Cao cấp<br />
                         <div class="item-product">
                           <img src="{{ url('asset') }}/images/img10.png" alt="" class="animated" />
                         </div>
-                        
+
                       </div>
                     </div>
                   </div>
@@ -406,7 +406,7 @@ Cà phê - Cao cấp<br />
             <div class="container">
               <div class="title text-center">
                 <h2 class="text-coffee">Feature Blog</h2>
-                <h6>Read Latest Delicious Posts And News</h6>
+                <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Read Latest Delicious Posts And News</h6>
               </div>
               <div class="feature-blog">
                 <div
@@ -546,7 +546,7 @@ Cà phê - Cao cấp<br />
             <div class="container">
               <div class="title text-center">
                 <h2 class="text-primary">Một số tính năng của chúng tôi</h2>
-                <h6 class="text-turkish">
+                <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="text-turkish">
                  Vai trò của một dụng cụ nấu ăn tốt trong việc chuẩn bị một bữa ăn thịnh soạn không thể được
                 nhấn mạnh hơn so với bánh mì trắng.
                 </h6>
@@ -594,7 +594,7 @@ Cà phê - Cao cấp<br />
             <div class="container">
               <div class="title text-center">
                 <h2 class="text-primary">#coffeedespina</h2>
-                <h6 class="text-turkish">
+                <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="text-turkish">
                  Bạn có thích kỳ nghỉ của mình tại Despina không? Hãy chia sẻ những khoảnh khắc của bạn với chúng tôi. Theo dõi chúng tôi trên Instagram và sử dụng
                 </h6>
               </div>

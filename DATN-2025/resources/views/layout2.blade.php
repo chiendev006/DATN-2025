@@ -211,7 +211,7 @@
 
 
   <body>
-    <div id="app">
+    <div  id="app">
     <!-- Page pre loader -->
     <div id="pre-loader">
       <div class="loader-holder">
@@ -582,7 +582,7 @@
                       ><span>mira</span><small>café</small></a
                     >
                   </div>
-                  <p>
+                  <p  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
                     We have a hankering for some really in good melt in a mouth
                     variety. Floury is the best choice to taste food and
                     dessert.
@@ -620,7 +620,7 @@
                     </li>
                   </ul>
                 </div>
-                <div class="col-md-3 col-sm-3 col-xs-12">
+                <div  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="col-md-3 col-sm-3 col-xs-12">
                   <h5>Contact</h5>
                   <p>
                     329 Queensberry Street, North Melbourne <br />
@@ -629,7 +629,7 @@
                     <a href="mailto:support@despina.com">support@despina.com</a>
                   </p>
                 </div>
-                <div class="col-md-3 col-sm-3 col-xs-12">
+                <div  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="col-md-3 col-sm-3 col-xs-12">
                   <h5>Opening Hour</h5>
                   <p>
                     Monday - Friday: ........6am - 9pm <br />
