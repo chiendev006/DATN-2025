@@ -117,8 +117,8 @@
                                         <th>Tên bài</th>
                                         <th style="width:30%">Nội dung</th>
                                         <th>Ảnh bìa</th>
+                                        <th>Danh mục bài viết</th>
                                         <th>Ngày tạo</th>
-                                        <th>Ngày cập nhật</th>
                                         <th style="width:90px; text-align:center;">Hành động</th>
                                     </tr>
                                 </thead>
@@ -133,8 +133,8 @@
                                     <td>{{ $item->title }}</td>
                                     <td style="max-width:400px; word-break:break-word;">{!!  $item->content !!}</td>
                                     <td><img src="{{ asset('storage/'.$item->image) }}" alt="Ảnh bìa" style="width: 100px; height: 100px;"></td>
-                                    <td>{{ $item->created_at }}</td>
-                                    <td>{{ $item->updated_at }}</td>
+                                    <td>{{$item->danhmucBlog->name}}</td>
+                                    <td>{{ $item->created_at->format('d/m/Y') }}</td>
                                         <td style="width:90px; text-align:center;">
                                             <a style="color: white; width: 60px; margin-bottom:4px;" href="{{ route('blogs.edit', $item->id) }}" class="btn-success">Sửa</a>
                                             <a style="color: white; width: 60px;" href="{{ route('blogs.destroy', $item->id) }}" onclick="return confirm('  Xác nhận xóa bài viết?')" class="btn-success1">Xóa</a>

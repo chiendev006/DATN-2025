@@ -1,35 +1,35 @@
 <?php
 
-        use App\Http\Controllers\AboutController;
-        use App\Http\Controllers\admin\AdminStaffController;
-        use App\Http\Controllers\admin\Product_attributesController;
-        use Illuminate\Support\Facades\Route;
-        use App\Http\Controllers\Controller;
-        use App\Http\Controllers\ContactController;
-        use App\Http\Controllers\admin\HomeController;
-        use App\Http\Controllers\admin\DanhmucController;
-        use App\Http\Controllers\admin\SanphamController;
-        use App\Http\Controllers\admin\ProductImageController;
-        use App\Http\Controllers\admin\ContactAdminController;
-        use App\Http\Controllers\admin\SizeController;
-        use App\Http\Controllers\admin\ToppingController;
-        use App\Http\Controllers\admin\BlogsController;
-        use App\Http\Controllers\AuthenticationController;
-        use App\Http\Controllers\BlogController;
-        use App\Http\Controllers\CartController;
-        use App\Http\Controllers\ServicesController;
-        use App\Http\Controllers\ShowproductController;
-        use App\Http\Controllers\ResetPasswordController;
-        use App\Http\Controllers\admin\AuthController;
-        use App\Http\Controllers\OrderController;
-        use App\Http\Controllers\admin\PayrollController;
-        use App\Http\Controllers\CheckoutController;
-        use App\Http\Controllers\MyaccountController;
-        use App\Http\Controllers\ShopController;
-        use App\Http\Controllers\Staff\StaffController;
-        use App\Http\Controllers\VNPayController;
-        use App\Http\Controllers\Staff\AuthenController;
-        use App\Http\ViewComposers\CartComposer;
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\admin\AdminStaffController;
+use App\Http\Controllers\admin\Product_attributesController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\admin\HomeController;
+use App\Http\Controllers\admin\DanhmucController;
+use App\Http\Controllers\admin\SanphamController;
+use App\Http\Controllers\admin\ProductImageController;
+use App\Http\Controllers\admin\ContactAdminController;
+use App\Http\Controllers\admin\SizeController;
+use App\Http\Controllers\admin\ToppingController;
+use App\Http\Controllers\admin\BlogsController;
+use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ServicesController;
+use App\Http\Controllers\ShowproductController;
+use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\admin\AuthController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\admin\PayrollController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\MyaccountController;
+use App\Http\Controllers\ShopController;
+use App\Http\Controllers\Staff\StaffController;
+use App\Http\Controllers\VNPayController;
+use App\Http\Controllers\Staff\AuthenController;
+use App\Http\ViewComposers\CartComposer;
 
 Route::get('login', [AuthenticationController::class, 'login'])->name('login');
 Route::post('login', [AuthenticationController::class, 'postLogin'])->name('post-login');
@@ -245,16 +245,18 @@ Route::prefix('staff')->middleware('checkStaff')->group(function () {
 Route::get('/vnpay/return', [App\Http\Controllers\VNPayController::class, 'vnpayReturn'])->name('vnpay.return');
 Route::get('/vnpay/redirect', [App\Http\Controllers\VNPayController::class, 'redirectToVnpay'])->name('vnpay.redirect');
 
-        // My account
-        Route::get('/myaccount',[MyaccountController::class, 'index'])->name('client.myaccount');
-        Route::patch('/account/order/cancel/{id}', [MyaccountController::class, 'cancelOrder'])->name('client.order.cancel');
-        Route::patch('/order/cancel-multiple', [MyaccountController::class, 'cancelMultiple'])->name('client.order.cancelMultiple');
-        Route::post('/myaccount/ajax-update', [MyAccountController::class, 'ajaxUpdate'])->name('myaccount.ajax-update');
-        Route::get('/check-order-status/{id}', [MyaccountController::class, 'checkOrderStatus'])->name('client.order.checkStatus');
+// My account
+Route::get('/myaccount', [MyaccountController::class, 'index'])->name('client.myaccount');
+Route::patch('/account/order/cancel/{id}', [MyaccountController::class, 'cancelOrder'])->name('client.order.cancel');
+Route::patch('/order/cancel-multiple', [MyaccountController::class, 'cancelMultiple'])->name('client.order.cancelMultiple');
+Route::post('/myaccount/ajax-update', [MyAccountController::class, 'ajaxUpdate'])->name('myaccount.ajax-update');
+Route::get('/check-order-status/{id}', [MyaccountController::class, 'checkOrderStatus'])->name('client.order.checkStatus');
 
 
-        Route::post('/order/reorder/{orderId}', [OrderController::class, 'reorder'])->name('client.order.reorder');
+Route::post('/order/reorder/{orderId}', [OrderController::class, 'reorder'])->name('client.order.reorder');
 
 //
 Route::get('/blog', [BlogController::class, 'index'])->name('client.blog');
+Route::get('/blog/search', [BlogController::class, 'search'])->name('blog.search');
 Route::get('/blog/{id}', [BlogController::class, 'show'])->name('client.blogsingle');
+Route::get('/blog/category/{id}', [BlogController::class, 'showByCategory'])->name('blog.category');
