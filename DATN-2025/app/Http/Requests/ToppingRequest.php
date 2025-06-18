@@ -20,8 +20,9 @@ class ToppingRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            // 'name' => 'required|min:5|max:255'
+        return[
+            'name' => 'required|string',
+            'price' => 'required|numeric',
         ];
     }
 
@@ -45,7 +46,11 @@ class ToppingRequest extends FormRequest
     public function messages()
     {
         return [
-            //
+            'name.required' => 'Tên toping không được để trống',
+        'name.string' => 'Tên topping phải là một chuỗi kí tự',
+        'price.required' => 'Giá topping phải là một chuỗi kí tự',
+        'price.numeric' => 'Giá topping phải là dạng số',
+
         ];
     }
 }

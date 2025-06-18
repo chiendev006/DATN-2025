@@ -101,19 +101,18 @@
             @else
                 <div class="row gx-4">
                     @foreach ($sanpham as $item)
-                        <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-4 col-sm-6 pb-4" data-type="meat">
+                        <div class="col-xxl-3 col-xl-3 col-lg-3 col-md-3 col-sm-3 pb-3" data-type="meat">
                             <a href="#" class="pos-product" data-bs-toggle="modal"
                                data-bs-target="#modalPosItem"
                                data-id="{{ $item->id }}"
                                data-name="{{ $item->name }}"
-                               data-image="{{ url("/storage/uploads/$item->image") }}"
-                               data-description="{{ $item->mota }}">
+                               data-image="{{ url("/storage/uploads/$item->image") }}" >
                                 <div class="img">
                                     <img src="{{ url("/storage/uploads/$item->image") }}" width="100%" alt="{{ $item->name }}">
                                 </div>
                                 <div class="info">
                                     <div class="title">{{ $item->name }}</div>
-                                    <div class="desc">{{ $item->mota }}</div>
+
                                 </div>
                             </a>
                         </div>
