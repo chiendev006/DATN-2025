@@ -189,25 +189,29 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @switch($order->ship_status)
-                                                @case('pending_delivery')
-                                                    <span style="color: orange;">Chờ giao</span>
-                                                    @break
-                                                @case('out_for_delivery')
-                                                    <span style="color: blue;">Đang giao</span>
-                                                    @break
-                                                @case('delivered')
-                                                    <span style="color: green;">Đã giao</span>
-                                                    @break
-                                                @case('failed_delivery')
-                                                    <span style="color: red;">Giao thất bại</span>
-                                                    @break
-                                                @case('returned_to_store')
-                                                    <span style="color: gray;">Đã trả hàng</span>
-                                                    @break
-                                                @default
-                                                    <span>{{ $order->ship_status }}</span>
-                                            @endswitch
+                                            @if($order->ship_status == 'not_applicable' || $order->phone == 'N/A')
+                                                <span style="color: #888;">Không khả dụng</span>
+                                            @else
+                                                @switch($order->ship_status)
+                                                    @case('pending_delivery')
+                                                        <span style="color: orange;">Chờ giao</span>
+                                                        @break
+                                                    @case('out_for_delivery')
+                                                        <span style="color: blue;">Đang giao</span>
+                                                        @break
+                                                    @case('delivered')
+                                                        <span style="color: green;">Đã giao</span>
+                                                        @break
+                                                    @case('failed_delivery')
+                                                        <span style="color: red;">Giao thất bại</span>
+                                                        @break
+                                                    @case('returned_to_store')
+                                                        <span style="color: gray;">Đã trả hàng</span>
+                                                        @break
+                                                    @default
+                                                        <span>{{ $order->ship_status }}</span>
+                                                @endswitch
+                                            @endif
                                         </td>
                                          <td>{{ number_format($order->total, 0, ',', '.') }} đ</td>
                                         <td>{{ $order->note }}</td>
@@ -352,6 +356,7 @@
           <option value="delivered">Đã giao</option>
           <option value="failed_delivery">Giao thất bại</option>
           <option value="returned_to_store">Đã trả hàng</option>
+          <option value="na" style="display:none;">Không khả dụng</option>
         </select>
       </div>
       </div>
@@ -527,10 +532,25 @@
                     '<tr><td colspan="8" style="text-align:center; color:red;">Lỗi lấy dữ liệu</td></tr>';
             });
 
-        document.getElementById('modal_ship_status').value = btn.getAttribute('data-ship_status');
-        const originalShipStatus = btn.getAttribute('data-ship_status');
-        disableInvalidShipStatusOptions(originalShipStatus);
-        syncShipStatusHidden();
+        // Xử lý trạng thái giao hàng không khả dụng nếu phone == 'N/A'
+        if(btn.getAttribute('data-phone')=='N/A'){
+            const shipStatusSelect = document.getElementById('modal_ship_status');
+            let naOption = shipStatusSelect.querySelector('option[value="not_applicable"]');
+            if(!naOption){
+                naOption = document.createElement('option');
+                naOption.value = 'not_applicable';
+                naOption.text = 'Không khả dụng';
+                shipStatusSelect.appendChild(naOption);
+            }
+            shipStatusSelect.value = 'not_applicable';
+            shipStatusSelect.disabled = true;
+        } else {
+            document.getElementById('modal_ship_status').value = btn.getAttribute('data-ship_status');
+            const originalShipStatus = btn.getAttribute('data-ship_status');
+            disableInvalidShipStatusOptions(originalShipStatus);
+            syncShipStatusHidden();
+            document.getElementById('modal_ship_status').disabled = false;
+        }
     }
 
     function closeOrderModal() {
@@ -675,6 +695,7 @@
             });
         }
         
+        // Đảm bảo có thể chọn ngay option 'Đang giao' khi chuyển sang 'Đã xác nhận'
         disableInvalidShipStatusOptions(shipStatusSelect.value);
         syncShipStatusHidden();
     });
