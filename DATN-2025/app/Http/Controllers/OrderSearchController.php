@@ -75,6 +75,13 @@ class OrderSearchController extends Controller
         $reason = $request->input('cancel_reason', 'Khách hàng hủy đơn');
 
         $order->status = 'cancelled';
+        $order->ship_status = 'failed_delivery';
+        // Nếu đã thanh toán thì chuyển sang hoàn tiền
+        if ($order->pay_status === '1') {
+            $order->pay_status = '3'; // Hoàn tiền
+        } else {
+            $order->pay_status = '2'; // Đã hủy (chưa thanh toán)
+        }
         $order->cancel_reason = '(Khách hàng hủy) ' . $reason;
         $order->save();
 

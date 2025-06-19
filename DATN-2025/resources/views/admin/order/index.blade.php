@@ -80,7 +80,11 @@
                                 <div class="card">
 
                                     <div class="card-body">
-
+                                    @if(session('success'))
+                                        <div class="alert alert-success" style="margin-bottom: 16px;">
+                                            {{ session('success') }}
+                                        </div>
+                                    @endif
                                         <div class="row" style="margin-bottom: 20px; display:flex; justify-content: space-between;" >
                                             <div class="col-md-6">
                                                 <form method="GET" action="{{ route('admin.order.filter') }}" class="form-inline">
@@ -178,6 +182,8 @@
                                                 <span style="color: green;">Đã thanh toán</span>
                                             @elseif ($order->pay_status == 2)
                                                 <span style="color: red;">Đã hủy</span>
+                                            @elseif ($order->pay_status == 3)
+                                                <span style="color: #e67e22;">Hoàn tiền</span>
                                             @else
                                                 <span>{{ $order->pay_status }}</span>
                                             @endif
@@ -318,6 +324,8 @@
         <select class="form-control" name="pay_status" id="modal_pay_status">
           <option value="0">Chờ thanh toán</option>
           <option value="1">Đã thanh toán</option>
+          <option value="2">Đã hủy</option>
+          <option value="3">Hoàn tiền</option>
         </select>
       </div>
       </div>
@@ -450,7 +458,23 @@
         statusSelect.value = initialStatusValue;
         payStatusSelect.value = originalPayStatusFromButton;
         statusSelect.setAttribute('data-original-status', initialStatusValue);
-        payStatusSelect.setAttribute('data-original-pay-status', originalPayStatusFromButton);
+        if (originalPayStatusFromButton === '2' || originalPayStatusFromButton === '3') {
+            payStatusSelect.setAttribute('disabled', 'disabled');
+            if (!document.getElementById('hidden_pay_status')) {
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'pay_status';
+                hidden.id = 'hidden_pay_status';
+                hidden.value = originalPayStatusFromButton;
+                payStatusSelect.parentNode.appendChild(hidden);
+            } else {
+                document.getElementById('hidden_pay_status').value = originalPayStatusFromButton;
+            }
+        } else {
+            payStatusSelect.removeAttribute('disabled');
+            const hidden = document.getElementById('hidden_pay_status');
+            if (hidden) hidden.remove();
+        }
         disableInvalidStatusOptions(initialStatusValue);
         disableInvalidPayStatusOptions(originalPayStatusFromButton);
         document.getElementById('modal_total').value = btn.getAttribute('data-total');

@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('cancel_reason', 255)->nullable();
             $table->decimal('total', 10, 2);
             $table->uuid('transaction_id')->nullable();
-            $table->string('pay_status', 10)->default('0');
+            $table->enum('pay_status', ['0', '1', '2', '3'])->default('0');
             $table->text('coupon_summary')->nullable();
             $table->decimal('coupon_total_discount', 10, 2)->default(0);
             $table->text('note')->nullable();
