@@ -162,24 +162,24 @@ class OrderController extends Controller
     {
         $perPage = $request->input('per_page', 10);
         $query = Order::query()->select('orders.*');
-        $hasPayStatus = $request->filled('pay_status');
-        $hasStatus = $request->filled('status');
 
-        if ($hasPayStatus && $hasStatus) {
-            $query->where('pay_status', $request->input('pay_status'))
-                  ->where('status', $request->input('status'));
-        } elseif ($hasPayStatus) {
+        if ($request->filled('pay_status')) {
             $query->where('pay_status', $request->input('pay_status'));
-        } elseif ($hasStatus) {
+        }
+        if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
         }
+        if ($request->filled('ship_status')) {
+            $query->where('ship_status', $request->input('ship_status'));
+        }
+
         $orders = $query->paginate($perPage);
-        return view('admin.order.index', ['orders' => $orders]);
+        return view('admin.order.index', compact('orders'));
     }
 
     /**
      *
-     * 
+     *
      */
     public function searchByTransactionId(Request $request)
     {

@@ -86,24 +86,35 @@
                                         </div>
                                     @endif
                                         <div class="row" style="margin-bottom: 20px; display:flex; justify-content: space-between;" >
-                                            <div class="col-md-6">
+                                            <div class="col-md-7">
                                                 <form method="GET" action="{{ route('admin.order.filter') }}" class="form-inline">
                                                   <div style="display: flex; align-items: center;">
+                                                  <div  class="field-wrapper">
+                                                        <div class="field-placeholder">Trạng thái đơn</div>
+                                                    <select name="status" id="order_status" class="form-control" style="width: 150px; margin-right: 12px;">
+                                                        <option value="">Tất cả</option>
+                                                        <option value="pending" {{ request('status')==='pending' ? 'selected' : '' }}>Chờ xử lý</option>
+                                                        <option value="processing" {{ request('status')==='processing' ? 'selected' : '' }}>Đã xác nhận</option>
+                                                        <option value="completed" {{ request('status')==='completed' ? 'selected' : '' }}>Hoàn thành</option>
+                                                        <option value="cancelled" {{ request('status')==='cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                                                    </select></div>
                                                   <div  class="field-wrapper">    <div class="field-placeholder">Trạng thái thanh toán</div>
                                                     <select name="pay_status" id="pay_status" class="form-control" style="width: 150px; margin-right: 12px;">
                                                         <option value="">Tất cả</option>
                                                         <option value="0" {{ request('pay_status')==='0' ? 'selected' : '' }}>Chờ thanh toán</option>
                                                         <option value="1" {{ request('pay_status')==='1' ? 'selected' : '' }}>Đã thanh toán</option>
                                                         <option value="2" {{ request('pay_status')==='2' ? 'selected' : '' }}>Đã hủy</option>
+                                                        <option value="3" {{ request('pay_status')==='3' ? 'selected' : '' }}>Hoàn tiền</option>
                                                     </select></div>
                                                     <div  class="field-wrapper">
-                                                        <div class="field-placeholder">Trạng thái đơn</div>
-                                                    <select name="status" id="status" class="form-control" style="width: 150px; margin-right: 12px;">
+                                                        <div class="field-placeholder">Trạng giao hàng</div>
+                                                    <select name="ship_status" id="ship_status" class="form-control" style="width: 150px; margin-right: 12px;">
                                                         <option value="">Tất cả</option>
-                                                        <option value="pending" {{ request('status')==='pending' ? 'selected' : '' }}>Chờ xử lý</option>
-                                                        <option value="processing" {{ request('status')==='processing' ? 'selected' : '' }}>Đã xác nhận</option>
-                                                        <option value="completed" {{ request('status')==='completed' ? 'selected' : '' }}>Hoàn thành</option>
-                                                        <option value="cancelled" {{ request('status')==='cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                                                        <option value="0" {{ request('ship_status')==='0' ? 'selected' : '' }}>Chờ giao</option>
+                                                        <option value="1" {{ request('ship_status')==='1' ? 'selected' : '' }}>Đang giao</option>
+                                                        <option value="2" {{ request('ship_status')==='2' ? 'selected' : '' }}>Đã giao</option>
+                                                        <option value="3" {{ request('ship_status')==='3' ? 'selected' : '' }}>Giao thất bại</option>
+                                                        <option value="4" {{ request('ship_status')==='4' ? 'selected' : '' }}>Trả hàng</option>
                                                     </select></div>
                                                     <button style="margin-top: -8px;" type="submit" class="btn btn-primary">Lọc</button>
                                                    <div  class="field-wrapper">
@@ -115,14 +126,14 @@
                                                         <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
                                                         <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
                                                     </select>
-                                                    @foreach(request()->except(['per_page','page','pay_status','status']) as $key => $val)
+                                                    @foreach(request()->except(['per_page','page','pay_status','status','ship_status']) as $key => $val)
                                                         <input type="hidden" name="{{ $key }}" value="{{ $val }}">
                                                     @endforeach
                                                     </div>
                                                     </div>
                                                 </form>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-5">
                                                 <form method="GET" action="{{ route('admin.order.search') }}" class="form-inline" style="float: right; display: flex; align-items: center;">
                                                     <input type="text" name="transaction_id" class="form-control" placeholder="Tìm kiếm tên và số điện thoại ..." value="{{ request('transaction_id') }}" style="width: 220px; margin-right: 8px;">
                                                     <button type="submit" class="btn btn-success">Tìm kiếm</button>
@@ -143,7 +154,7 @@
                                         <th>Tổng tiền</th>
                                         <th>Ghi chú</th>
                                         <th>Lí do hủy</th>
-                                      
+
                                         <th style="width:90px; text-align:center;" >Hành động</th>
                                     </tr>
                                 </thead>
@@ -220,7 +231,7 @@
                                      @else
                                      <td></td>
                                      @endif
-                                           
+
                                         <td style="width:100px; text-align:center;">
                                             <div style="display: flex; gap: 2px; justify-content: center;">
                                             <button style=" background-color: rgb(76, 106, 175); color: white; border: none; border-radius: 5px; cursor: pointer;font-size: 12px;padding: 5px 10px;text-align: center;text-decoration: none;display: inline-block;" type="button" class="btn-action btn-view"
@@ -672,7 +683,7 @@
     document.getElementById('modal_status').addEventListener('change', function() {
         const status = this.value;
         const shipStatusSelect = document.getElementById('modal_ship_status');
-        
+
         // Nếu chuyển từ trạng thái khác sang "Đã xác nhận"
         if (status === 'processing') {
             // Cho phép chọn "Đang giao"
@@ -694,8 +705,10 @@
                 }
             });
         }
+
         
         // Đảm bảo có thể chọn ngay option 'Đang giao' khi chuyển sang 'Đã xác nhận'
+
         disableInvalidShipStatusOptions(shipStatusSelect.value);
         syncShipStatusHidden();
     });
