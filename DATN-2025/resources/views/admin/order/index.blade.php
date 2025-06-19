@@ -379,7 +379,7 @@
       <div class="field-wrapper col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" id="cancel_reason_container" style="display:none;">
         <div style="margin-bottom:10px;">
           <div class="field-placeholder">Lý do hủy <span style="color:red;">*</span></div>
-          <input type="text" class="form-control" name="cancel_reason" id="modal_cancel_reason" {{ isset($order) && $order->cancel_reason ? 'disabled' : '' }} />
+          <input type="text" class="form-control" name="cancel_reason" id="modal_cancel_reason" />
         </div>
       </div>
 
@@ -401,18 +401,12 @@
         } else {
             document.getElementById('modal_phone').value = btn.getAttribute('data-phone');
         }
-
-
-            document.getElementById('modal_email').value =  btn.getAttribute('data-email') ||'Nhân viên thu ngân';
-
+        document.getElementById('modal_email').value =  btn.getAttribute('data-email') ||'Nhân viên thu ngân';
         document.getElementById('modal_payment_method').value = btn.getAttribute('data-payment_method');
-
         const statusSelect = document.getElementById('modal_status');
         const payStatusSelect = document.getElementById('modal_pay_status');
-
         const originalStatusFromButton = btn.getAttribute('data-status');
         const originalPayStatusFromButton = btn.getAttribute('data-pay_status');
-
         let initialStatusValue;
         if (originalStatusFromButton.includes('Chờ xử lý')) {
             initialStatusValue = 'pending';
@@ -425,19 +419,13 @@
         } else {
             initialStatusValue = originalStatusFromButton;
         }
-
         statusSelect.value = initialStatusValue;
         payStatusSelect.value = originalPayStatusFromButton;
-
         statusSelect.setAttribute('data-original-status', initialStatusValue);
         payStatusSelect.setAttribute('data-original-pay-status', originalPayStatusFromButton);
-
-        // Disable invalid status options
         disableInvalidStatusOptions(initialStatusValue);
         disableInvalidPayStatusOptions(originalPayStatusFromButton);
-
         document.getElementById('modal_total').value = btn.getAttribute('data-total');
-        document.getElementById('modal_cancel_reason').value = btn.getAttribute('data-cancel_reason') || '';
         document.getElementById('modal_shipping_fee').value = btn.getAttribute('data-shipping_fee') || '0 đ';
         document.getElementById('modal_coupon_total_discount').value = btn.getAttribute('data-coupon_total_discount') || '0 đ';
         document.getElementById('modal_address_detail').value = btn.getAttribute('data-address_detail') || 'Nhân viên thu ngân';
@@ -445,8 +433,18 @@
         document.getElementById('modal_created_at').value = btn.getAttribute('data-created_at') || '';
         document.getElementById('orderForm').action = "{{ url('admin/order/update') }}/" + btn.getAttribute('data-id');
 
-        checkCancelFields();
+        // Reset trạng thái input lý do hủy
+        const cancelReasonInput = document.getElementById('modal_cancel_reason');
+        cancelReasonInput.removeAttribute('disabled');
+        if (btn.getAttribute('data-cancel_reason')) {
+            cancelReasonInput.value = btn.getAttribute('data-cancel_reason');
+            cancelReasonInput.setAttribute('disabled', 'disabled');
+        } else {
+            cancelReasonInput.value = '';
+            cancelReasonInput.removeAttribute('disabled');
+        }
 
+        checkCancelFields();
         statusSelect.addEventListener('change', checkCancelFields);
         payStatusSelect.addEventListener('change', checkCancelFields);
 
@@ -551,11 +549,5 @@
 
         return true;
     }
-document.getElementById('modal_cancel_reason').value = btn.getAttribute('data-cancel_reason') || '';
-if (btn.getAttribute('data-cancel_reason')) {
-    document.getElementById('modal_cancel_reason').setAttribute('disabled', 'disabled');
-} else {
-    document.getElementById('modal_cancel_reason').removeAttribute('disabled');
-}
 </script>
 

@@ -26,7 +26,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-8 col-sm-8 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                <h5 class="text-coffee">Để lại cho chúng tôi mộ tin nhắn</h5>
+                                <h5 class="text-coffee">Để lại cho chúng tôi một tin nhắn</h5>
                                  <div id="success-message"></div>
                                 <form id="contact-form" action="{{ route('contact.store') }}" method="POST">
                                   @csrf

@@ -180,7 +180,7 @@
                                     <td>{{ $item->title }}</td>
                                     <td style="max-width:400px; word-break:break-word;">{!!  $item->content !!}</td>
                                     <td><img src="{{ asset('storage/'.$item->image) }}" alt="Ảnh bìa" style="width: 100px; height: 100px;"></td>
-                                    <td>{{$item->danhmucBlog->name}}</td>
+                                    <td>{{ $item->danhmucBlog->name ?? 'Không có danh mục' }}</td>
                                     <td>{{ $item->created_at->format('d/m/Y') }}</td>
                                         <td style="width:90px; text-align:center;">
                                             <a style="color: white; width: 60px; margin-bottom:4px;" href="{{ route('blogs.edit', $item->id) }}" class="btn-success">Sửa</a>
