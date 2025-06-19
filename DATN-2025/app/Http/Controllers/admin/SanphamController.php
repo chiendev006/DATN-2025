@@ -11,6 +11,7 @@ use App\Models\ProductImage;
 use App\Models\Size;
 use App\Models\Topping;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 use Laravel\Sanctum\Sanctum;
 
@@ -204,15 +205,65 @@ class SanphamController extends Controller
     /**
      * Search sản phẩm theo tên.
      */
-    public function search(Request $request)
-    {
-        $query = $request->input('q');
-        $sanpham = Sanpham::with('danhmuc')
-            ->where('name', 'like', '%' . $query . '%')
-            ->paginate(10);
-        $danhmucs = Danhmuc::all();
-        return view('admin.sanpham.index', ['sanpham' => $sanpham, 'search' => $query, 'danhmucs' => $danhmucs]);
+
+public function search(Request $request)
+{
+    // Bước 1: Validate dữ liệu đầu vào
+    $validator = Validator::make($request->all(), [
+        'q' => 'nullable|string|max:255',
+        'min_price' => 'nullable|numeric|min:0',
+        'max_price' => 'nullable|numeric|gte:min_price',
+    ], [
+        'q.string' => 'Tên sản phẩm phải là chuỗi.',
+        'min_price.numeric' => 'Giá từ phải là số.',
+        'max_price.numeric' => 'Giá đến phải là số.',
+        'max_price.gte' => 'Giá đến phải lớn hơn hoặc bằng giá từ.',
+    ]);
+
+    if ($validator->fails()) {
+        return redirect()->back()
+            ->withErrors($validator)
+            ->withInput();
     }
+
+    // Bước 2: Lấy input
+    $query = $request->input('q');
+    $minPrice = $request->input('min_price');
+    $maxPrice = $request->input('max_price');
+
+    // Bước 3: Truy vấn sản phẩm
+    $sanpham = Sanpham::with('danhmuc', 'sizes')
+        ->when($query, function ($q) use ($query) {
+            $q->where('name', 'like', '%' . $query . '%');
+        })
+        ->when($minPrice, function ($q) use ($minPrice) {
+            $q->whereIn('id', function ($sub) use ($minPrice) {
+                $sub->select('product_id')
+                    ->from('product_attributes')
+                    ->groupBy('product_id')
+                    ->havingRaw('MIN(price) >= ?', [$minPrice]);
+            });
+        })
+        ->when($maxPrice, function ($q) use ($maxPrice) {
+            $q->whereIn('id', function ($sub) use ($maxPrice) {
+                $sub->select('product_id')
+                    ->from('product_attributes')
+                    ->groupBy('product_id')
+                    ->havingRaw('MIN(price) <= ?', [$maxPrice]);
+            });
+        })
+        ->orderBy('id', 'desc')
+        ->paginate(10)
+        ->withQueryString();
+
+    $danhmucs = Danhmuc::all();
+
+    // Bước 4: Trả kết quả
+    return view('admin.sanpham.index', ['sanpham' => $sanpham,'search' => $query,'minPrice' => $minPrice,'maxPrice' => $maxPrice,'danhmucs' => $danhmucs
+    ]);
+}
+
+
 
     /**
      * Lọc sản phẩm theo danh mục.

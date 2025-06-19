@@ -43,13 +43,43 @@
                                         </select>
 
                                     </form>
+                                    @if ($errors->any())
+                                        <div class="alert alert-danger" style="margin-bottom: 20px;">
+                                            <ul style="margin: 0;">
+                                                @foreach ($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+                                    <form class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4" action="{{ route('sanpham.search') }}" method="GET">
+                                <div class="input-group" style="max-width: 400px;">
+                                    <input type="text" name="q" class="form-control" placeholder="Tìm kiếm sản phẩm theo tên..." value="{{ request('q') }}">
 
-                                    <form class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4" action="{{ route('sanpham.search') }}" method="GET" class="mb-3">
+                                    {{-- Giữ lại giá nếu có --}}
+                                    <input type="hidden" name="min_price" value="{{ request('min_price') }}">
+                                    <input type="hidden" name="max_price" value="{{ request('max_price') }}">
+
+                                    <button class="btn btn-primary" type="submit">
+                                        <span class="icon-search"></span>
+                                    </button>
+                                </div>
+                            </form>
+
+                                <form class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4" action="{{ route('sanpham.search') }}" method="GET">
                                     <div class="input-group" style="max-width: 400px;">
-                                        <input type="text" name="q" class="form-control" placeholder="Tìm kiếm sản phẩm theo tên..." value="{{ isset($search) ? $search : '' }}">
-                                        <button class="btn btn-primary" type="submit"><span class="icon-search"></span></button>
+                                        <input type="number" name="min_price" class="form-control" placeholder="Giá từ" value="{{ request('min_price') }}">
+                                        <input type="number" name="max_price" class="form-control" placeholder="Đến" value="{{ request('max_price') }}" >
+
+                                        {{-- Giữ lại tên tìm kiếm nếu có --}}
+                                        <input type="hidden" name="q" value="{{ request('q') }}">
+
+                                        <button class="btn btn-primary" type="submit">
+                                            <span class="icon-search"></span>
+                                        </button>
                                     </div>
                                 </form>
+
                                 </div>
                                    </div>
 
