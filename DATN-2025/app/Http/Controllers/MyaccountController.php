@@ -63,11 +63,10 @@ public function cancelOrder($id, Request $request)
 
     $order->status = 'cancelled';
     $order->ship_status = 'failed_delivery';
-    // Nếu là COD thì luôn để pay_status = '2' khi hủy hoặc giao thất bại
     if ($order->payment_method === 'cash') {
         $order->pay_status = '2';
     } else if ($order->pay_status === '1') {
-        $order->pay_status = '3'; // Hoàn tiền
+        $order->pay_status = '3'; 
     } else {
         $order->pay_status = '2';
     }
