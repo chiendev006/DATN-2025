@@ -150,7 +150,7 @@
 
                     <!-- BEGIN pos-sidebar-nav -->
                     <div class="pos-sidebar-nav small">
-                        <ul class="nav nav-tabs nav-fill">
+                        <ul class="nav nav-tabs">
                             <li class="nav-item">
                                 <a
                                     class="nav-link active"
@@ -158,15 +158,6 @@
                                     data-bs-toggle="tab"
                                     data-bs-target="#newOrderTab"
                                 >Order</a
-                                >
-                            </li>
-                            <li class="nav-item">
-                                <a
-                                    class="nav-link"
-                                    href="#"
-                                    data-bs-toggle="tab"
-                                    data-bs-target="#orderHistoryTab"
-                                >Order History</a
                                 >
                             </li>
                         </ul>
@@ -200,26 +191,6 @@
                         </div>
                         <div class="mt-3">
                             <div class="d-flex">
-                                <a
-                                    href="#"
-                                    class="btn btn-default w-70px me-10px d-flex align-items-center justify-content-center"
-                                >
-                        <span>
-                          <i class="fa fa-bell fa-lg my-10px d-block"></i>
-                          <span class="small fw-semibold">Service</span>
-                        </span>
-                                </a>
-                                <a
-                                    href="#"
-                                    class="btn btn-default w-70px me-10px d-flex align-items-center justify-content-center"
-                                >
-                        <span>
-                          <i
-                              class="fa fa-receipt fa-fw fa-lg my-10px d-block"
-                          ></i>
-                          <span class="small fw-semibold">Bill</span>
-                        </span>
-                                </a>
                                 <a
                                     href="#"
                                     class="btn btn-theme flex-fill d-flex align-items-center justify-content-center btn-submit-order"
