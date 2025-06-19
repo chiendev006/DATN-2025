@@ -228,6 +228,7 @@
         Route::prefix('contact')->group(function () {
                 Route::get('/', [ContactAdminController::class, 'index'])->name('contact.index');
                 Route::delete('/delete/{id}', [ContactAdminController::class, 'delete'])->name('contact.delete');
+                Route::get('/search', [ContactAdminController::class, 'search'])->name('contact.search');
         });
 
         // Topping
