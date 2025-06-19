@@ -132,49 +132,45 @@
                                     <tr>
                                         <th width="5%">STT</th>
                                         <th>Tên khách hàng</th>
-
                                         <th>Số điện thoại</th>
-
                                         <th>Trạng thái</th>
                                         <th>Trạng thái thanh toán</th>
+                                        <th>Trạng thái giao hàng</th>
                                         <th>Tổng tiền</th>
                                         <th>Ghi chú</th>
                                         <th>Lí do hủy</th>
-                                        <th>Ngày tạo</th>
+                                      
                                         <th style="width:90px; text-align:center;" >Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                   @if($orders->isEmpty())
                                   <tr>
-                                    <td colspan="10" class="text-center">Không có dữ liệu</td>
+                                    <td colspan="11" class="text-center">Không có dữ liệu</td>
                                   </tr>
                                   @else
                                   @foreach ($orders as $key => $order)
                                     <tr>
                                        <td width="5%">{{ ($orders->currentPage()-1) * $orders->perPage() + $key + 1 }}</td>
                                         <td>{{ $order->name }}</td>
-
                                      @if($order->phone=='N/A')
                                      <td>Nhân viên</td>
                                      @else
                                      <td>{{ $order->phone }}</td>
                                      @endif
-
                                         <td>
                                             @if ($order->status == 'pending' || $order->status == 0)
                                                 <span style="color: orange;">Chờ xử lý</span>
                                             @elseif ($order->status == 'processing' || $order->status == 1)
-                                                <span style="color: green;">Đã xác nhận</span>
+                                                <span style="color: gray;">Đã xác nhận</span>
                                             @elseif ($order->status == 'completed' || $order->status == 3)
-                                                <span style="color: gray;">Hoàn thành</span>
+                                                <span style="color: green;">Hoàn thành</span>
                                             @elseif ($order->status == 'cancelled' || $order->status == 4)
                                                 <span style="color: red;">Đã hủy</span>
                                             @else
                                                 <span>{{ $order->status }}</span>
                                             @endif
                                         </td>
-
                                         <td>
                                             @if ($order->pay_status == 0)
                                                 <span style="color: orange;">Chờ thanh toán</span>
@@ -186,18 +182,35 @@
                                                 <span>{{ $order->pay_status }}</span>
                                             @endif
                                         </td>
+                                        <td>
+                                            @switch($order->ship_status)
+                                                @case('pending_delivery')
+                                                    <span style="color: orange;">Chờ giao</span>
+                                                    @break
+                                                @case('out_for_delivery')
+                                                    <span style="color: blue;">Đang giao</span>
+                                                    @break
+                                                @case('delivered')
+                                                    <span style="color: green;">Đã giao</span>
+                                                    @break
+                                                @case('failed_delivery')
+                                                    <span style="color: red;">Giao thất bại</span>
+                                                    @break
+                                                @case('returned_to_store')
+                                                    <span style="color: gray;">Đã trả hàng</span>
+                                                    @break
+                                                @default
+                                                    <span>{{ $order->ship_status }}</span>
+                                            @endswitch
+                                        </td>
                                          <td>{{ number_format($order->total, 0, ',', '.') }} đ</td>
-
-
                                         <td>{{ $order->note }}</td>
-
                                      @if($order->status == 'cancelled' || $order->pay_status == 2)
                                      <td>{{ $order->cancel_reason }}</td>
                                      @else
                                      <td></td>
                                      @endif
-                                           <td>{{ $order->created_at->format('d/m/Y') }}</td>
-
+                                           
                                         <td style="width:100px; text-align:center;">
                                             <div style="display: flex; gap: 2px; justify-content: center;">
                                             <button style=" background-color: rgb(76, 106, 175); color: white; border: none; border-radius: 5px; cursor: pointer;font-size: 12px;padding: 5px 10px;text-align: center;text-decoration: none;display: inline-block;" type="button" class="btn-action btn-view"
@@ -216,6 +229,7 @@
                                                 data-address_detail="{{ $order->district_name ? $order->district_name . ', ' : '' }}{{ $order->address_detail }}"
                                                 data-product_total="{{ number_format(($order->total ?? 0) - ($order->shipping_fee ?? 0) + ($order->coupon_total_discount ?? 0), 0, ',', '.') }} đ"
                                                 data-cancel_reason="{{ $order->cancel_reason }}"
+                                                data-ship_status="{{ $order->ship_status }}"
                                             >Xem</button>
 
                                             </div>
@@ -320,6 +334,20 @@
                 <input type="text" class="form-control" name="created_at" id="modal_created_at" readonly />
       </div>
       </div>
+
+      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
+      <div style="margin-bottom:10px;">
+        <div class="field-placeholder">Trạng thái giao hàng</div>
+        <select name="ship_status" id="modal_ship_status" class="form-control">
+          <option value="pending_delivery">Chờ giao</option>
+          <option value="out_for_delivery">Đang giao</option>
+          <option value="delivered">Đã giao</option>
+          <option value="failed_delivery">Giao thất bại</option>
+          <option value="returned_to_store">Đã trả hàng</option>
+        </select>
+      </div>
+      </div>
+      <input type="hidden" name="ship_status_hidden" id="modal_ship_status_hidden" />
 
       <!-- Bảng sản phẩm -->
       <div class="field-wrapper col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12  ">
@@ -474,6 +502,11 @@
                 document.querySelector('#order_products_table tbody').innerHTML =
                     '<tr><td colspan="8" style="text-align:center; color:red;">Lỗi lấy dữ liệu</td></tr>';
             });
+
+        document.getElementById('modal_ship_status').value = btn.getAttribute('data-ship_status');
+        const originalShipStatus = btn.getAttribute('data-ship_status');
+        disableInvalidShipStatusOptions(originalShipStatus);
+        syncShipStatusHidden();
     }
 
     function closeOrderModal() {
@@ -535,6 +568,52 @@
             }
         });
     }
+
+    function disableInvalidShipStatusOptions(originalShipStatus) {
+        const select = document.getElementById('modal_ship_status');
+        const order = [
+            'pending_delivery',
+            'out_for_delivery',
+            'delivered',
+            'failed_delivery',
+            'returned_to_store'
+        ];
+        const currentIdx = order.indexOf(originalShipStatus);
+
+        // Nếu đã giao thì disable toàn bộ select
+        if (originalShipStatus === 'delivered') {
+            select.disabled = true;
+            [...select.options].forEach(option => {
+                option.disabled = true;
+            });
+            return;
+        } else if (originalShipStatus === 'out_for_delivery') {
+            select.disabled = false;
+            [...select.options].forEach(option => {
+                // Chỉ cho phép chọn 'out_for_delivery', 'delivered', 'failed_delivery'
+                option.disabled = !['out_for_delivery','delivered','failed_delivery'].includes(option.value);
+            });
+            return;
+        } else {
+            select.disabled = false;
+        }
+
+        [...select.options].forEach((option, idx) => {
+            option.disabled = false;
+            if (idx < currentIdx) {
+                option.disabled = true;
+            }
+            if (idx > currentIdx + 1) {
+                option.disabled = true;
+            }
+        });
+    }
+
+    function syncShipStatusHidden() {
+        document.getElementById('modal_ship_status_hidden').value = document.getElementById('modal_ship_status').value;
+    }
+
+    document.getElementById('modal_ship_status').addEventListener('change', syncShipStatusHidden);
 
     function validateForm() {
         const status = document.getElementById('modal_status').value;
