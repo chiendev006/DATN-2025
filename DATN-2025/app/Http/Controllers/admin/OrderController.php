@@ -27,6 +27,7 @@ class OrderController extends Controller
         $order->pay_status = $request->input('pay_status');
         $oldStatus = $order->status;
         $order->status = $request->input('status');
+        $order->ship_status = $request->input('ship_status_hidden', $request->input('ship_status'));
 
         if ($request->input('status') === 'cancelled') {
         if ($order->cancel_reason && $oldStatus === 'cancelled') {
