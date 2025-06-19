@@ -29,6 +29,11 @@ class OrderController extends Controller
         $status = $request->input('status');
         $ship_status = $request->input('ship_status_hidden', $request->input('ship_status'));
 
+        // Nếu là đơn nhân viên hoặc ship_status là 'na', set ship_status về 'not_applicable'
+        if (($order->phone == 'N/A') || $ship_status == 'na' || empty($ship_status)) {
+            $ship_status = 'not_applicable';
+        }
+
         $autoAdjustMsg = null;
         $originalStatus = $status;
         $originalShipStatus = $ship_status;
