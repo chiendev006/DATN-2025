@@ -14,7 +14,7 @@
             <ul id="category-list">
                 @foreach ($danhmucs as $index => $danhmuc)
                     <li class="{{ $index == 0 ? 'current' : '' }}">
-                        <a href="#" data-id="{{ $danhmuc->id }}">
+                        <a  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="#" data-id="{{ $danhmuc->id }}">
                             <span class="custom-icon {{ strtolower($danhmuc->name) }}"></span>
                             <strong>{{ strtoupper($danhmuc->name) }}</strong>
                         </a>
@@ -43,7 +43,7 @@
                 <div class="menu-fix-main-list menu-fix-with-item">
                     <div class="title text-center">
                         <h2 class="text-dark" id="category-name">{{ $firstDanhmuc->name ?? 'Danh mục' }}</h2>
-                        <h6 id="category-description">{{ $firstDanhmuc->description ?? 'Mô tả danh mục' }}</h6>
+                        <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" id="category-description">{{ $firstDanhmuc->description ?? 'Mô tả danh mục' }}</h6>
                     </div>
 
                     <div class="row" id="product-display">
@@ -53,7 +53,7 @@
                                     <span class="menu-fix-product">
                                         <img src="{{ url('storage/uploads/' . $product->image) }}" style="width: 100px; height: 100px; border-radius: 100px;" alt="{{ $product->name }}">
                                     </span>
-                                    <h5>{{ strtoupper($product->name) }} <span> {{ number_format($product->min_price) }} VND</span></h5>
+                                    <h5  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">{{ $product->name }} <span> {{ number_format($product->min_price) }} VND</span></h5>
                                     <p>{{ $product->mota ?? 'Không có mô tả.' }}</p>
                                 </div>
                             </div>
@@ -64,7 +64,7 @@
                         <div class="gallery-pagination-inner">
                             <ul>
                                 <li>
-                                    <a href="#" class="pagination-prev {{ $firstProducts->onFirstPage() ? 'disabled' : '' }}" data-page="{{ $firstProducts->currentPage() - 1 }}">
+                                    <a  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="#" class="pagination-prev {{ $firstProducts->onFirstPage() ? 'disabled' : '' }}" data-page="{{ $firstProducts->currentPage() - 1 }}">
                                         <i class="icon-left-4"></i> <span>PREV page</span>
                                     </a>
                                 </li>
@@ -74,8 +74,8 @@
                                     </li>
                                 @endfor
                                 <li>
-                                    <a href="#" class="pagination-next {{ $firstProducts->hasMorePages() ? '' : 'disabled' }}" data-page="{{ $firstProducts->currentPage() + 1 }}">
-                                        <span>next page</span> <i class="icon-right-4"></i>
+                                    <a  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="#" class="pagination-next {{ $firstProducts->hasMorePages() ? '' : 'disabled' }}" data-page="{{ $firstProducts->currentPage() + 1 }}">
+                                        <span >next page</span> <i class="icon-right-4"></i>
                                     </a>
                                 </li>
                             </ul>
@@ -89,10 +89,10 @@
                 <div class="discount-part">
                     <div class="row">
                         <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="700ms" data-wow-delay="700ms">
-                            <h6>HAPPY CUSTOMER EVENT</h6>
-                            <h2 class="text-coffee">DISCOUNT <span>50%</span></h2>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor int et lamp dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</p>
-                            <a href="#" class="button-default buttone-text-dark">LEARN MORE</a>
+                            <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">HAPPY CUSTOMER EVENT</h6>
+                            <h2  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="text-coffee">DISCOUNT <span>50%</span></h2>
+                            <p  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor int et lamp dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</p>
+                            <a  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="#" class="button-default buttone-text-dark">LEARN MORE</a>
                         </div>
                         <div class="col-md-7 col-sm-7 col-xs-12">
                             <div class="discount-right">

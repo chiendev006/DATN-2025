@@ -70,18 +70,7 @@
                                         </div>
                                     </div>
                                 </form>
-                                <div class="divider-login">
-                                    <hr>
-                                    <span>Or</span>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6 col-sm-12 col-xs-12">
-                                        <a href="#" class="facebook-btn btn-change button-default"><i class="fa fa-google"></i>Facebook Connect</a>
-                                    </div>
-                                    <div class="col-md-6 col-sm-12 col-xs-12">
-                                        <a href="#" class="tweeter-btn btn-change button-default"><i class="fa fa-twitter"></i>Twitter Connect</a>
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
                     </div>

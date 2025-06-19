@@ -4,7 +4,7 @@
 <main>
     <div class="container mx-auto px-6 py-10">
         <div class="bg-white rounded-lg shadow p-6 mb-8">
-            <h2 class="text-2xl font-bold mb-4 text-center">Tra Cứu Đơn Hàng</h2>
+            <h2 style="    margin-top: 120px;" class="text-2xl font-bold mb-4 text-center">Tra cứu đơn hàng</h2>
             <p class="text-center text-gray-600 mb-6">Nhập số điện thoại của bạn để xem lịch sử mua hàng.</p>
 
             <form action="{{ route('order.search') }}" method="GET" class="max-w-md mx-auto">
@@ -26,159 +26,199 @@
         </div>
 
         @if (isset($phone) && $orders->isNotEmpty())
-            <div class="bg-white rounded-lg shadow p-6 flex flex-col md:flex-row items-center md:items-start gap-6 mb-8">
-                <div class="mb-4">
-                    <p><strong>Số điện thoại tra cứu:</strong> <span id="displayPhone">{{ $phone }}</span></p>
-                    <h3>
-                        Đây là thông tin đơn hàng liên quan đến số điện thoại này.
-                    </h3>
-                </div>
+          <div class="grid grid-cols-1 lg:grid-cols-1 gap-8 mb-8">
 
-                <div class="ml-auto grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-auto mt-4 md:mt-0">
-                    <div class="bg-green-100 text-green-800 p-4 rounded-lg text-center">
-                        <div class="text-2xl font-bold" id="stat-all">{{ $orderStats['all'] }}</div>
-                        <div class="text-base">Tổng đơn</div>
+
+            <!-- Stats Cards -->
+            <div width="100%" style=" " class="lg:col-span-2">
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div class="bg-gradient-to-br from-green-400 to-green-600 text-white p-6 rounded-xl shadow-sm text-center transform hover:scale-105 transition-transform">
+                        <div class="text-3xl font-bold mb-2" id="stat-all">{{ $orderStats['all'] }}</div>
+                        <div class="text-sm opacity-90">Tổng đơn</div>
                     </div>
-                    <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg text-center">
-                        <div class="text-2xl font-bold" id="stat-pending">{{ $orderStats['pending'] }}</div>
-                        <div class="text-base">Chờ xác nhận</div>
+
+                    <div class="bg-gradient-to-br from-yellow-400 to-yellow-600 text-white p-6 rounded-xl shadow-sm text-center transform hover:scale-105 transition-transform">
+                        <div class="text-3xl font-bold mb-2" id="stat-pending">{{ $orderStats['pending'] }}</div>
+                        <div class="text-sm opacity-90">Chờ xác nhận</div>
                     </div>
-                    <div class="bg-blue-100 text-blue-800 p-4 rounded-lg text-center">
-                        <div class="text-2xl font-bold" id="stat-processing">{{ $orderStats['processing'] }}</div>
-                        <div class="text-base">Đang xử lý</div>
+
+                    <div class="bg-gradient-to-br from-blue-400 to-blue-600 text-white p-6 rounded-xl shadow-sm text-center transform hover:scale-105 transition-transform">
+                        <div class="text-3xl font-bold mb-2" id="stat-processing">{{ $orderStats['processing'] }}</div>
+                        <div class="text-sm opacity-90">Đang xử lý</div>
                     </div>
-                    <div class="bg-purple-100 text-purple-800 p-4 rounded-lg text-center">
-                        <div class="text-2xl font-bold" id="stat-completed">{{ $orderStats['completed'] }}</div>
-                        <div class="text-base">Đã hoàn thành</div>
+
+                    <div class="bg-gradient-to-br from-purple-400 to-purple-600 text-white p-6 rounded-xl shadow-sm text-center transform hover:scale-105 transition-transform">
+                        <div class="text-3xl font-bold mb-2" id="stat-completed">{{ $orderStats['completed'] }}</div>
+                        <div class="text-sm opacity-90">Đã hoàn thành</div>
                     </div>
-                    <div class="bg-red-100 text-red-800 p-4 rounded-lg text-center">
-                        <div class="text-2xl font-bold" id="stat-cancelled">{{ $orderStats['cancelled'] }}</div>
-                        <div class="text-base">Đã hủy</div>
+
+                    <div class="bg-gradient-to-br from-red-400 to-red-600 text-white p-6 rounded-xl shadow-sm text-center transform hover:scale-105 transition-transform">
+                        <div class="text-3xl font-bold mb-2" id="stat-cancelled">{{ $orderStats['cancelled'] }}</div>
+                        <div class="text-sm opacity-90">Đã hủy</div>
                     </div>
                 </div>
             </div>
+        </div>
         @endif
 
         @if (isset($phone))
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                <div class="bg-white rounded-lg shadow p-4 space-y-4">
-                    <h3 class="text-lg font-semibold">Trạng thái đơn hàng</h3>
-                    <ul id="order_status" class="space-y-2 text-gray-700">
-                        <li>
-                            <button class="order-tab active-tab text-lg font-medium text-green-600 hover:underline" data-status="all">
-                                <h1>Tất cả</h1>
-                            </button>
-                        </li>
-                        <li>
-                            <button class="order-tab text-lg font-medium text-gray-600 hover:underline" data-status="pending">
-                                <h1>Chờ xác nhận</h1>
-                            </button>
-                        </li>
-                        <li>
-                            <button class="order-tab text-lg font-medium text-gray-600 hover:underline" data-status="processing">
-                                <h1>Đang xử lý</h1>
-                            </button>
-                        </li>
-                        <li>
-                            <button class="order-tab text-lg font-medium text-gray-600 hover:underline" data-status="completed">
-                                <h1>Đã hoàn thành</h1>
-                            </button>
-                        </li>
-                        <li>
-                            <button class="order-tab text-lg font-medium text-gray-600 hover:underline" data-status="cancelled">
-                                <h1>Đã hủy</h1>
-                            </button>
-                        </li>
-                    </ul>
-                </div>
+              <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-36">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i class="fas fa-filter mr-3 text-blue-500"></i>
+                        Lọc đơn hàng
+                    </h3>
 
+                    <div class="space-y-3">
+                        <button class="order-tab active-tab w-full text-left p-4 rounded-lg bg-blue-50 border-2 border-blue-200 text-blue-700 font-semibold transition-all hover:bg-blue-100" data-status="all">
+                            <div class="flex items-center justify-between">
+                                <span>Tất cả</span>
+                                <span class="bg-blue-600 text-white px-2 py-1 rounded-full text-xs">{{ $orderStats['all'] }}</span>
+                            </div>
+                        </button>
+
+                        <button class="order-tab w-full text-left p-4 rounded-lg bg-gray-50 border-2 border-gray-200 text-gray-600 font-semibold transition-all hover:bg-gray-100" data-status="pending">
+                            <div class="flex items-center justify-between">
+                                <span>Chờ xác nhận</span>
+                                <span class="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs">{{ $orderStats['pending'] }}</span>
+                            </div>
+                        </button>
+
+                        <button class="order-tab w-full text-left p-4 rounded-lg bg-gray-50 border-2 border-gray-200 text-gray-600 font-semibold transition-all hover:bg-gray-100" data-status="processing">
+                            <div class="flex items-center justify-between">
+                                <span>Đang xử lý</span>
+                                <span class="bg-blue-500 text-white px-2 py-1 rounded-full text-xs">{{ $orderStats['processing'] }}</span>
+                            </div>
+                        </button>
+
+                        <button class="order-tab w-full text-left p-4 rounded-lg bg-gray-50 border-2 border-gray-200 text-gray-600 font-semibold transition-all hover:bg-gray-100" data-status="completed">
+                            <div class="flex items-center justify-between">
+                                <span>Đã hoàn thành</span>
+                                <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs">{{ $orderStats['completed'] }}</span>
+                            </div>
+                        </button>
+
+                        <button class="order-tab w-full text-left p-4 rounded-lg bg-gray-50 border-2 border-gray-200 text-gray-600 font-semibold transition-all hover:bg-gray-100" data-status="cancelled">
+                            <div class="flex items-center justify-between">
+                                <span>Đã hủy</span>
+                                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">{{ $orderStats['cancelled'] }}</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
                 <div class="md:col-span-2 bg-white rounded-lg shadow p-4">
                     @if ($orders->isNotEmpty())
-                        @foreach($orders as $order)
-                            @php
-                                $status = $order->status;
-                                $badgeColor = match($status) {
-                                    'completed' => 'bg-green-100 text-green-700',
-                                    'processing' => 'bg-yellow-100 text-yellow-700',
-                                    'cancelled' => 'bg-red-100 text-red-700',
-                                    default => 'bg-gray-100 text-gray-700',
-                                };
-                            @endphp
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                                <i class="fas fa-shopping-bag mr-3 text-blue-500"></i>
+                                Danh sách đơn hàng
+                            </h3>
+                            <div class="space-y-6">
+                                @foreach($orders as $order)
+                                    @php
+                                        $status = $order->status;
+                                        $payStatus = $order->pay_status;
+                                        $statusConfig = match($status) {
+                                            'completed' => ['bg' => 'bg-green-100', 'text' => 'text-green-700', 'border' => 'border-green-200', 'icon' => 'fas fa-check-circle'],
+                                            'processing' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-700', 'border' => 'border-yellow-200', 'icon' => 'fas fa-clock'],
+                                            'cancelled' => ['bg' => 'bg-red-100', 'text' => 'text-red-700', 'border' => 'border-red-200', 'icon' => 'fas fa-times-circle'],
+                                            default => ['bg' => 'bg-gray-100', 'text' => 'text-gray-700', 'border' => 'border-gray-200', 'icon' => 'fas fa-info-circle'],
+                                        };
+                                    @endphp
 
-                            <div class="product-item flex flex-col border p-4 rounded-lg bg-white shadow-sm gap-4 mb-4" data-status="{{ $status }}" data-pay-status="{{ $order->pay_status }}">
-                                <div class="flex justify-between items-center">
-                                    <h2 class="text-lg font-semibold">Mã đơn hàng: {{ $order->id }}</h2>
-                                    <span class="status-badge inline-block {{ $badgeColor }} text-sm font-semibold px-3 py-2 rounded-full">
-                                        {{ ucfirst($status) }}
-                                    </span>
-                                </div>
-
-                                @if ($status === 'cancelled' && $order->cancel_reason)
-                                    <p class="text-sm text-red-700 mt-2"><strong>Lý do hủy:</strong> {{ $order->cancel_reason }}</p>
-                                @endif
-
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    @foreach($order->orderDetails as $item)
-                                        @php
-                                            $image = $item->product && $item->product->image
-                                                ? asset('storage/uploads/' . $item->product->image)
-                                                : 'https://via.placeholder.com/150x150.png?text=Product';
-                                            $toppingNames = [];
-                                            if (!empty($item->topping_id)) {
-                                                $toppingIds = explode(',', trim($item->topping_id));
-                                                foreach ($toppingIds as $id) {
-                                                    $id = (int)$id;
-                                                    if (isset($toppings[$id])) {
-                                                        $toppingNames[] = $toppings[$id]->topping;
+                                    <div class="product-item border-2 border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow" data-status="{{ $status }}" data-pay-status="{{ $payStatus }}">
+                                        <!-- Order Header -->
+                                        <div class="p-6 border-b border-gray-200">
+                                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                                <div class="flex items-center gap-4">
+                                                    <div class="flex items-center gap-3">
+                                                        <i class="fas fa-receipt text-2xl text-blue-500"></i>
+                                                        <div>
+                                                            <h4 class="text-lg font-bold text-gray-800">Đơn hàng #{{ $order->id }}</h4>
+                                                            <p class="text-sm text-gray-500">{{ $order->created_at->format('d/m/Y H:i') }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="status-badge inline-flex items-center gap-2 {{ $statusConfig['bg'] }} {{ $statusConfig['text'] }} {{ $statusConfig['border'] }} px-4 py-2 rounded-full text-sm font-semibold">
+                                                        <i class="{{ $statusConfig['icon'] }}"></i>
+                                                        {{ ucfirst($status) }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            @if ($status === 'cancelled' && $order && $order->cancel_reason)
+                                                <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                                    <p class="text-sm text-red-700">
+                                                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                                                        <strong>Lý do hủy:</strong> {{ $order->cancel_reason }}
+                                                    </p>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <!-- Products -->
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            @foreach($order->orderDetails as $item)
+                                                @php
+                                                    $image = $item->product && $item->product->image
+                                                        ? asset('storage/uploads/' . $item->product->image)
+                                                        : 'https://via.placeholder.com/150x150.png?text=Product';
+                                                    $toppingNames = [];
+                                                    if (!empty($item->topping_id)) {
+                                                        $toppingIds = explode(',', trim($item->topping_id));
+                                                        foreach ($toppingIds as $id) {
+                                                            $id = (int)$id;
+                                                            if (isset($toppings[$id])) {
+                                                                $toppingNames[] = $toppings[$id]->topping;
+                                                            }
+                                                        }
                                                     }
-                                                }
-                                            }
-                                        @endphp
-
-                                        <div class="flex gap-4 border rounded p-3">
-                                            <img src="{{ $image }}" alt="{{ $item->product_name }}" class="w-24 h-24 rounded object-cover">
-                                            <div class="flex-1 space-y-1">
-                                                <h3 class="font-semibold">{{ $item->product_name }}</h3>
-                                                <p>Số lượng: {{ $item->quantity }}</p>
-                                                <p>Giá: {{ number_format($item->product_price, 0, ',', '.') }}đ</p>
-                                                <p>Tổng: {{ number_format($item->total, 0, ',', '.') }}đ</p>
-                                                <p>Size: {{ $item->size->size ?? 'Không có' }}</p>
-                                                <p>Topping: {{ !empty($toppingNames) ? implode(', ', $toppingNames) : 'Không có' }}</p>
+                                                @endphp
+                                                <div class="flex gap-4 border rounded p-3">
+                                                    <img src="{{ $image }}" alt="{{ $item->product_name }}" class="w-24 h-24 rounded object-cover">
+                                                    <div class="flex-1 space-y-1">
+                                                        <h3 class="font-semibold">{{ $item->product_name }}</h3>
+                                                        <p>Số lượng: {{ $item->quantity }}</p>
+                                                        <p>Giá: {{ number_format($item->product_price, 0, ',', '.') }}đ</p>
+                                                        <p>Tổng: {{ number_format($item->total, 0, ',', '.') }}đ</p>
+                                                        <p>Size: {{ $item->size->size ?? 'Không có' }}</p>
+                                                        <p>Topping: {{ !empty($toppingNames) ? implode(', ', $toppingNames) : 'Không có' }}</p>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        <!-- Order Summary -->
+                                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                                            <div class="space-y-2 text-right">
+                                                <p class="text-gray-700">
+                                                    <i class="fas fa-truck mr-2"></i>
+                                                    Phí vận chuyển: <span class="font-semibold">{{ number_format($order->shipping_fee, 0, ',', '.') }}đ</span>
+                                                </p>
+                                                <p class="text-gray-700">
+                                                    <i class="fas fa-tag mr-2"></i>
+                                                    Giảm giá mã: <span class="font-semibold text-green-600">-{{ number_format($order->coupon_total_discount, 0, ',', '.') }}đ</span>
+                                                </p>
+                                                <p class="text-xl font-bold text-red-600 border-t border-blue-200 pt-2">
+                                                    <i class="fas fa-calculator mr-2"></i>
+                                                    Tổng cộng: {{ number_format($order->total, 0, ',', '.') }}đ
+                                                </p>
                                             </div>
                                         </div>
-                                    @endforeach
-                                </div>
-
-                                <div class="mt-4 pt-4 border-t">
-                                    <h2 class="text-right ">Phí vận chuyển: {{ number_format($order->shipping_fee, 0, ',', '.') }}đ</h2>
-                                    <h2 class="text-right ">Giảm giá mã: -{{ number_format($order->coupon_total_discount, 0, ',', '.') }}đ</h2>
-                                    <h2 class="text-right font-bold text-xl text-red-600">Tổng cộng: {{ number_format($order->total, 0, ',', '.') }}đ</h2>
-                                </div>
-
-                                <div class="mt-4 flex justify-end gap-2">
-                                    @if($status === 'completed' || $status === 'cancelled')
-                                    <form method="POST" action="{{ route('order.search.reorder', $order->id) }}">
-                                        @csrf
-                                        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-                                            Mua lại
-                                        </button>
-                                    </form>
-                                    @endif
-
-                                    <button type="button" class="view-details bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                                            data-id="{{ $order->id }}">
-                                        Chi tiết đơn hàng
-                                    </button>
-
-                                    @if($status === 'pending')
-                                    <button type="button" class="cancel-order bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                                                data-id="{{ $order->id }}">
-                                        Hủy đơn
-                                    </button>
-                                    @endif
-                                </div>
+                                        <!-- Action Buttons -->
+                                        <div class="p-6 border-t border-gray-200 bg-gray-50 rounded-b-xl">
+                                            <div class="flex flex-wrap gap-3 justify-end">
+                                                <button type="button" class="view-details inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                                                        data-id="{{ $order->id }}">
+                                                    <i class="fas fa-eye"></i>
+                                                    Chi tiết đơn hàng
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
-                        @endforeach
+                        </div>
                     @else
                         <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow" role="alert">
                             <p class="font-bold">Không tìm thấy kết quả</p>
@@ -186,9 +226,8 @@
                         </div>
                     @endif
                 </div>
-            </div>
+        </div>
         @endif
-    </div>
 
     <!-- Modal Chi tiết đơn hàng -->
 <div id="orderDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-[9999] flex items-center justify-center">
@@ -199,7 +238,7 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
+
             <!-- Thông tin khách hàng -->
             <div class="mb-6 p-4 bg-gray-50 rounded-lg">
                 <h3 class="text-lg font-semibold mb-3">Thông tin khách hàng</h3>
@@ -265,7 +304,7 @@
 
                 document.querySelectorAll('.product-item').forEach(item => {
                     const itemStatus = item.getAttribute('data-status');
-                    item.style.display = (selectedStatus === 'all' || itemStatus === selectedStatus) ? 'flex' : 'none';
+                    item.style.display = (selectedStatus === 'all' || itemStatus === selectedStatus) ? '' : 'none';
                 });
             });
         });
@@ -392,8 +431,8 @@
                                 const productHtml = `
                                     <div class="flex gap-4 border rounded p-4">
                                         <div class="w-24 h-24">
-                                            <img src="${item.product_image || 'https://via.placeholder.com/150x150.png?text=Product'}" 
-                                                 alt="${item.product_name}" 
+                                            <img src="${item.product_image || 'https://via.placeholder.com/150x150.png?text=Product'}"
+                                                 alt="${item.product_name}"
                                                  class="w-full h-full object-cover rounded">
                                         </div>
                                         <div class="flex-1">
@@ -410,11 +449,11 @@
                             });
 
                             // Cập nhật tổng tiền
-                            document.getElementById('detail-shipping-fee').textContent = 
+                            document.getElementById('detail-shipping-fee').textContent =
                                 new Intl.NumberFormat('vi-VN').format(data.order.shipping_fee) + 'đ';
-                            document.getElementById('detail-discount').textContent = 
+                            document.getElementById('detail-discount').textContent =
                                 '-' + new Intl.NumberFormat('vi-VN').format(data.order.coupon_total_discount) + 'đ';
-                            document.getElementById('detail-total').textContent = 
+                            document.getElementById('detail-total').textContent =
                                 new Intl.NumberFormat('vi-VN').format(data.order.total) + 'đ';
                         }
                     })
