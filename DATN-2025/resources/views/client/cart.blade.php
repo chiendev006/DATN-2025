@@ -19,9 +19,9 @@
             <div class="container">
                 <div class="checkout-wrap wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                     <ul class="checkout-bar">
-                        <li class="active">Shopping Cart</li>
-                        <li>Checkout</li>
-                        <li>Order Complete</li>
+                        <li style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="active">Shopping Cart</li>
+                        <li style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Checkout</li>
+                        <li style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Order Complete</li>
                     </ul>
                 </div>
                 @php
@@ -99,14 +99,14 @@
                                         @if(Auth::check())
                                             @if($size)
                                                 <div>{{ $size->size ?? 'Không rõ' }}</div>
-                                                
+
                                             @else
                                                 <div>Không rõ</div>
                                             @endif
                                         @else
                                             @if(isset($item->size_name) && isset($item->size_price))
                                                 <div>{{ $item->size_name }}</div>
-                                            
+
                                             @else
                                                 <div>{{ $item->size_name ?? 'Không rõ' }}</div>
                                             @endif

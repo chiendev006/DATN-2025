@@ -31,7 +31,7 @@
                                 <ul id="category-list">
                                     @foreach ($danhmucs as $index => $danhmuc)
                                         <li class="{{ $index == 0 ? 'current' : '' }}">
-                                            <a href="#" data-id="{{ $danhmuc->id }}">{{ strtoupper($danhmuc->name) }}</a>
+                                            <a style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="#" data-id="{{ $danhmuc->id }}">{{ $danhmuc->name }}</a>
                                         </li>
                                     @endforeach
                                 </ul>
@@ -84,7 +84,7 @@
                             <div class="shop-search wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                 <div class="row">
                                     <div class="col-md-6 col-sm-6 col-xs-12">
-                                        <h6>Showing {{ $firstProducts->firstItem() }}–{{ $firstProducts->lastItem() }} of {{ $firstProducts->total() }} results</h6>
+                                        <h6 style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Showing {{ $firstProducts->firstItem() }}–{{ $firstProducts->lastItem() }} of {{ $firstProducts->total() }} results</h6>
                                     </div>
                                     <div class="col-md-6 col-sm-6 col-xs-12">
                                         <select class="select-dropbox">
@@ -107,7 +107,7 @@
                                                 </a>
                                                 <div class="cart-overlay-wrap">
                                                     <div class="cart-overlay">
-                                                        <a href="{{ route('client.product.detail', $product->id) }}" class="shop-cart-btn">ADD TO CART</a>
+                                                        <a style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="{{ route('client.product.detail', $product->id) }}" class="shop-cart-btn">ADD TO CART</a>
                                                     </div>
                                                 </div>
                                             </div>

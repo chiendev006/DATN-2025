@@ -131,10 +131,10 @@
                 <div class="tab-part">
                     <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation">
-                            <a href="#description" aria-controls="description" role="tab" data-toggle="tab">Description</a>
+                            <a style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="#description" aria-controls="description" role="tab" data-toggle="tab">Description</a>
                         </li>
                         <li role="presentation" class="active">
-                            <a href="#reviews" aria-controls="reviews" role="tab" data-toggle="tab">Reviews ( {{ $product->comments->count() }} )</a>
+                            <a style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="#reviews" aria-controls="reviews" role="tab" data-toggle="tab">Reviews ( {{ $product->comments->count() }} )</a>
                         </li>
                     </ul>
                     <div class="tab-content">
@@ -193,7 +193,7 @@
                                         </div>
                                     </form>
                                 @else
-                                    <h6>Muốn phọt ra bình luận? <a href="{{ route('login') }}">Đăng nhập cái đã!</a></h6>
+                                    <h6 style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Muốn phọt ra bình luận? <a href="{{ route('login') }}">Đăng nhập cái đã!</a></h6>
                                 @endif
                             </div>
                         </div>
