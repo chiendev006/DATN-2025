@@ -76,11 +76,13 @@ class OrderSearchController extends Controller
 
         $order->status = 'cancelled';
         $order->ship_status = 'failed_delivery';
-        // Nếu đã thanh toán thì chuyển sang hoàn tiền
-        if ($order->pay_status === '1') {
+        // Nếu là COD thì luôn để pay_status = '2' khi hủy hoặc giao thất bại
+        if ($order->payment_method === 'cash') {
+            $order->pay_status = '2';
+        } else if ($order->pay_status === '1') {
             $order->pay_status = '3'; // Hoàn tiền
         } else {
-            $order->pay_status = '2'; // Đã hủy (chưa thanh toán)
+            $order->pay_status = '2';
         }
         $order->cancel_reason = '(Khách hàng hủy) ' . $reason;
         $order->save();

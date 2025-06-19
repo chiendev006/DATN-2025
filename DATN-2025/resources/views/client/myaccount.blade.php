@@ -151,6 +151,28 @@
                     </h3>
 
                     <div class="space-y-6">
+                        @php
+                            $statusLabels = [
+                                'pending' => 'Chờ xác nhận',
+                                'processing' => 'Đang xử lý',
+                                'completed' => 'Đã hoàn thành',
+                                'cancelled' => 'Đã hủy',
+                            ];
+                            $payStatusLabels = [
+                                '0' => 'Chờ thanh toán',
+                                '1' => 'Đã thanh toán',
+                                '2' => 'Đã hủy',
+                                '3' => 'Hoàn tiền',
+                            ];
+                            $shipStatusLabels = [
+                                'pending_delivery' => 'Chờ giao',
+                                'out_for_delivery' => 'Đang giao',
+                                'delivered' => 'Đã giao',
+                                'failed_delivery' => 'Giao thất bại',
+                                'returned_to_store' => 'Đã trả hàng',
+                            ];
+                        @endphp
+
                         @foreach($orders as $orderId => $items)
                             @php
                                 $firstItem = $items->first();
@@ -184,7 +206,7 @@
                                         <div class="flex items-center gap-3">
                                             <span class="status-badge inline-flex items-center gap-2 {{ $statusConfig['bg'] }} {{ $statusConfig['text'] }} {{ $statusConfig['border'] }} px-4 py-2 rounded-full text-sm font-semibold">
                                                 <i class="{{ $statusConfig['icon'] }}"></i>
-                                                {{ ucfirst($status) }}
+                                                {{ $statusLabels[$status] ?? ucfirst($status) }}
                                             </span>
                                         </div>
                                     </div>
@@ -687,7 +709,8 @@
                             document.getElementById('detail-email').textContent = data.order.email || 'Không có';
                             document.getElementById('detail-address').textContent = data.order.address_detail;
                             document.getElementById('detail-payment').textContent = data.order.payment_method === 'cash' ? 'Tiền mặt' : 'Chuyển khoản';
-                            document.getElementById('detail-pay-status').textContent = data.order.pay_status === '1' ? 'Đã thanh toán' : 'Chưa thanh toán';
+                            const payStatusMap = {'0':'Chờ thanh toán','1':'Đã thanh toán','2':'Đã hủy','3':'Hoàn tiền'};
+                            document.getElementById('detail-pay-status').textContent = payStatusMap[data.order.pay_status] || data.order.pay_status;
 
                             // Update products
                             const productsContainer = document.getElementById('detail-products');

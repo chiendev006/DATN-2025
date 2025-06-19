@@ -70,6 +70,9 @@ class OrderController extends Controller
             if ($order->pay_status == '1') {
                 $order->pay_status = '3'; // Hoàn tiền
                 $autoAdjustMsg .= ' Đơn đã thanh toán, chuyển trạng thái sang "Hoàn tiền".';
+            } else if ($order->pay_status == '0') { // Nếu chưa thanh toán
+                $order->pay_status = '2'; // Đã hủy
+                $autoAdjustMsg .= ' Đơn chưa thanh toán, chuyển trạng thái sang "Đã hủy".';
             }
         }
 
