@@ -49,7 +49,7 @@
 	</head>
 	<body>
 @php
-    $isHomeTab = request()->is('admin') ||request()->is('admin/contact') ||request()->is('admin/address') ||request()->is('admin/address/search') ||request()->is('admin/coupon') || request()->is('admin/danhmuc*')|| request()->is('admin/blogs*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*');
+    $isHomeTab = request()->is('admin') ||request()->is('admin/contact') ||request()->is('admin/address') ||request()->is('admin/address/search') ||request()->is('admin/coupon') || request()->is('admin/danhmuc*') || request()->is('admin/danhmucblog*') || request()->is('admin/blogs*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*');
     $isAuthTab = request()->is('admin/staff*') || request()->is('admin/payroll*');
 @endphp
 
@@ -112,6 +112,7 @@
 										<li>
 											<a href="{{ route('danhmuc.index') }}" class="{{ request()->is('admin/danhmuc*') ? 'current-page' : '' }}">Danh mục</a>
 										</li>
+										
 										<li>
 											<a href="{{ route('sanpham.index') }}" class="{{ request()->is('admin/sanpham*') ? 'current-page' : '' }}">Sản phẩm</a>
 										</li>
@@ -126,6 +127,9 @@
 										</li>
                                         <li>
                                         <a href="{{ route('coupon.index') }}" class="{{ request()->is('admin/coupon*') ? 'current-page' : '' }}">Mã giảm giá</a>
+										</li>
+										<li>
+											<a href="{{ route('danhmucblog.index') }}" class="{{ request()->is('admin/danhmucblog*') ? 'current-page' : '' }}">Danh mục bài viết</a>
 										</li>
 										<li>
 											<a href="{{ route('blogs.index') }}" class="{{ request()->is('admin/blogs*') ? 'current-page' : '' }}">Bài viết</a>

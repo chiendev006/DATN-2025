@@ -7,6 +7,7 @@ use App\Http\Requests\ToppingRequest;
 use App\Models\Topping;
 use Illuminate\Http\Request;
 
+
 class ToppingController extends Controller
 {
     public function index(Request $request) {
@@ -62,18 +63,39 @@ class ToppingController extends Controller
         return redirect()->route('topping.index')->with('success', 'Xóa thành công!');
     }
 
-    public function searchtopping( Request $request){
+    public function searchtopping(Request $request)
+{
     $perPage = $request->input('per_page', 5);
-            $request->validate([
-            'name' => 'required|string',
-                   ],
-    [
-        'name.required' => 'Tên toping không được để trống',
-        'name.string' => 'Tên topping phải là một chuỗi kí tự',
+
+    // Validate dữ liệu
+    $request->validate([
+        'name' => 'nullable|string',
+        'min_price' => 'nullable|numeric|min:0',
+        'max_price' => 'nullable|numeric|gte:min_price',
+    ], [
+        'min_price.numeric' => 'Giá tối thiểu phải là số',
+        'max_price.numeric' => 'Giá tối đa phải là số',
+        'max_price.gte' => 'Giá tối đa phải lớn hơn hoặc bằng giá tối thiểu',
     ]);
-         $toppings = topping::select('topping.*')
-            ->where('name', 'like', "%$request->name%")
-            ->paginate($perPage);
-        return view('admin.topping.index', ['topping' => $toppings]);
+
+
+    $query = Topping::query();
+    if ($request->filled('name')) {
+        $query->where('name', 'like', '%' . $request->name . '%');
     }
+
+    if ($request->filled('min_price')) {
+        $query->where('price', '>=', $request->min_price);
+    }
+
+    if ($request->filled('max_price')) {
+        $query->where('price', '<=', $request->max_price);
+    }
+
+    $toppings = $query->paginate($perPage)->withQueryString();
+
+    return view('admin.topping.index', ['topping' => $toppings]);
+}
+
+
 }

@@ -330,6 +330,7 @@ class CheckoutController extends Controller
             $order->coupon_summary = $couponSummaryJson; 
             $order->coupon_total_discount = $couponTotalDiscount;
             $order->note = $request->note;
+            $order->pay_status = $request->payment_method === 'banking' ? '1' : '0';
 
             if (!$order->save()) {
                 throw new \Exception('Không thể lưu đơn hàng');

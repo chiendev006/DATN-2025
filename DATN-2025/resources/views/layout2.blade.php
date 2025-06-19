@@ -271,14 +271,14 @@
                       <li class="">
                         <a href="/">Home</a>
                       </li>
-                      <li class="mega-menu">
+                      <li  class="mega-menu">
                         <a href="/menu">Menu</a>
                         <ul class="drop-nav">
                           <li>
-                            <div class="drop-mega-part">
+                            <div  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="drop-mega-part">
                               <div class="row">
                                 <div class="col-md-5 col-sm-12 col-xs-12">
-                                  <span class="mega-title">MAIN MENU</span>
+                                  <span  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="mega-title">MAIN MENU</span>
                                   <div class="row">
                                     <div class="col-md-6 col-sm-12 col-xs-12">
                                       <ul>
@@ -361,11 +361,11 @@
                                   </div>
                                 </div>
                                 <div class="col-md-2 col-sm-12 col-xs-12">
-                                  <span class="mega-title">IMAGE</span>
+                                  <span  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="mega-title">IMAGE</span>
                                   <img src="{{ url('asset') }}/images/img6.png" alt="" />
                                 </div>
                                 <div class="col-md-5 col-sm-12 col-xs-12">
-                                  <span class="mega-title">DESCRIPTION</span>
+                                  <span  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="mega-title">DESCRIPTION</span>
                                   <p>
                                     This column can contain whatever you like!
                                     Add text, shortcodes, or HTML.Various
@@ -381,9 +381,9 @@
                           </li>
                         </ul>
                       </li>
-                      <li class="has-child">
+                      <li  class="has-child">
                         <a href="/shop">Shop</a>
-                        <ul class="drop-nav">
+                        <ul  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="drop-nav">
                           <li><a href="/shop">Sản phẩm</a></li>
                           <li><a href="/cart">Giỏ hàng </a></li>
                           <li>
@@ -393,7 +393,7 @@
                       </li>
                       <li class="has-child">
                         <a href="/about">Pages</a>
-                        <ul class="drop-nav">
+                        <ul  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="drop-nav">
                           <li><a href="/about">About Us</a></li>
                           <li class="drop-has-child">
                             <a href="service1.html">Services</a>
@@ -455,7 +455,7 @@
                               <a href="#" class="nav-link dropdown-toggle" id="userDropdown">
                                   Xin chào, {{ Auth::user()->name }}
                               </a>
-                              <ul class="drop-nav">
+                              <ul  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="drop-nav">
                                   <li>
                                       <a class="dropdown-item" href="{{ route('logout') }}"
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -472,7 +472,7 @@
                       @else
                         <li class="has-child">
                             <a href="#" class="nav-link">Tài khoản</a>
-                            <ul class="drop-nav">
+                            <ul  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="drop-nav">
                                 <li><a href="{{ route('login') }}">Đăng nhập</a></li>
                                 <li><a href="{{ route('register') }}">Đăng ký</a></li>
                                 <li><a href="{{ route('order.search') }}">Tra cứu đơn hàng</a></li>
@@ -514,8 +514,8 @@
                                         <div class="cart-item-left">
                                             <img src="{{ $productImage }}" alt="" />
                                         </div>
-                                        <div class="cart-item-right">
-                                            <h6>{{ $productName }}</h6>
+                                        <div  class="cart-item-right">
+                                            <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">{{ $productName }}</h6>
                                             <div class="quantity-controls">
                                                 <button class="decrease-quantity" data-item-id="{{ $itemId }}">-</button>
                                                 <input type="number" class="item-quantity" value="{{ $quantity }}" min="1" data-item-id="{{ $itemId }}" readonly>
@@ -534,10 +534,10 @@
                                 <div class="subtotal">
                                     <div class="row">
                                         <div class="col-md-6 col-sm-6 col-xs-6">
-                                            <h6>Tạm tính :</h6>
+                                            <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Tạm tính :</h6>
                                         </div>
                                         <div class="col-md-6 col-sm-6 col-xs-6">
-                                            <span id="subtotal-amount">{{ number_format($subtotal, 0, ',', '.') }}₫</span>
+                                            <span  id="subtotal-amount">{{ number_format($subtotal, 0, ',', '.') }}₫</span>
                                         </div>
                                     </div>
                                 </div>

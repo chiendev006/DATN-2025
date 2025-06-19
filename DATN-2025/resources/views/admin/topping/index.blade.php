@@ -37,12 +37,9 @@
 
                                 <div class="card">
                                 <button type="button" id="btn-add-topping" class="btn-success">Thêm topping</button>
-                                   <form method="GET" action="{{ route('topping.search') }}" class="form-inline" style="float: right; display: flex; align-items: center;">
-                                                    <input type="text" name="name" class="form-control" placeholder="Tìm kiếm tên và số điện thoại ..." value="{{ request('name') }}" style="width: 220px; margin-right: 8px;">
-                                                    <button type="submit" class="btn btn-success">Tìm kiếm</button>
-                                                </form>
-                                    <div class="card-body">
-                                        <form method="GET" action="" style="margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                                             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap" style="gap: 15px;">
+                            <!-- Bên trái: chọn số bản ghi -->
+                            <form method="GET" action="" style="margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
                                             <label for="per_page" style="margin-bottom:0;">Bản/trang:</label>
                                             <select name="per_page" id="per_page" class="form-control" style="width: 80px;" onchange="this.form.submit()">
                                                 <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản</option>
@@ -54,6 +51,34 @@
                                                 <input type="hidden" name="{{ $key }}" value="{{ $val }}">
                                             @endforeach
                                         </form>
+
+                            <!-- Bên phải: các form tìm kiếm -->
+                            <div class="d-flex align-items-center" style="gap: 15px;">
+                                <!-- Tìm theo tên -->
+                                @if ($errors->any())
+                                    <div class="alert alert-danger" style="margin-top: 10px;">
+                                        <ul style="margin-bottom: 0;">
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+                                   <form method="GET" action="{{ route('topping.search') }}" class="form-inline" style="float: right; display: flex; align-items: center;">
+                                        <input type="text" name="name" class="form-control" placeholder="Tìm kiếm tên và số điện thoại ..." value="{{ request('name') }}" style="width: 220px; margin-right: 8px;">
+                                        <button type="submit" class="btn btn-success">Tìm kiếm</button>
+                                    </form>
+                                    <form method="GET" action="{{ route('topping.search') }}" class="form-inline" style="float: right; display: flex; align-items: center;">
+                                        <input type="number" name="min_price" class="form-control" placeholder="Giá từ" value="{{ request('min_price') }}" style="width: 220px; margin-right: 8px;">
+                                        <input type="number" name="max_price" class="form-control" placeholder="Đến" value="{{ request('max_price') }}" style="width: 220px; margin-right: 8px;">
+
+                                        {{-- Giữ lại name nếu có --}}
+                                        <input type="hidden" name="name" value="{{ request('name') }}">
+
+                                        <button type="submit" class="btn btn-success">Lọc</button>
+                                    </form>     
+                            </div>
+                        </div>
                                         <div class="table-responsive">
                                             <table id="copy-print-csv" class="table v-middle">
                                                 <thead>

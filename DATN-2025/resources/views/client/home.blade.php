@@ -77,7 +77,7 @@
                       data-captionhidden="off"
                     >
 Cà phê - Cao cấp<br />
-                      <span class="v-light">Đậm</span>
+                      <span style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="v-light">Đậm</span>
                     </div>
 
                     <!-- LAYER NR. 4 -->

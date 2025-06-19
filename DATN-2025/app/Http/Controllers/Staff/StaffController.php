@@ -193,8 +193,22 @@ class StaffController extends Controller
         }
 
         $order->cancel_reason = $cancelReason;
+
+        // Cập nhật trạng thái thanh toán khi hủy
+        if ($order->pay_status == '1') {
+            $order->pay_status = '3'; // Hoàn tiền
+        } else {
+            $order->pay_status = '2'; // Đã hủy
+        }
     } else {
         $order->cancel_reason = null;
+    }
+
+    // Nếu trạng thái là hoàn thành, tự động chuyển trạng thái thanh toán sang đã thanh toán
+    if ($newStatus == 'completed' || $newStatus == 3) {
+        if ($order->pay_status != '1') {
+            $order->pay_status = '1'; // Đã thanh toán
+        }
     }
 
     $order->save();
