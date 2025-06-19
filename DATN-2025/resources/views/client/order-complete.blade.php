@@ -19,9 +19,9 @@
             <div class="container">
                 <div class="checkout-wrap wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                     <ul class="checkout-bar">
-                        <li class="done-proceed">Shopping Cart</li>
-                        <li class="done-proceed">Checkout</li>
-                        <li class="active">Order Complete</li>
+                        <li style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="done-proceed">Shopping Cart</li>
+                        <li style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="done-proceed">Checkout</li>
+                        <li style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="active">Order Complete</li>
                     </ul>
                 </div>
                 <div class="row">
@@ -63,8 +63,8 @@
                                                 <td>{{ $item->size->size ?? 'Không có' }}</td>
                                                 <td>
                                                     @php
-                                                        $toppingIds = (!empty($item->topping_id) && is_string($item->topping_id)) 
-                                                            ? explode(',', $item->topping_id) 
+                                                        $toppingIds = (!empty($item->topping_id) && is_string($item->topping_id))
+                                                            ? explode(',', $item->topping_id)
                                                             : [];
                                                     @endphp
 
@@ -73,7 +73,7 @@
                                                             @php $toppingId = (int) trim($toppingId); @endphp
                                                             @if(isset($allToppings[$toppingId]))
                                                                 <div>
-                                                                    {{ $allToppings[$toppingId]->topping ?? 'Không tên' }} 
+                                                                    {{ $allToppings[$toppingId]->topping ?? 'Không tên' }}
                                                                     ({{ number_format($allToppings[$toppingId]->price ?? 0, 0) }}đ)
                                                                 </div>
                                                             @else
@@ -84,10 +84,10 @@
                                                         <div>Không topping</div>
                                                     @endif
                                                 </td>
-                                                
+
                                                 {{-- THAY ĐỔI: Sử dụng các trường địa chỉ mới từ DB --}}
                                                 <td>{{ $order->address_detail }}, {{ $order->district_name }}</td>
-                                                
+
                                                 <td>{{ $item->quantity }}</td>
                                                 <td>{{ number_format($item->product_price, 0) }}đ</td>
                                                 <td>{{ number_format($item->total, 0) }}đ</td>
@@ -98,7 +98,7 @@
                                     @endif
                                 </tbody>
                             </table>
-                            
+
                             {{-- THAY ĐỔI: Thêm phần hiển thị giảm giá và tổng tiền --}}
                             <div class="text-right mt-3" style="max-width: 400px; margin-left: auto;">
                                 <h5 style="display: flex; justify-content: space-between;">
@@ -120,7 +120,7 @@
                             <p>Vui lòng ghi lại mã đơn hàng của bạn: <strong>#{{ session('order_number', $order->id) }}</strong></p>
                             <p>Bạn sẽ sớm nhận được email xác nhận đơn hàng.</p>
                             <div class="mt-4">
-                                <a href="/shop" class="button-default btn-large btn-primary-gold">Tiếp tục mua sắm</a>
+                                <a style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="/shop" class="button-default btn-large btn-primary-gold">Tiếp tục mua sắm</a>
                             </div>
                         </div>
                     </div>

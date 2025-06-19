@@ -33,8 +33,8 @@
                         </button>
                     </div>
 
-                    <div class="space-y-4">
-                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <div style="justify-content: space-around;" class="space-y-4 flex ">
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg ư-4/12">
                             <i class="fas fa-user text-gray-500 w-5 mr-3"></i>
                             <div>
                                 <p class="text-sm text-gray-600">Họ tên</p>
@@ -42,7 +42,7 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg ư-4/12">
                             <i class="fas fa-phone text-gray-500 w-5 mr-3"></i>
                             <div>
                                 <p class="text-sm text-gray-600">Số điện thoại</p>
@@ -50,7 +50,7 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg ư-4/12">
                             <i class="fas fa-map-marker-alt text-gray-500 w-5 mr-3"></i>
                             <div>
                                 <p class="text-sm text-gray-600">Địa chỉ</p>
@@ -317,7 +317,7 @@
 
 <!-- Edit Profile Modal -->
 <div id="editProfileModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl w-full max-w-lg shadow-2xl">
+    <div class="bg-white rounded-xl w-4/12 max-w-2lg shadow-2xl">
         <div class="p-6 border-b border-gray-200">
             <h3 class="text-xl font-bold text-gray-800 flex items-center">
                 <i class="fas fa-user-edit mr-3 text-blue-500"></i>
@@ -325,10 +325,12 @@
             </h3>
         </div>
 
-        <form id="editProfileForm" enctype="multipart/form-data" class="p-6">
+        <form id="editProfileForm" enctype="multipart/form-data" class="p-6 ">
             @csrf
-            <div class="space-y-4">
-                <div>
+            <div class="space-y-4 ">
+
+            <div style="justify-content: space-around;" class="flex">
+                <div class="w-5/12">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         <i class="fas fa-user mr-2"></i>Họ tên
                     </label>
@@ -336,15 +338,16 @@
                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
                 </div>
 
-                <div>
+                <div class="w-5/12">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         <i class="fas fa-phone mr-2"></i>Số điện thoại
                     </label>
                     <input type="text" name="phone" value="{{ $user->phone }}"
                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 </div>
-
-                <div>
+            </div>
+            <div style="justify-content: space-around;" class="flex">
+                <div class="w-5/12">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         <i class="fas fa-map-marker-alt mr-2"></i>Địa chỉ
                     </label>
@@ -352,17 +355,18 @@
                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 </div>
 
-                <div>
+                <div class="w-5/12">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         <i class="fas fa-image mr-2"></i>Ảnh đại diện
                     </label>
-                    <input type="file" name="image" accept="image/*"
+                    <input style="border-radius: 30px; padding: 10px;" type="file" name="image" accept="image/*"
                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                            id="previewImageInput">
                     <div class="mt-3 text-center">
                         <img id="previewImage" src="{{ $user->image ? asset('storage/' . $user->image) : '' }}"
                              class="w-24 h-24 object-cover rounded-full border-4 border-gray-200 {{ $user->image ? '' : 'hidden' }}">
                     </div>
+                </div>
                 </div>
             </div>
 
