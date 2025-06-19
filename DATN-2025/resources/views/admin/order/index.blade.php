@@ -377,10 +377,10 @@
       </div>
 
       <div class="field-wrapper col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" id="cancel_reason_container" style="display:none;">
-        <div style="margin-bottom:10px;">
-          <div class="field-placeholder">Lý do hủy <span style="color:red;">*</span></div>
-          <input type="text" class="form-control" name="cancel_reason" id="modal_cancel_reason" {{ isset($order) && $order->cancel_reason ? 'disabled' : '' }} />
-        </div>
+            <div style="margin-bottom:10px;">
+            <div class="field-placeholder">Lý do hủy <span style="color:red;">*</span></div>
+            <input type="text" class="form-control" name="cancel_reason" id="modal_cancel_reason" {{ isset($order) && $order->cancel_reason ? 'disabled' : '' }} />
+            </div>
       </div>
 
       <button type="submit" class="btn-action btn-view">Cập nhật đơn hàng</button>

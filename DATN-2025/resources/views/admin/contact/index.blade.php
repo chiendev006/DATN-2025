@@ -34,11 +34,9 @@
                     <div class="content-wrapper">
                     <div class="row gutters">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-
-                                <div class="card">
-
-                                    <div class="card-body">
-                                        <form method="GET" action="" style="margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap" style="gap: 15px;">
+                            <!-- Bên trái: chọn số bản ghi -->
+                            <form method="GET" action="" style="margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
                                             <label for="per_page" style="margin-bottom:0;">Bản/trang:</label>
                                             <select name="per_page" id="per_page" class="form-control" style="width: 80px;" onchange="this.form.submit()">
                                                 <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản</option>
@@ -50,6 +48,22 @@
                                                 <input type="hidden" name="{{ $key }}" value="{{ $val }}">
                                             @endforeach
                                         </form>
+
+                            <!-- Bên phải: các form tìm kiếm -->
+                            <div class="d-flex align-items-center" style="gap: 15px;">
+                                <!-- Tìm theo tên -->
+                                <form action="{{ route('contact.search') }}" method="GET" class="d-flex" style="gap: 8px;">
+                                    <input type="text" name="name" class="form-control" placeholder="Tìm theo tên..." value="{{ request('name') }}" style="max-width: 250px;">
+                                    <input type="text" name="email" class="form-control" placeholder="Tìm theo email..." value="{{ request('email') }}" style="max-width: 250px;">
+                                    <input type="text" name="phone" class="form-control" placeholder="Tìm theo sđt..." value="{{ request('phone') }}" style="max-width: 250px;">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i> Tìm
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                                
                                         <div class="table-responsive">
                                         <table id="copy-print-csv" class="table v-middle">
                                 <thead>
