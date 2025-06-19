@@ -9,6 +9,7 @@
         use App\Http\Controllers\ContactController;
         use App\Http\Controllers\admin\HomeController;
         use App\Http\Controllers\admin\DanhmucController;
+        use App\Http\Controllers\admin\DanhmucBlogController;
         use App\Http\Controllers\admin\SanphamController;
         use App\Http\Controllers\admin\ProductImageController;
         use App\Http\Controllers\admin\ContactAdminController;
@@ -135,6 +136,16 @@
         Route::get('/edit/{id}', [DanhmucController::class, 'edit'])->name('danhmuc.edit');
         Route::post('/update/{id}', [DanhmucController::class, 'update'])->name('danhmuc.update');
         Route::delete('/delete/{id}', [DanhmucController::class, 'delete'])->name('danhmuc.delete');
+        });
+
+        // Danh mục blog
+        Route::prefix('danhmucblog')->name('danhmucblog.')->group(function () {
+        Route::get('/', [DanhmucBlogController::class, 'index'])->name('index');
+        Route::get('/create', [DanhmucBlogController::class, 'create'])->name('create');
+        Route::post('/store', [DanhmucBlogController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [DanhmucBlogController::class, 'edit'])->name('edit');
+        Route::post('/update/{id}', [DanhmucBlogController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [DanhmucBlogController::class, 'delete'])->name('delete');
         });
 
         // Quản lý ảnh theo sản phẩm
@@ -320,13 +331,13 @@
         Route::get('/blog/{id}', [BlogController::class, 'show'])->name('client.blogsingle');
 
 
-Route::post('/order/reorder/{orderId}', [OrderController::class, 'reorder'])->name('client.order.reorder');
+        Route::post('/order/reorder/{orderId}', [OrderController::class, 'reorder'])->name('client.order.reorder');
 
-//
-Route::get('/blog', [BlogController::class, 'index'])->name('client.blog');
-Route::get('/blog/search', [BlogController::class, 'search'])->name('blog.search');
-Route::get('/blog/{id}', [BlogController::class, 'show'])->name('client.blogsingle');
-Route::get('/blog/category/{id}', [BlogController::class, 'showByCategory'])->name('blog.category');
+        //
+        Route::get('/blog', [BlogController::class, 'index'])->name('client.blog');
+        Route::get('/blog/search', [BlogController::class, 'search'])->name('blog.search');
+        Route::get('/blog/{id}', [BlogController::class, 'show'])->name('client.blogsingle');
+        Route::get('/blog/category/{id}', [BlogController::class, 'showByCategory'])->name('blog.category');
 
         // Discout
         Route::post('/cart/apply-coupon', [CartController::class, 'applyCoupon'])->name('cart.applyCoupon');
