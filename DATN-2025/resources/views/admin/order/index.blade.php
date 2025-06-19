@@ -595,6 +595,7 @@
 
     function disableInvalidShipStatusOptions(originalShipStatus) {
         const select = document.getElementById('modal_ship_status');
+        const status = document.getElementById('modal_status').value;
         const order = [
             'pending_delivery',
             'out_for_delivery',
@@ -622,8 +623,16 @@
             select.disabled = false;
         }
 
+        // Nếu đơn chưa được xác nhận (không phải processing), không cho chọn out_for_delivery
+        if (status !== 'processing') {
+            [...select.options].forEach(option => {
+                if (option.value === 'out_for_delivery') {
+                    option.disabled = true;
+                }
+            });
+        }
+
         [...select.options].forEach((option, idx) => {
-            option.disabled = false;
             if (idx < currentIdx) {
                 option.disabled = true;
             }
@@ -638,6 +647,37 @@
     }
 
     document.getElementById('modal_ship_status').addEventListener('change', syncShipStatusHidden);
+
+    // Thêm event listener cho việc thay đổi trạng thái đơn
+    document.getElementById('modal_status').addEventListener('change', function() {
+        const status = this.value;
+        const shipStatusSelect = document.getElementById('modal_ship_status');
+        
+        // Nếu chuyển từ trạng thái khác sang "Đã xác nhận"
+        if (status === 'processing') {
+            // Cho phép chọn "Đang giao"
+            [...shipStatusSelect.options].forEach(option => {
+                if (option.value === 'out_for_delivery') {
+                    option.disabled = false;
+                }
+            });
+        } else {
+            // Nếu chuyển từ "Đã xác nhận" sang trạng thái khác
+            // và đang ở trạng thái "Đang giao" thì chuyển về "Chờ giao"
+            if (shipStatusSelect.value === 'out_for_delivery') {
+                shipStatusSelect.value = 'pending_delivery';
+            }
+            // Disable option "Đang giao"
+            [...shipStatusSelect.options].forEach(option => {
+                if (option.value === 'out_for_delivery') {
+                    option.disabled = true;
+                }
+            });
+        }
+        
+        disableInvalidShipStatusOptions(shipStatusSelect.value);
+        syncShipStatusHidden();
+    });
 
     function validateForm() {
         const status = document.getElementById('modal_status').value;

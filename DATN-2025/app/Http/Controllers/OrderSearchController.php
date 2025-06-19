@@ -76,11 +76,11 @@ class OrderSearchController extends Controller
 
         $order->status = 'cancelled';
         $order->ship_status = 'failed_delivery';
-        // Nếu là COD thì luôn để pay_status = '2' khi hủy hoặc giao thất bại
+
         if ($order->payment_method === 'cash') {
             $order->pay_status = '2';
         } else if ($order->pay_status === '1') {
-            $order->pay_status = '3'; // Hoàn tiền
+            $order->pay_status = '3'; 
         } else {
             $order->pay_status = '2';
         }
@@ -138,8 +138,6 @@ class OrderSearchController extends Controller
                         ->select('topping', 'price')
                         ->get();
                 }
-
-                // Tạo key cho giỏ hàng
                 $key = $item->product_id . '-' . ($item->size_id ?? '0') . '-' . implode(',', $toppingIds);
 
                 $cartSession[$key] = [
