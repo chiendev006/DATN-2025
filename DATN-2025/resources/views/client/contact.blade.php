@@ -18,11 +18,11 @@
                 <!-- Start Contact Part -->
 
                 <section class="default-section contact-part pad-top-remove">
-                    
+
                     <div class="container">
                         <div class="title text-center">
                             <h2 class="text-coffee">Liên hệ với chúng tôi</h2>
-                            <h6>Chúng tôi luôn đặt lợi ích của khách hàng lên hàng đầu nếu bạn có thắc măc gì hãy liên hệ với chúng tôi.</h6>
+                            <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Chúng tôi luôn đặt lợi ích của khách hàng lên hàng đầu nếu bạn có thắc măc gì hãy liên hệ với chúng tôi.</h6>
                         </div>
                         <div class="row">
                             <div class="col-md-8 col-sm-8 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
@@ -59,7 +59,7 @@
                                           @error('message')
                                               <span class="text-danger">{{ $message }}</span>
                                           @enderror
-                                        </div>  
+                                        </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <button name="submit" class="submit-btn send_message" type="submit">Gửi</button>
                                         </div>
@@ -80,7 +80,7 @@
                                     <li><span class="week-name">Thứ năm</span> <span>12-6 giờ</span></li>
                                     <li><span class="week-name">Thứ sáu</span> <span>12-6 giờ</span></li>
                                     <li><span class="week-name">Thứ bảy</span> <span>12-6 giờ</span></li>
-                                    <li><span class="week-name">Thứ tám</span> <span>Đóng cửa</span></li>
+                                    <li><span class="week-name">Chủ nhật</span> <span>Đóng cửa</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -88,7 +88,7 @@
                 </section>
 
             </div>
-        </main> 
+        </main>
         <style>
         .text-danger {
             color: #dc3545;
@@ -187,7 +187,7 @@
         <script>
   $(document).ready(function() {
     $('#editor').summernote({
-      height: 300,       
+      height: 300,
       placeholder: 'Nhập tin nhắn của bạn (ít nhất 10 ký tự)...',
       toolbar: [
         ['style', ['style']],
@@ -312,7 +312,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const content = $(this).summernote('code').replace(/<[^>]*>/g, '').trim();
     const error = validateMessage(content);
     const editor = $(this).next('.note-editor');
-    
+
     if (error) {
       editor.addClass('is-invalid');
       let errorElement = editor.parent().find('.text-danger');
@@ -329,13 +329,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
-    
+
     // Clear previous messages
     messageBox.innerHTML = '';
-    
+
     // Validate all fields
     let hasErrors = false;
-    
+
     const nameError = validateName(nameInput.value);
     if (nameError) {
       showError(nameInput, nameError);
@@ -392,7 +392,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (data.success) {
         messageBox.innerHTML = `<div style='color: green; background-color: #e6ffe6; padding: 10px;'>${data.message}</div>`;
         form.reset();
-        $('#editor').summernote('reset'); 
+        $('#editor').summernote('reset');
         // Clear all validation errors
         document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
         document.querySelectorAll('.text-danger').forEach(el => el.remove());
@@ -405,6 +405,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
-</script> 
+</script>
        @endsection
        @endsection

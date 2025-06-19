@@ -32,16 +32,17 @@
             <div class="container">
                 <div class="checkout-wrap wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                     <ul class="checkout-bar">
-                        <li class="done-proceed">Shopping Cart</li>
-                        <li class="active">Checkout</li>
-                        <li>Order Complete</li>
+                        <li   style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="done-proceed">Shopping Cart</li>
+                        <li  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="active">Checkout</li>
+                        <li  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" >Order Complete</li>
                     </ul>
                 </div>
                 <div class="row">
                     <div class="col-md-7 col-sm-7 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                         <div class="shop-checkout-left">
                             @if(!$isLoggedIn)
-                            <h6>Returning customer? Click here to <a href="{{ route('login') }}">login</a></h6>
+                            <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+Khách hàng quay lại? Nhấp vào đây để <a href="{{ route('login') }}">login</a></h6>
                             @endif
                            <form id="checkout-form" class="form" method="POST" action="{{ route('checkout.process') }}">
                                 @csrf
@@ -161,12 +162,12 @@
                     </div>
                     <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                         <div class="shop-checkout-right">
-                            <div class="shop-checkout-box">
+                            <div  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="shop-checkout-box">
                                 <h5 style="color: #959393;">ĐƠN HÀNG CỦA BẠN</h5>
-                                <div class="shop-checkout-title">
-                                    <h6 style="color: #959393;">SẢN PHẨM <span>THÀNH TIỀN</span></h6>
+                                <div  class="shop-checkout-title">
+                                    <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" style="color: #959393;">SẢN PHẨM <span>THÀNH TIỀN</span></h6>
                                 </div>
-                                <div class="shop-checkout-row">
+                                <div  class="shop-checkout-row">
                                     @php
                                         $displayItems = Auth::check() ? $items : $cart;
                                     @endphp
@@ -257,7 +258,7 @@
                                 </div>
 
                                 <div class="checkout-total">
-                                    <h6>Tạm tính: <span>{{ number_format($subtotal) }} VND</span></h6>
+                                    <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" >Tạm tính: <span>{{ number_format($subtotal) }} VND</span></h6>
                                 </div>
 
                                 @php
@@ -285,11 +286,11 @@
                                 @endif
 
                                 <div class="checkout-total">
-                                    <h6>Phí vận chuyển: <span id="shipping-fee-display-right">{{ $shippingFee > 0 ? number_format($shippingFee) . ' đ' : '0 đ' }}</span></h6>
+                                    <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Phí vận chuyển: <span id="shipping-fee-display-right">{{ $shippingFee > 0 ? number_format($shippingFee) . ' đ' : '0 đ' }}</span></h6>
                                 </div>
 
                                 <div class="checkout-total">
-                                    <h6>Tổng cộng: <span class="price-big" id="total-with-shipping">{{ number_format($total) }} VND</span></h6>
+                                    <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Tổng thanh toán: <span class="price-big" id="total-with-shipping">{{ number_format($total) }} VND</span></h6>
                                 </div>
                             </div>
                         </div>
@@ -480,7 +481,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const shippingFeeDisplayRight = document.getElementById("shipping-fee-display-right");
     const totalWithShippingElement = document.getElementById("total-with-shipping");
     const checkoutForm = document.getElementById("checkout-form");
-    
+
     const subtotal = parseFloat({{ $subtotal }});
     const discount = parseFloat({{ $discount }});
 
