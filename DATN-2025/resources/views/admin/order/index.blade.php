@@ -434,6 +434,12 @@
             <input type="text" class="form-control" name="cancel_reason" id="modal_cancel_reason" />
         </div>
       </div>
+      <div class="field-wrapper col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" id="failed_delivery_reason_container" style="display:none;">
+        <div style="margin-bottom:10px;">
+            <div class="field-placeholder">Lý do giao không thành công <span style="color:red;">*</span></div>
+            <input type="text" class="form-control" name="failed_delivery_reason" id="modal_failed_delivery_reason" />
+        </div>
+      </div>
 
       <button type="submit" class="btn-action btn-view">Cập nhật đơn hàng</button>
         </div>
@@ -443,262 +449,275 @@
 </div>
 <<script>
 
+function resetDisableOptions() {
+    // Enable all options for status
+    const statusSelect = document.getElementById('modal_status');
+    if (statusSelect) [...statusSelect.options].forEach(option => option.disabled = false);
 
-    function openOrderModal(btn) {
-        document.getElementById('orderModal').style.display = 'block';
-        document.getElementById('modal_id').value = btn.getAttribute('data-id');
-        document.getElementById('modal_name').value = btn.getAttribute('data-name') + ' - ' + btn.getAttribute('data-id');
-        if( btn.getAttribute('data-phone')=='N/A'){
-            document.getElementById('modal_phone').value = 'Nhân viên thu ngân';
-        } else {
-            document.getElementById('modal_phone').value = btn.getAttribute('data-phone');
-        }
-        document.getElementById('modal_email').value =  btn.getAttribute('data-email') ||'Nhân viên thu ngân';
-        document.getElementById('modal_payment_method').value = btn.getAttribute('data-payment_method');
-        const statusSelect = document.getElementById('modal_status');
-        const payStatusSelect = document.getElementById('modal_pay_status');
-        const originalStatusFromButton = btn.getAttribute('data-status');
-        const originalPayStatusFromButton = btn.getAttribute('data-pay_status');
-        let initialStatusValue;
-        if (originalStatusFromButton.includes('Chờ xử lý')) {
-            initialStatusValue = 'pending';
-        } else if (originalStatusFromButton.includes('Đã xác nhận')) {
-            initialStatusValue = 'processing';
-        } else if (originalStatusFromButton.includes('Hoàn thành')) {
-            initialStatusValue = 'completed';
-        } else if (originalStatusFromButton.includes('Đã hủy')) {
-            initialStatusValue = 'cancelled';
-        } else {
-            initialStatusValue = originalStatusFromButton;
-        }
-        statusSelect.value = initialStatusValue;
-        payStatusSelect.value = originalPayStatusFromButton;
-        statusSelect.setAttribute('data-original-status', initialStatusValue);
-        if (originalPayStatusFromButton === '2' || originalPayStatusFromButton === '3') {
-            payStatusSelect.setAttribute('disabled', 'disabled');
-            if (!document.getElementById('hidden_pay_status')) {
-                const hidden = document.createElement('input');
-                hidden.type = 'hidden';
-                hidden.name = 'pay_status';
-                hidden.id = 'hidden_pay_status';
-                hidden.value = originalPayStatusFromButton;
-                payStatusSelect.parentNode.appendChild(hidden);
-            } else {
-                document.getElementById('hidden_pay_status').value = originalPayStatusFromButton;
-            }
-        } else {
-            payStatusSelect.removeAttribute('disabled');
-            const hidden = document.getElementById('hidden_pay_status');
-            if (hidden) hidden.remove();
-        }
-        disableInvalidStatusOptions(initialStatusValue);
-        disableInvalidPayStatusOptions(originalPayStatusFromButton);
-        document.getElementById('modal_total').value = btn.getAttribute('data-total');
-        document.getElementById('modal_shipping_fee').value = btn.getAttribute('data-shipping_fee') || '0 đ';
-        document.getElementById('modal_coupon_total_discount').value = btn.getAttribute('data-coupon_total_discount') || '0 đ';
-        document.getElementById('modal_address_detail').value = btn.getAttribute('data-address_detail') || 'Nhân viên thu ngân';
-        document.getElementById('modal_product_total').value = btn.getAttribute('data-product_total') || '0 đ';
-        document.getElementById('modal_created_at').value = btn.getAttribute('data-created_at') || '';
-        document.getElementById('orderForm').action = "{{ url('admin/order/update') }}/" + btn.getAttribute('data-id');
+    // Enable all options for pay_status
+    const payStatusSelect = document.getElementById('modal_pay_status');
+    if (payStatusSelect) [...payStatusSelect.options].forEach(option => option.disabled = false);
 
-        // Reset trạng thái input lý do hủy
-        const cancelReasonInput = document.getElementById('modal_cancel_reason');
+    // Enable all options for ship_status
+    const shipStatusSelect = document.getElementById('modal_ship_status');
+    if (shipStatusSelect) {
+        [...shipStatusSelect.options].forEach(option => option.disabled = false);
+        shipStatusSelect.disabled = false;
+    }
+}
+
+function openOrderModal(btn) {
+    resetDisableOptions();
+    document.getElementById('orderModal').style.display = 'block';
+    document.getElementById('modal_id').value = btn.getAttribute('data-id');
+    document.getElementById('modal_name').value = btn.getAttribute('data-name') + ' - ' + btn.getAttribute('data-id');
+    if( btn.getAttribute('data-phone')=='N/A'){
+        document.getElementById('modal_phone').value = 'Nhân viên thu ngân';
+    } else {
+        document.getElementById('modal_phone').value = btn.getAttribute('data-phone');
+    }
+    document.getElementById('modal_email').value =  btn.getAttribute('data-email') ||'Nhân viên thu ngân';
+    document.getElementById('modal_payment_method').value = btn.getAttribute('data-payment_method');
+    const statusSelect = document.getElementById('modal_status');
+    const payStatusSelect = document.getElementById('modal_pay_status');
+    const originalStatusFromButton = btn.getAttribute('data-status');
+    const originalPayStatusFromButton = btn.getAttribute('data-pay_status');
+    let initialStatusValue;
+    if (originalStatusFromButton.includes('Chờ xử lý')) {
+        initialStatusValue = 'pending';
+    } else if (originalStatusFromButton.includes('Đã xác nhận')) {
+        initialStatusValue = 'processing';
+    } else if (originalStatusFromButton.includes('Hoàn thành')) {
+        initialStatusValue = 'completed';
+    } else if (originalStatusFromButton.includes('Đã hủy')) {
+        initialStatusValue = 'cancelled';
+    } else {
+        initialStatusValue = originalStatusFromButton;
+    }
+    statusSelect.value = initialStatusValue;
+    payStatusSelect.value = originalPayStatusFromButton;
+    statusSelect.setAttribute('data-original-status', initialStatusValue);
+    if (originalPayStatusFromButton === '2' || originalPayStatusFromButton === '3') {
+        payStatusSelect.setAttribute('disabled', 'disabled');
+        if (!document.getElementById('hidden_pay_status')) {
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'pay_status';
+            hidden.id = 'hidden_pay_status';
+            hidden.value = originalPayStatusFromButton;
+            payStatusSelect.parentNode.appendChild(hidden);
+        } else {
+            document.getElementById('hidden_pay_status').value = originalPayStatusFromButton;
+        }
+    } else {
+        payStatusSelect.removeAttribute('disabled');
+        const hidden = document.getElementById('hidden_pay_status');
+        if (hidden) hidden.remove();
+    }
+    disableInvalidStatusOptions(initialStatusValue);
+    disableInvalidPayStatusOptions(originalPayStatusFromButton);
+    document.getElementById('modal_total').value = btn.getAttribute('data-total');
+    document.getElementById('modal_shipping_fee').value = btn.getAttribute('data-shipping_fee') || '0 đ';
+    document.getElementById('modal_coupon_total_discount').value = btn.getAttribute('data-coupon_total_discount') || '0 đ';
+    document.getElementById('modal_address_detail').value = btn.getAttribute('data-address_detail') || 'Nhân viên thu ngân';
+    document.getElementById('modal_product_total').value = btn.getAttribute('data-product_total') || '0 đ';
+    document.getElementById('modal_created_at').value = btn.getAttribute('data-created_at') || '';
+    document.getElementById('orderForm').action = "{{ url('admin/order/update') }}/" + btn.getAttribute('data-id');
+
+    // Reset trạng thái input lý do hủy
+    const cancelReasonInput = document.getElementById('modal_cancel_reason');
+    cancelReasonInput.removeAttribute('disabled');
+    if (btn.getAttribute('data-cancel_reason')) {
+        cancelReasonInput.value = btn.getAttribute('data-cancel_reason');
+        cancelReasonInput.setAttribute('disabled', 'disabled');
+    } else {
+        cancelReasonInput.value = '';
         cancelReasonInput.removeAttribute('disabled');
-        if (btn.getAttribute('data-cancel_reason')) {
-            cancelReasonInput.value = btn.getAttribute('data-cancel_reason');
-            cancelReasonInput.setAttribute('disabled', 'disabled');
-        } else {
-            cancelReasonInput.value = '';
-            cancelReasonInput.removeAttribute('disabled');
-        }
+    }
 
+    checkCancelFields();
+
+    var orderId = btn.getAttribute('data-id');
+    fetch('/admin/order/json/' + orderId)
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.querySelector('#order_products_table tbody');
+            tbody.innerHTML = '';
+            if (data.details && Array.isArray(data.details) && data.details.length > 0) {
+                data.details.forEach(product => {
+                    const row = `<tr>
+                        <td>${product.product_name ?? ''}</td>
+                        <td>${product.product_image ? `<img src='/storage/uploads/${product.product_image}' width='50'>` : ''}</td>
+                        <td>${product.size ?? ''}</td>
+                        <td>${product.topping ? `<p>${product.topping}</p>` : `<span style=\"color: red;\">Không chọn</span>`}</td>
+                        <td>${product.quantity ?? ''}</td>
+                        <td>${product.total !== undefined ? parseInt(product.total).toLocaleString('vi-VN') + ' đ' : ''}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Không có sản phẩm</td></tr>';
+            }
+        })
+        .catch(() => {
+            document.querySelector('#order_products_table tbody').innerHTML =
+                '<tr><td colspan="8" style="text-align:center; color:red;">Lỗi lấy dữ liệu</td></tr>';
+        });
+
+    // Xử lý trạng thái giao hàng không khả dụng nếu phone == 'N/A'
+    if(btn.getAttribute('data-phone')=='N/A'){
+        const shipStatusSelect = document.getElementById('modal_ship_status');
+        let naOption = shipStatusSelect.querySelector('option[value="not_applicable"]');
+        if(!naOption){
+            naOption = document.createElement('option');
+            naOption.value = 'not_applicable';
+            naOption.text = 'Không khả dụng';
+            shipStatusSelect.appendChild(naOption);
+        }
+        shipStatusSelect.value = 'not_applicable';
+        shipStatusSelect.disabled = true;
+    } else {
+        document.getElementById('modal_ship_status').value = btn.getAttribute('data-ship_status');
+        const originalShipStatus = btn.getAttribute('data-ship_status');
+        disableInvalidShipStatusOptions(originalShipStatus);
+        syncShipStatusHidden();
+        document.getElementById('modal_ship_status').disabled = false;
+    }
+}
+
+function closeOrderModal() {
+    document.getElementById('orderModal').style.display = 'none';
+}
+
+function checkCancelFields() {
+    const status = document.getElementById('modal_status').value;
+    const payStatus = document.getElementById('modal_pay_status').value;
+    const shipStatus = document.getElementById('modal_ship_status').value;
+    const cancelReasonContainer = document.getElementById('cancel_reason_container');
+    const failedDeliveryReasonContainer = document.getElementById('failed_delivery_reason_container');
+    const cancelReasonInput = document.getElementById('modal_cancel_reason');
+    const failedDeliveryReasonInput = document.getElementById('modal_failed_delivery_reason');
+
+    // Reset: ẩn cả hai ô, bỏ required
+    cancelReasonContainer.style.display = 'none';
+    cancelReasonInput.required = false;
+    failedDeliveryReasonContainer.style.display = 'none';
+    failedDeliveryReasonInput.required = false;
+
+    // Nếu là hủy đơn thì chỉ hiện ô lý do hủy, ẩn ô lý do giao không thành công
+    if (status === 'cancelled' || payStatus === '2') {
+        cancelReasonContainer.style.display = 'block';
+        cancelReasonInput.required = true;
+    } else if (shipStatus === 'failed_delivery') {
+        // Nếu là giao thất bại thì chỉ hiện ô lý do giao không thành công, ẩn ô lý do hủy
+        failedDeliveryReasonContainer.style.display = 'block';
+        failedDeliveryReasonInput.required = true;
+    }
+}
+
+function disableInvalidStatusOptions(originalStatus) {
+    const select = document.getElementById('modal_status');
+    const statusOrder = { 'pending': 0, 'processing': 1, 'completed': 2, 'cancelled': 3 };
+
+    [...select.options].forEach(option => {
+        const val = option.value;
+        option.disabled = false;
+
+        if (originalStatus === 'cancelled' && val !== 'cancelled') {
+            option.disabled = true;
+        } else if (originalStatus === 'completed' && val !== 'completed') {
+            option.disabled = true;
+        } else if (
+            statusOrder[val] < statusOrder[originalStatus] && val !== 'cancelled'
+        ) {
+            option.disabled = true;
+        } else if (
+            statusOrder[val] > statusOrder[originalStatus] + 1 && val !== 'cancelled'
+        ) {
+            option.disabled = true;
+        }
+    });
+}
+
+function disableInvalidPayStatusOptions(originalPayStatus) {
+    const select = document.getElementById('modal_pay_status');
+    const original = parseInt(originalPayStatus);
+
+    [...select.options].forEach(option => {
+        const val = parseInt(option.value);
+        option.disabled = false;
+
+        if (original === 1 && val !== 1) {
+            option.disabled = true;
+        }
+    });
+}
+
+function disableInvalidShipStatusOptions(originalShipStatus) {
+    const select = document.getElementById('modal_ship_status');
+    const status = document.getElementById('modal_status').value;
+    const order = [
+        'pending_delivery',
+        'out_for_delivery',
+        'delivered',
+        'failed_delivery',
+        'returned_to_store'
+    ];
+    const currentIdx = order.indexOf(originalShipStatus);
+
+    if (originalShipStatus === 'out_for_delivery') {
+        select.disabled = false;
+        [...select.options].forEach(option => {
+            // Chỉ cho phép chọn 'out_for_delivery', 'delivered', 'failed_delivery'
+            option.disabled = !['out_for_delivery','delivered','failed_delivery'].includes(option.value);
+        });
+        return;
+    } else {
+        select.disabled = false;
+    }
+
+    // Nếu đơn chưa được xác nhận (không phải processing), không cho chọn out_for_delivery
+    if (status !== 'processing') {
+        [...select.options].forEach(option => {
+            if (option.value === 'out_for_delivery') {
+                option.disabled = true;
+            }
+        });
+    }
+
+    [...select.options].forEach((option, idx) => {
+        if (idx < currentIdx) {
+            option.disabled = true;
+        }
+        if (idx > currentIdx + 1) {
+            option.disabled = true;
+        }
+    });
+}
+
+function syncShipStatusHidden() {
+    document.getElementById('modal_ship_status_hidden').value = document.getElementById('modal_ship_status').value;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('modal_ship_status').addEventListener('change', function() {
+        syncShipStatusHidden();
         checkCancelFields();
-        statusSelect.addEventListener('change', checkCancelFields);
-        payStatusSelect.addEventListener('change', checkCancelFields);
+    });
 
-        var orderId = btn.getAttribute('data-id');
-        fetch('/admin/order/json/' + orderId)
-            .then(response => response.json())
-            .then(data => {
-                const tbody = document.querySelector('#order_products_table tbody');
-                tbody.innerHTML = '';
-                if (data.details && Array.isArray(data.details) && data.details.length > 0) {
-                    data.details.forEach(product => {
-                        const row = `<tr>
-                            <td>${product.product_name ?? ''}</td>
-                            <td>${product.product_image ? `<img src='/storage/uploads/${product.product_image}' width='50'>` : ''}</td>
-                            <td>${product.size ?? ''}</td>
-                            <td>${product.topping ? `<p>${product.topping}</p>` : `<span style="color: red;">Không chọn</span>`}</td>
-                            <td>${product.quantity ?? ''}</td>
-                            <td>${product.total !== undefined ? parseInt(product.total).toLocaleString('vi-VN') + ' đ' : ''}</td>
-                        </tr>`;
-                        tbody.innerHTML += row;
-                    });
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Không có sản phẩm</td></tr>';
-                }
-            })
-            .catch(() => {
-                document.querySelector('#order_products_table tbody').innerHTML =
-                    '<tr><td colspan="8" style="text-align:center; color:red;">Lỗi lấy dữ liệu</td></tr>';
-            });
-
-        // Xử lý trạng thái giao hàng không khả dụng nếu phone == 'N/A'
-        if(btn.getAttribute('data-phone')=='N/A'){
-            const shipStatusSelect = document.getElementById('modal_ship_status');
-            let naOption = shipStatusSelect.querySelector('option[value="not_applicable"]');
-            if(!naOption){
-                naOption = document.createElement('option');
-                naOption.value = 'not_applicable';
-                naOption.text = 'Không khả dụng';
-                shipStatusSelect.appendChild(naOption);
-            }
-            shipStatusSelect.value = 'not_applicable';
-            shipStatusSelect.disabled = true;
-        } else {
-            document.getElementById('modal_ship_status').value = btn.getAttribute('data-ship_status');
-            const originalShipStatus = btn.getAttribute('data-ship_status');
-            disableInvalidShipStatusOptions(originalShipStatus);
-            syncShipStatusHidden();
-            document.getElementById('modal_ship_status').disabled = false;
-        }
-    }
-
-    function closeOrderModal() {
-        document.getElementById('orderModal').style.display = 'none';
-        const statusSelect = document.getElementById('modal_status');
-        const payStatusSelect = document.getElementById('modal_pay_status');
-        statusSelect.replaceWith(statusSelect.cloneNode(true));
-        payStatusSelect.replaceWith(payStatusSelect.cloneNode(true));
-    }
-
-    function checkCancelFields() {
-        const status = document.getElementById('modal_status').value;
-        const payStatus = document.getElementById('modal_pay_status').value;
-        const cancelReasonContainer = document.getElementById('cancel_reason_container');
-
-        if (status === 'cancelled' || payStatus === '2') {
-            cancelReasonContainer.style.display = 'block';
-            document.getElementById('modal_cancel_reason').required = true;
-        } else {
-            cancelReasonContainer.style.display = 'none';
-            document.getElementById('modal_cancel_reason').required = false;
-        }
-    }
-
-    function disableInvalidStatusOptions(originalStatus) {
-        const select = document.getElementById('modal_status');
-        const statusOrder = { 'pending': 0, 'processing': 1, 'completed': 2, 'cancelled': 3 };
-
-        [...select.options].forEach(option => {
-            const val = option.value;
-            option.disabled = false;
-
-            if (originalStatus === 'cancelled' && val !== 'cancelled') {
-                option.disabled = true;
-            } else if (originalStatus === 'completed' && val !== 'completed') {
-                option.disabled = true;
-            } else if (
-                statusOrder[val] < statusOrder[originalStatus] && val !== 'cancelled'
-            ) {
-                option.disabled = true;
-            } else if (
-                statusOrder[val] > statusOrder[originalStatus] + 1 && val !== 'cancelled'
-            ) {
-                option.disabled = true;
-            }
-        });
-    }
-
-    function disableInvalidPayStatusOptions(originalPayStatus) {
-        const select = document.getElementById('modal_pay_status');
-        const original = parseInt(originalPayStatus);
-
-        [...select.options].forEach(option => {
-            const val = parseInt(option.value);
-            option.disabled = false;
-
-            if (original === 1 && val !== 1) {
-                option.disabled = true;
-            }
-        });
-    }
-
-    function disableInvalidShipStatusOptions(originalShipStatus) {
-        const select = document.getElementById('modal_ship_status');
-        const status = document.getElementById('modal_status').value;
-        const order = [
-            'pending_delivery',
-            'out_for_delivery',
-            'delivered',
-            'failed_delivery',
-            'returned_to_store'
-        ];
-        const currentIdx = order.indexOf(originalShipStatus);
-
-        // Nếu đã giao thì disable toàn bộ select
-        if (originalShipStatus === 'delivered') {
-            select.disabled = true;
-            [...select.options].forEach(option => {
-                option.disabled = true;
-            });
-            return;
-        } else if (originalShipStatus === 'out_for_delivery') {
-            select.disabled = false;
-            [...select.options].forEach(option => {
-                // Chỉ cho phép chọn 'out_for_delivery', 'delivered', 'failed_delivery'
-                option.disabled = !['out_for_delivery','delivered','failed_delivery'].includes(option.value);
-            });
-            return;
-        } else {
-            select.disabled = false;
-        }
-
-        // Nếu đơn chưa được xác nhận (không phải processing), không cho chọn out_for_delivery
-        if (status !== 'processing') {
-            [...select.options].forEach(option => {
-                if (option.value === 'out_for_delivery') {
-                    option.disabled = true;
-                }
-            });
-        }
-
-        [...select.options].forEach((option, idx) => {
-            if (idx < currentIdx) {
-                option.disabled = true;
-            }
-            if (idx > currentIdx + 1) {
-                option.disabled = true;
-            }
-        });
-    }
-
-    function syncShipStatusHidden() {
-        document.getElementById('modal_ship_status_hidden').value = document.getElementById('modal_ship_status').value;
-    }
-
-    document.getElementById('modal_ship_status').addEventListener('change', syncShipStatusHidden);
-
-    // Thêm event listener cho việc thay đổi trạng thái đơn
     document.getElementById('modal_status').addEventListener('change', function() {
         const status = this.value;
         const shipStatusSelect = document.getElementById('modal_ship_status');
 
-        // Nếu chuyển từ trạng thái khác sang "Đã xác nhận"
+        // Nếu chuyển sang "Đã xác nhận", cho phép chọn "Đang giao"
         if (status === 'processing') {
-            // Cho phép chọn "Đang giao"
             [...shipStatusSelect.options].forEach(option => {
                 if (option.value === 'out_for_delivery') {
                     option.disabled = false;
                 }
             });
         } else {
-            // Nếu chuyển từ "Đã xác nhận" sang trạng thái khác
-            // và đang ở trạng thái "Đang giao" thì chuyển về "Chờ giao"
-            if (shipStatusSelect.value === 'out_for_delivery') {
-                shipStatusSelect.value = 'pending_delivery';
-            }
-            // Disable option "Đang giao"
+            // Disable option "Đang giao" nếu không phải "Đã xác nhận"
             [...shipStatusSelect.options].forEach(option => {
                 if (option.value === 'out_for_delivery') {
                     option.disabled = true;
@@ -706,25 +725,71 @@
             });
         }
 
-        
-        // Đảm bảo có thể chọn ngay option 'Đang giao' khi chuyển sang 'Đã xác nhận'
-
         disableInvalidShipStatusOptions(shipStatusSelect.value);
         syncShipStatusHidden();
+        checkCancelFields();
     });
 
-    function validateForm() {
-        const status = document.getElementById('modal_status').value;
-        const payStatus = document.getElementById('modal_pay_status').value;
-        const cancelReason = document.getElementById('modal_cancel_reason').value;
+    document.getElementById('modal_pay_status').addEventListener('change', function() {
+        checkCancelFields();
+    });
+});
 
-        if ((status === 'cancelled' || payStatus === '2') && !cancelReason.trim()) {
-            alert('Vui lòng nhập lý do hủy đơn hàng');
-            document.getElementById('modal_cancel_reason').focus();
+function validateForm() {
+    const status = document.getElementById('modal_status').value;
+    const payStatus = document.getElementById('modal_pay_status').value;
+    const cancelReason = document.getElementById('modal_cancel_reason').value;
+    const shipStatus = document.getElementById('modal_ship_status').value;
+    const failedDeliveryReason = document.getElementById('modal_failed_delivery_reason').value;
+    const phone = document.getElementById('modal_phone').value;
+
+    // Nếu KHÔNG phải đơn nhân viên thì mới validate ship_status
+    if (phone !== 'Nhân viên thu ngân' && shipStatus !== 'not_applicable') {
+        // Validate: Đơn đã xác nhận phải có trạng thái giao hàng là Đang giao
+        if (status === 'processing' && shipStatus !== 'out_for_delivery') {
+            alert('Khi đơn đã xác nhận, bạn phải chọn trạng thái giao hàng là Đang giao.');
             return false;
         }
-
-        return true;
+        // Validate: Không thể chọn trạng thái giao hàng là Giao thất bại khi đơn đã hoàn thành
+        if (status === 'completed' && shipStatus === 'failed_delivery') {
+            alert('Không thể chọn trạng thái giao hàng là Giao thất bại khi đơn đã hoàn thành.');
+            return false;
+        }
+        // Validate: Đơn đã hoàn thành phải có trạng thái giao hàng là Đã giao
+        if (status === 'completed' && shipStatus !== 'delivered') {
+            alert('Khi đơn đã hoàn thành, bạn phải chọn trạng thái giao hàng là Đã giao.');
+            return false;
+        }
     }
+
+    if ((status === 'cancelled' || payStatus === '2') && !cancelReason.trim()) {
+        alert('Vui lòng nhập lý do hủy đơn hàng');
+        document.getElementById('modal_cancel_reason').focus();
+        return false;
+    }
+    if (shipStatus === 'failed_delivery' && !failedDeliveryReason.trim()) {
+        alert('Vui lòng nhập lý do giao không thành công');
+        document.getElementById('modal_failed_delivery_reason').focus();
+        return false;
+    }
+    // Khi chọn giao thất bại, copy lý do sang cancel_reason để backend nhận được
+    if (shipStatus === 'failed_delivery') {
+        document.getElementById('modal_cancel_reason').value = failedDeliveryReason;
+    }
+
+    // Validate cho đơn nhân viên: Hoàn thành phải là đã thanh toán
+    if ((phone === 'Nhân viên thu ngân' || shipStatus === 'not_applicable') && status === 'completed' && payStatus !== '1') {
+        alert('Đơn tại quầy hoàn thành phải có trạng thái thanh toán là Đã thanh toán.');
+        return false;
+    }
+
+    // Validate: Nếu hoàn thành và đã giao thì phải chọn đã thanh toán
+    if (status === 'completed' && shipStatus === 'delivered' && payStatus !== '1') {
+        alert('Đơn hoàn thành và đã giao phải có trạng thái thanh toán là Đã thanh toán.');
+        return false;
+    }
+
+    return true;
+}
 </script>
 
