@@ -28,25 +28,29 @@ class StaffController extends Controller
     public function ajaxShow($id)
     {
         $product = SanPham::where('id', $id)->first();
+        $category = DanhMuc::where('id', $product->id_danhmuc)->first();
 
-        $sizes = \DB::table('product_attributes')
-            ->where('product_id', $id)
-            ->select('id', 'size', 'price')
-            ->get();
-
-        $toppings = \DB::table('product_topping')
-            ->where('product_id', $id)
-            ->select('id', 'topping', 'price')
-            ->get();
+        $toppings = [];
+        if ($category->role != 0) {
+            $toppings = \DB::table('product_topping')
+                ->where('product_id', $id)
+                ->select('id', 'topping', 'price')
+                ->get();
+        }
 
         return response()->json([
             'id' => $product->id,
             'name' => $product->name,
             'image' => asset('storage/uploads/' . $product->image),
             'mota' => $product->mota,
-            'sizes' => $sizes,
+            'sizes' => \DB::table('product_attributes')
+                ->where('product_id', $id)
+                ->select('id', 'size', 'price')
+                ->get(),
             'toppings' => $toppings,
+            'no_topping' => $category->role == 0
         ]);
+
     }
 
     // use DB, Order, OrderDetail, ...
@@ -130,7 +134,7 @@ class StaffController extends Controller
                 // Xử lý trường hợp nhiều topping (ngăn cách bởi dấu phẩy)
                 $toppingIds = explode(',', $detail->topping_id);
                 $toppings = [];
-                
+
                 foreach($toppingIds as $id) {
                     $id = trim($id); // Loại bỏ khoảng trắng
                     if($id) {
@@ -140,7 +144,7 @@ class StaffController extends Controller
                         }
                     }
                 }
-                
+
                 $detail->topping_list = $toppings;
             } else {
                 $detail->topping_list = [];
@@ -171,7 +175,7 @@ class StaffController extends Controller
     public function updateStatus(Request $request, $id)
 {
     $order = Order::findOrFail($id);
-    $oldStatus = $order->status; 
+    $oldStatus = $order->status;
 
     $newStatus = $request->input('status');
     $order->status = $newStatus;
