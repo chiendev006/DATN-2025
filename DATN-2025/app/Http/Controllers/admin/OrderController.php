@@ -34,59 +34,7 @@ class OrderController extends Controller
             $ship_status = 'not_applicable';
         }
 
-        $autoAdjustMsg = null;
-        $originalStatus = $status;
-        $originalShipStatus = $ship_status;
-
-        // Đồng bộ logic status và ship_status
-        if ($status === 'pending') {
-            if ($ship_status === 'out_for_delivery') {
-                $status = 'processing';
-                $autoAdjustMsg = 'Hệ thống tự động chuyển trạng thái đơn sang "Đã xác nhận" vì trạng thái giao hàng là "Đang giao".';
-            } elseif ($ship_status === 'delivered') {
-                $status = 'completed';
-                $autoAdjustMsg = 'Hệ thống tự động chuyển trạng thái đơn sang "Hoàn thành" vì trạng thái giao hàng là "Đã giao".';
-            } elseif (in_array($ship_status, ['failed_delivery', 'returned_to_store'])) {
-                $status = 'cancelled';
-                $autoAdjustMsg = 'Hệ thống tự động chuyển trạng thái đơn sang "Đã hủy" vì trạng thái giao hàng là "Giao thất bại" hoặc "Đã trả hàng".';
-            }
-        }
-        if ($status === 'processing') {
-            if ($ship_status === 'delivered') {
-                $status = 'completed';
-                $autoAdjustMsg = 'Hệ thống tự động chuyển trạng thái đơn sang "Hoàn thành" vì trạng thái giao hàng là "Đã giao".';
-            } elseif (in_array($ship_status, ['failed_delivery', 'returned_to_store'])) {
-                $status = 'cancelled';
-                $autoAdjustMsg = 'Hệ thống tự động chuyển trạng thái đơn sang "Đã hủy" vì trạng thái giao hàng là "Giao thất bại" hoặc "Đã trả hàng".';
-            }
-        }
-        if ($status === 'completed') {
-            if ($ship_status !== 'delivered') {
-                $ship_status = 'delivered';
-                $autoAdjustMsg = 'Hệ thống tự động chuyển trạng thái giao hàng sang "Đã giao" vì trạng thái đơn là "Hoàn thành".';
-            }
-        }
-        if ($status === 'cancelled') {
-            if (!in_array($ship_status, ['failed_delivery', 'returned_to_store'])) {
-                $ship_status = 'failed_delivery';
-                $autoAdjustMsg = 'Hệ thống tự động chuyển trạng thái giao hàng sang "Giao thất bại" vì trạng thái đơn là "Đã hủy".';
-            }
-            // Nếu đã thanh toán thì chuyển sang hoàn tiền
-            if ($order->pay_status == '1') {
-                $order->pay_status = '3'; // Hoàn tiền
-                $autoAdjustMsg .= ' Đơn đã thanh toán, chuyển trạng thái sang "Hoàn tiền".';
-            } else if ($order->pay_status == '0') { // Nếu chưa thanh toán
-                $order->pay_status = '2'; // Đã hủy
-                $autoAdjustMsg .= ' Đơn chưa thanh toán, chuyển trạng thái sang "Đã hủy".';
-            }
-        }
-
-        // Tự động cập nhật trạng thái thanh toán nếu đơn đã hoàn thành và đã giao
-        if ($status === 'completed' && $ship_status === 'delivered' && $order->pay_status != '1') {
-            $order->pay_status = '1';
-            $autoAdjustMsg .= ' Hệ thống tự động chuyển trạng thái thanh toán sang "Đã thanh toán" vì đơn đã giao và hoàn thành.';
-        }
-
+        // Không còn tự động đồng bộ status/pay_status/ship_status nữa
         $order->status = $status;
         $order->ship_status = $ship_status;
 
@@ -105,9 +53,6 @@ class OrderController extends Controller
 
         $order->save();
         $msg = 'Cập nhật đơn hàng thành công!';
-        if ($autoAdjustMsg) {
-            $msg .= ' ' . $autoAdjustMsg;
-        }
         return redirect()->route('admin.order.index')->with('success', $msg);
     }
 

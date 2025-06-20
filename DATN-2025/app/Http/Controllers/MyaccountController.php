@@ -63,12 +63,10 @@ public function cancelOrder($id, Request $request)
 
     $order->status = 'cancelled';
     $order->ship_status = 'failed_delivery';
-    if ($order->payment_method === 'cash') {
-        $order->pay_status = '2';
-    } else if ($order->pay_status === '1') {
-        $order->pay_status = '3'; 
+    if ($order->pay_status === '1') {
+        $order->pay_status = '3'; // Hoàn tiền
     } else {
-        $order->pay_status = '2';
+        $order->pay_status = '2'; // Đã hủy
     }
     $order->cancel_reason = '(Khách hàng hủy) ' . $reason;
     $order->save();
