@@ -148,7 +148,7 @@ class VNPayController extends Controller
                     $order->status =  'pending';
                     $order->total = $vnpOrder['total'];
                     $order->shipping_fee = $vnpOrder['shipping_fee'];
-                    $order->pay_status = 1;
+                    $order->pay_status = '1';
                     $order->coupon_summary = $vnpOrder['coupon_summary'];
                     $order->coupon_total_discount = $vnpOrder['coupon_total_discount'];
                     $order->note = $vnpOrder['note'];

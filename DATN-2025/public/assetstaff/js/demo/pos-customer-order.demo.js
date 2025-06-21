@@ -91,18 +91,22 @@ function updateTotalPrice() {
 
                     // --- Render topping ---
                     var toppingHtml = '';
-                    data.toppings.forEach(function(topping, index) {
-                        toppingHtml += `
-                        <div class="option">
-                            <input type="checkbox" name="addon[${topping.id}]" value="${topping.id}"
-                                class="option-input" id="addon${index}" data-topping-name="${topping.topping}" data-price="${parseFloat(topping.price)}"/>
-                            <label class="option-label" for="addon${index}">
-                                <span class="option-text">${topping.topping}</span>
-                                <span class="option-price">+${parseFloat(topping.price).toFixed(2)}</span>
-                            </label>
-                        </div>
-                    `;
-                    });
+                    if (data.no_topping) {
+                        toppingHtml = '<div class="text-danger">Sản phẩm này không kèm topping</div>';
+                    } else {
+                        data.toppings.forEach(function(topping, index) {
+                            toppingHtml += `
+                            <div class="option">
+                                <input type="checkbox" name="addon[${topping.id}]" value="${topping.id}"
+                                    class="option-input" id="addon${index}" data-topping-name="${topping.topping}" data-price="${parseFloat(topping.price)}"/>
+                                <label class="option-label" for="addon${index}">
+                                    <span class="option-text">${topping.topping}</span>
+                                    <span class="option-price">+${parseFloat(topping.price).toFixed(2)}</span>
+                                </label>
+                            </div>
+                        `;
+                        });
+                    }
                     $('#modalPosItem .topping-list').html(toppingHtml);
 
                     // --- Đổ các thông tin khác ---

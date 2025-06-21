@@ -24,26 +24,36 @@ class OrderController extends Controller
     public function update(Request $request, $id)
     {
         $order = \App\Models\Order::findOrFail($id);
-        $order->pay_status = $request->input('pay_status');
+        $order->pay_status = (string) $request->input('pay_status');
         $oldStatus = $order->status;
-        $order->status = $request->input('status');
-        $order->ship_status = $request->input('ship_status_hidden', $request->input('ship_status'));
+        $status = $request->input('status');
+        $ship_status = $request->input('ship_status_hidden', $request->input('ship_status'));
 
-        if ($request->input('status') === 'cancelled') {
-        if ($order->cancel_reason && $oldStatus === 'cancelled') {
-        } else {
-            $cancelReason = $request->input('cancel_reason');
-            if (!str_contains($cancelReason, '(Admin hủy)')) {
-                $cancelReason = '(Admin hủy) ' . $cancelReason;
-            }
-            $order->cancel_reason = $cancelReason;
+        // Nếu là đơn nhân viên hoặc ship_status là 'na', set ship_status về 'not_applicable'
+        if (($order->phone == 'N/A') || $ship_status == 'na' || empty($ship_status)) {
+            $ship_status = 'not_applicable';
         }
-    } else {
+
+        // Không còn tự động đồng bộ status/pay_status/ship_status nữa
+        $order->status = $status;
+        $order->ship_status = $ship_status;
+
+        if ($status === 'cancelled') {
+            if ($order->cancel_reason && $oldStatus === 'cancelled') {
+            } else {
+                $cancelReason = $request->input('cancel_reason');
+                if (!str_contains($cancelReason, '(Admin hủy)')) {
+                    $cancelReason = '(Admin hủy) ' . $cancelReason;
+                }
+                $order->cancel_reason = $cancelReason;
+            }
+        } else {
             $order->cancel_reason = $request->input('cancel_reason');
         }
 
         $order->save();
-        return redirect()->route('admin.order.index')->with('success', 'Cập nhật đơn hàng thành công!');
+        $msg = 'Cập nhật đơn hàng thành công!';
+        return redirect()->route('admin.order.index')->with('success', $msg);
     }
 
    public function delete($id)
@@ -97,24 +107,24 @@ class OrderController extends Controller
     {
         $perPage = $request->input('per_page', 10);
         $query = Order::query()->select('orders.*');
-        $hasPayStatus = $request->filled('pay_status');
-        $hasStatus = $request->filled('status');
 
-        if ($hasPayStatus && $hasStatus) {
-            $query->where('pay_status', $request->input('pay_status'))
-                  ->where('status', $request->input('status'));
-        } elseif ($hasPayStatus) {
+        if ($request->filled('pay_status')) {
             $query->where('pay_status', $request->input('pay_status'));
-        } elseif ($hasStatus) {
+        }
+        if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
         }
+        if ($request->filled('ship_status')) {
+            $query->where('ship_status', $request->input('ship_status'));
+        }
+
         $orders = $query->paginate($perPage);
-        return view('admin.order.index', ['orders' => $orders]);
+        return view('admin.order.index', compact('orders'));
     }
 
     /**
      *
-     * 
+     *
      */
     public function searchByTransactionId(Request $request)
     {

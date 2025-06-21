@@ -16,29 +16,29 @@ class DanhmucController extends Controller
      */
     public function index(Request $request)
     {
-       $perPage = $request->input('per_page', 5);
-       $search = $request->input('search', '');
-       $filterType = $request->input('filter_type', '');
-       
-       $query = Danhmuc::query();
-       
-       // Lọc theo tên
-       if (!empty($search)) {
-           $query->where('name', 'like', '%' . $search . '%');
-       }
-       
-       // Lọc theo loại danh mục
-       if ($filterType !== '') {
-           $query->where('role', $filterType);
-       }
-       
-       $danhmuc = $query->paginate($perPage);
-       
-       return view('admin.danhmuc.index', [
-           'danhmuc' => $danhmuc,
-           'search' => $search,
-           'filterType' => $filterType
-       ]);
+        $perPage = $request->input('per_page', 5);
+        $search = $request->input('search', '');
+        $filterType = $request->input('filter_type', '');
+
+        $query = Danhmuc::query();
+
+        // Lọc theo tên
+        if (!empty($search)) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        // Lọc theo loại danh mục
+        if ($filterType !== '') {
+            $query->where('role', $filterType);
+        }
+
+        $danhmuc = $query->paginate($perPage);
+
+        return view('admin.danhmuc.index', [
+            'danhmuc' => $danhmuc,
+            'search' => $search,
+            'filterType' => $filterType
+        ]);
     }
 
     /**
@@ -87,12 +87,12 @@ class DanhmucController extends Controller
     {
         $danhmuc = Danhmuc::find($id);
         $danhmuc->has_topping = $danhmuc->role;
-        return view('admin.danhmuc.edit',['danhmuc'=>$danhmuc]);
+        return view('admin.danhmuc.edit', ['danhmuc' => $danhmuc]);
     }
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'name' => 'required|string|max:255|min:2|unique:danhmucs,name,' . $id,
