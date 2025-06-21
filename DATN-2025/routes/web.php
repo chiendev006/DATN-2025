@@ -1,41 +1,43 @@
 <?php
 
-use App\Http\Controllers\AboutController;
-use App\Http\Controllers\admin\AddressController;
-use App\Http\Controllers\admin\AdminStaffController;
-use App\Http\Controllers\admin\Product_attributesController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\admin\HomeController;
-use App\Http\Controllers\admin\DanhmucController;
-use App\Http\Controllers\admin\DanhmucBlogController;
-use App\Http\Controllers\admin\SanphamController;
-use App\Http\Controllers\admin\ProductImageController;
-use App\Http\Controllers\admin\ContactAdminController;
-use App\Http\Controllers\admin\SizeController;
-use App\Http\Controllers\admin\ToppingController;
-use App\Http\Controllers\admin\BlogsController;
-use App\Http\Controllers\AuthenticationController;
-use App\Http\Controllers\BlogController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\ServicesController;
-use App\Http\Controllers\ShowproductController;
-use App\Http\Controllers\ResetPasswordController;
-use App\Http\Controllers\admin\AuthController;
-use App\Http\Controllers\admin\CouponController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\admin\PayrollController;
-use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\MyaccountController;
-use App\Http\Controllers\OrderSearchController;
-use App\Http\Controllers\ShopController;
-use App\Http\Controllers\Staff\StaffController;
-use App\Http\Controllers\VNPayController;
-use App\Http\Controllers\Staff\AuthenController;
-use App\Http\Controllers\Staff\BartenderController;
-use App\Http\ViewComposers\CartComposer;
-use Illuminate\Support\Facades\Auth;
+        use App\Http\Controllers\AboutController;
+        use App\Http\Controllers\admin\AddressController;
+        use App\Http\Controllers\admin\AdminStaffController;
+        use App\Http\Controllers\admin\Product_attributesController;
+        use Illuminate\Support\Facades\Route;
+        use App\Http\Controllers\Controller;
+        use App\Http\Controllers\ContactController;
+        use App\Http\Controllers\admin\HomeController;
+        use App\Http\Controllers\admin\DanhmucController;
+        use App\Http\Controllers\admin\DanhmucBlogController;
+        use App\Http\Controllers\admin\SanphamController;
+        use App\Http\Controllers\admin\ProductImageController;
+        use App\Http\Controllers\admin\ContactAdminController;
+        use App\Http\Controllers\admin\SizeController;
+        use App\Http\Controllers\admin\ToppingController;
+        use App\Http\Controllers\admin\BlogsController;
+        use App\Http\Controllers\AuthenticationController;
+        use App\Http\Controllers\BlogController;
+        use App\Http\Controllers\CartController;
+        use App\Http\Controllers\ServicesController;
+        use App\Http\Controllers\ShowproductController;
+        use App\Http\Controllers\ResetPasswordController;
+        use App\Http\Controllers\admin\AuthController;
+        use App\Http\Controllers\admin\CouponController;
+        use App\Http\Controllers\OrderController;
+        use App\Http\Controllers\admin\PayrollController;
+        use App\Http\Controllers\CheckoutController;
+        use App\Http\Controllers\MyaccountController;
+        use App\Http\Controllers\OrderSearchController;
+        use App\Http\Controllers\ShopController;
+        use App\Http\Controllers\Staff\StaffController;
+        use App\Http\Controllers\VNPayController;
+        use App\Http\Controllers\Staff\AuthenController;
+        use App\Http\Controllers\Staff\BartenderController;
+        use App\Http\ViewComposers\CartComposer;
+        use Illuminate\Support\Facades\Auth;
+        use App\Http\Controllers\CommentController;
+
 
 
 
@@ -71,7 +73,10 @@ Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp');
 Route::get('/menu', [Controller::class, 'show'])->name('menu.show');
 Route::get('/menu/category/{categoryId}', [Controller::class, 'getCategoryProducts'])->name('menu.category');
 
-Route::post('comment', [Controller::class, 'postComment'])->name('comment.store');
+        Route::post('comment', [Controller::class, 'postComment'])->name('comment.store');
+        Route::get('/comment/{id}', [CommentController::class, 'index'])->name('comment.index');
+
+
 
 
 
