@@ -20,6 +20,7 @@ public function index(Request $request)
         'all' => Order::where('user_id', $userId)->count(),
         'pending' => Order::where('user_id', $userId)->where('status', 'pending')->count(),
         'processing' => Order::where('user_id', $userId)->where('status', 'processing')->count(),
+        'shipping' => Order::where('user_id', $userId)->where('status', 'shipping')->count(),
         'completed' => Order::where('user_id', $userId)->where('status', 'completed')->count(),
         'cancelled' => Order::where('user_id', $userId)->where('status', 'cancelled')->count(),
     ];
@@ -62,7 +63,6 @@ public function cancelOrder($id, Request $request)
     $reason = $request->input('cancel_reason', 'Người dùng không cung cấp lý do');
 
     $order->status = 'cancelled';
-    $order->ship_status = 'failed_delivery';
     if ($order->pay_status === '1') {
         $order->pay_status = '3'; // Hoàn tiền
     } else {

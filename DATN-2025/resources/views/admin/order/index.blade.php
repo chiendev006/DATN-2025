@@ -95,6 +95,7 @@
                                                         <option value="">Tất cả</option>
                                                         <option value="pending" {{ request('status')==='pending' ? 'selected' : '' }}>Chờ xử lý</option>
                                                         <option value="processing" {{ request('status')==='processing' ? 'selected' : '' }}>Đã xác nhận</option>
+                                                        <option value="shipping" {{ request('status')==='shipping' ? 'selected' : '' }}>Đang giao</option>
                                                         <option value="completed" {{ request('status')==='completed' ? 'selected' : '' }}>Hoàn thành</option>
                                                         <option value="cancelled" {{ request('status')==='cancelled' ? 'selected' : '' }}>Đã hủy</option>
                                                     </select></div>
@@ -106,16 +107,6 @@
                                                         <option value="2" {{ request('pay_status')==='2' ? 'selected' : '' }}>Đã hủy</option>
                                                         <option value="3" {{ request('pay_status')==='3' ? 'selected' : '' }}>Hoàn tiền</option>
                                                     </select></div>
-                                                    <div  class="field-wrapper">
-                                                        <div class="field-placeholder">Trạng giao hàng</div>
-                                                    <select name="ship_status" id="ship_status" class="form-control" style="width: 150px; margin-right: 12px;">
-                                                        <option value="">Tất cả</option>
-                                                        <option value="0" {{ request('ship_status')==='0' ? 'selected' : '' }}>Chờ giao</option>
-                                                        <option value="1" {{ request('ship_status')==='1' ? 'selected' : '' }}>Đang giao</option>
-                                                        <option value="2" {{ request('ship_status')==='2' ? 'selected' : '' }}>Đã giao</option>
-                                                        <option value="3" {{ request('ship_status')==='3' ? 'selected' : '' }}>Giao thất bại</option>
-                                                        <option value="4" {{ request('ship_status')==='4' ? 'selected' : '' }}>Trả hàng</option>
-                                                    </select></div>
                                                     <button style="margin-top: -8px;" type="submit" class="btn btn-primary">Lọc</button>
                                                    <div  class="field-wrapper">
                                                    <div class="field-placeholder">Đơn/trang</div>
@@ -126,7 +117,7 @@
                                                         <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
                                                         <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
                                                     </select>
-                                                    @foreach(request()->except(['per_page','page','pay_status','status','ship_status']) as $key => $val)
+                                                    @foreach(request()->except(['per_page','page','pay_status','status']) as $key => $val)
                                                         <input type="hidden" name="{{ $key }}" value="{{ $val }}">
                                                     @endforeach
                                                     </div>
@@ -150,7 +141,6 @@
                                         <th>Số điện thoại</th>
                                         <th>Trạng thái</th>
                                         <th>Trạng thái thanh toán</th>
-                                        <th>Trạng thái giao hàng</th>
                                         <th>Tổng tiền</th>
                                         <th>Ghi chú</th>
                                         <th>Lí do hủy</th>
@@ -161,7 +151,7 @@
                                 <tbody>
                                   @if($orders->isEmpty())
                                   <tr>
-                                    <td colspan="11" class="text-center">Không có dữ liệu</td>
+                                    <td colspan="9" class="text-center">Không có dữ liệu</td>
                                   </tr>
                                   @else
                                   @foreach ($orders as $key => $order)
@@ -174,13 +164,15 @@
                                      <td>{{ $order->phone }}</td>
                                      @endif
                                         <td>
-                                            @if ($order->status == 'pending' || $order->status == 0)
+                                            @if ($order->status == 'pending')
                                                 <span style="color: orange;">Chờ xử lý</span>
-                                            @elseif ($order->status == 'processing' || $order->status == 1)
+                                            @elseif ($order->status == 'processing')
                                                 <span style="color: gray;">Đã xác nhận</span>
-                                            @elseif ($order->status == 'completed' || $order->status == 3)
+                                            @elseif ($order->status == 'shipping')
+                                                <span style="color: blue;">Đang giao</span>
+                                            @elseif ($order->status == 'completed')
                                                 <span style="color: green;">Hoàn thành</span>
-                                            @elseif ($order->status == 'cancelled' || $order->status == 4)
+                                            @elseif ($order->status == 'cancelled')
                                                 <span style="color: red;">Đã hủy</span>
                                             @else
                                                 <span>{{ $order->status }}</span>
@@ -197,31 +189,6 @@
                                                 <span style="color: #e67e22;">Hoàn tiền</span>
                                             @else
                                                 <span>{{ $order->pay_status }}</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($order->ship_status == 'not_applicable' || $order->phone == 'N/A')
-                                                <span style="color: #888;">Không khả dụng</span>
-                                            @else
-                                                @switch($order->ship_status)
-                                                    @case('pending_delivery')
-                                                        <span style="color: orange;">Chờ giao</span>
-                                                        @break
-                                                    @case('out_for_delivery')
-                                                        <span style="color: blue;">Đang giao</span>
-                                                        @break
-                                                    @case('delivered')
-                                                        <span style="color: green;">Đã giao</span>
-                                                        @break
-                                                    @case('failed_delivery')
-                                                        <span style="color: red;">Giao thất bại</span>
-                                                        @break
-                                                    @case('returned_to_store')
-                                                        <span style="color: gray;">Đã trả hàng</span>
-                                                        @break
-                                                    @default
-                                                        <span>{{ $order->ship_status }}</span>
-                                                @endswitch
                                             @endif
                                         </td>
                                          <td>{{ number_format($order->total, 0, ',', '.') }} đ</td>
@@ -241,7 +208,7 @@
                                                 data-email="{{ $order->email }}"
                                                 data-payment_method="{{ $order->payment_method }}"
                                                 data-name="{{ $order->name }}"
-                                                data-status="@if ($order->status == 'pending' || $order->status == 0)Chờ xử lý@elseif ($order->status == 'processing' || $order->status == 1)Đã xác nhận @elseif ($order->status == 'completed' || $order->status == 3)Hoàn thành @elseif ($order->status == 'cancelled' || $order->status == 4)Đã hủy @else{{ $order->status }}@endif"
+                                                data-status="{{ $order->status }}"
                                                 data-total="{{ number_format($order->total, 0, ',', '.') }} đ"
                                                 data-pay_status="{{ $order->pay_status }}"
                                                 data-created_at="{{ $order->created_at->format('d/m/Y') }}"
@@ -250,7 +217,6 @@
                                                 data-address_detail="{{ $order->district_name ? $order->district_name . ', ' : '' }}{{ $order->address_detail }}"
                                                 data-product_total="{{ number_format(($order->total ?? 0) - ($order->shipping_fee ?? 0) + ($order->coupon_total_discount ?? 0), 0, ',', '.') }} đ"
                                                 data-cancel_reason="{{ $order->cancel_reason }}"
-                                                data-ship_status="{{ $order->ship_status }}"
                                             >Xem</button>
 
                                             </div>
@@ -306,6 +272,7 @@
         <select name="status" id="modal_status" class="form-control">
          <option value="pending">Chờ xử lý</option>
          <option value="processing">Đã xác nhận</option>
+         <option value="shipping">Đang giao</option>
          <option value="completed">Hoàn thành</option>
          <option value="cancelled">Đã hủy</option>
         </select>
@@ -357,21 +324,6 @@
                 <input type="text" class="form-control" name="created_at" id="modal_created_at" readonly />
       </div>
       </div>
-
-      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
-      <div style="margin-bottom:10px;">
-        <div class="field-placeholder">Trạng thái giao hàng</div>
-        <select name="ship_status" id="modal_ship_status" class="form-control">
-          <option value="pending_delivery">Chờ giao</option>
-          <option value="out_for_delivery">Đang giao</option>
-          <option value="delivered">Đã giao</option>
-          <option value="failed_delivery">Giao thất bại</option>
-          <option value="returned_to_store">Đã trả hàng</option>
-          <option value="na" style="display:none;">Không khả dụng</option>
-        </select>
-      </div>
-      </div>
-      <input type="hidden" name="ship_status_hidden" id="modal_ship_status_hidden" />
 
       <!-- Bảng sản phẩm -->
       <div class="field-wrapper col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12  ">
@@ -434,12 +386,6 @@
             <input type="text" class="form-control" name="cancel_reason" id="modal_cancel_reason" />
         </div>
       </div>
-      <div class="field-wrapper col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" id="failed_delivery_reason_container" style="display:none;">
-        <div style="margin-bottom:10px;">
-            <div class="field-placeholder">Lý do giao không thành công <span style="color:red;">*</span></div>
-            <input type="text" class="form-control" name="failed_delivery_reason" id="modal_failed_delivery_reason" />
-        </div>
-      </div>
 
       <button type="submit" class="btn-action btn-view">Cập nhật đơn hàng</button>
         </div>
@@ -447,7 +393,7 @@
     </form>
   </div>
 </div>
-<<script>
+<script>
 
 function resetDisableOptions() {
     // Enable all options for status
@@ -457,13 +403,6 @@ function resetDisableOptions() {
     // Enable all options for pay_status
     const payStatusSelect = document.getElementById('modal_pay_status');
     if (payStatusSelect) [...payStatusSelect.options].forEach(option => option.disabled = false);
-
-    // Enable all options for ship_status
-    const shipStatusSelect = document.getElementById('modal_ship_status');
-    if (shipStatusSelect) {
-        [...shipStatusSelect.options].forEach(option => option.disabled = false);
-        shipStatusSelect.disabled = false;
-    }
 }
 
 function openOrderModal(btn) {
@@ -471,29 +410,30 @@ function openOrderModal(btn) {
     document.getElementById('orderModal').style.display = 'block';
     document.getElementById('modal_id').value = btn.getAttribute('data-id');
     document.getElementById('modal_name').value = btn.getAttribute('data-name') + ' - ' + btn.getAttribute('data-id');
+    const statusSelect = document.getElementById('modal_status');
+
     if( btn.getAttribute('data-phone')=='N/A'){
         document.getElementById('modal_phone').value = 'Nhân viên thu ngân';
+        // Disable shipping option for staff orders
+        const shippingOption = statusSelect.querySelector('option[value="shipping"]');
+        if (shippingOption) {
+            shippingOption.disabled = true;
+        }
     } else {
         document.getElementById('modal_phone').value = btn.getAttribute('data-phone');
+        // Ensure shipping option is enabled for customer orders
+        const shippingOption = statusSelect.querySelector('option[value="shipping"]');
+        if (shippingOption) {
+            shippingOption.disabled = false;
+        }
     }
     document.getElementById('modal_email').value =  btn.getAttribute('data-email') ||'Nhân viên thu ngân';
     document.getElementById('modal_payment_method').value = btn.getAttribute('data-payment_method');
-    const statusSelect = document.getElementById('modal_status');
     const payStatusSelect = document.getElementById('modal_pay_status');
-    const originalStatusFromButton = btn.getAttribute('data-status');
+    const initialStatusValue = btn.getAttribute('data-status');
     const originalPayStatusFromButton = btn.getAttribute('data-pay_status');
-    let initialStatusValue;
-    if (originalStatusFromButton.includes('Chờ xử lý')) {
-        initialStatusValue = 'pending';
-    } else if (originalStatusFromButton.includes('Đã xác nhận')) {
-        initialStatusValue = 'processing';
-    } else if (originalStatusFromButton.includes('Hoàn thành')) {
-        initialStatusValue = 'completed';
-    } else if (originalStatusFromButton.includes('Đã hủy')) {
-        initialStatusValue = 'cancelled';
-    } else {
-        initialStatusValue = originalStatusFromButton;
-    }
+    document.getElementById('orderForm').setAttribute('data-original-pay-status', originalPayStatusFromButton);
+
     statusSelect.value = initialStatusValue;
     payStatusSelect.value = originalPayStatusFromButton;
     statusSelect.setAttribute('data-original-status', initialStatusValue);
@@ -563,26 +503,6 @@ function openOrderModal(btn) {
             document.querySelector('#order_products_table tbody').innerHTML =
                 '<tr><td colspan="8" style="text-align:center; color:red;">Lỗi lấy dữ liệu</td></tr>';
         });
-
-    // Xử lý trạng thái giao hàng không khả dụng nếu phone == 'N/A'
-    if(btn.getAttribute('data-phone')=='N/A'){
-        const shipStatusSelect = document.getElementById('modal_ship_status');
-        let naOption = shipStatusSelect.querySelector('option[value="not_applicable"]');
-        if(!naOption){
-            naOption = document.createElement('option');
-            naOption.value = 'not_applicable';
-            naOption.text = 'Không khả dụng';
-            shipStatusSelect.appendChild(naOption);
-        }
-        shipStatusSelect.value = 'not_applicable';
-        shipStatusSelect.disabled = true;
-    } else {
-        document.getElementById('modal_ship_status').value = btn.getAttribute('data-ship_status');
-        const originalShipStatus = btn.getAttribute('data-ship_status');
-        disableInvalidShipStatusOptions(originalShipStatus);
-        syncShipStatusHidden();
-        document.getElementById('modal_ship_status').disabled = false;
-    }
 }
 
 function closeOrderModal() {
@@ -592,48 +512,48 @@ function closeOrderModal() {
 function checkCancelFields() {
     const status = document.getElementById('modal_status').value;
     const payStatus = document.getElementById('modal_pay_status').value;
-    const shipStatus = document.getElementById('modal_ship_status').value;
     const cancelReasonContainer = document.getElementById('cancel_reason_container');
-    const failedDeliveryReasonContainer = document.getElementById('failed_delivery_reason_container');
     const cancelReasonInput = document.getElementById('modal_cancel_reason');
-    const failedDeliveryReasonInput = document.getElementById('modal_failed_delivery_reason');
 
-    // Reset: ẩn cả hai ô, bỏ required
+    // Reset: ẩn ô lý do hủy, bỏ required
     cancelReasonContainer.style.display = 'none';
     cancelReasonInput.required = false;
-    failedDeliveryReasonContainer.style.display = 'none';
-    failedDeliveryReasonInput.required = false;
 
-    // Nếu là hủy đơn thì chỉ hiện ô lý do hủy, ẩn ô lý do giao không thành công
+    // Nếu là hủy đơn thì hiện ô lý do hủy
     if (status === 'cancelled' || payStatus === '2') {
         cancelReasonContainer.style.display = 'block';
         cancelReasonInput.required = true;
-    } else if (shipStatus === 'failed_delivery') {
-        // Nếu là giao thất bại thì chỉ hiện ô lý do giao không thành công, ẩn ô lý do hủy
-        failedDeliveryReasonContainer.style.display = 'block';
-        failedDeliveryReasonInput.required = true;
     }
 }
 
 function disableInvalidStatusOptions(originalStatus) {
     const select = document.getElementById('modal_status');
-    const statusOrder = { 'pending': 0, 'processing': 1, 'completed': 2, 'cancelled': 3 };
+    const statusOrder = { 'pending': 0, 'processing': 1, 'shipping': 2, 'completed': 3, 'cancelled': 4 };
+    const phone = document.getElementById('modal_phone').value;
+    const isStaffOrder = (phone === 'Nhân viên thu ngân');
 
     [...select.options].forEach(option => {
         const val = option.value;
-        option.disabled = false;
+        option.disabled = false; // Reset first
 
-        if (originalStatus === 'cancelled' && val !== 'cancelled') {
+        // Final states: cannot be changed from
+        if (originalStatus === 'completed' || originalStatus === 'cancelled') {
+            if (val !== originalStatus) {
+                option.disabled = true;
+            }
+            return; // Go to next option in loop
+        }
+
+        // Cannot go backwards
+        if (statusOrder[val] < statusOrder[originalStatus] && val !== 'cancelled') {
             option.disabled = true;
-        } else if (originalStatus === 'completed' && val !== 'completed') {
-            option.disabled = true;
-        } else if (
-            statusOrder[val] < statusOrder[originalStatus] && val !== 'cancelled'
-        ) {
-            option.disabled = true;
-        } else if (
-            statusOrder[val] > statusOrder[originalStatus] + 1 && val !== 'cancelled'
-        ) {
+        }
+
+        // Prevent jumping states, with an exception for staff orders
+        const isJumping = statusOrder[val] > statusOrder[originalStatus] + 1;
+        const isAllowedJump = isStaffOrder && originalStatus === 'processing' && val === 'completed';
+
+        if (isJumping && !isAllowedJump && val !== 'cancelled') {
             option.disabled = true;
         }
     });
@@ -646,87 +566,11 @@ function disableInvalidPayStatusOptions(originalPayStatus) {
     [...select.options].forEach(option => {
         const val = parseInt(option.value);
         option.disabled = false;
-
-        if (original === 1 && val !== 1) {
-            option.disabled = true;
-        }
     });
-}
-
-function disableInvalidShipStatusOptions(originalShipStatus) {
-    const select = document.getElementById('modal_ship_status');
-    const status = document.getElementById('modal_status').value;
-    const order = [
-        'pending_delivery',
-        'out_for_delivery',
-        'delivered',
-        'failed_delivery',
-        'returned_to_store'
-    ];
-    const currentIdx = order.indexOf(originalShipStatus);
-
-    if (originalShipStatus === 'out_for_delivery') {
-        select.disabled = false;
-        [...select.options].forEach(option => {
-            // Chỉ cho phép chọn 'out_for_delivery', 'delivered', 'failed_delivery'
-            option.disabled = !['out_for_delivery','delivered','failed_delivery'].includes(option.value);
-        });
-        return;
-    } else {
-        select.disabled = false;
-    }
-
-    // Nếu đơn chưa được xác nhận (không phải processing), không cho chọn out_for_delivery
-    if (status !== 'processing') {
-        [...select.options].forEach(option => {
-            if (option.value === 'out_for_delivery') {
-                option.disabled = true;
-            }
-        });
-    }
-
-    [...select.options].forEach((option, idx) => {
-        if (idx < currentIdx) {
-            option.disabled = true;
-        }
-        if (idx > currentIdx + 1) {
-            option.disabled = true;
-        }
-    });
-}
-
-function syncShipStatusHidden() {
-    document.getElementById('modal_ship_status_hidden').value = document.getElementById('modal_ship_status').value;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('modal_ship_status').addEventListener('change', function() {
-        syncShipStatusHidden();
-        checkCancelFields();
-    });
-
     document.getElementById('modal_status').addEventListener('change', function() {
-        const status = this.value;
-        const shipStatusSelect = document.getElementById('modal_ship_status');
-
-        // Nếu chuyển sang "Đã xác nhận", cho phép chọn "Đang giao"
-        if (status === 'processing') {
-            [...shipStatusSelect.options].forEach(option => {
-                if (option.value === 'out_for_delivery') {
-                    option.disabled = false;
-                }
-            });
-        } else {
-            // Disable option "Đang giao" nếu không phải "Đã xác nhận"
-            [...shipStatusSelect.options].forEach(option => {
-                if (option.value === 'out_for_delivery') {
-                    option.disabled = true;
-                }
-            });
-        }
-
-        disableInvalidShipStatusOptions(shipStatusSelect.value);
-        syncShipStatusHidden();
         checkCancelFields();
     });
 
@@ -739,57 +583,48 @@ function validateForm() {
     const status = document.getElementById('modal_status').value;
     const payStatus = document.getElementById('modal_pay_status').value;
     const cancelReason = document.getElementById('modal_cancel_reason').value;
-    const shipStatus = document.getElementById('modal_ship_status').value;
-    const failedDeliveryReason = document.getElementById('modal_failed_delivery_reason').value;
     const phone = document.getElementById('modal_phone').value;
+    const originalPayStatus = document.getElementById('orderForm').getAttribute('data-original-pay-status');
 
-    // Nếu KHÔNG phải đơn nhân viên thì mới validate ship_status
-    if (phone !== 'Nhân viên thu ngân' && shipStatus !== 'not_applicable') {
-        // Validate: Đơn đã xác nhận phải có trạng thái giao hàng là Đang giao
-        if (status === 'processing' && shipStatus !== 'out_for_delivery') {
-            alert('Khi đơn đã xác nhận, bạn phải chọn trạng thái giao hàng là Đang giao.');
+    // Validate: Staff orders cannot be 'shipping'
+    if (phone === 'Nhân viên thu ngân' && status === 'shipping') {
+        alert('Đơn hàng tại quầy không thể có trạng thái "Đang giao".');
+        return false;
+    }
+
+    // Validate for cancellation
+    if (status === 'cancelled') {
+        if (originalPayStatus === '0' && payStatus !== '2') { // 0: Chờ thanh toán -> 2: Đã hủy
+            alert('Đơn chưa thanh toán. Khi hủy, trạng thái thanh toán phải được chuyển thành "Đã hủy".');
             return false;
         }
-        // Validate: Không thể chọn trạng thái giao hàng là Giao thất bại khi đơn đã hoàn thành
-        if (status === 'completed' && shipStatus === 'failed_delivery') {
-            alert('Không thể chọn trạng thái giao hàng là Giao thất bại khi đơn đã hoàn thành.');
-            return false;
-        }
-        // Validate: Đơn đã hoàn thành phải có trạng thái giao hàng là Đã giao
-        if (status === 'completed' && shipStatus !== 'delivered') {
-            alert('Khi đơn đã hoàn thành, bạn phải chọn trạng thái giao hàng là Đã giao.');
+        if (originalPayStatus === '1' && payStatus !== '3') { // 1: Đã thanh toán -> 3: Hoàn tiền
+            alert('Đơn đã thanh toán. Khi hủy, trạng thái thanh toán phải được chuyển thành "Hoàn tiền".');
             return false;
         }
     }
 
+    // Validate: Đơn đã hủy phải có lý do hủy
     if ((status === 'cancelled' || payStatus === '2') && !cancelReason.trim()) {
         alert('Vui lòng nhập lý do hủy đơn hàng');
         document.getElementById('modal_cancel_reason').focus();
         return false;
     }
-    if (shipStatus === 'failed_delivery' && !failedDeliveryReason.trim()) {
-        alert('Vui lòng nhập lý do giao không thành công');
-        document.getElementById('modal_failed_delivery_reason').focus();
-        return false;
-    }
-    // Khi chọn giao thất bại, copy lý do sang cancel_reason để backend nhận được
-    if (shipStatus === 'failed_delivery') {
-        document.getElementById('modal_cancel_reason').value = failedDeliveryReason;
-    }
 
     // Validate cho đơn nhân viên: Hoàn thành phải là đã thanh toán
-    if ((phone === 'Nhân viên thu ngân' || shipStatus === 'not_applicable') && status === 'completed' && payStatus !== '1') {
+    if (phone === 'Nhân viên thu ngân' && status === 'completed' && payStatus !== '1') {
         alert('Đơn tại quầy hoàn thành phải có trạng thái thanh toán là Đã thanh toán.');
         return false;
     }
 
-    // Validate: Nếu hoàn thành và đã giao thì phải chọn đã thanh toán
-    if (status === 'completed' && shipStatus === 'delivered' && payStatus !== '1') {
-        alert('Đơn hoàn thành và đã giao phải có trạng thái thanh toán là Đã thanh toán.');
+    // Validate: Đơn hoàn thành phải có trạng thái thanh toán là Đã thanh toán
+    if (status === 'completed' && payStatus !== '1') {
+        alert('Đơn hoàn thành phải có trạng thái thanh toán là Đã thanh toán.');
         return false;
     }
 
     return true;
 }
 </script>
+
 

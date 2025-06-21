@@ -63,7 +63,7 @@
 
             <!-- Stats Cards -->
             <div class="lg:col-span-2">
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <div class="bg-gradient-to-br from-green-400 to-green-600 text-white p-6 rounded-xl shadow-sm text-center transform hover:scale-105 transition-transform">
                         <div class="text-3xl font-bold mb-2" id="stat-all">{{ $orderStats['all'] }}</div>
                         <div class="text-sm opacity-90">Tổng đơn</div>
@@ -76,9 +76,14 @@
 
                     <div class="bg-gradient-to-br from-blue-400 to-blue-600 text-white p-6 rounded-xl shadow-sm text-center transform hover:scale-105 transition-transform">
                         <div class="text-3xl font-bold mb-2" id="stat-processing">{{ $orderStats['processing'] }}</div>
-                        <div class="text-sm opacity-90">Đang xử lý</div>
+                        <div class="text-sm opacity-90">Đã xác nhận</div>
                     </div>
 
+                    <div class="bg-gradient-to-br from-cyan-400 to-cyan-600 text-white p-6 rounded-xl shadow-sm text-center transform hover:scale-105 transition-transform">
+                        <div class="text-3xl font-bold mb-2" id="stat-shipping">{{ $orderStats['shipping'] }}</div>
+                        <div class="text-sm opacity-90">Đang giao</div>
+                    </div>
+                    
                     <div class="bg-gradient-to-br from-purple-400 to-purple-600 text-white p-6 rounded-xl shadow-sm text-center transform hover:scale-105 transition-transform">
                         <div class="text-3xl font-bold mb-2" id="stat-completed">{{ $orderStats['completed'] }}</div>
                         <div class="text-sm opacity-90">Đã hoàn thành</div>
@@ -120,8 +125,15 @@
 
                         <button class="order-tab w-full text-left p-4 rounded-lg bg-gray-50 border-2 border-gray-200 text-gray-600 font-semibold transition-all hover:bg-gray-100" data-status="processing">
                             <div class="flex items-center justify-between">
-                                <span>Đang xử lý</span>
+                                <span>Đã xác nhận</span>
                                 <span class="bg-blue-500 text-white px-2 py-1 rounded-full text-xs">{{ $orderStats['processing'] }}</span>
+                            </div>
+                        </button>
+
+                        <button class="order-tab w-full text-left p-4 rounded-lg bg-gray-50 border-2 border-gray-200 text-gray-600 font-semibold transition-all hover:bg-gray-100" data-status="shipping">
+                            <div class="flex items-center justify-between">
+                                <span>Đang giao</span>
+                                <span class="bg-cyan-500 text-white px-2 py-1 rounded-full text-xs">{{ $orderStats['shipping'] }}</span>
                             </div>
                         </button>
 
@@ -154,7 +166,8 @@
                         @php
                             $statusLabels = [
                                 'pending' => 'Chờ xác nhận',
-                                'processing' => 'Đang xử lý',
+                                'processing' => 'Đã xác nhận',
+                                'shipping' => 'Đang giao',
                                 'completed' => 'Đã hoàn thành',
                                 'cancelled' => 'Đã hủy',
                             ];
@@ -163,13 +176,6 @@
                                 '1' => 'Đã thanh toán',
                                 '2' => 'Đã hủy',
                                 '3' => 'Hoàn tiền',
-                            ];
-                            $shipStatusLabels = [
-                                'pending_delivery' => 'Chờ giao',
-                                'out_for_delivery' => 'Đang giao',
-                                'delivered' => 'Đã giao',
-                                'failed_delivery' => 'Giao thất bại',
-                                'returned_to_store' => 'Đã trả hàng',
                             ];
                         @endphp
 
@@ -182,7 +188,9 @@
 
                                 $statusConfig = match($status) {
                                     'completed' => ['bg' => 'bg-green-100', 'text' => 'text-green-700', 'border' => 'border-green-200', 'icon' => 'fas fa-check-circle'],
-                                    'processing' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-700', 'border' => 'border-yellow-200', 'icon' => 'fas fa-clock'],
+                                    'shipping' => ['bg' => 'bg-cyan-100', 'text' => 'text-cyan-700', 'border' => 'border-cyan-200', 'icon' => 'fas fa-truck'],
+                                    'processing' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-700', 'border' => 'border-blue-200', 'icon' => 'fas fa-cogs'],
+                                    'pending' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-700', 'border' => 'border-yellow-200', 'icon' => 'fas fa-clock'],
                                     'cancelled' => ['bg' => 'bg-red-100', 'text' => 'text-red-700', 'border' => 'border-red-200', 'icon' => 'fas fa-times-circle'],
                                     default => ['bg' => 'bg-gray-100', 'text' => 'text-gray-700', 'border' => 'border-gray-200', 'icon' => 'fas fa-info-circle'],
                                 };
@@ -550,11 +558,11 @@
                 .then(data => {
                     if (!data.success || data.status !== 'pending') {
                         const statusLabel = {
-                            'processing': 'Đang xử lý',
+                            'processing': 'Đã xác nhận',
+                            'shipping': 'Đang giao',
                             'completed': 'Đã hoàn thành',
                             'cancelled': 'Đã hủy',
                             'not_found': 'Không tồn tại',
-                            'delivering': 'Đang giao'
                         };
                         const statusText = statusLabel[data.status] || data.status;
 
@@ -594,11 +602,11 @@
             .then(data => {
                 if (!data.success || data.status !== 'pending') {
                     const statusLabel = {
-                        'processing': 'Đang xử lý',
+                        'processing': 'Đã xác nhận',
+                        'shipping': 'Đang giao',
                         'completed': 'Đã hoàn thành',
                         'cancelled': 'Đã hủy',
                         'not_found': 'Không tồn tại',
-                        'delivering': 'Đang giao'
                     };
 
                     const statusText = statusLabel[data.status] || data.status;
