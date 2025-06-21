@@ -22,15 +22,7 @@ return new class extends Migration
             $table->string('district_name')->nullable();
             $table->decimal('shipping_fee')->default(0);
             $table->enum('payment_method', ['cash', 'banking'])->default('cash');
-            $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
-            $table->enum('ship_status', [
-                'pending_delivery',
-                'out_for_delivery',
-                'delivered',
-                'failed_delivery',
-                'returned_to_store',
-                'not_applicable' // <-- Thêm dòng này
-            ])->default('pending_delivery');
+            $table->enum('status', ['pending', 'processing', 'shipping', 'completed', 'cancelled'])->default('pending');
             $table->string('cancel_reason', 255)->nullable();
             $table->decimal('total', 10, 2);
             $table->uuid('transaction_id')->nullable();

@@ -27,16 +27,9 @@ class OrderController extends Controller
         $order->pay_status = (string) $request->input('pay_status');
         $oldStatus = $order->status;
         $status = $request->input('status');
-        $ship_status = $request->input('ship_status_hidden', $request->input('ship_status'));
 
-        // Nếu là đơn nhân viên hoặc ship_status là 'na', set ship_status về 'not_applicable'
-        if (($order->phone == 'N/A') || $ship_status == 'na' || empty($ship_status)) {
-            $ship_status = 'not_applicable';
-        }
-
-        // Không còn tự động đồng bộ status/pay_status/ship_status nữa
+        // Không còn tự động đồng bộ status/pay_status nữa
         $order->status = $status;
-        $order->ship_status = $ship_status;
 
         if ($status === 'cancelled') {
             if ($order->cancel_reason && $oldStatus === 'cancelled') {
@@ -101,7 +94,7 @@ class OrderController extends Controller
 
     /**
      * Lọc đơn hàng theo trạng thái thanh toán hoặc trạng thái đơn hàng.
-     * Truyền query string: ?pay_status=0|1|2 hoặc ?status=pending|processing|completed|cancelled
+     * Truyền query string: ?pay_status=0|1|2 hoặc ?status=pending|processing|shipping|completed|cancelled
      */
     public function filterOrders(Request $request)
     {
@@ -113,9 +106,6 @@ class OrderController extends Controller
         }
         if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
-        }
-        if ($request->filled('ship_status')) {
-            $query->where('ship_status', $request->input('ship_status'));
         }
 
         $orders = $query->paginate($perPage);
