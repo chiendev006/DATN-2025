@@ -36,6 +36,7 @@
         use App\Http\Controllers\Staff\BartenderController;
         use App\Http\ViewComposers\CartComposer;
         use Illuminate\Support\Facades\Auth;
+        use App\Http\Controllers\CommentController;
 
 
 
@@ -72,6 +73,9 @@
         Route::get('/menu/category/{categoryId}', [Controller::class, 'getCategoryProducts'])->name('menu.category');
 
         Route::post('comment', [Controller::class, 'postComment'])->name('comment.store');
+        Route::get('/comment/{id}', [CommentController::class, 'index'])->name('comment.index');
+
+
 
 
 

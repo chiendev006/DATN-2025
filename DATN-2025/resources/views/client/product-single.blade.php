@@ -187,8 +187,12 @@
                                                     </p>
                                                 </div>
                                             </div> -->
-                                            <div class="col-md-12 col-sm-12 col-xs-12 text-center">
+                                           <div class="col-md-12 col-sm-12 col-xs-12 text-center">
                                                 <input name="submit" value="POST COMMENT" class="submit-btn" type="submit">
+                                                 <a href="{{ route('comment.index', ['id' => $product->id]) }}" class="btn btn-outline-secondary ml-2">
+                                                <i class="fa fa-comments"></i> Xem tất cả bình luận
+                                            </a>
+
                                             </div>
                                         </div>
                                     </form>

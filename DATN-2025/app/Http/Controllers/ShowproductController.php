@@ -16,7 +16,7 @@ class ShowproductController extends Controller
         $topping = Topping::all();
 
         $product = sanpham::findOrFail($id);
-        $comment = Product_comment::where('product_id', $product->id)->with('user')->get();
+        $comment = Product_comment::where('product_id', $product->id)->with('user')->orderBy('created_at', 'desc')->take('5')->get();
 
         // Get related products from same category
         $relatedProducts = sanpham::where('id_danhmuc', $sanpham->id_danhmuc)
