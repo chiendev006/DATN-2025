@@ -347,6 +347,11 @@ function updateTotalPrice() {
                     // Reset subtotal, total về 0
                     $('.pos-sidebar-footer .text-end.h6.mb-0').eq(0).text(formatVND(0));
                     $('.pos-sidebar-footer .text-end.h4.mb-0').text(formatVND(0));
+                    // XÓA coupon message
+                    $('#coupon-message').text('');
+                    $('#coupon-select').val('');
+                    // Reset biến global coupon nếu có
+                    appliedCoupon = null;
                 },
                 error: function(xhr){
 
