@@ -112,6 +112,7 @@ class StaffController extends Controller
                         'created_at' => now(),
                         'updated_at' => now()
                     ]);
+                    \DB::table('coupons')->where('id', $coupon->id)->increment('used');
                 }
             }
             DB::commit();
