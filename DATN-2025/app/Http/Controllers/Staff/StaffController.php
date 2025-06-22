@@ -53,7 +53,7 @@ class StaffController extends Controller
 
     }
 
-    public function getAvailableCoupons(Request $request)
+    public function getAvailableCoupons()
     {
         $today = now();
         $coupons = \DB::table('coupons')
@@ -64,7 +64,11 @@ class StaffController extends Controller
             ->where(function($q) use ($today){
                 $q->whereNull('starts_at')->orWhere('starts_at', '<=', $today);
             })
-            ->get(['id', 'code', 'discount', 'type', 'min_order_value']);
+            ->where(function($q){
+                $q->whereNull('usage_limit')
+                    ->orWhereRaw('`used` < `usage_limit`');
+            })
+            ->get(['id', 'code', 'discount', 'type', 'min_order_value', 'usage_limit', 'used']);
 
         return response()->json($coupons);
     }
