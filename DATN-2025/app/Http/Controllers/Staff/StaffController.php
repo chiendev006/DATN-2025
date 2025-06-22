@@ -87,12 +87,6 @@ class StaffController extends Controller
             $order->coupon_total_discount = $request->coupon_discount ?? 0;
             $order->status = 'pending';
             $order->save();
-
-//            $cart = $request->cart;
-//            $discountPerItem = 0;
-//            if ($request->coupon_discount && count($cart) > 0) {
-//                $discountPerItem = round($request->coupon_discount / count($cart), 2);
-//            }
             // Lưu chi tiết order
             foreach ($request->cart as $item) {
                 $detail = new Orderdetail();

@@ -272,10 +272,7 @@ function updateTotalPrice() {
             $('.pos-sidebar-footer .text-end.h4.mb-0').text(formatVND(total));
         }
 
-
-
         // Thu thập toàn bộ thông tin giỏ hàng từ sidebar
-        // Khi submit order, gửi coupon lên server (nếu có)
         function collectOrderData() {
             let cart = [];
             $('#newOrderTab .pos-order-list .pos-order').each(function () {
