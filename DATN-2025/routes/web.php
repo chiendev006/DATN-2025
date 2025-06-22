@@ -288,6 +288,7 @@ Route::prefix('staff')->middleware('checkStaff')->group(function () {
         Route::get('/product/{id}', [StaffController::class, 'ajaxShow'])->name('staff.options');
         Route::post('/orders', [StaffController::class, 'store'])->name('staff.store');
         Route::get('/products', [StaffController::class, 'products'])->name('staff.products');
+        Route::get('/coupons', [StaffController::class, 'getAvailableCoupons']);
         Route::get('/products/category/{id}', [StaffController::class, 'productsByCategory'])->name('staff.products.category');
         Route::get('/orderdetailtoday', [StaffController::class, 'orderdetailtoday'])->name('staff.orderdetailtoday');
         Route::get('/staff/products/search', [StaffController::class, 'searchProducts'])->name('staff.products.search');

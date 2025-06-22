@@ -53,7 +53,22 @@ class StaffController extends Controller
 
     }
 
-    // use DB, Order, OrderDetail, ...
+    public function getAvailableCoupons(Request $request)
+    {
+        $today = now();
+        $coupons = \DB::table('coupons')
+            ->where('is_active', 1)
+            ->where(function($q) use ($today){
+                $q->whereNull('expires_at')->orWhere('expires_at', '>=', $today);
+            })
+            ->where(function($q) use ($today){
+                $q->whereNull('starts_at')->orWhere('starts_at', '<=', $today);
+            })
+            ->get(['id', 'code', 'discount', 'type', 'min_order_value']);
+
+        return response()->json($coupons);
+    }
+
     public function store(Request $request)
     {
         DB::beginTransaction();
@@ -68,8 +83,16 @@ class StaffController extends Controller
             $order->shipping_fee = 0;
             $order->payment_method = $request->payment_method ?? 'cash';
             $order->total = $request->total;
+            $order->coupon_summary = $request->coupon_code;
+            $order->coupon_total_discount = $request->coupon_discount ?? 0;
             $order->status = 'pending';
             $order->save();
+
+//            $cart = $request->cart;
+//            $discountPerItem = 0;
+//            if ($request->coupon_discount && count($cart) > 0) {
+//                $discountPerItem = round($request->coupon_discount / count($cart), 2);
+//            }
             // Lưu chi tiết order
             foreach ($request->cart as $item) {
                 $detail = new Orderdetail();
@@ -85,6 +108,17 @@ class StaffController extends Controller
 
                 $detail->status = 'pending';
                 $detail->save();
+            }
+            if ($request->coupon_code) {
+                $coupon = \DB::table('coupons')->where('code', $request->coupon_code)->first();
+                if ($coupon) {
+                    \DB::table('coupon_order')->insert([
+                        'order_id' => $order->id,
+                        'coupon_id' => $coupon->id,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
             }
             DB::commit();
             return response()->json(['message' => 'Đặt hàng thành công!']);
