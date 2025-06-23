@@ -121,6 +121,8 @@
                         <tr>
                             <th>Ngày </th>
                             <th>Số lượng đơn</th>
+                            <th>Số đơn hoàn thành</th>
+                            <th>Số đơn đã hủy</th>
                             <th>Doanh thu</th>
                         </tr>
                     </thead>
@@ -131,6 +133,50 @@
         </div>
     </div>
 
+   <div style="display: flex; justify-content: space-between;; " class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+   <div class="card col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+        <div class="card-header">
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table products-table">
+                    <thead>
+                        <tr>
+                            <th>Top</th>
+                            <th>Tên</th>
+                            <th>Email</th>
+                            <th>Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="revenueTableBody1">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+        <div class="card-header">
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table products-table">
+                    <thead>
+                        <tr>
+                            <th>Top</th>
+                            <th>Tên</th>
+                            <th>Email</th>
+                            <th>Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="revenueTableBody2">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+   </div>
 </div>
 
 
@@ -262,10 +308,12 @@ function filterRevenue() {
         return;
     }
 
-    // Show loading state
-    document.getElementById('revenueTableBody').innerHTML = '<tr><td colspan="3" class="text-center">Đang tải...</td></tr>';
+    // Show loading state for all tables
+    document.getElementById('revenueTableBody').innerHTML = '<tr><td colspan="5" class="text-center">Đang tải...</td></tr>';
+    document.getElementById('revenueTableBody1').innerHTML = '<tr><td colspan="4" class="text-center">Đang tải...</td></tr>';
+    document.getElementById('revenueTableBody2').innerHTML = '<tr><td colspan="4" class="text-center">Đang tải...</td></tr>';
 
-    // Make AJAX request
+    // Single AJAX request
     fetch('/admin/revenue/filter', {
         method: 'POST',
         headers: {
@@ -279,29 +327,63 @@ function filterRevenue() {
     })
     .then(response => response.json())
     .then(data => {
-        let html = '';
-        if (data.length === 0) {
-            html = '<tr><td colspan="3" class="text-center">Không có dữ liệu</td></tr>';
-        } else {
-            data.forEach(item => {
-                html += `
+        // Handle Revenue Table
+        let revenueHtml = '';
+        if (data.revenueData && data.revenueData.length > 0) {
+            data.revenueData.forEach(item => {
+                revenueHtml += `
                     <tr>
                         <td>${item.date}</td>
                         <td>${item.total_orders}</td>
+                        <td>${item.completed_count}</td>
+                        <td>${item.cancelled_count}</td>
                         <td>${new Intl.NumberFormat('vi-VN').format(item.revenue)} đ</td>
                     </tr>
                 `;
             });
+        } else {
+            revenueHtml = '<tr><td colspan="5" class="text-center">Không có dữ liệu</td></tr>';
         }
-        document.getElementById('revenueTableBody').innerHTML = html;
+        document.getElementById('revenueTableBody').innerHTML = revenueHtml;
+
+        // Handle Top Staff Table
+        let staffHtml = '';
+        if (data.topStaff && data.topStaff.user) {
+            staffHtml = `<tr>
+                <td>1</td>
+                <td>${data.topStaff.user.name || 'Không rõ'}</td>
+                <td>${data.topStaff.user.email || ''}</td>
+                <td>${new Intl.NumberFormat('vi-VN').format(data.topStaff.total_revenue || 0)} đ</td>
+            </tr>`;
+        } else {
+            staffHtml = '<tr><td colspan="4" class="text-center">Không có dữ liệu nhân viên</td></tr>';
+        }
+        document.getElementById('revenueTableBody1').innerHTML = staffHtml;
+
+        // Handle Top Customer Table
+        let customerHtml = '';
+        if (data.topCustomer && data.topCustomer.user) {
+            customerHtml = `<tr>
+                <td>1</td>
+                <td>${data.topCustomer.user.name || 'Không rõ'}</td>
+                <td>${data.topCustomer.user.email || ''}</td>
+                <td>${new Intl.NumberFormat('vi-VN').format(data.topCustomer.total_spent || 0)} đ</td>
+            </tr>`;
+        } else {
+            customerHtml = '<tr><td colspan="4" class="text-center">Không có dữ liệu khách hàng</td></tr>';
+        }
+        document.getElementById('revenueTableBody2').innerHTML = customerHtml;
     })
     .catch(error => {
         console.error('Error:', error);
-        document.getElementById('revenueTableBody').innerHTML =
-            '<tr><td colspan="3" class="text-center">Có lỗi xảy ra khi tải dữ liệu</td></tr>';
+        document.getElementById('revenueTableBody').innerHTML = '<tr><td colspan="5" class="text-center">Có lỗi xảy ra khi tải dữ liệu</td></tr>';
+        document.getElementById('revenueTableBody1').innerHTML = '<tr><td colspan="4" class="text-center">Có lỗi xảy ra khi tải dữ liệu</td></tr>';
+        document.getElementById('revenueTableBody2').innerHTML = '<tr><td colspan="4" class="text-center">Có lỗi xảy ra khi tải dữ liệu</td></tr>';
     });
 }
 </script>
+
+
 
 
                             </div>

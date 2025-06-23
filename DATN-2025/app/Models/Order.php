@@ -46,4 +46,8 @@ public function coupons()
     return $this->belongsToMany(Coupon::class, 'coupon_order');
 }
 
+public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
 }
