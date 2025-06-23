@@ -424,42 +424,25 @@ function openOrderModal(btn) {
 
     if( btn.getAttribute('data-phone')=='N/A'){
         document.getElementById('modal_phone').value = 'Nhân viên thu ngân';
+        
         const shippingOption = statusSelect.querySelector('option[value="shipping"]');
-        if (shippingOption) {
-            shippingOption.style.display = 'none';
-        }
+        if (shippingOption) shippingOption.style.display = 'none';
+        
         const pendingOption = statusSelect.querySelector('option[value="pending"]');
-        const processingOption = statusSelect.querySelector('option[value="processing"]');
-        if (pendingOption) {
-            pendingOption.style.display = 'none';
-        }
-        if (processingOption) {
-            processingOption.style.display = 'none';
-        }
+        if (pendingOption) pendingOption.style.display = 'none';
+
         const payStatusSelect = document.getElementById('modal_pay_status');
         const pendingPayOption = payStatusSelect.querySelector('option[value="0"]');
-        if (pendingPayOption) {
-            pendingPayOption.style.display = 'none';
-        }
+        if (pendingPayOption) pendingPayOption.style.display = 'none';
+
     } else {
         document.getElementById('modal_phone').value = btn.getAttribute('data-phone');
-        const shippingOption = statusSelect.querySelector('option[value="shipping"]');
-        const pendingOption = statusSelect.querySelector('option[value="pending"]');
-        const processingOption = statusSelect.querySelector('option[value="processing"]');
-        if (shippingOption) {
-            shippingOption.style.display = '';
-        }
-        if (pendingOption) {
-            pendingOption.style.display = '';
-        }
-        if (processingOption) {
-            processingOption.style.display = '';
-        }
+        
+        [...statusSelect.options].forEach(option => option.style.display = '');
+
         const payStatusSelect = document.getElementById('modal_pay_status');
         const pendingPayOption = payStatusSelect.querySelector('option[value="0"]');
-        if (pendingPayOption) {
-            pendingPayOption.style.display = '';
-        }
+        if (pendingPayOption) pendingPayOption.style.display = '';
     }
     document.getElementById('modal_email').value =  btn.getAttribute('data-email') ||'Nhân viên thu ngân';
     document.getElementById('modal_payment_method').value = btn.getAttribute('data-payment_method');
@@ -679,6 +662,7 @@ function validateForm() {
 
     return true;
 }
+
 </script>
 
 
