@@ -18,14 +18,14 @@
                 <section class="default-section about">
                     <div class="container">
                         <div class="title text-center">
-                            <h2 class="text-coffee">Welcome To The Despina</h2>
+                            <h2 class="text-coffee">Chào mừng đến với Despina</h2>
                             <h6>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h6>
                         </div>
                         <div class="row">
                             <div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                <p>Welcome. This is La Boom. Elegant &amp; sophisticated restaurant template. Royal plate offers different home page layouts with smart and unique design, showcasing beautifully designed elements every restaurant website should have. Smooth animations, fast loading and engaging user experience are just some of , the features this template offers. So, give it a try and dive into a world of La Boom restaurant websites.</p>
-                                <div class="nto"><span>Ali tufan</span> <br> <small>Ali Tufan / CEO</small></div>
-                                <p><a href="#" class="submit-btn">LEARN MORE</a></p>
+                                <p>Xin chào. Đây là La Boom. Thanh lịch &amp; mẫu nhà hàng tinh tế. Royal Plate cung cấp nhiều bố cục trang chủ khác nhau với thiết kế thông minh và độc đáo, giới thiệu các yếu tố được thiết kế đẹp mắt mà mọi trang web nhà hàng nên có. Hoạt ảnh mượt mà, tải nhanh và trải nghiệm người dùng hấp dẫn chỉ là một số tính năng mà mẫu này cung cấp. Vì vậy, hãy thử và đắm mình vào thế giới trang web nhà hàng La Boom.</p>
+                                <div class="nto"><span>Ali tufan</span> <br> <small>Ali Tufan / Tổng giám đốc điều hành</small></div>
+                                <p><a href="#" class="submit-btn">TÌM HIỂU THÊM</a></p>
                             </div>
                             <div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                 <img src="{{ url('asset') }}/images/about-img.png" alt="">
