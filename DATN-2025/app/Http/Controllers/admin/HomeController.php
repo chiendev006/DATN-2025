@@ -49,7 +49,7 @@ class HomeController extends Controller
         $userIds = $orders->pluck('user_id')->filter()->unique();
         $role21Ids = [];
         if ($userIds->count() > 0) {
-            $role21Ids = \App\Models\User::whereIn('id', $userIds)->where('role', 21)->pluck('id')->toArray();
+            $role21Ids = \App\Models\User::whereIn('id', $userIds)->where('role', 21)->orwhere('role', 1)->pluck('id')->toArray();
         }
         $muaThang = $orders->where(function($order) use ($role21Ids) {
             return is_null($order->user_id) || in_array($order->user_id, $role21Ids);
@@ -83,20 +83,51 @@ class HomeController extends Controller
 
     public function filterRevenue(Request $request)
     {
+
         $startDate = $request->start_date;
-        $endDate = $request->end_date;
+        $endDate = date('Y-m-d 23:59:59', strtotime($request->end_date));
 
         $revenueData = Order::whereBetween('created_at', [$startDate, $endDate])
-            ->where('pay_status', 1) // Only count paid orders
             ->select(
                 DB::raw('DATE(created_at) as date'),
                 DB::raw('COUNT(*) as total_orders'),
-                DB::raw('SUM(total) as revenue')
+                DB::raw("SUM(CASE WHEN pay_status = 1 THEN total ELSE 0 END) as revenue"),
+                DB::raw("COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_count"),
+                DB::raw("COUNT(CASE WHEN status = 'cancelled' THEN 1 END) as cancelled_count")
             )
             ->groupBy('date')
             ->orderBy('date')
             ->get();
 
-        return response()->json($revenueData);
+        // Top khách hàng (role != 1, 21, 22)
+        $topCustomer = Order::whereBetween('created_at', [$startDate, $endDate])
+            ->whereNotNull('user_id')
+            ->whereHas('user', function($q) {
+                $q->whereNotIn('role', [1, 21, 22]);
+            })
+            ->select('user_id', DB::raw('SUM(total) as total_spent'))
+            ->groupBy('user_id')
+            ->orderByDesc('total_spent')
+            ->with('user')
+            ->first();
+
+        // Top nhân viên (role = 21)
+        $topStaff = Order::whereBetween('created_at', [$startDate, $endDate])
+            ->whereNotNull('user_id')
+            ->whereHas('user', function($q) {
+                $q->where('role', 21);
+            })
+            ->select('user_id', DB::raw('SUM(total) as total_revenue'))
+            ->groupBy('user_id')
+            ->orderByDesc('total_revenue')
+            ->with('user')
+            ->first();
+
+
+        return response()->json([
+            'revenueData' => $revenueData,
+            'topCustomer' => $topCustomer,
+            'topStaff' => $topStaff,
+        ]);
     }
 }
