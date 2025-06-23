@@ -574,7 +574,14 @@ function disableInvalidStatusOptions(originalStatus) {
         const val = option.value;
         option.disabled = false;
 
-        if (originalStatus === 'completed' || originalStatus === 'cancelled') {
+        // Cho phép đơn hàng nhân viên chuyển từ "Hoàn thành" sang "Đã hủy"
+        if (isStaffOrder && originalStatus === 'completed' && val === 'cancelled') {
+            option.disabled = false;
+            return;
+        }
+
+        // Final states: cannot be changed from (trừ đơn hàng nhân viên)
+        if ((originalStatus === 'completed' || originalStatus === 'cancelled') && !isStaffOrder) {
             if (val !== originalStatus) {
                 option.disabled = true;
             }
