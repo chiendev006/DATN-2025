@@ -431,10 +431,6 @@ function openOrderModal(btn) {
         const pendingOption = statusSelect.querySelector('option[value="pending"]');
         if (pendingOption) pendingOption.style.display = 'none';
 
-        const payStatusSelect = document.getElementById('modal_pay_status');
-        const pendingPayOption = payStatusSelect.querySelector('option[value="0"]');
-        if (pendingPayOption) pendingPayOption.style.display = 'none';
-
     } else {
         document.getElementById('modal_phone').value = btn.getAttribute('data-phone');
         
