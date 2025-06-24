@@ -70,6 +70,25 @@
     text-decoration: none;
     display: inline-block;
 }
+.modal {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    display: block;
+}
+.modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+.modal > div {
+    transform: translateY(-40px) scale(0.95);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(.4,0,.2,1);
+}
+.modal.show > div {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
 </style>
   <div class="content-wrapper-scroll">
 
@@ -408,7 +427,7 @@ function resetDisableOptions() {
             option.style.display = '';
         });
     }
-    
+
     const payStatusContainer = document.getElementById('pay_status_container');
     if (payStatusContainer) {
         payStatusContainer.style.display = '';
@@ -417,23 +436,27 @@ function resetDisableOptions() {
 
 function openOrderModal(btn) {
     resetDisableOptions();
-    document.getElementById('orderModal').style.display = 'block';
+    const modal = document.getElementById('orderModal');
+    modal.style.display = 'block';
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 10);
     document.getElementById('modal_id').value = btn.getAttribute('data-id');
     document.getElementById('modal_name').value = btn.getAttribute('data-name') + ' - ' + btn.getAttribute('data-id');
     const statusSelect = document.getElementById('modal_status');
 
     if( btn.getAttribute('data-phone')=='N/A'){
         document.getElementById('modal_phone').value = 'Nhân viên thu ngân';
-        
+
         const shippingOption = statusSelect.querySelector('option[value="shipping"]');
         if (shippingOption) shippingOption.style.display = 'none';
-        
+
         const pendingOption = statusSelect.querySelector('option[value="pending"]');
         if (pendingOption) pendingOption.style.display = 'none';
 
     } else {
         document.getElementById('modal_phone').value = btn.getAttribute('data-phone');
-        
+
         [...statusSelect.options].forEach(option => option.style.display = '');
 
         const payStatusSelect = document.getElementById('modal_pay_status');
@@ -469,13 +492,13 @@ function openOrderModal(btn) {
     }
     disableInvalidStatusOptions(initialStatusValue);
     disableInvalidPayStatusOptions(originalPayStatusFromButton);
-    
+
     if (initialStatusValue === 'pending' || initialStatusValue === 'processing' || initialStatusValue === 'shipping') {
         payStatusSelect.removeAttribute('name');
     } else {
         payStatusSelect.setAttribute('name', 'pay_status');
     }
-    
+
     document.getElementById('modal_total').value = btn.getAttribute('data-total');
     document.getElementById('modal_shipping_fee').value = btn.getAttribute('data-shipping_fee') || '0 đ';
     document.getElementById('modal_coupon_total_discount').value = btn.getAttribute('data-coupon_total_discount') || '0 đ';
@@ -525,7 +548,11 @@ function openOrderModal(btn) {
 }
 
 function closeOrderModal() {
-    document.getElementById('orderModal').style.display = 'none';
+    const modal = document.getElementById('orderModal');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
 }
 
 function checkCancelFields() {
@@ -588,12 +615,12 @@ function disableInvalidPayStatusOptions(originalPayStatus) {
     [...select.options].forEach(option => {
         const val = parseInt(option.value);
         option.disabled = false;
-        
+
         if (status === 'pending' || status === 'processing' || status === 'shipping') {
             option.disabled = true;
         }
     });
-    
+
     if (status === 'pending' || status === 'processing' || status === 'shipping') {
         select.removeAttribute('name');
     } else {
@@ -630,11 +657,11 @@ function validateForm() {
     }
 
     if (status === 'cancelled') {
-        if (originalPayStatus === '0' && payStatus !== '2') { 
+        if (originalPayStatus === '0' && payStatus !== '2') {
             alert('Đơn chưa thanh toán. Khi hủy, trạng thái thanh toán phải được chuyển thành "Đã hủy".');
             return false;
         }
-        if (originalPayStatus === '1' && payStatus !== '3') { 
+        if (originalPayStatus === '1' && payStatus !== '3') {
             alert('Đơn đã thanh toán. Khi hủy, trạng thái thanh toán phải được chuyển thành "Hoàn tiền".');
             return false;
         }

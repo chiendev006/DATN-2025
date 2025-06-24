@@ -246,7 +246,7 @@
     new Chart(document.getElementById('barChart'), {
         type: 'bar',
         data: {
-            labels: ['Thành công', 'Chưa thanh toán'],
+            labels: ['Thành công', 'Chưa thanh toán','Hủy-Hoàn tiền'],
             datasets: [{
                 label: 'Số đơn',
                 data: [orderStatusWeek.success, orderStatusWeek.pending, orderStatusWeek.cancel],
