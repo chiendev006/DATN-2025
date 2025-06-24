@@ -87,10 +87,8 @@ class StaffController extends Controller
             $order->shipping_fee = 0;
             $order->payment_method = $request->payment_method ?? 'cash';
             $order->total = $request->total;
-            $order->coupon_summary = $request->coupon_code;
-            $order->coupon_total_discount = $request->coupon_discount ?? 0;
-            $order->status = 'pending';
-            $order->pay_status = '0';
+            $order->status = 'completed';
+            $order->pay_status = '1';
             $order->save();
             // Lưu chi tiết order
             foreach ($request->cart as $item) {
@@ -105,7 +103,7 @@ class StaffController extends Controller
                 $detail->topping_id = (isset($item['toppings']) && is_array($item['toppings']))
                     ? implode(',', $item['toppings']) : '';
 
-                $detail->status = 'pending';
+                $detail->status = 'completed';
                 $detail->save();
             }
             if ($request->coupon_code) {
@@ -207,51 +205,61 @@ class StaffController extends Controller
         return view('staff.menu', compact('sanpham', 'keyword' , 'danhmuc'));
     }
     public function updateStatus(Request $request, $id)
-{
-    $order = Order::findOrFail($id);
-    $oldStatus = $order->status;
+    {
+        $order = \App\Models\Order::findOrFail($id);
 
-    $newStatus = $request->input('status');
-    $order->status = $newStatus;
+        $status = $request->input('status');
+        $pay_status = $request->input('pay_status');
 
-    // Nếu trạng thái là hủy (cancelled hoặc 4), xử lý lý do hủy
-    if ($newStatus == 'cancelled' || $newStatus == 4) {
-        $request->validate([
-            'cancel_reason' => 'required|string|max:255'
-        ], [
-            'cancel_reason.required' => 'Vui lòng nhập lý do hủy đơn hàng',
-            'cancel_reason.max' => 'Lý do hủy không được quá 255 ký tự'
-        ]);
-
-        $cancelReason = $request->input('cancel_reason');
-
-        // Thêm tiền tố nếu chưa có
-        if (!str_contains($cancelReason, '(Nhân viên hủy)')) {
-            $cancelReason = '(Nhân viên hủy) ' . $cancelReason;
+        // Khách lẻ: Nếu chọn hoàn tiền
+        if ($order->name == 'Khách lẻ' && $pay_status == '3') {
+            $order->status = 'cancelled';
+            $order->pay_status = '3';
         }
-
-        $order->cancel_reason = $cancelReason;
-
-        // Cập nhật trạng thái thanh toán khi hủy
-        if ($order->pay_status == '1') {
-            $order->pay_status = '3'; // Hoàn tiền
+        // Khách online: trạng thái là pending, thanh toán chuyển khoản, chọn hoàn tiền
+        else if (
+            $order->name != 'Khách lẻ'
+            && ($order->status == 'pending' || $order->status == 0)
+            && $order->payment_method == 'bank'
+            && $pay_status == '3'
+        ) {
+            $order->status = 'cancelled';
+            $order->pay_status = '3';
+        }
+        // Nếu chọn hủy ở bất kỳ loại đơn nào
+        else if ($status == '4' || $status === 4 || $status == 'cancelled' || $pay_status == '2' || $pay_status === 2) {
+            $order->status = 'cancelled';
+            $order->pay_status = '2';
+        } else if ($status == '3' || $status === 3 || $status == 'completed') {
+            // Nếu hoàn thành thì luôn là đã thanh toán
+            $order->status = 'completed';
+            $order->pay_status = '1';
+        } else if ($order->name == 'Khách lẻ') {
+            // Khách lẻ các trạng thái khác
+            $order->status = $status == '1' || $status === 1 || $status == 'processing' ? 'processing' : 'pending';
+            $order->pay_status = $pay_status;
         } else {
-            $order->pay_status = '2'; // Đã hủy
+            // Khách online
+            $order->pay_status = (string) $pay_status;
+            $order->status = $status;
         }
-    } else {
-        $order->cancel_reason = null;
-    }
 
-    // Nếu trạng thái là hoàn thành, tự động chuyển trạng thái thanh toán sang đã thanh toán
-    if ($newStatus == 'completed' || $newStatus == 3) {
-        if ($order->pay_status != '1') {
-            $order->pay_status = '1'; // Đã thanh toán
+        $oldStatus = $order->getOriginal('status');
+
+        if ($order->status === 'cancelled') {
+            if (!$order->cancel_reason || $oldStatus !== 'cancelled') {
+                $cancelReason = $request->input('cancel_reason');
+                if (!str_contains($cancelReason, '(Nhân viên hủy)')) {
+                    $cancelReason = '(Nhân viên hủy) ' . $cancelReason;
+                }
+                $order->cancel_reason = $cancelReason;
+            }
+        } else {
+            $order->cancel_reason = $request->input('cancel_reason');
         }
+
+        $order->save();
+
+        return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');
     }
-
-    $order->save();
-
-    return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');
-}
-
 }
