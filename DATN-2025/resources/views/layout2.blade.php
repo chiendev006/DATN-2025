@@ -5,9 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Despina : Coffee, Cake & Bakery HTML Template</title>
+    <title>Mira Café</title>
 
-    <link rel="shortcut icon" href="{{ url('asset') }}/images/favicon.png" />
+    <link rel="shortcut icon" href="assetadmin\img\cards\M-removebg-preview.png" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <link
@@ -391,58 +391,8 @@
                           </li>
                         </ul>
                       </li>
-                      <li class="has-child">
-                        <a href="/about">Pages</a>
-                        <ul  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="drop-nav">
-                          <li><a href="/about">About Us</a></li>
-                          <li class="drop-has-child">
-                            <a href="service1.html">Services</a>
-                            <ul class="drop-nav">
-                              <li><a href="service1.html">Service 1</a></li>
-                              <li><a href="service2.html">Service 2</a></li>
-                            </ul>
-                          </li>
-                          <li class="drop-has-child">
-                            <a href="gallery2.html">Gallery</a>
-                            <ul class="drop-nav">
-                              <li>
-                                <a href="gallery2.html">Gallery 2 Columns</a>
-                              </li>
-                              <li>
-                                <a href="gallery3.html">Gallery 3 Columns</a>
-                              </li>
-                              <li>
-                                <a href="gallery4.html">Gallery 4 Columns</a>
-                              </li>
-                              <li>
-                                <a href="gallery_masonry.html"
-                                  >Gallery Masonry</a
-                                >
-                              </li>
-                            </ul>
-                          </li>
-                          <li class="drop-has-child">
-                            <a href="menu_fixed.html">Menu</a>
-                            <ul class="drop-nav">
-                              <li><a href="menu_fixed.html">Menu 1</a></li>
-                              <li><a href="menu.html">Menu 2</a></li>
-                              <li><a href="menu_change.html">Menu 3</a></li>
-                            </ul>
-                          </li>
-                          <li class="drop-has-child">
-                            <a href="contact_1.html">Contact</a>
-                            <ul class="drop-nav">
-                              <li><a href="contact_1.html">Contact 1</a></li>
-                              <li><a href="contact_2.html">Contact 2</a></li>
-                            </ul>
-                          </li>
-                          <li>
-                            <a href="terms_condition.html">Terms & Condition</a>
-                          </li>
-                          <li><a href="faq.html">FAQ</a></li>
-                          <li><a href="element.html">Elements</a></li>
-                          <li><a href="404.html">404 Error</a></li>
-                        </ul>
+                      <li >
+                        <a href="/about">About</a>
                       </li>
                       <li >
                         <a href="/blog">Blog</a>
