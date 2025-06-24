@@ -48,9 +48,9 @@
                                 <td class="px-4 py-2 border text-center text-sm font-semibold">
                                     @php
                                         // Kiểm tra khách lẻ - dựa vào name và district_name
-                                        $isWalkInCustomer = ($item->name == 'Khách lẻ' || $item->name == 'Khách vãng lai') || 
+                                        $isWalkInCustomer = ($item->name == 'Khách lẻ' || $item->name == 'Khách vãng lai') ||
                                                           ($item->district_name == null && $item->shipping_fee == 0);
-                                        
+
                                         $statusMap = ['pending' => ['Chờ xử lý', 'orange'],
                                             'processing' => ['Đã xác nhận', 'green'],
                                             'completed' => ['Hoàn thành', 'gray'],
@@ -60,7 +60,7 @@
                                             3 => ['Hoàn thành', 'gray'],
                                             4 => ['Đã hủy', 'red'],
                                         ];
-                                        
+
                                         // Nếu là khách lẻ thì hiển thị "Hoàn thành"
                                         if ($isWalkInCustomer) {
                                             // Kiểm tra nếu đơn hàng đã bị hủy
@@ -89,8 +89,8 @@
                                             $statusMap = [
                                                 '0' => ['Chưa thanh toán', 'orange'],
                                                 '1' => ['Đã thanh toán', 'green'],
-                                                0 => ['Chưa thanh toán', 'orange'],
-                                                1 => ['Đã thanh toán', 'green'],
+                                                '2'=>['Dã hủy','red'],
+                                                '3'=>['Hoàn tiền','red']
                                             ];
                                             $payDisplay = $statusMap[$item->pay_status] ?? [$item->pay_status, 'black'];
                                         }
@@ -127,7 +127,7 @@
                             <div class="modal-body">
                                 @php
                                     // Kiểm tra khách lẻ trong modal - dựa vào name và district_name
-                                    $isWalkInCustomer = ($item->name == 'Khách lẻ') || 
+                                    $isWalkInCustomer = ($item->name == 'Khách lẻ') ||
                                                       ($item->district_name == null && $item->shipping_fee == 0);
                                 @endphp
 
@@ -160,14 +160,14 @@
                                                 ];
                                                 $currentStatusValue = $statusMapping[$currentStatus] ?? 0;
                                             }
-                                            
+
                                             // Nếu là khách lẻ và chưa bị hủy, đặt trạng thái mặc định là "Hoàn thành"
                                             if ($isWalkInCustomer && $currentStatusValue != 4) {
                                                 $currentStatusValue = 3;
                                             }
                                         @endphp
-                                        
-                                        <select name="status" class="form-select" id="statusSelect{{ $item->id }}" 
+
+                                        <select name="status" class="form-select" id="statusSelect{{ $item->id }}"
                                                 onchange="handleStatusChange({{ $item->id }}, this.value, {{ $currentStatusValue }}, {{ $isWalkInCustomer ? 'true' : 'false' }})" required>
                                             @if($isWalkInCustomer)
                                                 {{-- Khách lẻ: chỉ cho chọn "Hoàn thành" và "Đã hủy" --}}
@@ -234,11 +234,11 @@
                                         <label class="text-primary">Lý do hủy</label>
                                         <input type="text" class="form-control" value="{{ $item->cancel_reason}}" readonly>
                                     </div>
-                                    
+
                                     <!-- Input ẩn cho lý do hủy -->
                                     <div class="col-md-12" id="cancelReasonDiv{{ $item->id }}" style="display: none;">
                                         <label class="text-danger">Lý do hủy đơn hàng *</label>
-                                        <input type="text" name="cancel_reason" class="form-control" 
+                                        <input type="text" name="cancel_reason" class="form-control"
                                                placeholder="Nhập lý do hủy đơn hàng..." required id="cancelReasonInput{{ $item->id }}">
                                     </div>
                                 </div>
@@ -301,7 +301,7 @@
                                         <input type="text" class="form-control" value="{{ number_format($item->shipping_fee ?? 0, 0, ',', '.') }} đ" readonly>
                                     </div>
                                     @endif
-                                    
+
                                     <div class="{{ $isWalkInCustomer ? 'col-md-4' : 'col-md-3' }}">
                                         <label class="text-primary">Tiền sản phẩm</label>
                                         <input type="text" class="form-control"
@@ -337,7 +337,7 @@ function handleStatusChange(orderId, newStatus, currentStatus, isWalkInCustomer 
     const cancelReasonDiv = document.getElementById('cancelReasonDiv' + orderId);
     const cancelReasonInput = document.getElementById('cancelReasonInput' + orderId);
     const statusSelect = document.getElementById('statusSelect' + orderId);
-    
+
     // Định nghĩa thứ tự trạng thái
     const statusOrder = {
         'pending': 0,
@@ -345,9 +345,9 @@ function handleStatusChange(orderId, newStatus, currentStatus, isWalkInCustomer 
         'completed': 3,
         'cancelled': 4
     };
-    
+
     const newStatusValue = statusOrder[newStatus];
-    
+
     // Kiểm tra logic trạng thái
     if (newStatus === 'cancelled') {
         // Nếu chọn hủy, hiển thị input lý do
@@ -359,7 +359,7 @@ function handleStatusChange(orderId, newStatus, currentStatus, isWalkInCustomer 
         cancelReasonDiv.style.display = 'none';
         cancelReasonInput.required = false;
         cancelReasonInput.value = '';
-        
+
         // Xử lý logic cho khách lẻ
         if (isWalkInCustomer) {
             // Khách lẻ chỉ có thể chọn "Hoàn thành" hoặc "Hủy"
@@ -372,35 +372,35 @@ function handleStatusChange(orderId, newStatus, currentStatus, isWalkInCustomer 
             // Khách lẻ có thể chuyển từ "Hoàn thành" sang "Hủy" và ngược lại
             return true;
         }
-        
+
         // Logic cho khách online (giữ nguyên như cũ)
         if (currentStatus === 4) {// Nếu đã hủy thì không được chọn trạng thái khác
             alert('Đơn hàng đã hủy không thể thay đổi trạng thái!');
             statusSelect.value = 'cancelled';
             return false;
         }
-        
+
         if (currentStatus === 3 && newStatusValue !== 3) {
             // Nếu đã hoàn thành thì không được chọn trạng thái khác
             alert('Đơn hàng đã hoàn thành không thể thay đổi trạng thái!');
             statusSelect.value = 'completed';
             return false;
         }
-        
+
         if (newStatusValue < currentStatus && currentStatus !== 4) {
             // Không được lùi trạng thái (trừ trường hợp hủy)
             alert('Không thể lùi trạng thái đơn hàng!');
             // Reset về trạng thái hiện tại
             const currentStatusText = {
                 0: 'pending',
-                1: 'processing', 
+                1: 'processing',
                 3: 'completed',
                 4: 'cancelled'
             };
             statusSelect.value = currentStatusText[currentStatus];
             return false;
         }
-        
+
         // Kiểm tra không nhảy cóc trạng thái cho khách online
         if (newStatusValue !== 4) { // Không phải hủy
             if (currentStatus === 0 && newStatusValue === 3) {
@@ -411,7 +411,7 @@ function handleStatusChange(orderId, newStatus, currentStatus, isWalkInCustomer 
             }
         }
     }
-    
+
     return true;
 }
 
@@ -423,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const orderId = this.id.replace('orderForm', '');
             const statusSelect = document.getElementById('statusSelect' + orderId);
             const cancelReasonInput = document.getElementById('cancelReasonInput' + orderId);
-            
+
             if (statusSelect.value === 'cancelled' && !cancelReasonInput.value.trim()) {
                 e.preventDefault();
                 alert('Vui lòng nhập lý do hủy đơn hàng!');

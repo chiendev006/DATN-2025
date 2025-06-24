@@ -35,6 +35,26 @@
     text-decoration: none;
     display: inline-block;
 }
+
+.custom-modal {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    display: flex;
+}
+.custom-modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+.custom-modal-content {
+    transform: translateY(-40px) scale(0.95);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(.4,0,.2,1);
+}
+.custom-modal.show .custom-modal-content {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
 </style>
             <div class="content-wrapper-scroll">
                 <div class="content-wrapper">
@@ -240,22 +260,22 @@ document.addEventListener('DOMContentLoaded', function() {
         if (addNameInput) addNameInput.value = '';
         if (addShippingFeeInput) addShippingFeeInput.value = '';
         // Hiển thị modal
-        addModal.style.display = 'flex';
+        openModal(addModal);
     });
 
     // Đóng popup Thêm
     if (closeAddBtn) {
         closeAddBtn.onclick = function() {
-            addModal.style.display = 'none';
+            closeModal(addModal);
         };
     }
 
     window.addEventListener('click', function(event) {
         if (event.target == addModal) {
-            addModal.style.display = "none";
+            closeModal(addModal);
         }
         if (event.target == editModal) {
-            editModal.style.display = "none";
+            closeModal(editModal);
         }
     });
 
@@ -275,17 +295,30 @@ document.addEventListener('DOMContentLoaded', function() {
             if (editShippingFeeInput) editShippingFeeInput.value = itemShippingFee;
 
             // Hiển thị modal
-            editModal.style.display = 'flex';
+            openModal(editModal);
         });
     });
 
     // Đóng popup Sửa
     if (closeEditBtn) {
         closeEditBtn.onclick = function() {
-            editModal.style.display = 'none';
+            closeModal(editModal);
         };
     }
 });
+
+function openModal(modal) {
+    modal.style.display = 'flex';
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 10);
+}
+function closeModal(modal) {
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+}
 </script>
 <div class="text-muted mb-2" style="font-size:13px;">
     @php

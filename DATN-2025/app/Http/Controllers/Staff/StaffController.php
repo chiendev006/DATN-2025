@@ -90,6 +90,7 @@ class StaffController extends Controller
             $order->coupon_summary = $request->coupon_code;
             $order->coupon_total_discount = $request->coupon_discount ?? 0;
             $order->status = 'pending';
+            $order->pay_status = '0';
             $order->save();
             // Lưu chi tiết order
             foreach ($request->cart as $item) {
