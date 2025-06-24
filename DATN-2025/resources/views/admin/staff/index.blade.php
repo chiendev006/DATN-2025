@@ -27,7 +27,10 @@
 
     /* Styles cho modal - đảm bảo modal hiển thị đúng cách */
     .custom-modal {
-        display: none; /* Mặc định ẩn */
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        display: flex;
         position: fixed;
         z-index: 9999;
         left: 0;
@@ -35,11 +38,17 @@
         width: 100vw;
         height: 100vh;
         background: rgba(0,0,0,0.3);
-        display: flex; /* Dùng flex để căn giữa nội dung */
         align-items: center;
         justify-content: center;
     }
+    .custom-modal.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
     .custom-modal-content {
+        transform: translateY(-40px) scale(0.95);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(.4,0,.2,1);
         background: #fff;
         border-radius: 10px;
         padding: 32px 24px 24px 24px;
@@ -47,6 +56,10 @@
         width: 700px;
         box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08),0 1.5px 4px 0 rgba(0,0,0,0.03);
         position: relative;
+    }
+    .custom-modal.show .custom-modal-content {
+        transform: translateY(0) scale(1);
+        opacity: 1;
     }
     .custom-modal-close {
         position: absolute;
@@ -343,7 +356,7 @@
     <script>var popupErrorMsg = null;</script>
 @endif
 @if (session('success'))
-    <script>var popupSuccessMsg = @json(session('success'));</script>
+    <script>var popupSuccessMsg = "{{ session('success') }}";</script>
 @else
     <script>var popupSuccessMsg = null;</script>
 @endif
@@ -362,6 +375,20 @@ function showAlertPopup(message, type = 'success') {
     setTimeout(() => {
         popup.style.display = 'none';
     }, 3500);
+}
+
+function openModal(modal) {
+    modal.style.display = 'flex';
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 10);
+}
+
+function closeModal(modal) {
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -408,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Reset select box về option đầu tiên hoặc mặc định (nếu có)
             // if (addRoleSelect) addRoleSelect.selectedIndex = 0;
 
-            if (addModal) addModal.style.display = 'flex'; // Hiển thị modal
+            openModal(addModal);
         });
     }
 
@@ -416,12 +443,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Đóng popup Thêm
     if (closeAddBtn) {
         closeAddBtn.onclick = function() {
-            if (addModal) addModal.style.display = 'none';
+            closeModal(addModal);
         };
     }
     window.addEventListener('click', function(event) {
         if (addModal && event.target == addModal) {
-            addModal.style.display = "none";
+            closeModal(addModal);
         }
     });
 
@@ -467,19 +494,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 editRoleSelect.value = itemRole; // Gán giá trị role đã lấy được
             }
 
-            if (editModal) editModal.style.display = 'flex'; // Hiển thị modal
+            openModal(editModal);
         });
     });
 
     // Đóng popup Sửa
     if (closeEditBtn) {
         closeEditBtn.onclick = function() {
-            if (editModal) editModal.style.display = 'none';
+            closeModal(editModal);
         };
     }
     window.addEventListener('click', function(event) {
         if (editModal && event.target == editModal) {
-            editModal.style.display = "none";
+            closeModal(editModal);
         }
     });
 });

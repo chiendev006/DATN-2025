@@ -109,9 +109,26 @@
 }
 
 /* Modal styles */
+.custom-modal {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    display: flex;
+}
+.custom-modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
 .custom-modal-content {
+    transform: translateY(-40px) scale(0.95);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(.4,0,.2,1);
     max-height: 90vh;
     overflow-y: auto;
+}
+.custom-modal.show .custom-modal-content {
+    transform: translateY(0) scale(1);
+    opacity: 1;
 }
 
 .field-wrapper {
@@ -197,7 +214,7 @@
                                                         <td>
                                                          {{ $item['name'] }}
                                                         </td>
-                                                        
+
                                                         <td>
                                                             <div class="actions" style="display: flex; gap: 10px; justify-content: center;">
                                                             <button type="button" class="btn-edit-danhmucblog" data-id="{{ $item->id }}" data-name="{{ $item->name }}" style=" background-color: rgb(76, 106, 175); color: white; border: none; border-radius: 5px; cursor: pointer;font-size: 12px;padding: 5px 10px;text-align: center;text-decoration: none;display: inline-block;">
@@ -373,6 +390,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Animation helpers
+    function openModal(modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 10);
+    }
+    function closeModal(modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    }
+
     // Sự kiện cho nút "Thêm danh mục blog"
     document.getElementById('btn-add-danhmucblog').addEventListener('click', function() {
         // Reset form về trạng thái rỗng
@@ -380,18 +411,18 @@ document.addEventListener('DOMContentLoaded', function() {
             addNameInput.value = '';
             clearError(addNameInput);
         }
-        
+
         // Hiển thị modal
-        addModal.style.display = 'flex';
+        openModal(addModal);
     });
 
     // Đóng popup Thêm
     closeAddBtn.onclick = function() {
-        addModal.style.display = 'none';
+        closeModal(addModal);
     };
     window.addEventListener('click', function(event) {
         if (event.target == addModal) {
-            addModal.style.display = "none";
+            closeModal(addModal);
         }
     });
 
@@ -410,19 +441,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 editNameInput.value = itemName;
                 clearError(editNameInput);
             }
-            
+
             // Hiển thị modal
-            editModal.style.display = 'flex';
+            openModal(editModal);
         });
     });
 
     // Đóng popup Sửa
     closeEditBtn.onclick = function() {
-        editModal.style.display = 'none';
+        closeModal(editModal);
     };
     window.addEventListener('click', function(event) {
         if (event.target == editModal) {
-            editModal.style.display = "none";
+            closeModal(editModal);
         }
     });
 
@@ -437,7 +468,7 @@ document.addEventListener('DOMContentLoaded', function() {
         successMessage.className = 'alert alert-success';
         successMessage.textContent = '{{ session('success') }}';
         document.querySelector('.card-body').insertBefore(successMessage, document.querySelector('.card-body').firstChild);
-        
+
         // Auto remove after 3 seconds
         setTimeout(() => {
             successMessage.remove();
@@ -473,4 +504,4 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </form>
     </div>
-</div> 
+</div>

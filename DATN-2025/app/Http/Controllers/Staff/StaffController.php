@@ -53,7 +53,26 @@ class StaffController extends Controller
 
     }
 
-    // use DB, Order, OrderDetail, ...
+    public function getAvailableCoupons()
+    {
+        $today = now();
+        $coupons = \DB::table('coupons')
+            ->where('is_active', 1)
+            ->where(function($q) use ($today){
+                $q->whereNull('expires_at')->orWhere('expires_at', '>=', $today);
+            })
+            ->where(function($q) use ($today){
+                $q->whereNull('starts_at')->orWhere('starts_at', '<=', $today);
+            })
+            ->where(function($q){
+                $q->whereNull('usage_limit')
+                    ->orWhereRaw('`used` < `usage_limit`');
+            })
+            ->get(['id', 'code', 'discount', 'type', 'min_order_value', 'usage_limit', 'used']);
+
+        return response()->json($coupons);
+    }
+
     public function store(Request $request)
     {
         DB::beginTransaction();
@@ -86,6 +105,18 @@ class StaffController extends Controller
 
                 $detail->status = 'completed';
                 $detail->save();
+            }
+            if ($request->coupon_code) {
+                $coupon = \DB::table('coupons')->where('code', $request->coupon_code)->first();
+                if ($coupon) {
+                    \DB::table('coupon_order')->insert([
+                        'order_id' => $order->id,
+                        'coupon_id' => $coupon->id,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                    \DB::table('coupons')->where('id', $coupon->id)->increment('used');
+                }
             }
             DB::commit();
             return response()->json(['message' => 'Đặt hàng thành công!']);

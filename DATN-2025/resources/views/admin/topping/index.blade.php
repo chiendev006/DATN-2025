@@ -28,6 +28,25 @@
     text-decoration: none;
     display: inline-block;
 }
+.custom-modal {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    display: flex;
+}
+.custom-modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+.custom-modal-content {
+    transform: translateY(-40px) scale(0.95);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(.4,0,.2,1);
+}
+.custom-modal.show .custom-modal-content {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
 </style>
     <div class="content-wrapper-scroll">
 
@@ -76,7 +95,7 @@
                                         <input type="hidden" name="name" value="{{ request('name') }}">
 
                                         <button type="submit" class="btn btn-success">Lọc</button>
-                                    </form>     
+                                    </form>
                             </div>
                         </div>
                                         <div class="table-responsive">
@@ -207,16 +226,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (addHasToppingRadio1) addHasToppingRadio1.checked = false;
         if (addHasToppingRadio2) addHasToppingRadio2.checked = false;
         // Hiển thị modal
-        addModal.style.display = 'flex';
+        openModal(addModal);
     });
 
     // Đóng popup Thêm
     closeAddBtn.onclick = function() {
-        addModal.style.display = 'none';
+        closeModal(addModal);
     };
     window.addEventListener('click', function(event) {
         if (event.target == addModal) {
-            addModal.style.display = "none";
+            closeModal(addModal);
         }
     });
 
@@ -239,20 +258,33 @@ document.addEventListener('DOMContentLoaded', function() {
             if (editHasToppingRadio2) editHasToppingRadio2.checked = (itemHasTopping === '0');
 
             // Hiển thị modal
-            editModal.style.display = 'flex';
+            openModal(editModal);
         });
     });
 
     // Đóng popup Sửa
     closeEditBtn.onclick = function() {
-        editModal.style.display = 'none';
+        closeModal(editModal);
     };
     window.addEventListener('click', function(event) {
         if (event.target == editModal) {
-            editModal.style.display = "none";
+            closeModal(editModal);
         }
     });
 });
+
+function openModal(modal) {
+    modal.style.display = 'flex';
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 10);
+}
+function closeModal(modal) {
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+}
 </script>
 
 <div id="addToppingModal" class="custom-modal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);align-items:center;justify-content:center;">

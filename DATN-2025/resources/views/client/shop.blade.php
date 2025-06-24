@@ -73,10 +73,7 @@
                             @endif
 
                         </div>
-                            <div class="popular-tag blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                <h5>Popular Tags</h5>
-                                <a href="#">Audio</a> <a href="#">Service</a> <a href="#">Online Order</a> <a href="#">Contact</a> <a href="#">Cupcake</a>
-                            </div>
+
                         </div>
                     </div>
                     <div class="col-md-9 col-sm-8 col-xs-12">
@@ -120,13 +117,13 @@
                             <div style="text-align: center;" class="gallery-pagination">
                                 <div class="gallery-pagination-inner">
                                     <ul>
-                                        <li><a href="#" class="pagination-prev {{ $firstProducts->onFirstPage() ? 'disabled' : '' }}" data-page="{{ $firstProducts->currentPage() - 1 }}"><i class="icon-left-4"></i> <span>PREV page</span></a></li>
+                                        <li><a href="#" class="pagination-prev {{ $firstProducts->onFirstPage() ? 'disabled' : '' }}" data-page="{{ $firstProducts->currentPage() - 1 }}"><i class="icon-left-4"></i> <span style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">PREV page</span></a></li>
                                         @for ($i = 1; $i <= $firstProducts->lastPage(); $i++)
                                             <li class="{{ $i == $firstProducts->currentPage() ? 'active' : '' }}">
                                                 <a href="#" data-page="{{ $i }}"><span>{{ $i }}</span></a>
                                             </li>
                                         @endfor
-                                        <li><a href="#" class="pagination-next {{ $firstProducts->hasMorePages() ? '' : 'disabled' }}" data-page="{{ $firstProducts->currentPage() + 1 }}"><span>next page</span> <i class="icon-right-4"></i></a></li>
+                                        <li><a href="#" class="pagination-next {{ $firstProducts->hasMorePages() ? '' : 'disabled' }}" data-page="{{ $firstProducts->currentPage() + 1 }}"><span style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">next page</span> <i class="icon-right-4"></i></a></li>
                                     </ul>
                                 </div>
                             </div>

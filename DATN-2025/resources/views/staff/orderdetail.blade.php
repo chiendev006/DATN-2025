@@ -407,8 +407,6 @@ function handlePayStatusChange(orderId, newPayStatus, currentPayStatus, currentO
             payStatusSelect.value = currentPayStatus.toString();
             showAlert('Đơn hàng đã hủy chỉ có thể có trạng thái thanh toán "Đã hủy" hoặc "Hoàn tiền"!', 'error');
             return false;
-        }
-        return true;
     }
     // Nếu đơn hàng đã hoàn thành, không cho phép chuyển về "Chờ thanh toán"
     if (currentOrderStatus === 3 && newPayStatus === 0) {
@@ -470,6 +468,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const orderId = this.id.replace('orderForm', '');
             const statusSelect = document.getElementById('statusSelect' + orderId);
             const cancelReasonInput = document.getElementById('cancelReasonInput' + orderId);
+
             if (statusSelect.value === '4' && (!cancelReasonInput.value || cancelReasonInput.value.trim() === '')) {
                 e.preventDefault();
                 showAlert('Vui lòng nhập lý do hủy đơn hàng!', 'error');

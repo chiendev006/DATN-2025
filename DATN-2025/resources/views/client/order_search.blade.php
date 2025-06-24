@@ -212,13 +212,17 @@
                                         <!-- Order Summary -->
                                         <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
                                             <div class="space-y-2 text-right">
+                                            <p class="text-gray-700">
+                                                    <i class="fas fa-clock mr-2"></i>
+                                                    Thời gian đặt: <span class="font-semibold">{{ $order->created_at}}đ</span>
+                                                </p>
                                                 <p class="text-gray-700">
                                                     <i class="fas fa-truck mr-2"></i>
                                                     Phí vận chuyển: <span class="font-semibold">{{ number_format($order->shipping_fee, 0, ',', '.') }}đ</span>
                                                 </p>
                                                 <p class="text-gray-700">
                                                     <i class="fas fa-tag mr-2"></i>
-                                                    Giảm giá mã: <span class="font-semibold text-green-600">-{{ number_format($order->coupon_total_discount, 0, ',', '.') }}đ</span>
+                                                    Giảm giá: <span class="font-semibold text-green-600">-{{ number_format($order->coupon_total_discount, 0, ',', '.') }}đ</span>
                                                 </p>
                                                 <p class="text-xl font-bold text-red-600 border-t border-blue-200 pt-2">
                                                     <i class="fas fa-calculator mr-2"></i>
@@ -271,7 +275,7 @@
                     </div>
                     <div>
                         <p><strong>Địa chỉ:</strong> <span id="detail-address"></span></p>
-                        <p><strong>Phương thức thanh toán:</strong> <span id="detail-payment"></span></p>
+                        <p><strong>Thanh toán bằng:</strong> <span id="detail-payment"></span></p>
                         <p><strong>Trạng thái thanh toán:</strong> <span id="detail-pay-status"></span></p>
                     </div>
                 </div>

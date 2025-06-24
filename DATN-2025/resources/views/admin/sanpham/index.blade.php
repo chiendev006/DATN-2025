@@ -54,6 +54,7 @@
                                     @endif
                                     <form class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4" action="{{ route('sanpham.search') }}" method="GET">
                                 <div class="input-group" style="max-width: 400px;">
+                                       <div class="field-placeholder">Tìm sản phẩm</div>
                                     <input type="text" name="q" class="form-control" placeholder="Tìm kiếm sản phẩm theo tên..." value="{{ request('q') }}">
 
                                     {{-- Giữ lại giá nếu có --}}
@@ -68,6 +69,7 @@
 
                                 <form class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4" action="{{ route('sanpham.search') }}" method="GET">
                                     <div class="input-group" style="max-width: 400px;">
+                                           <div class="field-placeholder">Lọc theo giá</div>
                                         <input type="number" name="min_price" class="form-control" placeholder="Giá từ" value="{{ request('min_price') }}">
                                         <input type="number" name="max_price" class="form-control" placeholder="Đến" value="{{ request('max_price') }}" >
 

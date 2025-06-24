@@ -9,7 +9,6 @@ use App\Http\Controllers\Controller;
 class OrderController extends Controller
 {
     /**
-     * Hiển thị danh sách đơn hàng.
      */
     public function ordersIndex(Request $request)
     {
@@ -24,11 +23,14 @@ class OrderController extends Controller
     public function update(Request $request, $id)
     {
         $order = \App\Models\Order::findOrFail($id);
-        $order->pay_status = (string) $request->input('pay_status');
+        
+        if ($request->has('pay_status') && $request->input('pay_status') !== '') {
+            $order->pay_status = (string) $request->input('pay_status');
+        }
+        
         $oldStatus = $order->status;
         $status = $request->input('status');
 
-        // Không còn tự động đồng bộ status/pay_status nữa
         $order->status = $status;
 
         if ($status === 'cancelled') {
@@ -93,7 +95,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Lọc đơn hàng theo trạng thái thanh toán hoặc trạng thái đơn hàng.
+     * 
      * Truyền query string: ?pay_status=0|1|2 hoặc ?status=pending|processing|shipping|completed|cancelled
      */
     public function filterOrders(Request $request)

@@ -28,6 +28,25 @@
     text-decoration: none;
     display: inline-block;
 }
+.custom-modal {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    display: flex;
+}
+.custom-modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+.custom-modal-content {
+    transform: translateY(-40px) scale(0.95);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(.4,0,.2,1);
+}
+.custom-modal.show .custom-modal-content {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
 </style>
     <div class="content-wrapper-scroll">
 
@@ -70,10 +89,7 @@
                                                     <label for="expires_at" style="font-weight: 500;">Ngày kết thúc đến</label>
                                                     <input type="date" name="expires_at" id="expires_at" class="form-control" value="{{ request('expires_at') }}">
                                                 </div>
-                                                <div class="col-md-1">
-                                                    <label for="usage_left" style="font-weight: 500;">Số lượng &ge;</label>
-                                                    <input type="number" name="usage_left" id="usage_left" class="form-control" value="{{ request('usage_left') }}" min="0">
-                                                </div>
+
                                                 <div class="col-md-1" style="display: flex; align-items: end; gap: 10px;">
                                                     <button type="submit" class="btn btn-primary" style="height: 38px;">Lọc</button>
                                                     <a href="{{ route('coupon.index') }}" class="btn btn-secondary" style="height: 38px;">Làm mới</a>
@@ -127,7 +143,7 @@
                                                                 <td>
                                                                     {{ $item['used'] }}
                                                                 </td>
-                                                                <td>                                                   
+                                                                <td>
                                                                         {{ $item->starts_at->format('d/m/Y') }}
                                                                 </td>
                                                                 <td>
@@ -264,7 +280,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const addModal = document.getElementById('addCouponModal');
     const closeAddBtn = document.getElementById('close-add-Coupon-modal');
-    const addNameInput = document.getElementById('add-name'); 
+    const addNameInput = document.getElementById('add-name');
     const addForm = document.getElementById('addCouponForm');
 
     const editModal = document.getElementById('editCouponModal');
@@ -279,10 +295,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const editForm = document.getElementById('editCouponForm');
 
     function showAddCouponModalWithOldData() {
-        if (document.getElementById('add-name')) { 
+        if (document.getElementById('add-name')) {
             document.getElementById('add-name').value = "{{ old('code') }}";
         }
-        if (document.getElementById('add-price')) { 
+        if (document.getElementById('add-price')) {
             document.getElementById('add-price').value = "{{ old('discount') }}";
         }
         if (document.querySelector('#addCouponForm select[name="type"]')) {
@@ -300,7 +316,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (document.getElementById('add-expires_at')) {
             document.getElementById('add-expires_at').value = "{{ old('expires_at') }}";
         }
-        addModal.style.display = 'flex';
+        openModal(addModal);
     }
 
     function showEditCouponModalWithOldData(couponId) {
@@ -310,12 +326,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (editCodeInput) editCodeInput.value = "{{ old('code') }}";
         if (editDiscountInput) editDiscountInput.value = "{{ old('discount') }}";
         if (editMinOrderValueInput) editMinOrderValueInput.value = "{{ old('min_order_value') }}";
-        if (editTypeInput) editTypeInput.value = "{{ old('type', 'percent') }}"; 
+        if (editTypeInput) editTypeInput.value = "{{ old('type', 'percent') }}";
         if (editUsageLimitInput) editUsageLimitInput.value = "{{ old('usage_limit') }}";
         if (editStartAtInput) editStartAtInput.value = "{{ old('starts_at') }}";
         if (editExpiresAtInput) editExpiresAtInput.value = "{{ old('expires_at') }}";
 
-        editModal.style.display = 'flex';
+        openModal(editModal);
     }
 
 
@@ -340,11 +356,11 @@ document.addEventListener('DOMContentLoaded', function() {
             element.classList.remove('is-invalid');
         });
 
-        addModal.style.display = 'flex';
+        openModal(addModal);
     });
 
     closeAddBtn.onclick = function() {
-        addModal.style.display = 'none';
+        closeModal(addModal);
         addModal.querySelectorAll('.text-danger').forEach(function(element) {
             element.textContent = '';
         });
@@ -354,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     window.addEventListener('click', function(event) {
         if (event.target == addModal) {
-            addModal.style.display = "none";
+            closeModal(addModal);
             addModal.querySelectorAll('.text-danger').forEach(function(element) {
                 element.textContent = '';
             });
@@ -395,12 +411,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (editExpiresAtInput) editExpiresAtInput.value = itemExpiresAt;
             if (editStartAtInput) editStartAtInput.value = itemStartAt;
 
-            editModal.style.display = 'flex';
+            openModal(editModal);
         });
     });
 
     closeEditBtn.onclick = function() {
-        editModal.style.display = 'none';
+        closeModal(editModal);
         editModal.querySelectorAll('.text-danger').forEach(function(element) {
             element.textContent = '';
         });
@@ -410,7 +426,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     window.addEventListener('click', function(event) {
         if (event.target == editModal) {
-            editModal.style.display = "none";
+            closeModal(editModal);
             editModal.querySelectorAll('.text-danger').forEach(function(element) {
                 element.textContent = '';
             });
@@ -420,6 +436,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+function openModal(modal) {
+    modal.style.display = 'flex';
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 10);
+}
+function closeModal(modal) {
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+}
 </script>
 
 <div id="addCouponModal" class="custom-modal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);align-items:center;justify-content:center;">

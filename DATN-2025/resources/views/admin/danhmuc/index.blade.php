@@ -109,9 +109,24 @@
 }
 
 /* Modal styles */
+.custom-modal {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    display: flex;
+}
+.custom-modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
 .custom-modal-content {
-    max-height: 90vh;
-    overflow-y: auto;
+    transform: translateY(-40px) scale(0.95);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(.4,0,.2,1);
+}
+.custom-modal.show .custom-modal-content {
+    transform: translateY(0) scale(1);
+    opacity: 1;
 }
 
 .field-wrapper {
@@ -393,7 +408,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateRadioButtons(radioButtons, formType) {
         const selectedValue = Array.from(radioButtons).find(radio => radio.checked)?.value;
         const error = validateHasTopping(selectedValue);
-        
+
         radioButtons.forEach(radio => {
             if (error) {
                 radio.classList.add('is-invalid');
@@ -486,6 +501,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Animation helpers
+    function openModal(modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 10);
+    }
+    function closeModal(modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    }
+
     // Sự kiện cho nút "Thêm danh mục"
     document.getElementById('btn-add-danhmuc').addEventListener('click', function() {
         // Reset form về trạng thái rỗng
@@ -495,7 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (addHasToppingRadio1) addHasToppingRadio1.checked = false;
         if (addHasToppingRadio2) addHasToppingRadio2.checked = false;
-        
+
         // Clear radio button errors
         addRadioButtons.forEach(radio => {
             if (radio) radio.classList.remove('is-invalid');
@@ -505,18 +534,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const errorElement = radioContainer.querySelector('.text-danger');
             if (errorElement) errorElement.remove();
         }
-        
+
         // Hiển thị modal
-        addModal.style.display = 'flex';
+        openModal(addModal);
     });
 
     // Đóng popup Thêm
     closeAddBtn.onclick = function() {
-        addModal.style.display = 'none';
+        closeModal(addModal);
     };
     window.addEventListener('click', function(event) {
         if (event.target == addModal) {
-            addModal.style.display = "none";
+            closeModal(addModal);
         }
     });
 
@@ -538,7 +567,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             if (editHasToppingRadio1) editHasToppingRadio1.checked = (itemHasTopping === '1');
             if (editHasToppingRadio2) editHasToppingRadio2.checked = (itemHasTopping === '0');
-            
+
             // Clear radio button errors
             editRadioButtons.forEach(radio => {
                 if (radio) radio.classList.remove('is-invalid');
@@ -550,17 +579,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Hiển thị modal
-            editModal.style.display = 'flex';
+            openModal(editModal);
         });
     });
 
     // Đóng popup Sửa
     closeEditBtn.onclick = function() {
-        editModal.style.display = 'none';
+        closeModal(editModal);
     };
     window.addEventListener('click', function(event) {
         if (event.target == editModal) {
-            editModal.style.display = "none";
+            closeModal(editModal);
         }
     });
 
@@ -575,7 +604,7 @@ document.addEventListener('DOMContentLoaded', function() {
         successMessage.className = 'alert alert-success';
         successMessage.textContent = '{{ session('success') }}';
         document.querySelector('.card-body').insertBefore(successMessage, document.querySelector('.card-body').firstChild);
-        
+
         // Auto remove after 3 seconds
         setTimeout(() => {
             successMessage.remove();
