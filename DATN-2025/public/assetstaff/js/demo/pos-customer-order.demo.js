@@ -239,6 +239,11 @@ function updateTotalPrice() {
             updateSidebarTotal();
         });
 
+        // Tự động áp dụng khi chọn coupon
+        $('#coupon-select').on('change', function() {
+            $('#apply-coupon-btn').trigger('click');
+        });
+
         // Reset coupon khi xóa hết sản phẩm
         $(document).on('click', '.order-remove', function() {
             setTimeout(function() {
@@ -267,8 +272,10 @@ function updateTotalPrice() {
             var discount = appliedCoupon ? appliedCoupon.discountValue : 0;
             var total = subtotal - discount;
             if (total < 0) total = 0;
-            $('.pos-sidebar-footer .text-end.h6.mb-0').eq(0).text(formatVND(subtotal));
-            $('.pos-sidebar-footer .text-end.h4.mb-0').text(formatVND(total));
+
+            $('#cart-subtotal').text(formatVND(subtotal));
+            $('#cart-discount').text('-' + formatVND(discount));
+            $('#cart-total').text(formatVND(total));
         }
 
         // Thu thập toàn bộ thông tin giỏ hàng từ sidebar
@@ -338,7 +345,8 @@ function updateTotalPrice() {
             $.ajax({
                 url: '/staff/orders',
                 method: 'POST',
-                data: orderData,
+                data: JSON.stringify(orderData),
+                contentType: 'application/json',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },

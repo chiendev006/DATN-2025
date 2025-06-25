@@ -190,8 +190,17 @@
                         </div>
                         <hr class="opacity-1 my-10px"/>
                         <div class="d-flex align-items-center mb-2">
+                            <div>Subtotal</div>
+                            <div class="flex-1 text-end h6 mb-0" id="cart-subtotal">0đ</div>
+                        </div>
+                        <div class="d-flex align-items-center mb-2 text-danger">
+                            <div>Discount</div>
+                            <div class="flex-1 text-end h6 mb-0" id="cart-discount">0đ</div>
+                        </div>
+                        <hr class="opacity-1 my-10px"/>
+                        <div class="d-flex align-items-center mb-2">
                             <div>Total</div>
-                            <div class="flex-1 text-end h4 mb-0"></div>
+                            <div class="flex-1 text-end h4 mb-0" id="cart-total">0đ</div>
                         </div>
                         <div class="mt-3">
                             <div class="d-flex justify-content-sm-around">
@@ -214,7 +223,7 @@
                                     data-pay_status="1"
                                 >
                                     <span>
-                                     <i class="fa fa-check-circle fa-lg my-10px d-block"></i>
+                                     <i class="fa fa-cash-register fa-lg my-10px d-block"></i>
                                       <span class="small fw-semibold">Thanh toán</span>
                                     </span>
                                 </a>
