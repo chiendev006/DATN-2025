@@ -3,7 +3,7 @@
 @section('main-content')
 
 <h2 class="text-3xl font-extrabold text-indigo-800 mb-8 flex items-center gap-2">
-    🧾 Hóa đơn hôm nay
+    Hóa đơn hôm nay
 </h2>
 
 @if ($donhangs->isEmpty())
@@ -79,16 +79,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="bg-white hover:bg-gray-50 transition">
+                        <tr style="{{ $isWalkInCustomer ? 'background-color: #ffe066;' : '' }}">
                             <td class="px-4 py-2 border text-gray-700 font-medium">{{ $item->name ?? 'Khách lẻ' }}</td>
                             <td class="px-4 py-2 border">{{ $item->phone ?? 'không có' }}</td>
                             <td class="px-4 py-2 border text-center text-sm font-semibold">
                                 @php
                                     $statusLabels = [
                                         0 => ['Chờ xử lý', 'orange'],
-                                        1 => ['Đã xác nhận', 'green'],
+                                        1 => ['Đã xác nhận', 'gray'],
                                         2 => ['Đang giao hàng', 'blue'],
-                                        3 => ['Hoàn thành', 'gray'],
+                                        3 => ['Hoàn thành', 'green'],
                                         4 => ['Đã hủy', 'red']
                                     ];
                                     $statusDisplay = $statusLabels[$currentStatusInt] ?? ['Không xác định', 'black'];
@@ -152,6 +152,7 @@
                                         <label class="text-primary">Trạng thái đơn hàng</label>
                                         @if($isWalkInCustomer)
                                             <select name="status" class="form-select" id="statusSelect{{ $item->id }}" data-current="{{ $currentStatusInt }}" required onchange="handleStatusChange({{ $item->id }}, this.value, '{{ $item->status }}', true)">
+                                                <option value="processing" {{ $item->status == 'processing' ? 'selected' : '' }}>Đã xác nhận</option>
                                                 <option value="completed" {{ $item->status == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
                                                 <option value="cancelled" {{ $item->status == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
                                             </select>
@@ -264,24 +265,20 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="row g-3 mt-3">
-                                    @if(!$isWalkInCustomer)
-                                    <div class="col-md-3">
-                                        <label class="text-primary">Tiền ship</label>
-                                        <input type="text" class="form-control" value="{{ number_format($item->shipping_fee ?? 0, 0, ',', '.') }} đ" readonly>
+                                <div class="row g-3 mt-3 border-bottom pb-2 mb-2">
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-end gap-4">
+                                            @if(!$isWalkInCustomer)
+                                                <span class="text-primary">Tiền ship: <span class="fw-normal text-dark">{{ number_format($item->shipping_fee ?? 0, 0, ',', '.') }} đ</span></span>
+                                            @endif
+                                            <span class="text-primary">Tiền sản phẩm: <span class="fw-normal text-dark">{{ number_format(($item->total ?? 0) + ($item->coupon_total_discount ?? 0) - ($item->shipping_fee ?? 0), 0, ',', '.') }} đ</span></span>
+                                            <span class="text-primary">Tiền giảm giá: <span class="fw-normal text-dark">{{ number_format($item->coupon_total_discount ?? 0, 0, ',', '.') }} đ</span></span>
+                                        </div>
                                     </div>
-                                    @endif
-                                    <div class="{{ $isWalkInCustomer ? 'col-md-4' : 'col-md-3' }}">
-                                        <label class="text-primary">Tiền sản phẩm</label>
-                                        <input type="text" class="form-control" value="{{ number_format(($item->total ?? 0) + ($item->coupon_total_discount ?? 0) - ($item->shipping_fee ?? 0), 0, ',', '.') }} đ" readonly>
-                                    </div>
-                                    <div class="{{ $isWalkInCustomer ? 'col-md-4' : 'col-md-3' }}">
-                                        <label class="text-primary">Tiền giảm giá</label>
-                                        <input type="text" class="form-control" value="{{ number_format($item->coupon_total_discount ?? 0, 0, ',', '.') }} đ" readonly>
-                                    </div>
-                                    <div class="{{ $isWalkInCustomer ? 'col-md-4' : 'col-md-3' }}">
-                                        <label class="text-primary">Tổng tiền thanh toán</label>
-                                        <input type="text" class="form-control" value="{{ number_format($item->total, 0, ',', '.') }} đ" readonly>
+                                </div>
+                                <div class="row g-3 mt-2">
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <span class="text-primary fw-bold" style="font-size: 1.1rem;">Tổng tiền thanh toán: <span class="fw-bold" style="font-size: 1.2rem; color: #d32f2f;">{{ number_format($item->total, 0, ',', '.') }} đ</span></span>
                                     </div>
                                 </div>
                             </div>
@@ -334,37 +331,34 @@ function handleStatusChange(orderId, newStatusValue, currentStatusInt, isWalkInC
     currentStatus = parseInt(currentStatus);
     newStatus = parseInt(newStatus);
 
+    // Nếu đơn đã hoàn thành, không cho phép đổi trạng thái nào nữa, kể cả hủy
+    if (currentStatus === 3) {
+        statusSelect.value = 'completed';
+        showAlert('Đơn hàng đã hoàn thành không thể thay đổi trạng thái!', 'error');
+        return false;
+    }
+
     // For walk-in customers
     if (isWalkInCustomer) {
-        // If order is already cancelled, don't allow status change
+        // Nếu đơn đã hủy thì không cho đổi trạng thái
         if (currentStatus === 4) {
             statusSelect.value = 'cancelled';
             showAlert('Đơn hàng đã hủy không thể thay đổi trạng thái!', 'error');
             return false;
         }
-        
-        // If order is already completed, only allow cancellation
-        if (currentStatus === 3 && newStatus !== 4) {
-            statusSelect.value = 'completed';
-            showAlert('Đơn hàng đã hoàn thành chỉ có thể hủy!', 'error');
-            return false;
-        }
-        
-        // If choosing to cancel
+        // Nếu chọn hủy
         if (newStatus === 4) {
             cancelReasonDiv.style.display = 'block';
             cancelReasonInput.required = true;
             if (payStatusSelect) payStatusSelect.value = '2'; // Đã hủy
             return true;
         }
-        
-        // For walk-in, only allow completed or cancelled
-        if (newStatus !== 3 && newStatus !== 4) {
-            statusSelect.value = currentStatus === 3 ? 'completed' : 'pending';
-            showAlert('Khách lẻ chỉ có thể chọn "Hoàn thành" hoặc "Đã hủy"!', 'error');
+        // Chỉ cho phép chọn các trạng thái: Đã xác nhận (1), Hoàn thành (3), Đã hủy (4)
+        if (![1, 3, 4].includes(newStatus)) {
+            statusSelect.value = currentStatus === 3 ? 'completed' : (currentStatus === 1 ? 'processing' : 'processing');
+            showAlert('Khách lẻ chỉ có thể chọn "Đã xác nhận", "Hoàn thành" hoặc "Đã hủy"!', 'error');
             return false;
         }
-        
         return true;
     }
 
@@ -373,13 +367,6 @@ function handleStatusChange(orderId, newStatusValue, currentStatusInt, isWalkInC
     if (currentStatus === 4) {
         statusSelect.value = 'cancelled';
         showAlert('Đơn hàng đã hủy không thể thay đổi trạng thái!', 'error');
-        return false;
-    }
-    
-    // If order is already completed, don't allow status change
-    if (currentStatus === 3) {
-        statusSelect.value = 'completed';
-        showAlert('Đơn hàng đã hoàn thành không thể thay đổi trạng thái!', 'error');
         return false;
     }
     
