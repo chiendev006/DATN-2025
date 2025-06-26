@@ -86,18 +86,9 @@ class StaffController extends Controller
             $order->address_detail = null;
             $order->shipping_fee = 0;
             $order->status = 'processing';
+            $order->pay_status = '1';
             $order->payment_method = $request->payment_method ?? 'cash';
             $order->total = $request->total;
-
-            if ($request->input('pay_status') == 1) {
-                // Đơn đã thanh toán
-
-                $order->pay_status = '1';
-            } else {
-                // Đơn mới, chờ thanh toán
-                $order->pay_status = '0';
-            }
-
             $order->save();
             // Lưu chi tiết order
             foreach ($request->cart as $item) {

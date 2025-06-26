@@ -204,6 +204,10 @@
     padding-right: 30px; /* Space for the delete icon */
 }
 
+.cart-blog {
+    background-color: #fdfaf6;
+}
+
     </style>
   </head>
 
@@ -434,53 +438,54 @@
                        <span class="icon-basket fontello"></span>
                        <span>{{ $cartCount }} sản phẩm - {{ number_format($subtotal, 0, ',', '.') }}₫</span>
                        <div class="cart-wrap">
-                            <div class="cart-blog scrollable-cart">
-                                @forelse ($items as $item)
-                                    @php
-                                        $productName = $item->product->name ?? $item->name;
-                                        $itemId = isset($item->product)
-                                            ? $item->id
-                                            : $loop->index;
-                                        $productImage = isset($item->product->image)
-                                            ? asset('storage/uploads/' . $item->product->image)
-                                            : (isset($item->image) ? asset('storage/uploads/' . $item->image) : asset('asset/images/img21.png'));
-                                        $quantity = $item->quantity ?? 1;
-                                        $price = 0;
+                            <div class="cart-blog">
+                                <div class="scrollable-cart">
+                                    @forelse ($items as $item)
+                                        @php
+                                            $productName = $item->product->name ?? $item->name;
+                                            $itemId = isset($item->product)
+                                                ? $item->id
+                                                : $loop->index;
+                                            $productImage = isset($item->product->image)
+                                                ? asset('storage/uploads/' . $item->product->image)
+                                                : (isset($item->image) ? asset('storage/uploads/' . $item->image) : asset('asset/images/img21.png'));
+                                            $quantity = $item->quantity ?? 1;
+                                            $price = 0;
 
-                                        if (isset($item->product)) {
-                                            $basePrice = $item->size->price ?? $item->product->price;
-                                            $toppingIds = array_filter(explode(',', $item->topping_id ?? ''));
-                                            $toppingPrice = $toppingIds ? \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price') : 0;
-                                            $price = ($basePrice + $toppingPrice);
-                                        } else {
-                                            $basePrice = $item->size_price ?? 0;
-                                            $toppingPrice = array_sum($item->topping_prices ?? []);
-                                            $price = ($basePrice + $toppingPrice);
-                                        }
-                                        $totalItemPrice = $price * $quantity;
-                                    @endphp
+                                            if (isset($item->product)) {
+                                                $basePrice = $item->size->price ?? $item->product->price;
+                                                $toppingIds = array_filter(explode(',', $item->topping_id ?? ''));
+                                                $toppingPrice = $toppingIds ? \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price') : 0;
+                                                $price = ($basePrice + $toppingPrice);
+                                            } else {
+                                                $basePrice = $item->size_price ?? 0;
+                                                $toppingPrice = array_sum($item->topping_prices ?? []);
+                                                $price = ($basePrice + $toppingPrice);
+                                            }
+                                            $totalItemPrice = $price * $quantity;
+                                        @endphp
 
-                                    <div class="cart-item" data-item-id="{{ $itemId }}" data-item-price-per-unit="{{ $price }}">
-                                        <div class="cart-item-left">
-                                            <img src="{{ $productImage }}" alt="" />
-                                        </div>
-                                        <div  class="cart-item-right">
-                                            <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">{{ $productName }}</h6>
-                                            <div class="quantity-controls">
-                                                <button class="decrease-quantity" data-item-id="{{ $itemId }}">-</button>
-                                                <input type="number" class="item-quantity" value="{{ $quantity }}" min="1" data-item-id="{{ $itemId }}" readonly>
-                                                <button class="increase-quantity" data-item-id="{{ $itemId }}">+</button>
+                                        <div class="cart-item" data-item-id="{{ $itemId }}" data-item-price-per-unit="{{ $price }}">
+                                            <div class="cart-item-left">
+                                                <img src="{{ $productImage }}" alt="" />
                                             </div>
-                                            <span class="item-price">{{ number_format($totalItemPrice, 0, ',', '.') }}₫</span>
+                                            <div  class="cart-item-right">
+                                                <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">{{ $productName }}</h6>
+                                                <div class="quantity-controls">
+                                                    <button class="decrease-quantity" data-item-id="{{ $itemId }}">-</button>
+                                                    <input type="number" style="height: 20px; margin-bottom: 0px;" class="item-quantity" value="{{ $quantity }}" min="1" data-item-id="{{ $itemId }}" readonly>
+                                                    <button class="increase-quantity" data-item-id="{{ $itemId }}">+</button>
+                                                </div>
+                                                <span  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="item-price">{{ number_format($totalItemPrice, 0, ',', '.') }}₫</span>
+                                            </div>
+                                            <i class="delete-icon fa fa-trash" data-item-id="{{ $itemId }}"></i>
                                         </div>
-                                        <i class="delete-icon fa fa-trash" data-item-id="{{ $itemId }}"></i>
-                                    </div>
-                                @empty
-                                    <div class="cart-item">
-                                        <p>Không có sản phẩm nào trong giỏ hàng.</p>
-                                    </div>
-                                @endforelse
-
+                                    @empty
+                                        <div class="cart-item">
+                                            <p>Không có sản phẩm nào trong giỏ hàng.</p>
+                                        </div>
+                                    @endforelse
+                                </div>
                                 <div class="subtotal">
                                     <div class="row">
                                         <div class="col-md-6 col-sm-6 col-xs-6">

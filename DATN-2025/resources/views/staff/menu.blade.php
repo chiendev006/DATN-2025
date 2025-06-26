@@ -215,18 +215,6 @@
                                       <span class="small fw-semibold">Xác nhận</span>
                                     </span>
                                 </a>
-
-                                <a style="max-width: 130px;"
-                                    href="#"
-                                    class="btn btn-success flex-fill d-flex align-items-center justify-content-center btn-submit-order"
-                                    id="btn-pay-order"
-                                    data-pay_status="1"
-                                >
-                                    <span>
-                                     <i class="fa fa-cash-register fa-lg my-10px d-block"></i>
-                                      <span class="small fw-semibold">Thanh toán</span>
-                                    </span>
-                                </a>
                             </div>
                         </div>
                     </div>
