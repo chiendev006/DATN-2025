@@ -76,112 +76,115 @@
                 <!-- BEGIN pos-content -->
                   <div class="flex-1 overflow-y-auto p-4 bg-white">@yield('main-content')</div>
 
-                  <div class="pos-sidebar" id="pos-sidebar">
-                <div class="h-100 d-flex flex-column p-0">
-                    <!-- BEGIN pos-sidebar-header -->
-                    <div class="pos-sidebar-header">
-                        <div class="back-btn">
-                            <button
-                                type="button"
-                                data-toggle-class="pos-mobile-sidebar-toggled"
-                                data-toggle-target="#pos"
-                                class="btn"
-                            >
-                                <i class="fa fa-chevron-left"></i>
-                            </button>
-                        </div>
-                        <div class="icon"><i class="fa fa-plate-wheat"></i></div>
-                        <div class="title">Table</div>
-                        <div class="order small">
-                            Order
-                        </div>
-                    </div>
-                    <!-- END pos-sidebar-header -->
-
-                    <!-- BEGIN pos-sidebar-nav -->
-                    <div class="pos-sidebar-nav small">
-                        <ul class="nav nav-tabs">
-                            <li class="nav-item">
-                                <a
-                                    class="nav-link active"
-                                    href="#"
-                                    data-bs-toggle="tab"
-                                    data-bs-target="#newOrderTab"
-                                >Order</a
-                                >
-                            </li>
-                        </ul>
-                    </div>
-                    <div
-                        class="pos-sidebar-body tab-content"
-                        data-scrollbar="true"
-                        data-height="100%"
-                    >
-                        <!-- BEGIN #newOrderTab -->
-                        <div class="tab-pane fade h-100 show active" id="newOrderTab">
-                            <div class="pos-order-list"></div>
-                        </div>
-                        <!-- END #orderHistoryTab -->
-
-                        <!-- BEGIN #orderHistoryTab -->
-                        <!-- END #orderHistoryTab -->
-                    </div>
-                    <!-- END pos-sidebar-body -->
-
-                    <!-- BEGIN pos-sidebar-footer -->
-                    <div class="pos-sidebar-footer">
-                        <div class="mb-2">
-                            <select class="form-select" id="coupon-select">
-                                <option value="">-- Chọn mã giảm giá --</option>
-                                <!-- option sẽ được JS render thêm -->
-                            </select>
-                            <button class="btn btn-sm btn-primary mt-2" id="apply-coupon-btn">Áp dụng</button>
-                            <div id="coupon-message" style="font-size:14px;margin-top:4px;"></div>
-                        </div>
-                        <hr class="opacity-1 my-10px"/>
-                        <div class="d-flex align-items-center mb-2">
-                            <div>Subtotal</div>
-                            <div class="flex-1 text-end h6 mb-0" id="cart-subtotal">0đ</div>
-                        </div>
-                        <div class="d-flex align-items-center mb-2 text-danger">
-                            <div>Discount</div>
-                            <div class="flex-1 text-end h6 mb-0" id="cart-discount">0đ</div>
-                        </div>
-                        <hr class="opacity-1 my-10px"/>
-                        <div class="d-flex align-items-center mb-2">
-                            <div>Total</div>
-                            <div class="flex-1 text-end h4 mb-0" id="cart-total">0đ</div>
-                        </div>
-                        <div class="mt-3">
-                            <div class="d-flex justify-content-sm-around">
-                                <a style="max-width: 130px;"
-                                    href="#"
-                                    class="btn btn-primary flex-fill d-flex align-items-center justify-content-center btn-submit-order"
-                                    id="btn-confirm-order"
-                                    data-pay_status="0"
-                                >
-                                    <span>
-                                    <i class="fa fa-check-circle fa-lg my-10px d-block"></i>
-                                      <span class="small fw-semibold">Xác nhận</span>
-                                    </span>
-                                </a>
-
-                                <a style="max-width: 130px;"
-                                    href="#"
-                                    class="btn btn-success flex-fill d-flex align-items-center justify-content-center btn-submit-order"
-                                    id="btn-pay-order"
-                                    data-pay_status="1"
-                                >
-                                    <span>
-                                     <i class="fa fa-cash-register fa-lg my-10px d-block"></i>
-                                      <span class="small fw-semibold">Thanh toán</span>
-                                    </span>
-                                </a>
+                  @if (!request()->routeIs('staff.orderdetailtoday'))
+                    <div class="pos-sidebar" id="pos-sidebar">
+                        <div class="h-100 d-flex flex-column p-0">
+                            <!-- BEGIN pos-sidebar-header -->
+                            <div class="pos-sidebar-header">
+                                <div class="back-btn">
+                                    <button
+                                        type="button"
+                                        data-toggle-class="pos-mobile-sidebar-toggled"
+                                        data-toggle-target="#pos"
+                                        class="btn"
+                                    >
+                                        <i class="fa fa-chevron-left"></i>
+                                    </button>
+                                </div>
+                                <div class="icon"><i class="fa fa-plate-wheat"></i></div>
+                                <div class="title">Table</div>
+                                <div class="order small">
+                                    Order
+                                </div>
                             </div>
+                            <!-- END pos-sidebar-header -->
+
+                            <!-- BEGIN pos-sidebar-nav -->
+                            <div class="pos-sidebar-nav small">
+                                <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a
+                                            class="nav-link active"
+                                            href="#"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#newOrderTab"
+                                        >Order</a
+                                        >
+                                    </li>
+                                </ul>
+                            </div>
+                            <div
+                                class="pos-sidebar-body tab-content"
+                                data-scrollbar="true"
+                                data-height="100%"
+                            >
+                                <!-- BEGIN #newOrderTab -->
+                                <div class="tab-pane fade h-100 show active" id="newOrderTab">
+                                    <div class="pos-order-list"></div>
+                                </div>
+                                <!-- END #orderHistoryTab -->
+
+                                <!-- BEGIN #orderHistoryTab -->
+                                <!-- END #orderHistoryTab -->
+                            </div>
+                            <!-- END pos-sidebar-body -->
+
+                            <!-- BEGIN pos-sidebar-footer -->
+                            <div class="pos-sidebar-footer">
+                                <div class="mb-2">
+                                    <select class="form-select" id="coupon-select">
+                                        <option value="">-- Chọn mã giảm giá --</option>
+                                        <!-- option sẽ được JS render thêm -->
+                                    </select>
+                                    <button class="btn btn-sm btn-primary mt-2" id="apply-coupon-btn">Áp dụng</button>
+                                    <div id="coupon-message" style="font-size:14px;margin-top:4px;"></div>
+                                </div>
+                                <hr class="opacity-1 my-10px"/>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div>Subtotal</div>
+                                    <div class="flex-1 text-end h6 mb-0" id="cart-subtotal">0đ</div>
+                                </div>
+                                <div class="d-flex align-items-center mb-2 text-danger">
+                                    <div>Discount</div>
+                                    <div class="flex-1 text-end h6 mb-0" id="cart-discount">0đ</div>
+                                </div>
+                                <hr class="opacity-1 my-10px"/>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div>Total</div>
+                                    <div class="flex-1 text-end h4 mb-0" id="cart-total">0đ</div>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-sm-around">
+                                        <a style="max-width: 130px;"
+                                            href="#"
+                                            class="btn btn-primary flex-fill d-flex align-items-center justify-content-center btn-submit-order"
+                                            id="btn-confirm-order"
+                                            data-pay_status="0"
+                                        >
+                                            <span>
+                                            <i class="fa fa-check-circle fa-lg my-10px d-block"></i>
+                                              <span class="small fw-semibold">Xác nhận</span>
+                                            </span>
+                                        </a>
+
+                                        <a style="max-width: 130px;"
+                                            href="#"
+                                            class="btn btn-success flex-fill d-flex align-items-center justify-content-center btn-submit-order"
+                                            id="btn-pay-order"
+                                            data-pay_status="1"
+                                        >
+                                            <span>
+                                             <i class="fa fa-cash-register fa-lg my-10px d-block"></i>
+                                              <span class="small fw-semibold">Thanh toán</span>
+                                            </span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- END pos-sidebar-footer -->
                         </div>
                     </div>
-                    <!-- END pos-sidebar-footer -->
-                </div>
+                  @endif
             </div>
             <!-- END pos-sidebar -->
         </div>
