@@ -85,11 +85,19 @@ class StaffController extends Controller
             $order->address_id = $request->input('address_id') ?? 1;
             $order->address_detail = null;
             $order->shipping_fee = 0;
+            $order->status = 'processing';
             $order->payment_method = $request->payment_method ?? 'cash';
             $order->total = $request->total;
-            // Đơn khách lẻ luôn hoàn thành và đã thanh toán
-            $order->status = 'completed';
-            $order->pay_status = '1';
+
+            if ($request->input('pay_status') == 1) {
+                // Đơn đã thanh toán
+
+                $order->pay_status = '1';
+            } else {
+                // Đơn mới, chờ thanh toán
+                $order->pay_status = '0';
+            }
+
             $order->save();
             // Lưu chi tiết order
             foreach ($request->cart as $item) {
@@ -104,7 +112,7 @@ class StaffController extends Controller
                 $detail->topping_id = (isset($item['toppings']) && is_array($item['toppings']))
                     ? implode(',', $item['toppings']) : '';
 
-                $detail->status = 'completed';
+                $detail->status = $order->status;
                 $detail->save();
             }
             if ($request->coupon_code) {
