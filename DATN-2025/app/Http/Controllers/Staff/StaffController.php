@@ -87,8 +87,9 @@ class StaffController extends Controller
             $order->shipping_fee = 0;
             $order->payment_method = $request->payment_method ?? 'cash';
             $order->total = $request->total;
-            $order->status = 'processing';
-            $order->pay_status = $request->pay_status;
+            // Đơn khách lẻ luôn hoàn thành và đã thanh toán
+            $order->status = 'completed';
+            $order->pay_status = '1';
             $order->save();
             // Lưu chi tiết order
             foreach ($request->cart as $item) {
@@ -213,31 +214,26 @@ class StaffController extends Controller
 
         // Khách lẻ: Nếu chọn hoàn tiền
         if ($order->name == 'Khách lẻ' && $pay_status == '3') {
-            $order->status = 'cancelled';
             $order->pay_status = '3';
+            $order->status = 'cancelled';
         }
-        // Khách online: trạng thái là pending, thanh toán chuyển khoản, chọn hoàn tiền
-        else if (
-            $order->name != 'Khách lẻ'
-            && ($order->status == 'pending' || $order->status == 0)
-            && $order->payment_method == 'bank'
-            && $pay_status == '3'
-        ) {
-            $order->status = 'cancelled';
+        // Khách online: Nếu chọn hoàn tiền
+        else if ($order->name != 'Khách lẻ' && $pay_status == '3') {
             $order->pay_status = '3';
+            $order->status = 'cancelled';
         }
         // Nếu chọn hủy ở bất kỳ loại đơn nào
         else if ($status == '4' || $status === 4 || $status == 'cancelled' || $pay_status == '2' || $pay_status === 2) {
             $order->status = 'cancelled';
             $order->pay_status = '2';
-        } else if ($status == '3' || $status === 3 || $status == 'completed') {
-            // Nếu hoàn thành thì luôn là đã thanh toán
-            $order->status = 'completed';
-            $order->pay_status = '1';
         } else if ($order->name == 'Khách lẻ') {
-            // Khách lẻ các trạng thái khác
-            $order->status = $status == '1' || $status === 1 || $status == 'processing' ? 'processing' : 'pending';
-            $order->pay_status = $pay_status;
+            if (($status == 'completed' || $status == 3)) {
+                $order->status = 'completed';
+                $order->pay_status = '1';
+            } else if (($status == 'cancelled' || $status == 4)) {
+                $order->status = 'cancelled';
+                $order->pay_status = '2';
+            }
         } else {
             // Khách online
             $order->pay_status = (string) $pay_status;

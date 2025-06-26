@@ -152,7 +152,6 @@
                                         <label class="text-primary">Trạng thái đơn hàng</label>
                                         @if($isWalkInCustomer)
                                             <select name="status" class="form-select" id="statusSelect{{ $item->id }}" data-current="{{ $currentStatusInt }}" required onchange="handleStatusChange({{ $item->id }}, this.value, '{{ $item->status }}', true)">
-                                                <option value="processing" {{ $item->status == 'processing' ? 'selected' : '' }}>Đã xác nhận</option>
                                                 <option value="completed" {{ $item->status == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
                                                 <option value="cancelled" {{ $item->status == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
                                             </select>
@@ -172,7 +171,7 @@
                                             <select name="pay_status" class="form-select" id="payStatusSelect{{ $item->id }}" data-current="{{ $currentPayStatus }}" required onchange="handlePayStatusChange({{ $item->id }}, this.value, {{ $currentPayStatus }}, {{ $currentStatusInt }})">
                                                 <option value="1" {{ $currentPayStatus == 1 ? 'selected' : '' }}>Đã thanh toán</option>
                                                 <option value="2" {{ $currentPayStatus == 2 ? 'selected' : '' }}>Đã hủy</option>
-                                                <option value="3" {{ $currentPayStatus == 3 ? 'selected' : '' }}>Hoàn tiền (chỉ áp dụng khi đã đặt và muốn hoàn tiền)</option>
+                                                <option value="3" {{ $currentPayStatus == 3 ? 'selected' : '' }}>Hoàn tiền</option>
                                             </select>
                                         @else
                                             <select name="pay_status" class="form-select" id="payStatusSelect{{ $item->id }}" data-current="{{ $currentPayStatus }}" required onchange="handlePayStatusChange({{ $item->id }}, this.value, {{ $currentPayStatus }}, {{ $currentStatusInt }})">
@@ -180,8 +179,8 @@
                                                 <option value="1" {{ $currentPayStatus == 1 ? 'selected' : '' }}>Đã thanh toán</option>
                                                 <option value="2" {{ $currentPayStatus == 2 ? 'selected' : '' }}>Đã hủy</option>
                                                 <option value="3" {{ $currentPayStatus == 3 ? 'selected' : '' }}
-                                                    @if(!(($item->status == 'pending' || $item->status == 0) && $item->payment_method == 'bank')) disabled @endif
-                                                >Hoàn tiền (chỉ áp dụng khi đơn đang chờ xử lý & chuyển khoản)</option>
+                                                    @if(!(($item->pay_status == '1' || $item->pay_status == 1) && ($item->status == 'pending' || $item->status == 0 || $item->status == '0'))) disabled @endif
+                                                >Hoàn tiền</option>
                                             </select>
                                         @endif
                                     </div>
@@ -305,80 +304,112 @@ function handleStatusChange(orderId, newStatusValue, currentStatusInt, isWalkInC
     const cancelReasonInput = document.getElementById('cancelReasonInput' + orderId);
     const statusSelect = document.getElementById('statusSelect' + orderId);
     const payStatusSelect = document.getElementById('payStatusSelect' + orderId);
-    // Sử dụng chuỗi để so sánh trạng thái
-    let newStatusStr = newStatusValue.toString();
-    let currentStatusStr = currentStatusInt.toString();
-
+    
     // Reset cancel reason display
     cancelReasonDiv.style.display = 'none';
     cancelReasonInput.required = false;
     cancelReasonInput.value = '';
 
+    // Convert status values to integers for comparison
+    const statusMapping = {
+        'pending': 0,
+        'processing': 1,
+        'shipping': 2,
+        'completed': 3,
+        'cancelled': 4
+    };
+    
+    let currentStatus = currentStatusInt;
+    let newStatus = newStatusValue;
+    
+    // Convert string status to integer if needed
+    if (typeof currentStatus === 'string') {
+        currentStatus = statusMapping[currentStatus] || 0;
+    }
+    if (typeof newStatus === 'string') {
+        newStatus = statusMapping[newStatus] || 0;
+    }
+    
+    // Convert to integers for comparison
+    currentStatus = parseInt(currentStatus);
+    newStatus = parseInt(newStatus);
+
+    // For walk-in customers
     if (isWalkInCustomer) {
-        // Nếu đã hủy thì không cho chuyển lại
-        if ((currentStatusStr === '4' || currentStatusStr === 'cancelled') && newStatusStr !== '4' && newStatusStr !== 'cancelled') {
+        // If order is already cancelled, don't allow status change
+        if (currentStatus === 4) {
             statusSelect.value = 'cancelled';
             showAlert('Đơn hàng đã hủy không thể thay đổi trạng thái!', 'error');
             return false;
         }
-        // Nếu đã hoàn thành chỉ cho phép hủy
-        if ((currentStatusStr === '3' || currentStatusStr === 'completed') && newStatusStr !== '3' && newStatusStr !== 'completed' && newStatusStr !== '4' && newStatusStr !== 'cancelled') {
+        
+        // If order is already completed, only allow cancellation
+        if (currentStatus === 3 && newStatus !== 4) {
             statusSelect.value = 'completed';
             showAlert('Đơn hàng đã hoàn thành chỉ có thể hủy!', 'error');
             return false;
         }
-        // Nếu chọn hủy
-        if (newStatusStr === '4' || newStatusStr === 'cancelled') {
+        
+        // If choosing to cancel
+        if (newStatus === 4) {
             cancelReasonDiv.style.display = 'block';
             cancelReasonInput.required = true;
-            if (payStatusSelect) payStatusSelect.value = '2';
+            if (payStatusSelect) payStatusSelect.value = '2'; // Đã hủy
             return true;
         }
-        // Nếu chọn hoàn thành
-        if ((newStatusStr === '3' || newStatusStr === 'completed') && payStatusSelect) {
-            payStatusSelect.value = '1';
+        
+        // For walk-in, only allow completed or cancelled
+        if (newStatus !== 3 && newStatus !== 4) {
+            statusSelect.value = currentStatus === 3 ? 'completed' : 'pending';
+            showAlert('Khách lẻ chỉ có thể chọn "Hoàn thành" hoặc "Đã hủy"!', 'error');
+            return false;
         }
-        // Nếu chọn đã xác nhận
-        if ((newStatusStr === '1' || newStatusStr === 'processing') && payStatusSelect) {
-            payStatusSelect.value = '1';
-        }
+        
         return true;
     }
 
-    // Đơn online
-    if (currentStatusStr === '4' || currentStatusStr === 'cancelled') {
+    // For online orders
+    // If order is already cancelled, don't allow status change
+    if (currentStatus === 4) {
         statusSelect.value = 'cancelled';
         showAlert('Đơn hàng đã hủy không thể thay đổi trạng thái!', 'error');
         return false;
     }
-    if ((currentStatusStr === '3' || currentStatusStr === 'completed') && newStatusStr !== '3' && newStatusStr !== 'completed') {
+    
+    // If order is already completed, don't allow status change
+    if (currentStatus === 3) {
         statusSelect.value = 'completed';
         showAlert('Đơn hàng đã hoàn thành không thể thay đổi trạng thái!', 'error');
         return false;
     }
-    // Không cho phép lùi trạng thái (trừ hủy)
-    if (!isNaN(parseInt(newStatusStr)) && !isNaN(parseInt(currentStatusStr)) && (parseInt(newStatusStr) < parseInt(currentStatusStr)) && newStatusStr !== '4' && newStatusStr !== 'cancelled') {
-        statusSelect.value = currentStatusStr;
+    
+    // Prevent going backwards (except for cancellation)
+    if (newStatus < currentStatus && newStatus !== 4) {
+        statusSelect.value = Object.keys(statusMapping).find(key => statusMapping[key] === currentStatus) || 'pending';
         showAlert('Không thể lùi trạng thái đơn hàng!', 'error');
         return false;
     }
-    // Không cho phép nhảy cóc trạng thái (phải đi từng bước)
-    if (!isNaN(parseInt(newStatusStr)) && !isNaN(parseInt(currentStatusStr)) && (parseInt(newStatusStr) > parseInt(currentStatusStr) + 1) && newStatusStr !== '4' && newStatusStr !== 'cancelled') {
-        statusSelect.value = currentStatusStr;
+    
+    // Prevent skipping steps (must go one step at a time, except for cancellation)
+    if (newStatus > currentStatus + 1 && newStatus !== 4) {
+        statusSelect.value = Object.keys(statusMapping).find(key => statusMapping[key] === currentStatus) || 'pending';
         showAlert('Chỉ có thể chuyển sang trạng thái tiếp theo!', 'error');
         return false;
     }
-    // Nếu chọn hủy
-    if (newStatusStr === '4' || newStatusStr === 'cancelled') {
+    
+    // If choosing to cancel
+    if (newStatus === 4) {
         cancelReasonDiv.style.display = 'block';
         cancelReasonInput.required = true;
         if (payStatusSelect) payStatusSelect.value = '2';
         return true;
     }
-    // Nếu chọn hoàn thành
-    if ((newStatusStr === '3' || newStatusStr === 'completed') && payStatusSelect) {
+    
+    // If choosing completed, set payment status to paid
+    if (newStatus === 3 && payStatusSelect) {
         payStatusSelect.value = '1';
     }
+    
     return true;
 }
 
@@ -407,6 +438,7 @@ function handlePayStatusChange(orderId, newPayStatus, currentPayStatus, currentO
             payStatusSelect.value = currentPayStatus.toString();
             showAlert('Đơn hàng đã hủy chỉ có thể có trạng thái thanh toán "Đã hủy" hoặc "Hoàn tiền"!', 'error');
             return false;
+        }
     }
     // Nếu đơn hàng đã hoàn thành, không cho phép chuyển về "Chờ thanh toán"
     if (currentOrderStatus === 3 && newPayStatus === 0) {
@@ -432,9 +464,8 @@ function handlePayStatusChange(orderId, newPayStatus, currentPayStatus, currentO
         showAlert('Chỉ có thể chuyển trạng thái thanh toán thành "Đã hủy" khi đơn hàng đã hủy!', 'error');
         return false;
     }
-    // Tự động hủy đơn hàng khi chuyển trạng thái thanh toán thành "Đã hủy"
-    if (newPayStatus === 2 && currentOrderStatus !== 4) {
-        statusSelect.value = '4';
+    // Nếu chọn Hoàn tiền thì chỉ hiện input lý do hủy, không đổi trạng thái đơn
+    if (newPayStatus === 3) {
         const cancelReasonDiv = document.getElementById('cancelReasonDiv' + orderId);
         const cancelReasonInput = document.getElementById('cancelReasonInput' + orderId);
         cancelReasonDiv.style.display = 'block';
