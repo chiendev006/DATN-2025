@@ -1,5 +1,6 @@
 @extends('layout2')
 @section('main')
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
 @php
     use Illuminate\Support\Facades\Auth;
     use Illuminate\Support\Facades\Log;
@@ -42,7 +43,7 @@
                         <div class="shop-checkout-left">
                             @if(!$isLoggedIn)
                             <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
-Khách hàng quay lại? Nhấp vào đây để <a href="{{ route('login') }}">login</a></h6>
+                            Khách hàng quay lại? Nhấp vào đây để <a href="{{ route('login') }}">login</a></h6>
                             @endif
                            <form id="checkout-form" class="form" method="POST" action="{{ route('checkout.process') }}">
                                 @csrf
@@ -163,9 +164,12 @@ Khách hàng quay lại? Nhấp vào đây để <a href="{{ route('login') }}">
                     <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                         <div class="shop-checkout-right">
                             <div  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="shop-checkout-box">
-                                <h5 style="color: #959393;">ĐƠN HÀNG CỦA BẠN</h5>
+                               
+                                <div class="col-12">
+                                        <h5>Đơn Hàng Của Bạn</h5>
+                                    </div>
                                 <div  class="shop-checkout-title">
-                                    <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" style="color: #959393;">SẢN PHẨM <span>THÀNH TIỀN</span></h6>
+                                    <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" >Sản Phẩm <span>Thành tiền </span></h6>
                                 </div>
                                 <div  class="shop-checkout-row">
                                     @php
@@ -243,10 +247,10 @@ Khách hàng quay lại? Nhấp vào đây để <a href="{{ route('login') }}">
                                                 <div class="col-xs-7">
                                                     <p><strong>{{ $name }} x{{ $quantity }} </strong></p>
                                                     @if(isset($desc[1]))
-                                                        <p style="color: #666; font-size: 0.8em; font-weight: bold;">{{ $desc[1] }}</p>
+                                                        <p style="">{{ $desc[1] }}</p>
                                                     @endif
                                                     @if(isset($desc[2]))
-                                                        <p style="color: #666; font-size: 0.8em; font-weight: bold;">{{ $desc[2] }}</p>
+                                                        <p style="">{{ $desc[2] }}</p>
                                                     @endif
                                                 </div>
                                                 <div style="margin-left: 30px;" class="col-xs-4 text-right">
@@ -393,9 +397,7 @@ Khách hàng quay lại? Nhấp vào đây để <a href="{{ route('login') }}">
     color: #666;
 }
 
-.shop-checkout-row p strong {
-    color: #959393;
-}
+
 
 .checkout-total h6 {
     display: flex;
@@ -472,6 +474,11 @@ label {
 select.form-control:focus {
     border-color: #c7a17a;
     box-shadow: 0 0 0 0.2rem rgba(199, 161, 122, 0.25);
+}
+
+.shop-checkout-right, .shop-checkout-box, .shop-checkout-box * {
+    font-family: 'Quicksand', 'Segoe UI', Arial, sans-serif !important;
+    letter-spacing: 0.01em;
 }
 </style>
 <script>
