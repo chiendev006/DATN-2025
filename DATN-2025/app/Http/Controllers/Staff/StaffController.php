@@ -89,6 +89,8 @@ class StaffController extends Controller
             $order->pay_status = '1';
             $order->payment_method = $request->payment_method ?? 'cash';
             $order->total = $request->total;
+            $order->coupon_summary = $request->coupon_code;
+            $order->coupon_total_discount = $request->coupon_discount ?? 0;
             $order->save();
             // Lưu chi tiết order
             foreach ($request->cart as $item) {
