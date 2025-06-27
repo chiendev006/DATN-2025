@@ -55,12 +55,12 @@
             <!-- Header hóa đơn -->
             <div class="flex justify-between items-center mb-6 pb-4 border-b border-indigo-200">
                 <div>
-                    <h3 class="text-3xl font-extrabold text-indigo-700">#{{ $item->id }}</h3>
-                    <p class="text-sm text-gray-500">Mã hóa đơn</p>
+                    <h1 class="text-3xl font-extrabold text-indigo-700">#{{ $item->id }}</h1>
+                    <h4 class="text-sm text-gray-500">Mã hóa đơn</h4>
                 </div>
                 <div class="text-right">
-                    <div class="text-xl font-semibold text-gray-700">{{ $item->created_at->format('H:i') }}</div>
-                    <div class="text-sm text-gray-500">{{ $item->created_at->format('d/m/Y') }}</div>
+                    <div class="text-xl font-semibold text-gray-1000">{{ $item->created_at->format('H:i') }}</div>
+                    <div class="text-sm text-gray-1000">{{ $item->created_at->format('d/m/Y') }}</div>
                 </div>
             </div>
 
