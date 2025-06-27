@@ -23,7 +23,7 @@
     <!-- BEGIN #content -->
     <div id="content" class="app-content p-0">
         <!-- BEGIN pos -->
-        <div class="pos pos-with-menu pos-with-sidebar" id="pos">
+        <div class="pos pos-with-menu {{ !request()->routeIs('staff.orderdetailtoday') ? 'pos-with-sidebar' : '' }}" id="pos">
             <div class="pos-container">
                 <!-- BEGIN pos-menu -->
                 <div class="pos-menu">
