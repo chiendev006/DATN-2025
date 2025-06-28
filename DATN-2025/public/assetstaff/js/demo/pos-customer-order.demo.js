@@ -401,6 +401,46 @@ function updateTotalPrice() {
             }
         }
 
+        // Tăng số lượng trong giỏ
+        $(document).on('click', '.order-qty-increase', function(e) {
+            e.preventDefault();
+            var $qtyInput = $(this).closest('.pos-order-product').find('.order-qty');
+            var qty = parseInt($qtyInput.val()) || 1;
+            $qtyInput.val(qty + 1);
+
+            // Cập nhật tổng tiền cho sản phẩm
+            var $order = $(this).closest('.pos-order');
+            var sizePrice = parseFloat($order.data('sizeprice')) || 0;
+            var toppingTotal = parseFloat($order.data('toppingtotal')) || 0;
+            var newTotal = (sizePrice + toppingTotal) * (qty + 1);
+            $order.find('.order-total').text(formatVND(newTotal));
+            $order.data('total', newTotal);
+
+            updateSidebarTotal();
+            saveCartToLocalStorage();
+        });
+
+        // Giảm số lượng trong giỏ
+        $(document).on('click', '.order-qty-decrease', function(e) {
+            e.preventDefault();
+            var $qtyInput = $(this).closest('.pos-order-product').find('.order-qty');
+            var qty = parseInt($qtyInput.val()) || 1;
+            if (qty > 1) {
+                $qtyInput.val(qty - 1);
+
+                // Cập nhật tổng tiền cho sản phẩm
+                var $order = $(this).closest('.pos-order');
+                var sizePrice = parseFloat($order.data('sizeprice')) || 0;
+                var toppingTotal = parseFloat($order.data('toppingtotal')) || 0;
+                var newTotal = (sizePrice + toppingTotal) * (qty - 1);
+                $order.find('.order-total').text(formatVND(newTotal));
+                $order.data('total', newTotal);
+
+                updateSidebarTotal();
+                saveCartToLocalStorage();
+            }
+        });
+
 
         function saveCartToLocalStorage() {
             let cart = [];
