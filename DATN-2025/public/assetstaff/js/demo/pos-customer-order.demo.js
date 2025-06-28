@@ -205,6 +205,7 @@ function updateTotalPrice() {
                     </option>
                 `);
                 });
+                updateCouponOptions();
             }
         });
 
@@ -276,6 +277,8 @@ function updateTotalPrice() {
             $('#cart-subtotal').text(formatVND(subtotal));
             $('#cart-discount').text('-' + formatVND(discount));
             $('#cart-total').text(formatVND(total));
+
+            updateCouponOptions();
         }
 
         // Thu thập toàn bộ thông tin giỏ hàng từ sidebar
@@ -379,6 +382,25 @@ function updateTotalPrice() {
                 }
             });
         });
+
+        function updateCouponOptions() {
+            let subtotal = getCartSubtotal();
+            $('#coupon-select option').each(function(){
+                let min = Number($(this).data('min')) || 0;
+                if (subtotal < min && $(this).val() !== "") {
+                    $(this).prop('disabled', true);
+                } else {
+                    $(this).prop('disabled', false);
+                }
+            });
+            if ($('#coupon-select option:selected').prop('disabled')) {
+                $('#coupon-select').val('');
+                $('#coupon-message').text('');
+                appliedCoupon = null;
+                updateSidebarTotal();
+            }
+        }
+
 
         function saveCartToLocalStorage() {
             let cart = [];

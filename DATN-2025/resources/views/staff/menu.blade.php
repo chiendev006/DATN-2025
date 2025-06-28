@@ -12,6 +12,13 @@
     <link href="{{ url('assetstaff/css/app.min.css') }}" rel="stylesheet"/>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <style>
+        #coupon-select option:disabled {
+            color: #bfbfbf !important;
+            background: #f5f5f5;
+        }
+
+    </style>
     <!-- ================== END core-css ================== -->
 </head>
 <body class="pace-top">
