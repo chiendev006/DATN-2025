@@ -197,13 +197,17 @@ function updateTotalPrice() {
             if(data && data.length > 0) {
                 data.forEach(function(coupon) {
                     $('#coupon-select').append(`
-                    <option value="${coupon.code}"
+                      <option value="${coupon.code}"
                         data-type="${coupon.type}"
                         data-discount="${coupon.discount}"
                         data-min="${coupon.min_order_value}">
-                        ${coupon.code} - ${coupon.type === 'percent' ? coupon.discount+'%' : coupon.discount+'đ'} (Tối thiểu: ${Number(coupon.min_order_value).toLocaleString()}đ)
-                    </option>
-                `);
+                        ${coupon.code} - ${
+                        coupon.type === 'percent'
+                            ? (coupon.discount + '%')
+                            : (Number(coupon.discount).toLocaleString('vi-VN') + 'đ')
+                            } (Tối thiểu: ${Number(coupon.min_order_value).toLocaleString('vi-VN')}đ)
+                      </option>
+                    `);
                 });
                 updateCouponOptions();
             }
