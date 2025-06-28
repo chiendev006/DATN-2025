@@ -185,7 +185,7 @@
                                 <option value="">-- Chọn mã giảm giá --</option>
                                 <!-- option sẽ được JS render thêm -->
                             </select>
-                            <button class="btn btn-sm btn-primary mt-2" id="apply-coupon-btn">Áp dụng</button>
+                            <div id="apply-coupon-btn"></div>
                             <div id="coupon-message" style="font-size:14px;margin-top:4px;"></div>
                         </div>
                         <hr class="opacity-1 my-10px"/>
