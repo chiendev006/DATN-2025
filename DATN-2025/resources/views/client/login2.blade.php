@@ -26,13 +26,9 @@
                                 <div class="title text-center">
                                     <h3 class="text-coffee">Login</h3>
                                 </div>
-                                <form class="login-form" method="post" name="login" action="{{ route('post-login') }}">
+                                <form id="login-form">
                                     @csrf
-                                    @if(session('message'))
-                                        <div class="alert alert-danger">
-                                            <p>{{ session('message') }}</p>
-                                        </div>
-                                    @endif
+                                    <div id="login-error-message" class="alert alert-danger" style="display: none;"></div>
                                     @if(session('success'))
                                         <div class="alert alert-success">
                                             <p>{{ session('success') }}</p>
@@ -40,20 +36,10 @@
                                     @endif
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <input type="text" name="email" placeholder="Username or email address" class="input-fields">
-                                            @error('email')
-                                            <div class="alert alert-danger">
-                                                <p>{{ $message }}</p>
-                                            </div>
-                                            @enderror
+                                            <input type="text" name="email" placeholder="Username or email address" class="input-fields" required>
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <input type="password" name="password" placeholder="********" class="input-fields">
-                                            @error('password')
-                                            <div class="alert alert-danger">
-                                                <p>{{ $message }}</p>
-                                            </div>
-                                            @enderror
+                                            <input type="password" name="password" placeholder="********" class="input-fields" required>
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <div class="row">
@@ -66,7 +52,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <input type="submit" name="submit" value="LOGIN" class="button-default button-default-submit">
+                                            <button type="submit" class="button-default button-default-submit">LOGIN</button>
                                         </div>
                                     </div>
                                 </form>
@@ -81,4 +67,47 @@
 
         </div>
     </main>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('login-form');
+    const errorMessageDiv = document.getElementById('login-error-message');
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(loginForm);
+            const data = Object.fromEntries(formData.entries());
+
+            fetch('{{ route('post-login') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.token) {
+                    localStorage.setItem('authToken', result.token);
+                    window.location.href = result.redirect_url || '/';
+                } else {
+                    errorMessageDiv.textContent = result.message || 'Đăng nhập thất bại.';
+                    errorMessageDiv.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorMessageDiv.textContent = 'Đã xảy ra lỗi khi đăng nhập.';
+                errorMessageDiv.style.display = 'block';
+            });
+        });
+    }
+});
+</script>
 @endsection

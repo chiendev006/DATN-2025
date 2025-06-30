@@ -36,7 +36,7 @@
 
 		<!-- Mega Menu -->
 		<link rel="stylesheet" href="{{ url('assetadmin') }}/vendor/megamenu/css/megamenu.css">
-
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 		<!-- Search Filter JS -->
 		<link rel="stylesheet" href="{{ url('assetadmin') }}/vendor/search-filter/search-filter.css">
 		<link rel="stylesheet" href="{{ url('assetadmin') }}/vendor/search-filter/custom-search-filter.css">
@@ -45,9 +45,13 @@
 <!-- Summernote JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
-@vite(['resources/css/app.css', 'resources/js/app.js'])
+@vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/admin-app.js'])
 	</head>
 	<body>
+@php
+    use Illuminate\Support\Facades\Auth;
+    $currentAdminId = (Auth::check() && Auth::user()->role == 1) ? Auth::id() : null;
+@endphp
 @php
     $isHomeTab = request()->is('admin') ||request()->is('admin/contact') ||request()->is('admin/address') ||request()->is('admin/address/search') ||request()->is('admin/coupon') || request()->is('admin/danhmuc*') ||  request()->is('admin/blogs*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*');
     $isAuthTab = request()->is('admin/staff*') || request()->is('admin/payroll*');
@@ -378,3 +382,6 @@
 
 				</div>
 				<!-- Page header ends -->
+                @if($currentAdminId)
+                    <div id="admin-app" data-current-user-id="{{ json_encode($currentAdminId) }}"></div>
+                @endif

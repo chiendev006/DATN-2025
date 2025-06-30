@@ -80,6 +80,14 @@
             }
         </script>
 </div>
+
+<!-- Main Footer -->
+
+
+@if(isset($currentAdminId) && $currentAdminId)
+    <div id="admin-app" data-current-user-id="{{ json_encode($currentAdminId) }}"></div>
+@endif
+
 	</body>
   <!-- jQuery (bắt buộc) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
