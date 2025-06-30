@@ -7,6 +7,38 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Mira Café</title>
 
+    @vite(['resources/css/client.css', 'resources/js/client-app.js'])
+
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    @php
+        use Illuminate\Support\Facades\Auth;
+        use App\Models\Cart;
+        use App\Models\Cartdetail;
+        use App\Models\User;
+
+        $currentUserId = Auth::check() ? Auth::id() : null;
+        $cartCount = 0;
+
+        if ($currentUserId) {
+            $cart = Cart::where('user_id', $currentUserId)->first();
+            if ($cart) {
+                $cartCount = Cartdetail::where('cart_id', $cart->id)->sum('quantity');
+            }
+        } else {
+            $sessionCart = session('cart', []);
+            $cartCount = collect($sessionCart)->sum('quantity');
+        }
+
+        // Tìm ID của admin mặc định hoặc admin đầu tiên
+        $adminForChat = User::where('role', 1)->first(); // Giả sử cột is_admin
+        $adminIdForChat = $adminForChat ? $adminForChat->id : null;
+        // Nếu bạn muốn test mà chưa có admin nào, bạn có thể gán tạm một ID:
+        // $adminIdForChat = $adminIdForChat ?? 1; // Ví dụ: gán 1 nếu không tìm thấy
+    @endphp
     <link rel="shortcut icon" href="assetadmin\img\cards\M-removebg-preview.png" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
@@ -41,27 +73,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-@vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-       @php
-      use Illuminate\Support\Facades\Auth;
-
-      $cartCount = 0;
-
-      if (Auth::check()) {
-          $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
-          if ($cart) {
-              $cartCount = \App\Models\Cartdetail::where('cart_id', $cart->id)->sum('quantity');
-          }
-      } else {
-          $sessionCart = session('cart', []);
-          $cartCount = collect($sessionCart)->sum('quantity');
-      }
-    @endphp
     <style>
 
       .search-input-wrapper {
@@ -520,6 +532,11 @@
         </div>
       </header>
     @yield('main')
+    <div id="client-app"
+        data-current-user-id="{{ json_encode($currentUserId) }}"
+        data-admin-id="{{ json_encode($adminIdForChat) }}">
+    </div>
+
       <!-- End Main Part -->
 
       <!-- Start Footer Part -->
@@ -621,13 +638,7 @@
 
 
 <!-- Elfsight AI Chatbot | Untitled AI Chatbot  -->
-<script src="https://static.elfsight.com/platform/platform.js" async></script>
 
-                <!-- luonghvpp03220@gmal.com -->
-<!-- <div class="elfsight-app-36d5930f-53fe-4eb3-9cfb-7853aecba54c" data-elfsight-app-lazy></div> -->
-
-                <!-- chubenai3@gmail.com -->
-<div class="elfsight-app-784728d3-89d8-42e0-8e07-0b4b0235f735" data-elfsight-app-lazy></div>
 
 
     <script src="{{ url('asset') }}/js/jquery.min.js"></script>

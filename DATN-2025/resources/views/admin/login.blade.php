@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" class="form-screen">
 <head>
@@ -56,10 +55,8 @@
                 </p>
             </header>
             <div class="card-content">
-                @if(session('message'))
-                    <p class="text-red-500">{{ session('message') }}</p>
-                @endif
-                <form method="post" action="{{ route('admin.post-login') }}">
+                <div id="login-error-message" class="text-red-500" style="display: none;"></div>
+                <form id="admin-login-form">
                     @csrf
                     <div class="field spaced">
                         <label class="label">Login</label>
@@ -112,7 +109,47 @@
 </div>
 
 <!-- Scripts below are for demo only -->
-<script type="text/javascript" src="js/main.min.js?v=1628755089081"></script>
+<script type="text/javascript" src="{{ url('assetlogin') }}/js/main.min.js?v=1628755089081"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('admin-login-form');
+    const errorMessageDiv = document.getElementById('login-error-message');
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(loginForm);
+            const data = Object.fromEntries(formData.entries());
+
+            fetch('{{ route('admin.post-login') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.token) {
+                    localStorage.setItem('authToken', result.token);
+                    window.location.href = result.redirect_url || '/admin';
+                } else {
+                    errorMessageDiv.textContent = result.message || 'Đăng nhập thất bại.';
+                    errorMessageDiv.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorMessageDiv.textContent = 'Đã xảy ra lỗi khi đăng nhập.';
+                errorMessageDiv.style.display = 'block';
+            });
+        });
+    }
+});
+</script>
 
 
 <script>

@@ -30,14 +30,13 @@ class AuthenticationController extends Controller
         ]);
 
         if (Auth::guard('web')->attempt($data)) {
+            /** @var \App\Models\User $user */
             $user = Auth::user();
 
-            // Only if user is an admin (role must be exactly 1), authenticate admin and staff guards
             if ($user->role === 1 || $user->role === '1') {
                 Auth::guard('admin')->login($user);
                 Auth::guard('staff')->login($user);
             } else {
-                // Make sure non-admin users are NOT logged into admin or staff guards
                 if (Auth::guard('admin')->check()) {
                     Auth::guard('admin')->logout();
                 }
@@ -46,8 +45,25 @@ class AuthenticationController extends Controller
                 }
             }
 
+            // Nếu là yêu cầu AJAX, trả về token
+            if ($request->expectsJson()) {
+                $token = $user->createToken('auth-token')->plainTextToken;
+                return response()->json([
+                    'message' => 'Login successful',
+                    'token' => $token,
+                    'user' => $user,
+                    'redirect_url' => '/'
+                ]);
+            }
+
             return redirect()->intended('/');
         } else {
+            // Nếu là yêu cầu AJAX, trả về lỗi
+             if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Email hoac mat khau khong chinh xac'
+                ], 401);
+            }
             return redirect()->back()->with([
                 'message' => 'Email hoac mat khau khong chinh xac'
             ]);
