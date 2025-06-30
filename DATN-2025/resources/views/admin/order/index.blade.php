@@ -418,6 +418,7 @@ function resetDisableOptions() {
             option.disabled = false;
             option.style.display = '';
         });
+        statusSelect.removeAttribute('disabled');
     }
 
     const payStatusSelect = document.getElementById('modal_pay_status');
@@ -426,6 +427,7 @@ function resetDisableOptions() {
             option.disabled = false;
             option.style.display = '';
         });
+        payStatusSelect.removeAttribute('disabled');
     }
 
     const payStatusContainer = document.getElementById('pay_status_container');
@@ -454,6 +456,11 @@ function openOrderModal(btn) {
         const pendingOption = statusSelect.querySelector('option[value="pending"]');
         if (pendingOption) pendingOption.style.display = 'none';
 
+        // Ẩn option Hoàn tiền trong trạng thái thanh toán
+        const payStatusSelect = document.getElementById('modal_pay_status');
+        const refundOption = payStatusSelect.querySelector('option[value="3"]');
+        if (refundOption) refundOption.style.display = 'none';
+
     } else {
         document.getElementById('modal_phone').value = btn.getAttribute('data-phone');
 
@@ -473,25 +480,36 @@ function openOrderModal(btn) {
     statusSelect.value = initialStatusValue;
     payStatusSelect.value = originalPayStatusFromButton;
     statusSelect.setAttribute('data-original-status', initialStatusValue);
-    if (originalPayStatusFromButton === '2' || originalPayStatusFromButton === '3') {
-        payStatusSelect.setAttribute('disabled', 'disabled');
-        if (!document.getElementById('hidden_pay_status')) {
-            const hidden = document.createElement('input');
-            hidden.type = 'hidden';
-            hidden.name = 'pay_status';
-            hidden.id = 'hidden_pay_status';
-            hidden.value = originalPayStatusFromButton;
-            payStatusSelect.parentNode.appendChild(hidden);
-        } else {
-            document.getElementById('hidden_pay_status').value = originalPayStatusFromButton;
-        }
-    } else {
-        payStatusSelect.removeAttribute('disabled');
-        const hidden = document.getElementById('hidden_pay_status');
-        if (hidden) hidden.remove();
-    }
+
     disableInvalidStatusOptions(initialStatusValue);
     disableInvalidPayStatusOptions(originalPayStatusFromButton);
+
+    // Đặt đoạn này SAU các hàm disable khác để đảm bảo không bị override
+    if (initialStatusValue === 'completed' && originalPayStatusFromButton === '1') {
+        // Disable tất cả option trạng thái đơn
+        [...statusSelect.options].forEach(option => {
+            if (option.value !== 'completed') {
+                option.disabled = true;
+                option.style.display = 'none';
+            } else {
+                option.disabled = false;
+                option.style.display = '';
+            }
+        });
+        statusSelect.setAttribute('disabled', 'disabled');
+
+        // Disable tất cả option trạng thái thanh toán
+        [...payStatusSelect.options].forEach(option => {
+            if (option.value !== '1') {
+                option.disabled = true;
+                option.style.display = 'none';
+            } else {
+                option.disabled = false;
+                option.style.display = '';
+            }
+        });
+        payStatusSelect.setAttribute('disabled', 'disabled');
+    }
 
     if (initialStatusValue === 'pending' || initialStatusValue === 'processing' || initialStatusValue === 'shipping') {
         payStatusSelect.removeAttribute('name');
@@ -661,7 +679,7 @@ function validateForm() {
             alert('Đơn chưa thanh toán. Khi hủy, trạng thái thanh toán phải được chuyển thành "Đã hủy".');
             return false;
         }
-        if (originalPayStatus === '1' && payStatus !== '3') {
+        if (originalPayStatus === '1' && payStatus !== '3' && phone !== 'Nhân viên thu ngân') {
             alert('Đơn đã thanh toán. Khi hủy, trạng thái thanh toán phải được chuyển thành "Hoàn tiền".');
             return false;
         }

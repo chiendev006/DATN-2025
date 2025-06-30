@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\User;
 
 class VNPayController extends Controller
 {
@@ -154,6 +155,12 @@ class VNPayController extends Controller
                     $order->note = $vnpOrder['note'];
                     $order->transaction_id = $vnpData['vnp_TransactionNo'];
 
+                    // Lưu thông tin điểm sử dụng
+                    if (isset($vnpOrder['points_used']) && $vnpOrder['points_used'] > 0) {
+                        $order->points_used = $vnpOrder['points_used'];
+                        $order->points_discount = $vnpOrder['points_discount'];
+                    }
+
                     if (!$order->save()) {
                         throw new \Exception('Không thể lưu đơn hàng');
                     }
@@ -180,6 +187,46 @@ class VNPayController extends Controller
                         if ($userCart) {
                             \App\Models\Cartdetail::where('cart_id', $userCart->id)->delete();
                             $userCart->delete();
+                        }
+                    }
+
+                    // Trừ điểm sau khi đơn hàng đã được lưu thành công
+                    if (isset($vnpOrder['points_used']) && $vnpOrder['points_used'] > 0) {
+                        try {
+                            Log::info('DEBUG: Starting to deduct points for VNPay order', [
+                                'user_id' => $vnpOrder['user_id'],
+                                'order_id' => $order->id,
+                                'points_used' => $vnpOrder['points_used']
+                            ]);
+                            
+                            $user = \App\Models\User::find($vnpOrder['user_id']);
+                            if ($user) {
+                                $userPointsBefore = $user->points;
+                                
+                                // Trừ điểm trực tiếp từ user
+                                $user->usePoints(
+                                    $vnpOrder['points_used'],
+                                    "Sử dụng điểm giảm giá đơn hàng #{$order->id}",
+                                    $order->id
+                                );
+                                
+                                Log::info('DEBUG: Points deducted for VNPay order', [
+                                    'user_id' => $user->id,
+                                    'order_id' => $order->id,
+                                    'points_used' => $vnpOrder['points_used'],
+                                    'user_points_before' => $userPointsBefore,
+                                    'user_points_after' => $user->points
+                                ]);
+                            }
+                        } catch (\Exception $e) {
+                            Log::error('DEBUG: Error deducting points for VNPay order', [
+                                'user_id' => $vnpOrder['user_id'] ?? null,
+                                'order_id' => $order->id,
+                                'error' => $e->getMessage(),
+                                'trace' => $e->getTraceAsString()
+                            ]);
+                            // Không throw exception ở đây để không rollback đơn hàng đã tạo
+                            // Chỉ log lỗi và tiếp tục
                         }
                     }
 

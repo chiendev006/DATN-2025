@@ -29,6 +29,8 @@ class Order extends Model
         'pay_status',
         'coupon_summary',
         'coupon_total_discount',
+        'points_used',
+        'points_discount',
         'note',
         'created_at',
         'updated_at',

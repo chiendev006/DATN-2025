@@ -5,9 +5,17 @@ namespace App\Http\Controllers\admin;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Services\PointService;
 
 class OrderController extends Controller
 {
+    protected $pointService;
+
+    public function __construct(PointService $pointService)
+    {
+        $this->pointService = $pointService;
+    }
+
     /**
      */
     public function ordersIndex(Request $request)
@@ -47,7 +55,23 @@ class OrderController extends Controller
         }
 
         $order->save();
-        $msg = 'Cập nhật đơn hàng thành công!';
+
+        // Tích điểm khi đơn hàng hoàn thành
+        if ($status === 'Hoàn thành' && $order->pay_status === 'Đã thanh toán') {
+            try {
+                $earnedPoints = $this->pointService->earnPointsFromOrder($order);
+                if ($earnedPoints > 0) {
+                    $msg = "Cập nhật đơn hàng thành công! Đã tích {$earnedPoints} điểm cho khách hàng.";
+                } else {
+                    $msg = 'Cập nhật đơn hàng thành công!';
+                }
+            } catch (\Exception $e) {
+                $msg = 'Cập nhật đơn hàng thành công! (Lỗi tích điểm: ' . $e->getMessage() . ')';
+            }
+        } else {
+            $msg = 'Cập nhật đơn hàng thành công!';
+        }
+
         return redirect()->route('admin.order.index')->with('success', $msg);
     }
 

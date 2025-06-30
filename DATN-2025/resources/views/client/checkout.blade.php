@@ -289,13 +289,57 @@
                                     @endforeach
                                 @endif
 
-                                <div class="checkout-total">
-                                    <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Phí vận chuyển: <span id="shipping-fee-display-right">{{ $shippingFee > 0 ? number_format($shippingFee) . ' đ' : '0 đ' }}</span></h6>
-                                </div>
+                                <!-- Point System Section -->
+                                @if($isLoggedIn)
+                                    <div class="checkout-total" id="points-section">
+                                        <h6 style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; text-align: left;">
+                                        ⭐ Điểm tích lũy: <span id="user-points">{{ Auth::user()->formatted_points ?? '0' }}</span>
+                                        </h6>                                        
+                                        <div id="points-info" style="font-size: 1.2rem; color: #666; margin-top: 5px; display: none;">
+                                            <span id="points-message"></span>
+                                        </div>
+                                        
+                                        <div id="points-input-section" class="points-input-section-custom">
+                                            <label for="points-to-use" class="points-label">
+                                            Sử dụng điểm tích lũy:
+                                            </label>
+                                            <div class="input-group points-input-group">
+                                                <input type="number" id="points-to-use" class="form-control points-input" placeholder="Nhập số điểm..." min="0">
+                                                <button type="button" id="apply-points" class="btn btn-warning points-apply-btn">
+                                                Áp dụng
+                                                </button>
+                                            </div>
+                                            <small class="text-muted">Tối đa: <span id="max-points">0</span> điểm</small>
+                                            @error('points_used')
+                                                <div class="text-danger mt-1">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        
+                                        <div id="points-discount" style="display: none; margin-top: 10px;">
+                                            <div class="alert alert-success" style="border-radius: 20px; padding: 10px 15px; margin: 0;">
+                                                <i class="fas fa-gift"></i> 
+                                                Giảm giá từ điểm: <strong>-<span id="points-discount-amount">0</span> VND</strong>
+                                                <button type="button" id="remove-points" class="btn btn-sm btn-outline-danger" style="float: right; border-radius: 15px;">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
 
                                 <div class="checkout-total">
-                                    <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Tổng thanh toán: <span class="price-big" id="total-with-shipping">{{ number_format($total) }} VND</span></h6>
+                                    <h6 class="shipping-fee-title">
+                                        <img src="{{ url('asset') }}/images/ship.jpg" alt="" style="height: 24px;">
+                                        Phí vận chuyển: <span id="shipping-fee-display-right">{{ $shippingFee > 0 ? number_format($shippingFee) . ' đ' : '0 đ' }}</span>
+                                    </h6>
                                 </div>
+
+                              <div class="checkout-total">
+                                <h6 class="total-payment-title">
+                                    <img src="{{ url('asset') }}/images/thanhtoan.jpg" alt="" style="height: 24px;">
+                                    Tổng thanh toán: <span class="price-big" id="total-with-shipping">{{ number_format($total) }} VND</span>
+                                </h6>
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -306,11 +350,90 @@
 </main>
 
 <style>
+    .points-input-section-custom {
+    background:rgb(226, 255, 236);
+    border-radius: 18px;
+    box-shadow: 0 2px 8px rgba(199,161,122,0.07);
+    padding: 18px 20px 12px 20px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    max-width: 420px;
+}
+.points-label {
+    font-weight: 600;
+    color:rgb(0, 0, 0);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    gap: 6px;
+}
+.points-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+.points-input {
+    border-radius: 20px 0 0 20px !important;
+    height: 42px;
+    border: 1px solid #e7cba9;
+    font-size: 1rem;
+    background: #fff;
+    box-shadow: none;
+}
+.points-apply-btn {
+    border-radius: 0 20px 20px 0 !important;
+    height: 42px;
+    background: linear-gradient(90deg, #c7a17a 0%, #e7cba9 100%);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    transition: background 0.2s;
+}
+.points-apply-btn:hover {
+    background: linear-gradient(90deg, #e7cba9 0%, #c7a17a 100%);
+    color: #fff;
+}
+@media (max-width: 600px) {
+    .points-input-section-custom {
+        padding: 12px 8px 8px 8px;
+        max-width: 100%;
+    }
+    .points-label {
+        font-size: 0.95rem;
+    }
+    .points-input, .points-apply-btn {
+        height: 38px;
+        font-size: 0.95rem;
+    }
+}
+    .total-payment-title {
+    text-align: left !important;
+    justify-content: flex-start !important;
+    display: block !important;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.total-payment-title img {
+    vertical-align: middle;
+    margin-right: 8px;
+}
+    /* Thêm vào cuối file style */
+.checkout-total .shipping-fee-title {
+    text-align: left !important;
+    justify-content: flex-start !important;
+    display: block !important;
+}
 .text-danger {
     color: #dc3545;
     font-size: 0.875rem;
     margin-top: 0.25rem;
     display: block;
+}
+/* Thêm vào cuối file style */
+.checkout-total .shipping-fee-title {
+    text-align: left !important;
+    justify-content: flex-start !important;
+    display: block !important;
 }
 
 .text-muted {
@@ -801,6 +924,199 @@ document.addEventListener("DOMContentLoaded", function () {
 
     districtSelect.addEventListener("change", updateShippingAndTotal);
     updateShippingAndTotal();
+
+    // Point System JavaScript
+    @if($isLoggedIn)
+    let pointsApplied = 0;
+    let pointsDiscount = 0;
+    let maxPointsCanUse = 0;
+
+    // Elements
+    const pointsSection = document.getElementById('points-section');
+    const pointsInfo = document.getElementById('points-info');
+    const pointsMessage = document.getElementById('points-message');
+    const pointsInputSection = document.getElementById('points-input-section');
+    const pointsToUseInput = document.getElementById('points-to-use');
+    const applyPointsBtn = document.getElementById('apply-points');
+    const maxPointsSpan = document.getElementById('max-points');
+    const pointsDiscountDiv = document.getElementById('points-discount');
+    const pointsDiscountAmount = document.getElementById('points-discount-amount');
+    const removePointsBtn = document.getElementById('remove-points');
+
+    // Check available points on page load
+    function checkAvailablePoints() {
+        const currentTotal = subtotal + (parseInt(districtSelect.options[districtSelect.selectedIndex]?.getAttribute("data-ship")) || 0) - discount;
+        
+        fetch(`/points/available?order_total=${currentTotal}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.can_use) {
+                    pointsMessage.textContent = data.message;
+                    pointsInfo.style.display = 'block';
+                    pointsInputSection.style.display = 'block';
+                    maxPointsCanUse = data.max_points;
+                    maxPointsSpan.textContent = data.max_points;
+                    
+                    // Set max value for input
+                    pointsToUseInput.max = data.max_points;
+                } else {
+                    pointsMessage.textContent = data.message;
+                    pointsInfo.style.display = 'block';
+                    pointsInputSection.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error checking points:', error);
+                pointsMessage.textContent = 'Không thể kiểm tra điểm. Vui lòng thử lại.';
+                pointsInfo.style.display = 'block';
+            });
+    }
+
+    // Apply points
+    function applyPoints() {
+        const pointsToUse = parseInt(pointsToUseInput.value) || 0;
+        
+        if (pointsToUse <= 0) {
+            alert('Vui lòng nhập số điểm muốn sử dụng');
+            return;
+        }
+        
+        if (pointsToUse > maxPointsCanUse) {
+            alert(`Chỉ có thể sử dụng tối đa ${maxPointsCanUse} điểm cho đơn hàng này`);
+            return;
+        }
+
+        const currentTotal = subtotal + (parseInt(districtSelect.options[districtSelect.selectedIndex]?.getAttribute("data-ship")) || 0) - discount;
+        
+        fetch('/points/calculate-discount', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                points_to_use: pointsToUse,
+                order_total: currentTotal
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+            
+            pointsApplied = data.points_used;
+            pointsDiscount = data.discount_amount;
+            
+            // Update display
+            pointsDiscountAmount.textContent = data.discount_amount.toLocaleString('vi-VN');
+            pointsDiscountDiv.style.display = 'block';
+            pointsInputSection.style.display = 'none';
+            
+            // Update total
+            updateTotalWithPoints();
+            
+            // Add hidden input for form submission
+            addPointsToForm();
+        })
+        .catch(error => {
+            console.error('Error applying points:', error);
+            alert('Có lỗi xảy ra. Vui lòng thử lại.');
+        });
+    }
+
+    // Remove points
+    function removePoints() {
+        pointsApplied = 0;
+        pointsDiscount = 0;
+        
+        pointsDiscountDiv.style.display = 'none';
+        pointsInputSection.style.display = 'block';
+        pointsToUseInput.value = '';
+        
+        updateTotalWithPoints();
+        removePointsFromForm();
+    }
+
+    // Update total with points discount
+    function updateTotalWithPoints() {
+        const shippingCost = parseInt(districtSelect.options[districtSelect.selectedIndex]?.getAttribute("data-ship")) || 0;
+        const newTotal = subtotal + shippingCost - discount - pointsDiscount;
+        
+        if (totalWithShippingElement) {
+            totalWithShippingElement.textContent = formatCurrency(Math.max(0, newTotal));
+        }
+    }
+
+    // Add points to form for submission
+    function addPointsToForm() {
+        // Remove existing points input
+        removePointsFromForm();
+        
+        // Add new points input
+        const pointsInput = document.createElement('input');
+        pointsInput.type = 'hidden';
+        pointsInput.name = 'points_used';
+        pointsInput.value = pointsApplied;
+        checkoutForm.appendChild(pointsInput);
+    }
+
+    // Remove points from form
+    function removePointsFromForm() {
+        const existingPointsInput = checkoutForm.querySelector('input[name="points_used"]');
+        if (existingPointsInput) {
+            existingPointsInput.remove();
+        }
+    }
+
+    // Event listeners
+    applyPointsBtn.addEventListener('click', applyPoints);
+    removePointsBtn.addEventListener('click', removePoints);
+    
+    pointsToUseInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            applyPoints();
+        }
+    });
+
+    // Check points when shipping changes
+    districtSelect.addEventListener('change', function() {
+        if (pointsApplied > 0) {
+            // Recalculate points discount if shipping changes
+            const currentTotal = subtotal + (parseInt(districtSelect.options[districtSelect.selectedIndex]?.getAttribute("data-ship")) || 0) - discount;
+            
+            fetch('/points/calculate-discount', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    points_to_use: pointsApplied,
+                    order_total: currentTotal
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    pointsDiscount = data.discount_amount;
+                    pointsDiscountAmount.textContent = data.discount_amount.toLocaleString('vi-VN');
+                    updateTotalWithPoints();
+                }
+            })
+            .catch(error => {
+                console.error('Error recalculating points:', error);
+            });
+        } else {
+            checkAvailablePoints();
+        }
+    });
+
+    // Initialize points check
+    checkAvailablePoints();
+    @endif
 });
 </script>
 @endsection
