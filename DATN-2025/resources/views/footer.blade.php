@@ -39,6 +39,7 @@
 		<script src="{{ url('assetadmin') }}/vendor/search-filter/custom-search-filter.js"></script>
 
 		<!-- Apex Charts -->
+		{{--
 		<script src="{{ url('assetadmin') }}/vendor/apex/apexcharts.min.js"></script>
 		<script src="{{ url('assetadmin') }}/vendor/apex/custom/home/salesGraph.js"></script>
 		<script src="{{ url('assetadmin') }}/vendor/apex/custom/home/ordersGraph.js"></script>
@@ -46,6 +47,7 @@
 		<script src="{{ url('assetadmin') }}/vendor/apex/custom/home/visitorsGraph.js"></script>
 		<script src="{{ url('assetadmin') }}/vendor/apex/custom/home/customersGraph.js"></script>
 		<script src="{{ url('assetadmin') }}/vendor/apex/custom/home/sparkline.js"></script>
+		--}}
 
 		<!-- Circleful Charts -->
 		<script src="{{ url('assetadmin') }}/vendor/circliful/circliful.min.js"></script>

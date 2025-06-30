@@ -23,19 +23,19 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             UserSeeder::class,
-            DanhmucSeeder::class,
-            SanphamSeeder::class,
-            ToppingSeeder::class,
-            ProductAttributeSeeder::class,
-            ProductToppingSeeder::class,
-            CouponSeeder::class,
-            AddressSeeder::class,
-            ContactSeeder::class,
-            BlogsSeeder::class,
-            StaffSeeder::class,
+            // DanhmucSeeder::class,
+            // SanphamSeeder::class,
+            // ToppingSeeder::class,
+            // ProductAttributeSeeder::class,
+            // ProductToppingSeeder::class,
+            // CouponSeeder::class,
+            // AddressSeeder::class,
+            // ContactSeeder::class,
+            // BlogsSeeder::class,
+            // StaffSeeder::class,
 
-            ProductCommentSeeder::class,
-            DanhmucBlogSeeder::class
+            // ProductCommentSeeder::class,
+            // DanhmucBlogSeeder::class
         ]);
     }
 }
