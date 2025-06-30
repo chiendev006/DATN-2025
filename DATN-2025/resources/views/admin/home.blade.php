@@ -6,101 +6,30 @@
                     <div class="row gutters">
                     <div class="container">
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                    <div style="align-items: center;" class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
+                       <div style="display: flex; justify-content: space-between; " class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
+                    <div style="align-items: center;" class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
                     <h2>Thống kê 12 tháng gần nhất</h2>
                    <div style="background-color: white;" >
 
-                    <canvas style="width: 100%; height: 100%;" id="lineChart"></canvas>
+                    <canvas style="margin-top:19px ;" id="lineChart"></canvas>
                    </div>
                     </div>
 
-                    <div style="display: flex; justify-content: space-between; " class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11">
-                  <div style="margin-top: 10px;" class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6" >
+
+
+                    <div style="margin-top: 10px; margin-left:10px" class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6" >
                   <h2>Đơn hàng trong tuần này</h2>
                     <div style="background-color: white;" >
 
                     <canvas  id="barChart"></canvas>
                     </div>
                   </div>
-
-                  <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5" >
-                    <h2 style="margin-top: 10px;">Top sản phẩm</h2>
-                                <div class="card">
-
-
-                                    <div  class="card-body">
-										<div  style="margin-top: 10px;" class="table-responsive">
-											<table class="table products-table">
-												<thead>
-													<tr>
-                                                        <th>Top </th>
-														<th>Sản phẩm</th>
-														<th>Sô lượt bán</th>
-													</tr>
-												</thead>
-												<tbody>
-                                                    @foreach ($topproduct as $key => $item)
-													<tr>
-														<td>{{ $key+1}}</td>
-														<td>{{ $item->product->name }}</td>
-														<td style="text-align: center;">{{ $item->total_quantity }}</td>
-													</tr>
-                                                    @endforeach
-												</tbody>
-											</table>
-										</div>
-									</div>
-								</div>
-                            </div>
                     </div>
 
 
     </div>
 
-    <div  style="margin-top: 10px;margin-left:3px" class="row gutters col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11" >
-
-                            <h2>Đơn hàng gần đây</h2>
-								<div class="card">
-									<div class="card-header">
-
-
-									</div>
-									<div class="card-body">
-										<div class="table-responsive">
-											<table class="table products-table">
-												<thead>
-													<tr>
-														<th>Mã đơn hàng</th>
-														<th>Ngày đặt hàng</th>
-														<th>Tên khách hàng</th>
-														<th>Số điện thoại</th>
-														<th>Tổng tiền</th>
-														<th>Trạng thái</th>
-													</tr>
-												</thead>
-												<tbody>
-                                                    @foreach ($recentOrders as $order)
-													<tr>
-														<td>{{ $order->id }}</td>
-														<td>{{ $order->created_at }}</td>
-														<td>{{ $order->name }}</td>
-														@if( $order->phone=="N/A")
-                                                        <td>Nhân viên order</td>
-                                                        @else
-                                                        <td>{{ $order->phone }}</td>
-                                                        @endif
-														<td>{{ number_format($order->total) }} đ</td>
-														<td>{{ $order->status }}</td>
-													</tr>
-                                                    @endforeach
-												</tbody>
-											</table>
-										</div>
-									</div>
-								</div>
-
-						</div><div id="modal-revenue" style="margin-top: 10px;margin-left:3px; " class="row gutters col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11" >
-
+    <div  style="margin-top: 10px;margin-left:3px; display: flex;" class="row gutters col-xl-11 col-lg-11 col-md-11 col-sm-11 col-11" >
 <h2>Doanh thu
     <form id="revenueFilterForm" method="post">
         @csrf
@@ -177,6 +106,46 @@
     </div>
 
    </div>
+                            <h2>Đơn hàng gần đây</h2>
+								<div class="card">
+									<div class="card-header">
+
+
+									</div>
+									<div class="card-body">
+										<div class="table-responsive">
+											<table class="table products-table">
+												<thead>
+													<tr>
+														<th>Mã đơn hàng</th>
+														<th>Ngày đặt hàng</th>
+														<th>Tên khách hàng</th>
+														<th>Số điện thoại</th>
+														<th>Tổng tiền</th>
+														<th>Trạng thái</th>
+													</tr>
+												</thead>
+												<tbody>
+                                                    @foreach ($recentOrders as $order)
+													<tr>
+														<td>{{ $order->id }}</td>
+														<td>{{ $order->created_at }}</td>
+														<td>{{ $order->name }}</td>
+														@if( $order->phone=="N/A")
+                                                        <td>Nhân viên order</td>
+                                                        @else
+                                                        <td>{{ $order->phone }}</td>
+                                                        @endif
+														<td>{{ number_format($order->total) }} đ</td>
+														<td>{{ $order->status }}</td>
+													</tr>
+                                                    @endforeach
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+
 </div>
 
 

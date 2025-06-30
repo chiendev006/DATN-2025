@@ -148,7 +148,7 @@
                                         <label class="text-primary">Email</label>
                                         <input type="text" class="form-control" value="{{ $item->email ?? ($isWalkInCustomer ? 'Khách lẻ' : 'Không có') }}" readonly>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <label class="text-primary">Trạng thái đơn hàng</label>
                                         @if($isWalkInCustomer)
                                             <select name="status" class="form-select" id="statusSelect{{ $item->id }}" data-current="{{ $currentStatusInt }}" required onchange="handleStatusChange({{ $item->id }}, this.value, '{{ $item->status }}', true)">
@@ -166,7 +166,7 @@
                                             </select>
                                         @endif
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <label class="text-primary">Trạng thái thanh toán</label>
                                         @if($isWalkInCustomer)
                                             <select name="pay_status" class="form-select" id="payStatusSelect{{ $item->id }}" data-current="{{ $currentPayStatus }}" required onchange="handlePayStatusChange({{ $item->id }}, this.value, {{ $currentPayStatus }}, {{ $currentStatusInt }})">
@@ -193,7 +193,7 @@
                                         <label class="text-primary">Mã đơn</label>
                                         <input type="text" class="form-control" value="{{ $item->id }}" readonly>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label class="text-primary">Địa chỉ</label>
                                         @if($item->district_name==null)
                                             <input type="text" class="form-control" value="Đặt tại quán" readonly>
@@ -301,7 +301,7 @@ function handleStatusChange(orderId, newStatusValue, currentStatusInt, isWalkInC
     const cancelReasonInput = document.getElementById('cancelReasonInput' + orderId);
     const statusSelect = document.getElementById('statusSelect' + orderId);
     const payStatusSelect = document.getElementById('payStatusSelect' + orderId);
-    
+
     // Reset cancel reason display
     cancelReasonDiv.style.display = 'none';
     cancelReasonInput.required = false;
@@ -315,10 +315,10 @@ function handleStatusChange(orderId, newStatusValue, currentStatusInt, isWalkInC
         'completed': 3,
         'cancelled': 4
     };
-    
+
     let currentStatus = currentStatusInt;
     let newStatus = newStatusValue;
-    
+
     // Convert string status to integer if needed
     if (typeof currentStatus === 'string') {
         currentStatus = statusMapping[currentStatus] || 0;
@@ -326,7 +326,7 @@ function handleStatusChange(orderId, newStatusValue, currentStatusInt, isWalkInC
     if (typeof newStatus === 'string') {
         newStatus = statusMapping[newStatus] || 0;
     }
-    
+
     // Convert to integers for comparison
     currentStatus = parseInt(currentStatus);
     newStatus = parseInt(newStatus);
@@ -369,21 +369,21 @@ function handleStatusChange(orderId, newStatusValue, currentStatusInt, isWalkInC
         showAlert('Đơn hàng đã hủy không thể thay đổi trạng thái!', 'error');
         return false;
     }
-    
+
     // Prevent going backwards (except for cancellation)
     if (newStatus < currentStatus && newStatus !== 4) {
         statusSelect.value = Object.keys(statusMapping).find(key => statusMapping[key] === currentStatus) || 'pending';
         showAlert('Không thể lùi trạng thái đơn hàng!', 'error');
         return false;
     }
-    
+
     // Prevent skipping steps (must go one step at a time, except for cancellation)
     if (newStatus > currentStatus + 1 && newStatus !== 4) {
         statusSelect.value = Object.keys(statusMapping).find(key => statusMapping[key] === currentStatus) || 'pending';
         showAlert('Chỉ có thể chuyển sang trạng thái tiếp theo!', 'error');
         return false;
     }
-    
+
     // If choosing to cancel
     if (newStatus === 4) {
         cancelReasonDiv.style.display = 'block';
@@ -391,12 +391,12 @@ function handleStatusChange(orderId, newStatusValue, currentStatusInt, isWalkInC
         if (payStatusSelect) payStatusSelect.value = '2';
         return true;
     }
-    
+
     // If choosing completed, set payment status to paid
     if (newStatus === 3 && payStatusSelect) {
         payStatusSelect.value = '1';
     }
-    
+
     return true;
 }
 
