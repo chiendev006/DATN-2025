@@ -10,6 +10,8 @@ use App\Models\sanpham;
 use App\Models\Product_topping; 
 use App\Models\Address; 
 use App\Models\Coupon; 
+use App\Models\User;
+use App\Services\PointService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +20,14 @@ use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
- public function index()
+    protected $pointService;
+
+    public function __construct(PointService $pointService)
+    {
+        $this->pointService = $pointService;
+    }
+
+    public function index()
     {
         $items = [];
         $cart = [];
@@ -130,7 +139,8 @@ class CheckoutController extends Controller
                 'payment_method' => 'required|in:cash,banking',
                 'terms' => 'required|accepted',
                 'email' => 'nullable|email|max:255',
-                'note' => 'nullable|string|max:1000'
+                'note' => 'nullable|string|max:1000',
+                'points_used' => 'nullable|integer|min:0'
             ], [
                 'name.required' => 'Vui lòng nhập họ tên',
                 'name.string' => 'Họ tên phải là chuỗi ký tự',
@@ -150,7 +160,9 @@ class CheckoutController extends Controller
                 'terms.accepted' => 'Bạn phải đồng ý với điều khoản và điều kiện',
                 'email.email' => 'Email không đúng định dạng',
                 'email.max' => 'Email không được quá 255 ký tự',
-                'note.max' => 'Ghi chú không được quá 1000 ký tự'
+                'note.max' => 'Ghi chú không được quá 1000 ký tự',
+                'points_used.integer' => 'Số điểm phải là số nguyên',
+                'points_used.min' => 'Số điểm không được âm'
             ]);
 
             DB::beginTransaction();
@@ -284,6 +296,69 @@ class CheckoutController extends Controller
             $couponTotalDiscount = $discount; 
             $total = max(0, round($total - $discount)); 
 
+            // Xử lý điểm tích lũy
+            $pointsUsed = 0;
+            $pointsDiscount = 0;
+            
+            Log::info('DEBUG: Starting points processing', [
+                'has_points_used' => $request->has('points_used'),
+                'points_used_value' => $request->points_used ?? 'null',
+                'is_logged_in' => Auth::check(),
+                'user_id' => Auth::id(),
+                'total_before_points' => $total
+            ]);
+            
+            if (Auth::check() && $request->has('points_used') && $request->points_used > 0) {
+                try {
+                    $pointsUsed = (int) $request->points_used;
+                    
+                    Log::info('DEBUG: Processing points', [
+                        'points_used' => $pointsUsed,
+                        'user_points_before' => Auth::user()->points
+                    ]);
+                    
+                    // Kiểm tra user có đủ điểm không
+                    if (Auth::user()->points < $pointsUsed) {
+                        throw new \Exception('Không đủ điểm để sử dụng');
+                    }
+                    
+                    // Tính số tiền giảm giá từ điểm (1 điểm = 1000đ)
+                    $pointsDiscount = $pointsUsed * 1000;
+                    
+                    Log::info('DEBUG: Points calculation', [
+                        'points_used' => $pointsUsed,
+                        'points_discount' => $pointsDiscount,
+                        'current_total' => $total
+                    ]);
+                    
+                    // Kiểm tra không vượt quá 50% giá trị đơn hàng
+                    $maxPointsByPercent = ($total * 50) / 100;
+                    $maxPointsByVnd = $maxPointsByPercent / 1000;
+                    $maxPoints = min(Auth::user()->points, (int) $maxPointsByVnd);
+                    
+                    if ($pointsUsed > $maxPoints) {
+                        throw new \Exception("Chỉ có thể sử dụng tối đa {$maxPoints} điểm cho đơn hàng này");
+                    }
+                    
+                    // Cập nhật tổng tiền sau khi trừ điểm
+                    $total = max(0, $total - $pointsDiscount);
+                    
+                    Log::info('DEBUG: Points processing completed', [
+                        'user_id' => Auth::id(),
+                        'points_used' => $pointsUsed,
+                        'points_discount' => $pointsDiscount,
+                        'final_total' => $total
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('DEBUG: Error calculating points for order', [
+                        'user_id' => Auth::id(),
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                    throw new \Exception('Lỗi xử lý điểm: ' . $e->getMessage());
+                }
+            }
+
             $selectedAddress = Address::find($request->district);
             if (!$selectedAddress) {
                 throw new \Exception('Địa chỉ không hợp lệ.');
@@ -309,6 +384,8 @@ class CheckoutController extends Controller
                         'status' => 'pending_payment',
                         'coupon_summary' => $couponSummaryJson, 
                         'coupon_total_discount' => $couponTotalDiscount,
+                        'points_used' => $pointsUsed,
+                        'points_discount' => $pointsDiscount,
                     ]
                 ]);
                 DB::commit();
@@ -332,9 +409,38 @@ class CheckoutController extends Controller
             $order->note = $request->note;
             $order->pay_status = $request->payment_method === 'banking' ? '1' : '0';
 
+            // Lưu thông tin điểm sử dụng
+            if ($pointsUsed > 0) {
+                $order->points_used = $pointsUsed;
+                $order->points_discount = $pointsDiscount;
+            }
+
+            Log::info('DEBUG: Attempting to save order', [
+                'order_data' => [
+                    'user_id' => $order->user_id,
+                    'name' => $order->name,
+                    'phone' => $order->phone,
+                    'total' => $order->total,
+                    'points_used' => $order->points_used ?? 0,
+                    'points_discount' => $order->points_discount ?? 0,
+                    'payment_method' => $order->payment_method,
+                    'status' => $order->status
+                ]
+            ]);
+
             if (!$order->save()) {
+                Log::error('DEBUG: Failed to save order', [
+                    'order_data' => $order->toArray(),
+                    'errors' => $order->getErrors() ?? 'No errors array'
+                ]);
                 throw new \Exception('Không thể lưu đơn hàng');
             }
+
+            Log::info('DEBUG: Order saved successfully', [
+                'order_id' => $order->id,
+                'total' => $order->total
+            ]);
+
             foreach ($orderDetails as $detail) {
                 $orderDetail = new OrderDetail();
                 $orderDetail->order_id = $order->id;
@@ -375,14 +481,74 @@ class CheckoutController extends Controller
                 }
             }
 
+            // Trừ điểm sau khi đơn hàng đã được lưu thành công
+            if ($pointsUsed > 0) {
+                try {
+                    Log::info('DEBUG: Starting to deduct points', [
+                        'user_id' => Auth::id(),
+                        'order_id' => $order->id,
+                        'points_used' => $pointsUsed,
+                        'user_points_before' => Auth::user()->points
+                    ]);
+                    
+                    // Trừ điểm trực tiếp từ database bằng query
+                    $user = Auth::user();
+                    $newPoints = $user->points - $pointsUsed;
+                    
+                    // Cập nhật điểm user
+                    \DB::table('users')->where('id', $user->id)->update(['points' => $newPoints]);
+                    
+                    // Tạo transaction record
+                    \DB::table('point_transactions')->insert([
+                        'user_id' => $user->id,
+                        'points' => -$pointsUsed,
+                        'type' => 'spend',
+                        'description' => "Sử dụng điểm giảm giá đơn hàng #{$order->id}",
+                        'order_id' => $order->id,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                    
+                    Log::info('DEBUG: Points deducted successfully', [
+                        'user_id' => Auth::id(),
+                        'order_id' => $order->id,
+                        'points_used' => $pointsUsed,
+                        'user_points_after' => $newPoints
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('DEBUG: Error deducting points after order creation', [
+                        'user_id' => Auth::id(),
+                        'order_id' => $order->id,
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                    // Không throw exception ở đây để không rollback đơn hàng đã tạo
+                    // Chỉ log lỗi và tiếp tục
+                }
+            }
+
             session()->forget(['cart', 'coupons', '_old_input']);
 
+            Log::info('DEBUG: About to commit transaction', [
+                'order_id' => $order->id,
+                'points_used' => $pointsUsed
+            ]);
+
             DB::commit();
+            
+            Log::info('DEBUG: Transaction committed successfully', [
+                'order_id' => $order->id
+            ]);
+            
             return redirect()->route('order.complete', $order->id)
                 ->with('success', 'Đặt hàng thành công!')
                 ->with('order_number', $order->id);
 
         } catch (\Exception $e) {
+            Log::error('DEBUG: Exception caught in checkout process', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             DB::rollBack();
             return back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())
                 ->withInput();
@@ -392,10 +558,25 @@ class CheckoutController extends Controller
     public function success($orderId)
     {
         try {
+            Log::info('DEBUG: success method called', [
+                'order_id' => $orderId
+            ]);
+            
             $order = Order::with('orderDetails.size', 'orderDetails.product')->findOrFail($orderId);
+            
+            Log::info('DEBUG: Order found', [
+                'order_id' => $order->id,
+                'order_details_count' => $order->orderDetails->count()
+            ]);
+            
             $allToppings = Product_topping::all()->keyBy('id');
             return view('client.order-complete', compact('order', 'allToppings'));
         } catch (\Exception $e) {
+            Log::error('DEBUG: Error in success method', [
+                'order_id' => $orderId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return redirect()->route('home')->with('error', 'Không tìm thấy đơn hàng');
         }
     }

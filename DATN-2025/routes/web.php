@@ -363,3 +363,34 @@ Route::get('/order-detail/{id}', [OrderSearchController::class, 'getOrderDetail'
 Route::fallback(function () {
         return view('client.errors404'); // Trả về view 'errors/404.blade.php'
 });
+
+// Point System Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/points/info', [App\Http\Controllers\PointController::class, 'getUserPoints'])->name('points.info');
+    Route::get('/points/available', [App\Http\Controllers\PointController::class, 'getAvailablePointsForOrder'])->name('points.available');
+    Route::get('/points/history', [App\Http\Controllers\PointController::class, 'getPointHistory'])->name('points.history');
+    Route::post('/points/calculate-discount', [App\Http\Controllers\PointController::class, 'calculateDiscount'])->name('points.calculate-discount');
+});
+
+// Public point settings
+Route::get('/points/settings', [App\Http\Controllers\PointController::class, 'getPointSettings'])->name('points.settings');
+
+// Debug route for testing points
+Route::get('/test-points', function() {
+    if (!Auth::check()) {
+        return response()->json(['error' => 'Not logged in']);
+    }
+    
+    $user = Auth::user();
+    $pointService = app(\App\Services\PointService::class);
+    
+    return response()->json([
+        'user_points' => $user->points,
+        'can_use_points' => $user->canUsePoints(),
+        'min_points' => \App\Models\PointSetting::getMinPointsToUse(),
+        'points_per_vnd' => \App\Models\PointSetting::getPointsPerVnd(),
+        'vnd_per_point' => \App\Models\PointSetting::getVndPerPoint(),
+        'system_enabled' => \App\Models\PointSetting::isPointsSystemEnabled(),
+        'test_calculation' => $pointService->calculateDiscountFromPoints(10)
+    ]);
+})->name('test.points');

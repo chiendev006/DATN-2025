@@ -170,8 +170,12 @@
                     <label class="coupon-label">Chọn mã giảm giá:</label>
                     <p>Lưu ý: Bạn chỉ được áp dụng 1 mã giảm giá cho 1 đơn hàng.</p>
                    @php
-    $filteredCoupons = $availableCoupons->filter(function ($coupon) {
-        return !$coupon->user_id || (Auth::check() && Auth::id() === $coupon->user_id);
+    $filteredCoupons = $availableCoupons->filter(function ($coupon) use ($subtotal) {
+        $userCondition = !$coupon->user_id || (Auth::check() && Auth::id() === $coupon->user_id);
+        
+        $minOrderCondition = !$coupon->min_order_value || $subtotal >= $coupon->min_order_value;
+        
+        return $userCondition && $minOrderCondition;
     });
 @endphp
 
@@ -206,10 +210,9 @@
             @endif
         </div>
     @empty
-        <p class="no-coupon-message">Không có mã giảm giá khả dụng nào.</p>
+        <p class="no-coupon-message">Không có mã giảm giá khả dụng nào cho đơn hàng hiện tại.</p>
     @endforelse
 </div>
-
 
         @if($expiredCoupons->count())
             <div class="expired-coupon-section">
@@ -328,6 +331,14 @@ document.addEventListener("DOMContentLoaded", function () {
         return amount.toLocaleString('vi-VN') + ' VND';
     }
 
+    function parseCurrencyText(text) {
+        if (!text) return 0;
+        const cleanText = text.replace(/[^\d]/g, '');
+        const result = parseInt(cleanText) || 0;
+        console.log('parseCurrencyText:', text, '->', result);
+        return result;
+    }
+
     function updateUIElements(data) {
         if (data.line_total !== undefined) {
             const row = document.querySelector(`tr[data-key="${data.key}"]`);
@@ -339,6 +350,16 @@ document.addEventListener("DOMContentLoaded", function () {
         if (data.subtotal !== undefined) {
             const subtotalEl = document.getElementById('cart-subtotal');
             if (subtotalEl) subtotalEl.textContent = formatCurrency(data.subtotal);
+            
+            console.log('Updating coupon visibility with subtotal:', data.subtotal);
+            updateCouponVisibility(data.subtotal);
+        } else {
+            const subtotalEl = document.getElementById('cart-subtotal');
+            if (subtotalEl) {
+                const currentSubtotal = parseCurrencyText(subtotalEl.textContent);
+                console.log('Fallback: updating coupon visibility with calculated subtotal:', currentSubtotal);
+                updateCouponVisibility(currentSubtotal);
+            }
         }
 
         if (data.total !== undefined) {
@@ -354,7 +375,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const coupon = data.applied_coupons[code];
                 let discountAmount;
                 if (coupon.type === 'percent') {
-                    const currentSubtotal = parseFloat(document.getElementById('cart-subtotal')?.textContent.replace(/\D/g, '')) || 0;
+                    const currentSubtotal = parseCurrencyText(document.getElementById('cart-subtotal')?.textContent);
                     discountAmount = (currentSubtotal * coupon.discount) / 100;
                 } else {
                     discountAmount = coupon.discount;
@@ -398,6 +419,76 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function updateCouponVisibility(subtotal) {
+        console.log('updateCouponVisibility called with subtotal:', subtotal);
+        const couponCards = document.querySelectorAll('.coupon-card');
+        let visibleCoupons = 0;
+        
+        console.log('Found coupon cards:', couponCards.length);
+        
+        couponCards.forEach((card, index) => {
+            const minOrderText = card.querySelector('.coupon-condition');
+            console.log(`Card ${index}:`, card.dataset.code, 'minOrderText:', minOrderText?.textContent);
+            
+            if (minOrderText) {
+                const minOrderMatch = minOrderText.textContent.match(/Đơn hàng tối thiểu: ([\d,]+)đ/);
+                if (minOrderMatch) {
+                    const minOrderValue = parseInt(minOrderMatch[1].replace(/,/g, ''));
+                    console.log(`Card ${index} minOrderValue:`, minOrderValue, 'subtotal:', subtotal);
+                    if (subtotal >= minOrderValue) {
+                        card.style.display = 'flex';
+                        visibleCoupons++;
+                        console.log(`Card ${index} SHOWED`);
+                    } else {
+                        card.style.display = 'none';
+                        console.log(`Card ${index} HIDDEN`);
+                    }
+                } else {
+                    card.style.display = 'flex';
+                    visibleCoupons++;
+                    console.log(`Card ${index} SHOWED (no min order)`);
+                }
+            } else {
+                card.style.display = 'flex';
+                visibleCoupons++;
+                console.log(`Card ${index} SHOWED (no condition text)`);
+            }
+        });
+        
+        console.log('Total visible coupons:', visibleCoupons);
+        
+        const noCouponMessage = document.querySelector('.no-coupon-message');
+        if (visibleCoupons === 0) {
+            if (!noCouponMessage) {
+                const couponListWrapper = document.querySelector('.coupon-list-wrapper');
+                if (couponListWrapper) {
+                    const message = document.createElement('p');
+                    message.className = 'no-coupon-message';
+                    message.textContent = 'Không có mã giảm giá khả dụng nào cho đơn hàng hiện tại.';
+                    couponListWrapper.appendChild(message);
+                    console.log('Added no coupon message');
+                }
+            }
+        } else {
+            if (noCouponMessage) {
+                noCouponMessage.remove();
+                console.log('Removed no coupon message');
+            }
+        }
+    }
+
+    setTimeout(() => {
+        const initialSubtotal = parseCurrencyText(document.getElementById('cart-subtotal')?.textContent);
+        console.log('Initial subtotal:', initialSubtotal);
+        updateCouponVisibility(initialSubtotal);
+        
+        setTimeout(() => {
+            const retrySubtotal = parseCurrencyText(document.getElementById('cart-subtotal')?.textContent);
+            console.log('Retry subtotal:', retrySubtotal);
+            updateCouponVisibility(retrySubtotal);
+        }, 500);
+    }, 200);
+
     document.querySelectorAll('.remove-item').forEach(btn => {
         btn.addEventListener('click', async function (e) {
             e.preventDefault();
@@ -426,7 +517,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     body: JSON.stringify({
                         product_id: productId,
                         size_id: sizeId,
-                        topping_ids: toppingIds ? toppingIds.split(',').map(id => parseInt(id)) : []
+                        topping_ids: toppingIds ? topping_ids.split(',').map(id => parseInt(id)) : []
                     })
                 });
                 if (!response.ok) {
@@ -458,6 +549,12 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
                     updateUIElements(data);
+                    
+                    setTimeout(() => {
+                        const currentSubtotal = parseCurrencyText(document.getElementById('cart-subtotal')?.textContent);
+                        console.log('Force refresh coupon visibility after remove with subtotal:', currentSubtotal);
+                        updateCouponVisibility(currentSubtotal);
+                    }, 50);
                 } else {
                     alert(data.message || "Không thể xóa sản phẩm.");
                 }
@@ -512,6 +609,13 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.success) {
                 input.value = data.quantity;
                 updateUIElements(data);
+                
+                setTimeout(() => {
+                    const currentSubtotal = parseCurrencyText(document.getElementById('cart-subtotal')?.textContent);
+                    console.log('Force refresh coupon visibility with subtotal:', currentSubtotal);
+                    updateCouponVisibility(currentSubtotal);
+                }, 50);
+                
                 return true;
             } else {
                 input.value = oldQuantity;
@@ -557,7 +661,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const subtotalText = document.getElementById('cart-subtotal')?.textContent;
-        const subtotal = parseFloat(subtotalText?.replace(/\D/g, '')) || 0;
+        const subtotal = parseCurrencyText(subtotalText);
 
         const requestData = {
             code: couponCode,
@@ -654,13 +758,13 @@ document.addEventListener("DOMContentLoaded", function () {
 .coupon-list-wrapper {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    justify-content: flex-start;
+    gap: 16px;
 }
 
 .coupon-card {
-    flex: 1 0 200px; /* tối thiểu 200px, co giãn đều */
-    max-width: 250px;
+    flex: 0 1 220px; 
+    min-width: 220px;
+    max-width: 220px;
     border: 1px solid #ddd;
     padding: 10px;
     border-radius: 8px;
@@ -670,7 +774,15 @@ document.addEventListener("DOMContentLoaded", function () {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
 }
+
+.coupon-card[style*="display: none"] {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
 .coupon-header {
     display: flex;
     justify-content: space-between;
@@ -704,5 +816,15 @@ document.addEventListener("DOMContentLoaded", function () {
     background-color: #e9fbe9;
 }
 
+.no-coupon-message {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px dashed #ccc;
+}
 </style>
 @endsection

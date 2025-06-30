@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\View;
 use App\Http\ViewComposers\CartComposer;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
-
+use App\Models\Order;
+use App\Observers\OrderObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,5 +26,8 @@ class AppServiceProvider extends ServiceProvider
     {
          View::composer('layout2', CartComposer::class);
           Schema::defaultStringLength(191);
+          
+          // Đăng ký Order Observer
+          Order::observe(OrderObserver::class);
     }
 }

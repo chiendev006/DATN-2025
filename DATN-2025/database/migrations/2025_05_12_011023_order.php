@@ -29,6 +29,8 @@ return new class extends Migration
             $table->enum('pay_status', ['0', '1', '2', '3'])->default('0');
             $table->text('coupon_summary')->nullable();
             $table->decimal('coupon_total_discount', 10, 2)->default(0);
+            $table->integer('points_used')->default(0)->comment('Số điểm đã sử dụng cho đơn hàng');
+            $table->decimal('points_discount', 15, 2)->default(0)->comment('Số tiền giảm giá từ điểm');
             $table->text('note')->nullable();
             $table->softDeletes();
             $table->timestamps();
