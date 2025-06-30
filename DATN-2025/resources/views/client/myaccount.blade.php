@@ -273,6 +273,10 @@
                                                     <i class="fas fa-truck mr-2"></i>
                                                     Phí vận chuyển: <span class="font-semibold">{{ number_format($order->shipping_fee, 0, ',', '.') }}đ</span>
                                                 </p>
+                                              <p class="text-gray-700">
+                                                <i class="fas fa-star mr-2"></i>
+                                                Điểm giảm giá: <span class="font-semibold text-green-600">-{{ number_format($order->points_discount, 0, ',', '.') }}đ</span>
+                                            </p>
                                                 <p class="text-gray-700">
                                                     <i class="fas fa-tag mr-2"></i>
                                                     Giảm giá mã: <span class="font-semibold text-green-600">-{{ number_format($order->coupon_total_discount, 0, ',', '.') }}đ</span>
@@ -483,8 +487,12 @@
                         Phí vận chuyển: <span id="detail-shipping-fee" class="font-semibold"></span>
                     </p>
                     <p class="text-gray-700">
+                        <i class="fas fa-star mr-2"></i>
+                        Giảm giá từ điểm: <span id="detail-points-discount" class="font-semibold text-green-600"></span>
+                    </p>
+                    <p class="text-gray-700">
                         <i class="fas fa-tag mr-2"></i>
-                        Giảm giá: <span id="detail-discount" class="font-semibold text-green-600"></span>
+                        Giảm giá từ mã: <span id="detail-coupon-discount" class="font-semibold text-green-600"></span>
                     </p>
                     <p class="text-2xl font-bold text-red-600 border-t border-green-200 pt-3">
                         <i class="fas fa-calculator mr-2"></i>
@@ -755,8 +763,10 @@
                             // Update totals
                             document.getElementById('detail-shipping-fee').textContent =
                                 new Intl.NumberFormat('vi-VN').format(data.order.shipping_fee) + 'đ';
-                            document.getElementById('detail-discount').textContent =
+                            document.getElementById('detail-coupon-discount').textContent =
                                 '-' + new Intl.NumberFormat('vi-VN').format(data.order.coupon_total_discount) + 'đ';
+                            document.getElementById('detail-points-discount').textContent =
+                                '-' + new Intl.NumberFormat('vi-VN').format(data.order.points_discount) + 'đ';
                             document.getElementById('detail-total').textContent =
                                 new Intl.NumberFormat('vi-VN').format(data.order.total) + 'đ';
                         }

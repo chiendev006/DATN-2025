@@ -69,7 +69,7 @@ class OrderController extends Controller
                 $msg = 'Cập nhật đơn hàng thành công! (Lỗi tích điểm: ' . $e->getMessage() . ')';
             }
         } else {
-            $msg = 'Cập nhật đơn hàng thành công!';
+        $msg = 'Cập nhật đơn hàng thành công!';
         }
 
         return redirect()->route('admin.order.index')->with('success', $msg);
@@ -82,6 +82,12 @@ class OrderController extends Controller
         return redirect()->route('admin.order.index')->with('success', 'Đã xóa mềm đơn hàng thành công!');
     }
 
+    /**
+     * Hiển thị chi tiết đơn hàng dưới dạng JSON
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
 
     public function showJson($id)
     {

@@ -89,6 +89,47 @@
     transform: translateY(0) scale(1);
     opacity: 1;
 }
+
+/* New, simple summary styles */
+.order-summary-container-simple {
+    width: 45%;
+    float: right;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 15px;
+    max-width: 250px;
+    margin-left: auto;
+}
+.summary-line > span:first-child {
+    color: #5a5a5a;
+    margin-right: 15px;
+}
+.summary-line > span:last-child {
+    font-weight: 500;
+    min-width: 120px;
+    text-align: right;
+}
+.discount-line > span:last-child {
+    color: #28a745;
+    font-weight: bold;
+}
+.summary-hr {
+    margin: 8px 0;
+    border: 0;
+    border-top: 1px solid #e9ecef;
+}
+.total-line {
+    font-size: 18px;
+}
+.total-line > span {
+    color: #dc3545;
+    font-weight: bold;
+}
 </style>
   <div class="content-wrapper-scroll">
 
@@ -236,6 +277,8 @@
                                                 data-address_detail="{{ $order->district_name ? $order->district_name . ', ' : '' }}{{ $order->address_detail }}"
                                                 data-product_total="{{ number_format(($order->total ?? 0) - ($order->shipping_fee ?? 0) + ($order->coupon_total_discount ?? 0), 0, ',', '.') }} đ"
                                                 data-cancel_reason="{{ $order->cancel_reason }}"
+                                                data-points_used="{{ $order->points_used ?? 0 }}"
+                                                data-points_discount="{{ number_format($order->points_discount ?? 0, 0, ',', '.') }} đ"
                                             >Xem</button>
 
                                             </div>
@@ -367,33 +410,30 @@
         </div>
       </div>
 
-
-      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
-      <div style="margin-bottom:10px;">
-        <div class="field-placeholder">Tổng tiền</div>
-        <input type="text" class="form-control" name="total" id="modal_total" readonly />
-      </div>
-      </div>
-    <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
-      <div style="margin-bottom:10px;">
-        <div class="field-placeholder">Tiền sản phẩm</div>
-            <input type="text" class="form-control" name="product_total" id="modal_product_total" readonly />
-      </div>
-      </div>
-      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
-      <div style="margin-bottom:10px;">
-        <div class="field-placeholder">Tiền ship</div>
-        <input type="text" class="form-control" name="shipping_fee" id="modal_shipping_fee" readonly />
-      </div>
-      </div>
-
-
-
-      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
-      <div style="margin-bottom:10px;">
-        <div class="field-placeholder">Tiền giảm giá</div>
-        <input type="text" class="form-control" name="coupon_total_discount" id="modal_coupon_total_discount" readonly />
-      </div>
+      <div class="col-12" style="padding: 0; min-height: 180px;">
+          <div class="order-summary-container-simple">
+              <div class="summary-line">
+                  <span>Tiền sản phẩm:</span>
+                  <span id="summary_product_total"></span>
+              </div>
+              <div class="summary-line">
+                  <span>Tiền ship:</span>
+                  <span id="summary_shipping_fee"></span>
+              </div>
+              <div class="summary-line discount-line">
+                  <span>Giảm giá từ mã:</span>
+                  <span id="summary_coupon_discount"></span>
+              </div>
+              <div class="summary-line discount-line">
+                  <span>Giảm giá điểm:</span>
+                  <span id="summary_points_discount"></span>
+              </div>
+              <hr class="summary-hr">
+              <div class="summary-line total-line">
+                  <span>Tổng tiền:</span>
+                  <span id="summary_total"></span>
+              </div>
+          </div>
       </div>
 
       <div class="field-wrapper col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" id="cancel_reason_container" style="display:none;">
@@ -517,11 +557,18 @@ function openOrderModal(btn) {
         payStatusSelect.setAttribute('name', 'pay_status');
     }
 
-    document.getElementById('modal_total').value = btn.getAttribute('data-total');
-    document.getElementById('modal_shipping_fee').value = btn.getAttribute('data-shipping_fee') || '0 đ';
-    document.getElementById('modal_coupon_total_discount').value = btn.getAttribute('data-coupon_total_discount') || '0 đ';
+    // New summary population
+    const couponDiscount = parseFloat(String(btn.getAttribute('data-coupon_total_discount')).replace(/[^0-9]/g, '')) || 0;
+    const pointsDiscount = parseFloat(String(btn.getAttribute('data-points_discount')).replace(/[^0-9]/g, '')) || 0;
+    const totalDiscount = couponDiscount + pointsDiscount;
+
+    document.getElementById('summary_product_total').textContent = btn.getAttribute('data-product_total') || '0 đ';
+    document.getElementById('summary_shipping_fee').textContent = btn.getAttribute('data-shipping_fee') || '0 đ';
+    document.getElementById('summary_coupon_discount').textContent = `- ${couponDiscount.toLocaleString('vi-VN')} đ`;
+    document.getElementById('summary_points_discount').textContent = `- ${pointsDiscount.toLocaleString('vi-VN')} đ`;
+    document.getElementById('summary_total').textContent = btn.getAttribute('data-total') || '0 đ';
+
     document.getElementById('modal_address_detail').value = btn.getAttribute('data-address_detail') || 'Nhân viên thu ngân';
-    document.getElementById('modal_product_total').value = btn.getAttribute('data-product_total') || '0 đ';
     document.getElementById('modal_created_at').value = btn.getAttribute('data-created_at') || '';
     document.getElementById('orderForm').action = "{{ url('admin/order/update') }}/" + btn.getAttribute('data-id');
 
