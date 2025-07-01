@@ -55,7 +55,7 @@
 
                                     <!-- Name & Phone -->
                                     <div class="col-md-6 mb-3">
-                                         <label>Họ tên: <span class="text-danger">*</span></label>
+                                         <label>Họ tên: <span class="text-danger"></span></label>
                                         <input type="text" name="name" value="{{ old('name', Auth::check() ? Auth::user()->name : '') }}" placeholder="Họ và tên" class="form-control @error('name') is-invalid @enderror" style="height: 45px; border-radius: 30px;">
                                         @error('name')
                                             <span class="text-danger">{{ $message }}</span>
@@ -63,7 +63,7 @@
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                          <label>Số điện thoại: <span class="text-danger">*</span></label>
+                                          <label>Số điện thoại: <span class="text-danger"></span></label>
                                         <input type="text" name="phone_raw" value="{{ old('phone_raw', Auth::check() ? Auth::user()->phone : '') }}" placeholder="Số điện thoại (10-11 số)" class="form-control @error('phone_raw') is-invalid @enderror" style="height: 45px; border-radius: 30px;">
                                         @error('phone_raw')
                                             <span class="text-danger">{{ $message }}</span>
@@ -81,7 +81,7 @@
 
                                     <!-- District & Address -->
                                     <div class="col-md-6 mb-3">
-                                        <label>Chọn huyện (tỉnh Hải Phòng) <span class="text-danger">*</span></label>
+                                        <label>Chọn huyện (tỉnh Hải Phòng) <span class="text-danger"></span></label>
                                         <select name="district" id="district-select" class="form-control @error('district') is-invalid @enderror" style="height: 45px; border-radius: 30px;">
                                             <option value="" disabled selected>-- Chọn huyện --</option>
                                             @foreach($districts as $districtOption)
@@ -96,7 +96,7 @@
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label>Địa chỉ chi tiết <span class="text-danger">*</span></label>
+                                        <label>Địa chỉ chi tiết <span class="text-danger"></span></label>
                                         <input type="text" name="address_detail" value="{{ old('address_detail') }}" placeholder="Nhập số nhà, tên đường..." class="form-control @error('address_detail') is-invalid @enderror" style="height: 45px; border-radius: 30px;">
                                         @error('address_detail')
                                             <span class="text-danger">{{ $message }}</span>
@@ -118,7 +118,7 @@
 
                                 <div class="row mb-4">
                                     <div class="col-md-12">
-                                        <h5>Phương thức thanh toán <span class="text-danger">*</span></h5>
+                                        <h5>Phương thức thanh toán <span class="text-danger"></span></h5>
                                         <div class="payment-methods @error('payment_method') is-invalid @enderror">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="payment_method" value="cash" {{ old('payment_method') === 'cash' ? 'checked' : '' }}>
@@ -145,7 +145,7 @@
                                     <div class="col-md-12">
                                         <div class="form-check @error('terms') is-invalid @enderror">
                                             <input class="form-check-input" type="checkbox" name="terms" {{ old('terms') ? 'checked' : '' }}>
-                                            <label class="form-check-label">Tôi đồng ý với các điều khoản và điều kiện <span class="text-danger">*</span></label>
+                                            <label class="form-check-label">Tôi đồng ý với các điều khoản và điều kiện <span class="text-danger"></span></label>
                                         </div>
                                         @error('terms')
                                             <span class="text-danger">{{ $message }}</span>
@@ -169,8 +169,12 @@
                                         <h5>Đơn Hàng Của Bạn</h5>
                                     </div>
                                 <div  class="shop-checkout-title">
-                                    <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" >Sản Phẩm <span>Thành tiền </span></h6>
+                                    <h6 style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" >
+                                         <img src="{{ url('asset') }}/images/icon_tra_sua.png" alt="" style="height: 24px;">
+                                        Sản Phẩm <span>Thành tiền </span>
+                                    </h6>
                                 </div>
+
                                 <div  class="shop-checkout-row">
                                     @php
                                         $displayItems = Auth::check() ? $items : $cart;
@@ -253,16 +257,18 @@
                                                         <p style="">{{ $desc[2] }}</p>
                                                     @endif
                                                 </div>
-                                                <div style="margin-left: 30px;" class="col-xs-4 text-right">
+                                                <div style="margin-left: 32px;" class="col-xs-4 text-right">
                                                     <p><strong>{{ number_format($itemTotal) }} VND</strong></p>
                                                 </div>
                                             </div>
                                         @endforeach
                                     @endif
                                 </div>
-
-                                <div class="checkout-total">
-                                    <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" >Tạm tính: <span>{{ number_format($subtotal) }} VND</span></h6>
+                                 <div class="checkout-total">
+                                  <h6 class="shipping-fee-title">
+                                        <img src="{{ url('asset') }}/images/tamtinh.jpg" alt="" style="height: 24px;">
+                                         Tạm tính: <span>{{ number_format($subtotal) }} VND</span>
+                                    </h6>
                                 </div>
 
                                 @php
