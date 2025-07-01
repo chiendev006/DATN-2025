@@ -393,4 +393,12 @@ Route::get('/test-points', function() {
         'system_enabled' => \App\Models\PointSetting::isPointsSystemEnabled(),
         'test_calculation' => $pointService->calculateDiscountFromPoints(10)
     ]);
-})->name('test.points');
+        })->name('test.points');
+        Route::prefix('admin/point-settings')->name('admin.point_settings.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\PointSettingController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\PointSettingController::class, 'create'])->name('create');
+        Route::post('/store', [\App\Http\Controllers\Admin\PointSettingController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [\App\Http\Controllers\Admin\PointSettingController::class, 'edit'])->name('edit');
+        Route::post('/update/{id}', [\App\Http\Controllers\Admin\PointSettingController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [\App\Http\Controllers\Admin\PointSettingController::class, 'destroy'])->name('delete');
+        });

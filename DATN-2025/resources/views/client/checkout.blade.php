@@ -315,11 +315,12 @@
                                                 Áp dụng
                                                 </button>
                                             </div>
-                                            <small class="text-muted">Tối đa: <span id="max-points">0</span> điểm</small>
                                             @error('points_used')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
                                         </div>
+                                            <small class="text-muted">Tối đa: <span id="max-points">0</span> điểm</small>
+                                    
                                         
                                         <div id="points-discount" style="display: none; margin-top: 10px;">
                                             <div class="alert alert-success" style="border-radius: 20px; padding: 10px 15px; margin: 0;">
@@ -357,7 +358,7 @@
 
 <style>
     .points-input-section-custom {
-    background:rgb(226, 255, 236);
+    background:rgb(255, 245, 214);
     border-radius: 18px;
     box-shadow: 0 2px 8px rgba(199,161,122,0.07);
     padding: 18px 20px 12px 20px;

@@ -53,7 +53,7 @@
     $currentAdminId = (Auth::check() && Auth::user()->role == 1) ? Auth::id() : null;
 @endphp
 @php
-    $isHomeTab = request()->is('admin') ||request()->is('admin/contact') ||request()->is('admin/address') ||request()->is('admin/address/search') ||request()->is('admin/coupon') || request()->is('admin/danhmuc*') ||  request()->is('admin/blogs*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*');
+    $isHomeTab = request()->is('admin') ||request()->is('admin/contact') ||request()->is('admin/address') ||request()->is('admin/address/search') ||request()->is('admin/coupon') || request()->is('admin/danhmuc*') ||  request()->is('admin/blogs*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*') || request()->is('admin/point-settings*');
     $isAuthTab = request()->is('admin/staff*') || request()->is('admin/payroll*');
 @endphp
 
@@ -138,8 +138,9 @@
                                         <li>
 											<a href="{{ route('address.index') }}" class="{{ request()->is('admin/address*') ? 'current-page' : '' }}">Ship</a>
 										</li>
-
-
+										<li>
+											<a href="{{ route('admin.point_settings.index') }}" class="{{ request()->is('admin/point-settings*') ? 'current-page' : '' }}">Cấu hình điểm</a>
+										</li>
 									</ul>
 
 								</div>
