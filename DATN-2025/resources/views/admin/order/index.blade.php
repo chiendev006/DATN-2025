@@ -501,6 +501,10 @@ function openOrderModal(btn) {
         const refundOption = payStatusSelect.querySelector('option[value="3"]');
         if (refundOption) refundOption.style.display = 'none';
 
+        // Ẩn option Đã hủy trong trạng thái thanh toán cho đơn nhân viên
+        const cancelledPayOption = payStatusSelect.querySelector('option[value="2"]');
+        if (cancelledPayOption) cancelledPayOption.style.display = 'none';
+
     } else {
         document.getElementById('modal_phone').value = btn.getAttribute('data-phone');
 
@@ -525,10 +529,10 @@ function openOrderModal(btn) {
     disableInvalidPayStatusOptions(originalPayStatusFromButton);
 
     // Đặt đoạn này SAU các hàm disable khác để đảm bảo không bị override
-    if (initialStatusValue === 'completed' && originalPayStatusFromButton === '1') {
+    if ((initialStatusValue === 'completed' && originalPayStatusFromButton === '1') || (initialStatusValue === 'cancelled' && originalPayStatusFromButton === '2')) {
         // Disable tất cả option trạng thái đơn
         [...statusSelect.options].forEach(option => {
-            if (option.value !== 'completed') {
+            if (option.value !== initialStatusValue) {
                 option.disabled = true;
                 option.style.display = 'none';
             } else {
@@ -540,7 +544,7 @@ function openOrderModal(btn) {
 
         // Disable tất cả option trạng thái thanh toán
         [...payStatusSelect.options].forEach(option => {
-            if (option.value !== '1') {
+            if (option.value !== originalPayStatusFromButton) {
                 option.disabled = true;
                 option.style.display = 'none';
             } else {
@@ -548,6 +552,16 @@ function openOrderModal(btn) {
                 option.style.display = '';
             }
         });
+        payStatusSelect.setAttribute('disabled', 'disabled');
+    }
+
+    // Nếu trạng thái đơn là 'Đã hủy' thì không cho chọn trạng thái thanh toán nữa
+    if (initialStatusValue === 'cancelled') {
+        // Nếu là đơn nhân viên thì ẩn option 'Chờ thanh toán' (value='0') trong trạng thái thanh toán
+        if (btn.getAttribute('data-phone') == 'N/A') {
+            const pendingPayOption = payStatusSelect.querySelector('option[value="0"]');
+            if (pendingPayOption) pendingPayOption.style.display = 'none';
+        }
         payStatusSelect.setAttribute('disabled', 'disabled');
     }
 
@@ -710,6 +724,12 @@ function validateForm() {
     const cancelReason = document.getElementById('modal_cancel_reason').value;
     const phone = document.getElementById('modal_phone').value;
     const originalPayStatus = document.getElementById('orderForm').getAttribute('data-original-pay-status');
+
+    // Validate: Đơn nhân viên, trạng thái đơn đã hủy, không được chọn trạng thái thanh toán là chờ thanh toán
+    if (phone === 'Nhân viên thu ngân' && status === 'cancelled' && payStatus === '0') {
+        alert('Đơn đã hủy không được chọn trạng thái thanh toán là Chờ thanh toán.');
+        return false;
+    }
 
     if ((status === 'pending' || status === 'processing' || status === 'shipping') && payStatus !== originalPayStatus) {
         alert('Không thể thay đổi trạng thái thanh toán khi đơn hàng đang ở trạng thái "Chờ xử lý", "Đã xác nhận" hoặc "Đang giao".');
