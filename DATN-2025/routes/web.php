@@ -402,3 +402,7 @@ Route::get('/test-points', function() {
         Route::post('/update/{id}', [\App\Http\Controllers\Admin\PointSettingController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [\App\Http\Controllers\Admin\PointSettingController::class, 'destroy'])->name('delete');
         });
+
+Route::prefix('admin/point-transactions')->name('admin.point_transactions.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\admin\PointTransactionController::class, 'index'])->name('index');
+});
