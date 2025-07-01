@@ -315,11 +315,11 @@
                                                 Áp dụng
                                                 </button>
                                             </div>
+                                            <small class="text-muted">Tối đa: <span id="max-points">0</span> điểm</small>
                                             @error('points_used')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
                                         </div>
-                                            <small class="text-muted">Tối đa: <span id="max-points">0</span> điểm</small>
                                     
                                         
                                         <div id="points-discount" style="display: none; margin-top: 10px;">

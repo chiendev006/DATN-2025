@@ -112,16 +112,19 @@ public function filterByPrice(Request $request)
 {
     $min = (int) $request->min;
     $max = (int) $request->max;
+    $page = (int) $request->input('page', 1);
+    $perPage = 12;
 
-    $sanphams = Sanpham::whereHas('attributes', function($q) use ($min, $max) {
+    $query = Sanpham::whereHas('attributes', function($q) use ($min, $max) {
         $q->whereBetween('price', [$min, $max]);
     })
     ->with(['attributes' => function($q) use ($min, $max) {
         $q->whereBetween('price', [$min, $max]);
-    }])
-    ->get();
+    }]);
 
-    $data = $sanphams->map(function ($item) {
+    $products = $query->paginate($perPage, ['*'], 'page', $page);
+
+    $data = $products->map(function ($item) {
         return [
             'id' => $item->id,
             'name' => $item->name,
@@ -130,7 +133,13 @@ public function filterByPrice(Request $request)
         ];
     });
 
-    return response()->json(['sanpham' => $data]);
+    return response()->json([
+        'products' => $data,
+        'current_page' => $products->currentPage(),
+        'last_page' => $products->lastPage(),
+        'total' => $products->total(),
+        'per_page' => $products->perPage(),
+    ]);
 }
 public function postComment(Request $request)
 {

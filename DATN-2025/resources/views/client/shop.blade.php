@@ -29,8 +29,11 @@
                             <div class="blog-left-categories blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                 <h5>Categories</h5>
                                 <ul id="category-list">
+                                    <li class="{{ request('danhmuc_id') == null ? 'current' : '' }}">
+                                        <a href="#" data-id="">Tất cả</a>
+                                    </li>
                                     @foreach ($danhmucs as $index => $danhmuc)
-                                        <li class="{{ $index == 0 ? 'current' : '' }}">
+                                        <li class="{{ $index == 0 && request('danhmuc_id') != null ? 'current' : '' }}">
                                             <a style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="#" data-id="{{ $danhmuc->id }}">{{ $danhmuc->name }}</a>
                                         </li>
                                     @endforeach
@@ -149,8 +152,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const resultText = document.querySelector('.shop-search h6');
     let currentDanhmucId = '{{ $firstDanhmuc->id ?? "" }}';
 
-    // Function to fetch products
-    function fetchProducts(page, danhmucId) {
+    // --- Thay thế toàn bộ phần xử lý filter price và phân trang filter price ---
+    let isFilteringByPrice = false;
+    let filterPriceRange = [30000, 200000];
+
+    // Đổi tên hàm fetchProducts gốc thành fetchProductsByCategory
+    function fetchProductsByCategory(page, danhmucId) {
         const url = `{{ route('shop.index') }}?page=${page}&danhmuc_id=${danhmucId}`;
         fetch(url, {
             headers: {
@@ -208,6 +215,66 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Định nghĩa lại fetchProducts để phân biệt giữa lọc giá và lọc danh mục
+    function fetchProducts(page, danhmucId) {
+        if (isFilteringByPrice) {
+            fetchProductsByPrice(page, filterPriceRange[0], filterPriceRange[1]);
+        } else {
+            fetchProductsByCategory(page, danhmucId);
+        }
+    }
+
+    function fetchProductsByPrice(page, minPrice, maxPrice) {
+        $.ajax({
+            url: "{{ route('ajax.filter.price') }}",
+            type: "GET",
+            data: { min: minPrice, max: maxPrice, page: page },
+            success: function (data) {
+                // Update product list
+                productList.innerHTML = data.products.map(product => `
+                    <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                        <div class="shop-main-list">
+                            <div class="shop-product">
+                                <a href="${productDetailRoute.replace(':id', product.id)}">
+                                    <img src="/storage/uploads/${product.image}" alt="${product.name}" style="border-radius: 20px;">
+                                </a>
+                                <div class="cart-overlay-wrap">
+                                    <div class="cart-overlay">
+                                        <a href="${productDetailRoute.replace(':id', product.id)}" class="shop-cart-btn">ADD TO CART</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="${productDetailRoute.replace(':id', product.id)}"><h5>${product.name}</h5></a>
+                            <h5><strong>${new Intl.NumberFormat('vi-VN').format(product.min_price)} VND</strong></h5>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Update pagination
+                let paginationHtml = `
+                    <li><a href="#" class="pagination-prev ${data.current_page === 1 ? 'disabled' : ''}" data-page="${data.current_page - 1}"><i class="icon-left-4"></i> <span>PREV page</span></a></li>
+                `;
+                for (let i = 1; i <= data.last_page; i++) {
+                    paginationHtml += `
+                        <li class="${i === data.current_page ? 'active' : ''}">
+                            <a href="#" data-page="${i}"><span>${i}</span></a>
+                        </li>
+                    `;
+                }
+                paginationHtml += `
+                    <li><a href="#" class="pagination-next ${data.current_page === data.last_page ? 'disabled' : ''}" data-page="${data.current_page + 1}"><span>next page</span> <i class="icon-right-4"></i></a></li>
+                `;
+                paginationContainer.innerHTML = paginationHtml;
+
+                // Update result count
+                resultText.textContent = `Showing ${data.products.length > 0 ? (data.current_page - 1) * data.per_page + 1 : 0}–${(data.current_page - 1) * data.per_page + data.products.length} of ${data.total} results`;
+            },
+            error: function() {
+                productList.innerHTML = '<div class="col-12 text-center"><p>Đã có lỗi xảy ra. Vui lòng thử lại.</p></div>';
+            }
+        });
+    }
+
     // Handle category clicks
     document.querySelectorAll('#category-list a').forEach(link => {
         link.addEventListener('click', function(e) {
@@ -215,16 +282,16 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('#category-list li').forEach(li => li.classList.remove('current'));
             this.parentElement.classList.add('current');
             currentDanhmucId = this.getAttribute('data-id');
+            isFilteringByPrice = false;
             fetchProducts(1, currentDanhmucId); // Load page 1 of the selected category
         });
     });
 
-    // Handle pagination clicks
+    // Sự kiện phân trang (cả khi lọc giá và khi xem danh mục)
     paginationContainer.addEventListener('click', function(e) {
         e.preventDefault();
         const target = e.target.closest('a');
         if (!target || target.classList.contains('disabled')) return;
-
         const page = target.getAttribute('data-page');
         fetchProducts(page, currentDanhmucId);
     });
@@ -291,54 +358,13 @@ document.addEventListener('DOMContentLoaded', function () {
         );
     });
 
-    // Handle price filter
+    // Sự kiện click nút lọc giá
     $('#btn-filter').on('click', function (e) {
         e.preventDefault();
-
         let range = slider.getValue();
-        let minPrice = range[0];
-        let maxPrice = range[1];
-
-        $('#product-list').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x"></i></div>');
-
-        $.ajax({
-            url: "{{ route('ajax.filter.price') }}",
-            type: "GET",
-            data: { min: minPrice, max: maxPrice },
-            success: function (response) {
-                let html = '';
-
-                if (response.sanpham && response.sanpham.length > 0) {
-                    response.sanpham.forEach(function (item) {
-                        html += `
-                            <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown">
-                                <div class="shop-main-list">
-                                    <div class="shop-product">
-                                        <a href="${productDetailRoute.replace(':id', item.id)}">
-                                            <img src="/storage/uploads/${item.image}" alt="${item.name}" style="border-radius: 20px;">
-                                        </a>
-                                        <div class="cart-overlay-wrap">
-                                            <div class="cart-overlay">
-                                                <a href="${productDetailRoute.replace(':id', item.id)}" class="shop-cart-btn">ADD TO CART</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <a href="${productDetailRoute.replace(':id', item.id)}"><h5>${item.name}</h5></a>
-                                    <h5><strong>${new Intl.NumberFormat('vi-VN').format(item.min_price)} VND</strong></h5>
-                                </div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    html = '<div class="col-12 text-center"><p>Không tìm thấy sản phẩm nào trong khoảng giá này.</p></div>';
-                }
-
-                $('#product-list').html(html);
-            },
-            error: function() {
-                $('#product-list').html('<div class="col-12 text-center"><p>Đã có lỗi xảy ra. Vui lòng thử lại.</p></div>');
-            }
-        });
+        filterPriceRange = range;
+        isFilteringByPrice = true;
+        fetchProductsByPrice(1, range[0], range[1]);
     });
 });
 </script>
