@@ -23,7 +23,7 @@
     <div v-if="selectedUser" class="chat-content">
         <div class="messages-container" ref="messagesContainer">
             <div v-for="message in messages" :key="message.id" :class="{ 'my-message': message.sender_id === currentUserId, 'their-message': message.sender_id !== currentUserId }">
-                <strong>{{ message.sender_name }}:</strong> {{ message.content }}
+                    <strong>{{ message.sender_name === 'admin' ? 'Bạn' : message.sender_name }}:</strong> {{ message.content }}
                 <span class="timestamp">{{ message.created_at }}</span>
             </div>
         </div>
@@ -134,17 +134,41 @@ return;
             },
             sendMessage() {
                 if (!this.newMessage.trim() || !this.selectedUser) return;
+
+                // Tạo tin nhắn tạm thời (optimistic)
+                const tempId = `temp_${Date.now()}`;
+                const optimisticMessage = {
+                    id: tempId,
+                    content: this.newMessage,
+                    sender_id: this.currentUserId,
+                    sender_name: 'Bạn',
+                    receiver_id: this.selectedUser.id,
+                    created_at: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+                    status: 'sending'
+                };
+                this.messages.push(optimisticMessage);
+                const messageToSend = this.newMessage;
+                this.newMessage = '';
+                this.$nextTick(this.scrollToBottom);
+
                 axios.post('/api/admin/chat/send', {
-receiver_id: this.selectedUser.id,
-message_content: this.newMessage,
+                    receiver_id: this.selectedUser.id,
+                    message_content: messageToSend,
                 }).then(response => {
-this.messages.push({
-    ...response.data.data,
-    sender_name: 'Admin'
-});
-this.newMessage = '';
-this.$nextTick(this.scrollToBottom);
-                }).catch(error => console.error('Lỗi khi gửi tin nhắn từ admin:', error));
+                    // Tìm tin nhắn tạm thời và cập nhật lại bằng dữ liệu thực từ server
+                    const sentMessage = this.messages.find(m => m.id === tempId);
+                    if (sentMessage) {
+                        Object.assign(sentMessage, response.data.data);
+                        sentMessage.status = 'sent';
+                    }
+                }).catch(error => {
+                    // Nếu lỗi, đánh dấu tin nhắn gửi thất bại
+                    const failedMessage = this.messages.find(m => m.id === tempId);
+                    if (failedMessage) {
+                        failedMessage.status = 'failed';
+                    }
+                    console.error('Lỗi khi gửi tin nhắn từ admin:', error);
+                });
             },
             scrollToBottom() {
                 const container = this.$refs.messagesContainer;
@@ -254,7 +278,7 @@ this.$nextTick(this.scrollToBottom);
 
     .message-input { display: flex; padding: 10px; border-top: 1px solid #eee; }
     .message-input input { flex-grow: 1; padding: 8px; border: 1px solid #ccc; border-radius: 20px; margin-right: 10px; }
-    .message-input button { background-color: #428cd6; color: white; border: none; border-radius: 20px; padding: 8px 15px; cursor: pointer; }
+    .message-input button {  max-height: 50px;  background-color: #428cd6; color: white; border: none; border-radius: 20px; padding: 8px 15px; cursor: pointer; }
 
-    .no-chat-selected { display: flex; justify-content: center; align-items: center; height: 100%; color: #888; }
+    .no-chat-selected { display: flex;justify-content: center; align-items: center; height: 100%; color: #888; }
     </style>

@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Mira Café</title>
 
-    @vite(['resources/css/client.css', 'resources/js/client-app.js'])
+    @vite(['resources/css/client.css', 'resources/js/client-app.js','resources/js/admin-app.js'])
 
 
     <!--[if lt IE 9]>
@@ -36,8 +36,8 @@
         // Tìm ID của admin mặc định hoặc admin đầu tiên
         $adminForChat = User::where('role', 1)->first(); // Giả sử cột is_admin
         $adminIdForChat = $adminForChat ? $adminForChat->id : null;
-        // Nếu bạn muốn test mà chưa có admin nào, bạn có thể gán tạm một ID:
-        // $adminIdForChat = $adminIdForChat ?? 1; // Ví dụ: gán 1 nếu không tìm thấy
+        $currentAdminId = (Auth::check() && Auth::user()->role == 1) ? Auth::id() : null;
+
     @endphp
     <link rel="shortcut icon" href="assetadmin\img\cards\M-removebg-preview.png" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -532,10 +532,19 @@
         </div>
       </header>
     @yield('main')
+    @if(Auth::guard('admin')->check())
+    <div id="admin-app" data-current-user-id="{{ json_encode($currentAdminId) }}"></div>
+
+    @elseif(Auth::check())
     <div id="client-app"
-        data-current-user-id="{{ json_encode($currentUserId) }}"
-        data-admin-id="{{ json_encode($adminIdForChat) }}">
-    </div>
+            data-current-user-id="{{ json_encode($currentUserId) }}"
+            data-admin-id="{{ json_encode($adminIdForChat) }}">
+        </div>
+    @else
+        <!-- Elfsight AI Chatbot | Untitled AI Chatbot -->
+        <script src="https://static.elfsight.com/platform/platform.js" async></script>
+        <div class="elfsight-app-784728d3-89d8-42e0-8e07-0b4b0235f735" data-elfsight-app-lazy></div>
+    @endif
 
       <!-- End Main Part -->
 
