@@ -155,7 +155,17 @@
                                             <img src="images/comment-img1.png" alt="">
                                         </div>
                                         <div class="comment-info">
-                                            <h5> <img style="width: 50px; height: 50px; border-radius: 50px;" src="{{ asset('storage/'.$item->user->image) }}" alt=""> {{ $item->user->name }}</h5>
+                                            @if($item->user)
+                                                <h5>
+                                                    <img style="width: 50px; height: 50px; border-radius: 50px;" src="{{ asset('storage/'.$item->user->image) }}" alt="">
+                                                    {{ $item->user->name }}
+                                                </h5>
+                                            @else
+                                                <h5>
+                                                    <img style="width: 50px; height: 50px; border-radius: 50px;" src="{{ asset('images/default-avatar.png') }}" alt="">
+                                                    Người dùng đã xóa
+                                                </h5>
+                                            @endif
                                             <span class="comment-date">{{ $item->created_at->format('d/m/Y') }}</span>
                                             <input disabled type="text" name="product_id" value="{{ $item->comment }}">
                                         </div>
