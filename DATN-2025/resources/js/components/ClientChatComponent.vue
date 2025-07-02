@@ -12,7 +12,9 @@
             </div>
             <div class="messages-container" ref="messagesContainer">
                 <div v-for="message in messages" :key="message.id" :class="{ 'my-message': message.sender_id === currentUserId, 'their-message': message.sender_id !== currentUserId }">
-                    <strong>{{ message.sender_name }}:</strong> {{ message.content }}
+                    <strong>
+                        {{ message.sender_name === 'admin' ? 'Admin' : 'Bạn' }}
+                    </strong> {{ message.content }}
                     <span class="timestamp">{{ message.created_at }}
                         <i v-if="message.status === 'sending'" class="fa-regular fa-clock-rotate-left"></i>
                         <i v-if="message.status === 'failed'" class="fa-solid fa-circle-exclamation" style="color: red;" title="Gửi thất bại"></i>
@@ -309,6 +311,7 @@ export default {
     padding: 8px 15px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    max-height: 50px;
 }
 
 .message-input button:hover {
