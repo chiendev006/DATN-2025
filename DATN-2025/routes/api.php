@@ -158,4 +158,22 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json(['messages' => $messages]);
     });
 
+    Route::post('/chat/mark-read', function (Request $request) {
+        $userId = $request->user()->id;
+        $partnerId = $request->partner_id;
+        \App\Models\Message::where('receiver_id', $userId)
+            ->where('sender_id', $partnerId)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+        return response()->json(['success' => true]);
+    });
+
+    Route::get('/chat/unread-count', function (Request $request) {
+        $userId = $request->user()->id;
+        $count = \App\Models\Message::where('receiver_id', $userId)
+            ->where('is_read', false)
+            ->count();
+        return response()->json(['unread' => $count]);
+    });
+
 });
