@@ -107,14 +107,14 @@
                                         <tr>
                                             <td>{{ ($pointSettings->currentPage()-1) * $pointSettings->perPage() + $key + 1 }}</td>
                                             <td>{{ $item->key }}</td>
-                                            <td>{{ number_format($item->value) }}</td>
+                                            <td>{{ $item->value }}</td>
                                             <td>{{ $item->description }}</td>
                                             <td>
                                                 <div class="actions" style="display: flex; gap: 10px; justify-content: center;">
                                                     <button type="button" class="btn-edit-point-setting btn btn-sm btn-primary"
                                                         data-id="{{ $item->id }}"
                                                         data-key="{{ $item->key }}"
-                                                        data-value="{{ number_format($item->value) }}"
+                                                        data-value="{{ $item->value }}"
                                                         data-description="{{ $item->description }}"
                                                     >Sửa</button>
                                                     <form action="{{ route('admin.point_settings.delete', $item->id) }}" method="POST" style="display:inline;">
@@ -153,12 +153,12 @@
             @csrf
             <input type="hidden" name="id" id="point-setting-id">
             <div class="mb-3">
-                <label for="modal-key" class="form-label">Key <span style="color:red">*</span></label>
+                <label for="modal-key" class="form-label">Key</label>
                 <input type="text" class="form-control" id="modal-key" name="key" required>
                 <div class="text-danger" id="error-key"></div>
             </div>
             <div class="mb-3">
-                <label for="modal-value" class="form-label">Value <span style="color:red">*</span></label>
+                <label for="modal-value" class="form-label">Value</label>
                 <input type="text" class="form-control" id="modal-value" name="value" required>
                 <div class="text-danger" id="error-value"></div>
             </div>
