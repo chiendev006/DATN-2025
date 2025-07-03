@@ -33,7 +33,7 @@
                                         <a href="#" data-id="">Tất cả</a>
                                     </li>
                                     @foreach ($danhmucs as $index => $danhmuc)
-                                        <li class="{{ $index == 0 && request('danhmuc_id') != null ? 'current' : '' }}">
+                                        <li class="{{ request('danhmuc_id') == $danhmuc->id ? 'current' : '' }}">
                                             <a style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="#" data-id="{{ $danhmuc->id }}">{{ $danhmuc->name }}</a>
                                         </li>
                                     @endforeach
@@ -286,6 +286,17 @@ document.addEventListener('DOMContentLoaded', function () {
             fetchProducts(1, currentDanhmucId); // Load page 1 of the selected category
         });
     });
+
+    // Highlight category based on URL parameter when page loads
+    const urlParams = new URLSearchParams(window.location.search);
+    const danhmucIdFromUrl = urlParams.get('danhmuc_id');
+    if (danhmucIdFromUrl) {
+        document.querySelectorAll('#category-list li').forEach(li => li.classList.remove('current'));
+        const categoryLink = document.querySelector(`#category-list a[data-id="${danhmucIdFromUrl}"]`);
+        if (categoryLink) {
+            categoryLink.parentElement.classList.add('current');
+        }
+    }
 
     // Sự kiện phân trang (cả khi lọc giá và khi xem danh mục)
     paginationContainer.addEventListener('click', function(e) {

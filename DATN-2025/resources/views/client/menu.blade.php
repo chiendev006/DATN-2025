@@ -31,7 +31,7 @@
             <div class="container">
                 <div class="breadcrumb-nav-inner">
                     <ul>
-                        <li><a href="index-2.html">Home</a></li>
+                        <li><a href="/">Home</a></li>
                         <li class="active"><a href="#">Menu</a></li>
                     </ul>
                     <label class="now">MENU</label>

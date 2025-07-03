@@ -17,6 +17,60 @@
             color: #bfbfbf !important;
             background: #f5f5f5;
         }
+        .prroduct-staff{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.pos-product {
+  width: 300px;
+  height: 200px;
+  background: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+  transition: all 0.5s ease;
+}
+
+.pos-product h2 {
+  color: #0ff;
+  font-size: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.pos-product::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    0deg,
+    transparent,
+    transparent 30%,
+    rgba(0,255,255,0.3)
+  );
+  transform: rotate(-45deg);
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+
+.pos-product:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0,255,255,0.5);
+}
+
+.pos-product:hover::before {
+  opacity: 1;
+  transform: rotate(-45deg) translateY(100%);
+}
 
     </style>
     <!-- ================== END core-css ================== -->
@@ -108,8 +162,8 @@
             @else
                 <div class="row gx-4">
                     @foreach ($sanpham as $item)
-                        <div class="col-xxl-3 col-xl-3 col-lg-3 col-md-3 col-sm-3 pb-3" data-type="meat">
-                            <a href="#" class="pos-product" data-bs-toggle="modal"
+                        <div class="prroduct-staff col-xxl-3 col-xl-3 col-lg-3 col-md-3 col-sm-3 pb-3" data-type="meat">
+                            <a  style="background-color:rgb(226, 226, 226); "  href="#" class="pos-product" data-bs-toggle="modal"
                                data-bs-target="#modalPosItem"
                                data-id="{{ $item->id }}"
                                data-name="{{ $item->name }}"

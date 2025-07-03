@@ -7,7 +7,7 @@
                     <div class="container">
                         <div class="breadcrumb-nav-inner">
                             <ul>
-                                <li><a href="index-2.html">Home</a></li>
+                                <li><a href="/">Home</a></li>
                                 <li class="active"><a href="#">Blog</a></li>
                             </ul>
                             <label class="now">BLOG</label>
@@ -15,7 +15,7 @@
                     </div>
                 </section>
 
-                <!-- Start Blog List -->   
+                <!-- Start Blog List -->
 
                 <section class="default-section blog-main-section blog-list-outer">
                     <div class="container">
@@ -75,7 +75,7 @@
                                             <h6>Disclosue - Real food here</h6>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <h5>Best Deals</h5>
                                         <div class="best-deal-blog">
@@ -108,7 +108,7 @@
                                     </div>
                                 </div>
                             </div>
-                                                      
+
                             <div class="col-md-8 col-sm-8 col-xs-12">
                                 <div class="blog-right-section">
                                   @foreach ($blogs as $item)
@@ -117,7 +117,7 @@
                                             <a href="{{route('client.blogsingle',$item->id)}}">
                                                  <img src="{{ asset('storage/'.$item->image) }} " width="300" height="350" alt="">
                                             </a>
-                                          
+
                                             <div class="date-feature">{{ \Carbon\Carbon::parse($item->created_at)->diffInDays(now()) }}<br> <small>Ngày</small></div>
                                         </div>
                                         <div class="feature-info">
@@ -138,5 +138,5 @@
                 <!-- End Blog List -->
 
             </div>
-        </main>  
+        </main>
         @endsection

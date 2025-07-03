@@ -7,7 +7,7 @@
                     <div class="container">
                         <div class="breadcrumb-nav-inner">
                             <ul>
-                                <li><a href="index-2.html">Home</a></li>
+                                <li><a href="/">Home</a></li>
                                 <li><a href="blog_2col.html">Blog</a></li>
                                 <li class="active"><a href="#">Blog Single</a></li>
                             </ul>
@@ -16,7 +16,7 @@
                     </div>
                 </section>
 
-                <!-- Start Blog List -->   
+                <!-- Start Blog List -->
 
                 <section class="default-section blog-main-section blog-single">
                     <div class="container">
@@ -59,7 +59,7 @@
                                             <h6>Disclosue - Real food here</h6>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <h5>Best Deals</h5>
                                         <div class="best-deal-blog">
@@ -159,5 +159,5 @@
                 <!-- End Blog List -->
 
             </div>
-        </main> 
+        </main>
 @endsection

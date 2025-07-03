@@ -10,10 +10,7 @@
     @vite(['resources/css/client.css', 'resources/js/client-app.js','resources/js/admin-app.js'])
 
 
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+
     @php
         use Illuminate\Support\Facades\Auth;
         use App\Models\Cart;
@@ -62,7 +59,7 @@
     <link href="{{ url('asset') }}/css/Slick-slider/slick-theme.css" rel="stylesheet" />
     <link href="{{ url('asset') }}/css/theme.css" rel="stylesheet" />
     <link href="{{ url('asset') }}/css/responsive.css" rel="stylesheet" />
-  <!-- Bootstrap Slider CSS -->
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/css/bootstrap-slider.min.css">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -147,12 +144,12 @@
 
 
 .scrollable-cart {
-    max-height: 300px; /* Adjust as needed based on your design */
-    overflow-y: auto; /* Adds a vertical scrollbar when content exceeds max-height */
-    padding-right: 15px; /* Add some padding to prevent scrollbar from overlapping content */
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 15px;
 }
 
-/* Optional: Style for the scrollbar itself (Webkit browsers) */
+
 .scrollable-cart::-webkit-scrollbar {
     width: 8px;
 }
@@ -169,7 +166,7 @@
 .quantity-controls {
     display: flex;
     align-items: center;
-    margin-top: 5px; /* Adjust spacing as needed */
+    margin-top: 5px;
 }
 
 .quantity-controls button {
@@ -184,7 +181,7 @@
 }
 
 .quantity-controls input {
-    width: 40px; /* Adjust width as needed */
+    width: 40px;
     text-align: center;
     border: 1px solid #ddd;
     padding: 2px 0;
@@ -194,17 +191,17 @@
 
 .delete-icon {
     cursor: pointer;
-    color: #f00; /* Red color for delete icon */
-    font-size: 18px; /* Adjust size as needed */
-    margin-left: auto; /* Pushes the icon to the right */
-    position: absolute; /* Position absolutely if needed for alignment */
-    right: 10px; /* Adjust based on your layout */
+    color: #f00;
+    font-size: 18px;
+    margin-left: auto;
+    position: absolute;
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
 }
 
 .cart-item {
-    position: relative; /* Needed for absolute positioning of delete icon */
+    position: relative;
     display: flex;
     align-items: center;
     padding: 10px 0;
@@ -212,13 +209,74 @@
 }
 
 .cart-item-right {
-    flex-grow: 1; /* Allows the right section to take up available space */
-    padding-right: 30px; /* Space for the delete icon */
+    flex-grow: 1;
+    padding-right: 30px;
 }
 
 .cart-blog {
     background-color: #fdfaf6;
 }
+
+
+      .menu-nav-main li a,
+      .menu-nav-main li .drop-nav li a,
+      .menu-nav-main li.mega-menu .drop-nav li a {
+          position: relative;
+          transition: color 0.3s cubic-bezier(0.4,0,0.2,1);
+      }
+      .menu-nav-main li a::after,
+      .menu-nav-main li .drop-nav li a::after,
+      .menu-nav-main li.mega-menu .drop-nav li a::after {
+          content: '';
+          display: block;
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 4px;
+          height: 2px;
+          background: #c7a17a;
+          border-radius: 2px;
+          transform: scaleX(0);
+          transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+          z-index: 1;
+      }
+      .menu-nav-main li a:hover,
+      .menu-nav-main li.active > a,
+      .menu-nav-main li .drop-nav li a:hover,
+      .menu-nav-main li .drop-nav li.active > a,
+      .menu-nav-main li.mega-menu .drop-nav li a:hover,
+      .menu-nav-main li.mega-menu .drop-nav li.active > a {
+          color:rgb(151, 45, 3);
+      }
+      .menu-nav-main li a:hover::after,
+      .menu-nav-main li.active > a::after,
+      .menu-nav-main li .drop-nav li a:hover::after,
+      .menu-nav-main li .drop-nav li.active > a::after,
+      .menu-nav-main li.mega-menu .drop-nav li a:hover::after,
+      .menu-nav-main li.mega-menu .drop-nav li.active > a::after {
+          transform: scaleX(1);
+      }
+
+      /* CSS cho highlight categories trong shop */
+      #category-list li.current a {
+          color: #c7a17a !important;
+          font-weight: bold;
+          background-color: rgba(199, 161, 122, 0.1);
+          border-left: 3px solid #c7a17a;
+          padding-left: 15px;
+      }
+      #category-list li a {
+          transition: all 0.3s ease;
+          padding: 8px 15px;
+          display: block;
+          border-left: 3px solid transparent;
+      }
+      #category-list li a:hover {
+          color: #c7a17a !important;
+          background-color: rgba(199, 161, 122, 0.05);
+          border-left: 3px solid #c7a17a;
+          padding-left: 15px;
+      }
 
     </style>
   </head>
@@ -228,7 +286,6 @@
 
   <body>
     <div  id="app">
-    <!-- Page pre loader -->
     <div id="pre-loader">
       <div class="loader-holder">
         <div class="frame">
@@ -237,13 +294,13 @@
       </div>
     </div>
 
-    <!-- Start Wrapper Part -->
+
 
     <div class="wrapper">
-      <!-- Start Header Part -->
+
 
       <header>
-        <!-- Flash Message Display -->
+
         @if(session('message'))
         <div class="alert-container" style="position: fixed; top: 80px; right: 20px; z-index: 9999; max-width: 350px;">
           <div class="alert alert-warning alert-dismissible fade show" role="alert" style="background-color: #fff3cd; color: #856404; border-color: #ffeeba; padding: 12px 20px; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
@@ -254,7 +311,7 @@
           </div>
         </div>
         <script>
-          // Auto close alert after 5 seconds
+
           setTimeout(function() {
             document.querySelector('.alert').classList.remove('show');
             setTimeout(function() {
@@ -262,7 +319,7 @@
             }, 500);
           }, 5000);
 
-          // Close on click
+
           document.querySelector('.close').addEventListener('click', function() {
             document.querySelector('.alert').classList.remove('show');
             setTimeout(function() {
@@ -293,94 +350,22 @@
                           <li>
                             <div  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="drop-mega-part">
                               <div class="row">
-                                <div class="col-md-5 col-sm-12 col-xs-12">
-                                  <span  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="mega-title">MAIN MENU</span>
-                                  <div class="row">
-                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                <div class="col-md-3 col-sm-12 col-xs-12">
+                                  <span  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="mega-title">DANH MỤC</span>
+                                        <?php $danhmucs= \App\Models\Danhmuc::with('sanphams')->get();?>
                                       <ul>
-                                        <li>
-                                          <a href="menu.html"
-                                            >Ready Player One</a
-                                          >
+                                      @foreach ($danhmucs as $index => $danhmuc)
+                                        <li class="{{ $index == 0 && request('danhmuc_id') != null ? 'current' : '' }}">
+                                            <a style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="{{ route('shop.index') }}?danhmuc_id={{ $danhmuc->id }}">{{ $danhmuc->name }}</a>
                                         </li>
-                                        <li>
-                                          <a href="menu_change.html"
-                                            >Ernest Cline</a
-                                          >
-                                        </li>
-                                        <li>
-                                          <a href="menu_fixed.html"
-                                            >Ender's Game</a
-                                          >
-                                        </li>
-                                        <li>
-                                          <a href="menu.html"
-                                            >Orson Scott Card</a
-                                          >
-                                        </li>
-                                        <li>
-                                          <a href="menu_change.html"
-                                            >Americam Gods</a
-                                          >
-                                        </li>
-                                        <li>
-                                          <a href="menu_fixed.html"
-                                            >Neil Gaiman</a
-                                          >
-                                        </li>
-                                        <li>
-                                          <a href="menu.html"
-                                            >The Great Gatsby</a
-                                          >
-                                        </li>
+                                    @endforeach
                                       </ul>
-                                    </div>
-                                    <div class="col-md-6 col-sm-12 col-xs-12">
-                                      <ul>
-                                        <li>
-                                          <a href="menu.html"
-                                            >Ready Player One</a
-                                          >
-                                        </li>
-                                        <li>
-                                          <a href="menu_change.html"
-                                            >Ernest Cline</a
-                                          >
-                                        </li>
-                                        <li>
-                                          <a href="menu_fixed.html"
-                                            >Ender's Game</a
-                                          >
-                                        </li>
-                                        <li>
-                                          <a href="menu.html"
-                                            >Orson Scott Card</a
-                                          >
-                                        </li>
-                                        <li>
-                                          <a href="menu_change.html"
-                                            >Americam Gods</a
-                                          >
-                                        </li>
-                                        <li>
-                                          <a href="menu_fixed.html"
-                                            >Neil Gaiman</a
-                                          >
-                                        </li>
-                                        <li>
-                                          <a href="menu.html"
-                                            >The Great Gatsby</a
-                                          >
-                                        </li>
-                                      </ul>
-                                    </div>
-                                  </div>
                                 </div>
                                 <div class="col-md-2 col-sm-12 col-xs-12">
                                   <span  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="mega-title">IMAGE</span>
                                   <img src="{{ url('asset') }}/images/img6.png" alt="" />
                                 </div>
-                                <div class="col-md-5 col-sm-12 col-xs-12">
+                                <div class="col-md-7 col-sm-12 col-xs-12">
                                   <span  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="mega-title">DESCRIPTION</span>
                                   <p>
                                     This column can contain whatever you like!
@@ -541,14 +526,10 @@
             data-admin-id="{{ json_encode($adminIdForChat) }}">
         </div>
     @else
-        <!-- Elfsight AI Chatbot | Untitled AI Chatbot -->
+
         <script src="https://static.elfsight.com/platform/platform.js" async></script>
         <div class="elfsight-app-784728d3-89d8-42e0-8e07-0b4b0235f735" data-elfsight-app-lazy></div>
     @endif
-
-      <!-- End Main Part -->
-
-      <!-- Start Footer Part -->
 
       <footer>
         <div class="footer-part">
@@ -637,17 +618,8 @@
         </div>
       </footer>
 
-      <!-- End Footer Part -->
+
     </div>
-
-    <!-- End Wrapper Part -->
-
-    <!-- Back To Top Arrow -->
-
-
-
-<!-- Elfsight AI Chatbot | Untitled AI Chatbot  -->
-
 
 
     <script src="{{ url('asset') }}/js/jquery.min.js"></script>
@@ -669,39 +641,36 @@
     <script src="{{ url('asset') }}/js/app.js"></script>
     <script src="{{ url('asset') }}/js/script.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    <!-- Bootstrap Slider JS -->
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/bootstrap-slider.min.js"></script>
     @yield('scripts')
     </div>
   </body>
-  <!-- jQuery (bắt buộc) -->
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- Summernote CSS -->
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.css" rel="stylesheet">
 
-<!-- Summernote JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const cartBlog = document.querySelector('.cart-blog');
     const subtotalAmountSpan = document.getElementById('subtotal-amount');
 
-    // Function to format currency in VND
+
     function formatCurrency(amount) {
         return new Intl.NumberFormat('vi-VN').format(amount) + '₫';
     }
 
-    // Function to update the subtotal displayed in the cart
+
     function updateCartSubtotal(newSubtotal) {
         subtotalAmountSpan.textContent = formatCurrency(newSubtotal);
-        // Update header cart count and total
+
         const headerCartText = document.querySelector('.cart.animated > span:nth-child(2)');
         const cartItemCount = document.querySelectorAll('.cart-item').length - (document.querySelector('.cart-item p') ? 1 : 0); // Subtract 1 if empty cart message exists
         headerCartText.textContent = `${cartItemCount} sản phẩm - ${formatCurrency(newSubtotal)}`;
     }
-
-    // Handle quantity changes and delete
     cartBlog.addEventListener('click', async function(event) {
         const target = event.target;
 
