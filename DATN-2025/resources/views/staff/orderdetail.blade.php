@@ -33,22 +33,11 @@
             } else {
                 $currentStatusInt = $statusMapping[$item->status] ?? 0;
             }
-            if ($isWalkInCustomer) {
-                if ($item->pay_status == 3 || $item->pay_status === '3') {
-                    $currentPayStatus = 3; // Hoàn tiền
-                } else if ($item->status === 'cancelled' || $item->status === 4) {
-                    $currentPayStatus = 2; // Đã hủy
-                } else {
-                    $currentPayStatus = 1; // Đã thanh toán
-                }
+            // Lấy trạng thái thanh toán trực tiếp từ database, không đồng bộ với trạng thái đơn hàng
+            if (is_numeric($item->pay_status)) {
+                $currentPayStatus = (int)$item->pay_status;
             } else {
-                if ($item->status === 'completed') {
-                    $currentPayStatus = 1; // Đơn online hoàn thành thì luôn là đã thanh toán
-                } else if (is_numeric($item->pay_status)) {
-                    $currentPayStatus = (int)$item->pay_status;
-                } else {
-                    $currentPayStatus = $payStatusMapping[$item->pay_status] ?? 0;
-                }
+                $currentPayStatus = $payStatusMapping[$item->pay_status] ?? 0;
             }
         @endphp
         <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
@@ -79,21 +68,26 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr style="{{ $isWalkInCustomer ? 'background-color: #ffe066;' : '' }}">
+                        <tr @if($isWalkInCustomer) class="px-4 py-2 border" style="background-color: #ffe066;" @else class="px-4 py-2 border" @endif>
                             <td class="px-4 py-2 border text-gray-700 font-medium">{{ $item->name ?? 'Khách lẻ' }}</td>
                             <td class="px-4 py-2 border">{{ $item->phone ?? 'không có' }}</td>
                             <td class="px-4 py-2 border text-center text-sm font-semibold">
                                 @php
-                                    $statusLabels = [
-                                        0 => ['Chờ xử lý', 'orange'],
-                                        1 => ['Đã xác nhận', 'gray'],
-                                        2 => ['Đang giao hàng', 'blue'],
-                                        3 => ['Hoàn thành', 'green'],
-                                        4 => ['Đã hủy', 'red']
-                                    ];
+                                                $statusLabels = [
+                0 => ['Chờ xử lý', 'orange'],
+                1 => ['Đã xác nhận', 'gray'],
+                2 => ['Đang giao hàng', 'blue'],
+                3 => ['Hoàn thành', 'green'],
+                4 => ['Đã hủy', 'red']
+            ];
+            
+            // Cho khách lẻ, nếu trạng thái là pending thì chuyển thành processing
+            if ($isWalkInCustomer && $currentStatusInt === 0) {
+                $currentStatusInt = 1;
+            }
                                     $statusDisplay = $statusLabels[$currentStatusInt] ?? ['Không xác định', 'black'];
                                 @endphp
-                                <span style="color: {{ $statusDisplay[1] }}">{{ $statusDisplay[0] }}</span>
+                                <span class="status-label" data-color="{{ $statusDisplay[1] }}">{{ $statusDisplay[0] }}</span>
                             </td>
                             <td class="px-4 py-2 border text-center text-sm font-semibold">
                                 @php
@@ -101,11 +95,11 @@
                                         0 => ['Chờ thanh toán', 'orange'],
                                         1 => ['Đã thanh toán', 'green'],
                                         2 => ['Đã hủy', 'red'],
-                                        3 => ['Hoàn tiền', 'purple']
+                                        3 => ['Hoàn tiền', '#e67e22']
                                     ];
                                     $payStatusDisplay = $payStatusLabels[$currentPayStatus] ?? ['Không xác định', 'black'];
                                 @endphp
-                                <span style="color: {{ $payStatusDisplay[1] }}">{{ $payStatusDisplay[0] }}</span>
+                                <span class="pay-status-label" data-color="{{ $payStatusDisplay[1] }}">{{ $payStatusDisplay[0] }}</span>
                             </td>
                             <td class="px-4 py-2 border text-right font-bold text-green-700">
                                 {{ number_format($item->total, 0, ',', '.') }} đ
@@ -136,83 +130,75 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row g-3 mb-3">
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <label class="text-primary">Tên khách hàng</label>
-                                        <input type="text" class="form-control" value="{{ $item->name }}" readonly>
+                                        <input type="text" class="form-control equal-width-input" value="{{ $item->name }}" readonly>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <label class="text-primary">Số điện thoại</label>
-                                        <input type="text" class="form-control" value="{{ $item->phone }}" readonly>
+                                        <input type="text" class="form-control equal-width-input" value="{{ $item->phone }}" readonly>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <label class="text-primary">Email</label>
-                                        <input type="text" class="form-control" value="{{ $item->email ?? ($isWalkInCustomer ? 'Khách lẻ' : 'Không có') }}" readonly>
+                                        <input type="text" class="form-control equal-width-input" value="{{ $item->email ?? ($isWalkInCustomer ? 'Khách lẻ' : 'Không có') }}" readonly>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <label class="text-primary">Trạng thái đơn hàng</label>
-                                        @if($isWalkInCustomer)
-                                            <select name="status" class="form-select" id="statusSelect{{ $item->id }}" data-current="{{ $currentStatusInt }}" required onchange="handleStatusChange({{ $item->id }}, this.value, '{{ $item->status }}', true)">
-                                                <option value="processing" {{ $item->status == 'processing' ? 'selected' : '' }}>Đã xác nhận</option>
-                                                <option value="completed" {{ $item->status == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
-                                                <option value="cancelled" {{ $item->status == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
-                                            </select>
-                                        @else
-                                            <select name="status" class="form-select" id="statusSelect{{ $item->id }}" data-current="{{ $currentStatusInt }}" required onchange="handleStatusChange({{ $item->id }}, this.value, '{{ $item->status }}', false)">
+                                        <select name="status" class="form-select equal-width-input status-select" id="statusSelect{{ $item->id }}" data-current="{{ $currentStatusInt }}" data-order-id="{{ $item->id }}" data-is-walk-in="{{ $isWalkInCustomer ? 'true' : 'false' }}">
+                                            @if(!$isWalkInCustomer)
                                                 <option value="pending" {{ $item->status == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
-                                                <option value="processing" {{ $item->status == 'processing' ? 'selected' : '' }}>Đã xác nhận</option>
+                                            @endif
+                                            <option value="processing" {{ $item->status == 'processing' ? 'selected' : '' }}>Đã xác nhận</option>
+                                            @if(!$isWalkInCustomer)
                                                 <option value="shipping" {{ $item->status == 'shipping' ? 'selected' : '' }}>Đang giao hàng</option>
-                                                <option value="completed" {{ $item->status == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
-                                                <option value="cancelled" {{ $item->status == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
-                                            </select>
-                                        @endif
+                                            @endif
+                                            <option value="completed" {{ $item->status == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
+                                            <option value="cancelled" {{ $item->status == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                                        </select>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <label class="text-primary">Trạng thái thanh toán</label>
                                         @if($isWalkInCustomer)
-                                            <select name="pay_status" class="form-select" id="payStatusSelect{{ $item->id }}" data-current="{{ $currentPayStatus }}" required onchange="handlePayStatusChange({{ $item->id }}, this.value, {{ $currentPayStatus }}, {{ $currentStatusInt }})">
+                                            <select name="pay_status" class="form-select equal-width-input pay-status-select" id="payStatusSelect{{ $item->id }}" data-current="{{ $currentPayStatus }}" data-order-id="{{ $item->id }}" data-status-int="{{ $currentStatusInt }}" disabled>
+                                                <option value="0" {{ $currentPayStatus == 0 ? 'selected' : '' }}>Chờ thanh toán</option>
+                                                <option value="1" {{ $currentPayStatus == 1 ? 'selected' : '' }}>Đã thanh toán</option>
+                                            </select>
+                                        @else
+                                            <select name="pay_status" class="form-select equal-width-input pay-status-select" id="payStatusSelect{{ $item->id }}" data-current="{{ $currentPayStatus }}" data-order-id="{{ $item->id }}" data-status-int="{{ $currentStatusInt }}">
+                                                <option value="0" {{ $currentPayStatus == 0 ? 'selected' : '' }}>Chờ thanh toán</option>
                                                 <option value="1" {{ $currentPayStatus == 1 ? 'selected' : '' }}>Đã thanh toán</option>
                                                 <option value="2" {{ $currentPayStatus == 2 ? 'selected' : '' }}>Đã hủy</option>
                                                 <option value="3" {{ $currentPayStatus == 3 ? 'selected' : '' }}>Hoàn tiền</option>
                                             </select>
-                                        @else
-                                            <select name="pay_status" class="form-select" id="payStatusSelect{{ $item->id }}" data-current="{{ $currentPayStatus }}" required onchange="handlePayStatusChange({{ $item->id }}, this.value, {{ $currentPayStatus }}, {{ $currentStatusInt }})">
-                                                <option value="0" {{ $currentPayStatus == 0 ? 'selected' : '' }}>Chờ thanh toán</option>
-                                                <option value="1" {{ $currentPayStatus == 1 ? 'selected' : '' }}>Đã thanh toán</option>
-                                                <option value="2" {{ $currentPayStatus == 2 ? 'selected' : '' }}>Đã hủy</option>
-                                                <option value="3" {{ $currentPayStatus == 3 ? 'selected' : '' }}
-                                                    @if(!(($item->pay_status == '1' || $item->pay_status == 1) && ($item->status == 'pending' || $item->status == 0 || $item->status == '0'))) disabled @endif
-                                                >Hoàn tiền</option>
-                                            </select>
                                         @endif
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <label class="text-primary">Phương thức thanh toán</label>
-                                        <input type="text" class="form-control" value="{{ $item->payment_method === 'cash' ? 'Tiền mặt' : 'Thẻ' }}" readonly>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <label class="text-primary">Mã đơn</label>
-                                        <input type="text" class="form-control" value="{{ $item->id }}" readonly>
+                                        <input type="text" class="form-control equal-width-input" value="{{ $item->payment_method === 'cash' ? 'Tiền mặt' : 'Thẻ' }}" readonly>
                                     </div>
                                     <div class="col-md-3">
                                         <label class="text-primary">Địa chỉ</label>
                                         @if($item->district_name==null)
-                                            <input type="text" class="form-control" value="Đặt tại quán" readonly>
+                                            <input type="text" class="form-control equal-width-input" value="Đặt tại quán" readonly>
                                         @else
-                                            <input type="text" class="form-control" value="{{ $item->district_name }}{{ $item->address_detail }}" readonly>
+                                            <input type="text" class="form-control equal-width-input" value="{{ $item->district_name }}{{ $item->address_detail }}" readonly>
                                         @endif
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label class="text-primary">Ghi chú</label>
-                                        <input type="text" class="form-control" value="{{ $item->note}}" readonly>
+                                        <input type="text" class="form-control equal-width-input" value="{{ $item->note}}" readonly>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label class="text-primary">Lý do hủy hiện tại</label>
-                                        <input type="text" class="form-control" value="{{ $item->cancel_reason ?? 'Không có' }}" readonly>
+                                        <input type="text" class="form-control equal-width-input" value="{{ $item->cancel_reason ?? 'Không có' }}" readonly>
                                     </div>
-                                    <!-- Input ẩn cho lý do hủy -->
+                                    <div class="col-md-3">
+                                        <label class="text-primary">Mã đơn</label>
+                                        <input type="text" class="form-control equal-width-input" value="{{ $item->id }}" readonly>
+                                    </div>
                                     <div class="col-md-12" id="cancelReasonDiv{{ $item->id }}" style="display: none;">
                                         <label class="text-danger">Lý do hủy đơn hàng *</label>
-                                        <input type="text" name="cancel_reason" class="form-control" placeholder="Nhập lý do hủy đơn hàng..." id="cancelReasonInput{{ $item->id }}">
+                                        <input type="text" name="cancel_reason" class="form-control equal-width-input" placeholder="Nhập lý do hủy đơn hàng..." id="cancelReasonInput{{ $item->id }}">
                                     </div>
                                 </div>
                                 <div class="table-responsive mt-4">
@@ -233,13 +219,14 @@
                                                 <td>{{ $ct->product_name }}</td>
                                                 <td>
                                                     @if($ct->product && $ct->product->image)
-                                                        <img src="{{ asset('uploads/sanpham/' . $ct->product->image) }}" width="40" height="40" alt="" class="rounded">
+                                                        <img src="{{ asset('storage/uploads/' . $ct->product->image) }}" width="100" height="70" alt="" class="rounded">  
                                                     @else
                                                         <div class="bg-gray-200 w-10 h-10 rounded flex items-center justify-center">
                                                             <span class="text-gray-400 text-xs">No img</span>
                                                         </div>
                                                     @endif
                                                 </td>
+
                                                 <td>
                                                     @if($ct->size)
                                                         {{ $ct->size->size ?? 'N/A' }} - {{ number_format($ct->size->price ?? 0, 0, ',', '.') }} đ
@@ -273,6 +260,7 @@
                                             @endif
                                             <span class="text-primary">Tiền sản phẩm: <span class="fw-normal text-dark">{{ number_format(($item->total ?? 0) + ($item->coupon_total_discount ?? 0) - ($item->shipping_fee ?? 0), 0, ',', '.') }} đ</span></span>
                                             <span class="text-primary">Tiền giảm giá: <span class="fw-normal text-dark">{{ number_format($item->coupon_total_discount ?? 0, 0, ',', '.') }} đ</span></span>
+                                            <span class="text-primary">Giảm giá điểm: <span class="fw-normal text-dark">{{ number_format($item->points_discount ?? 0, 0, ',', '.') }} đ</span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -283,8 +271,8 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                <button type="submit" class="btn btn-sm btn-success mt-2" id="updateBtn{{ $item->id }}">Cập nhật</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button> 
+                                <button type="submit" class="btn btn-success" id="updateBtn{{ $item->id }}">Cập nhật</button>
                             </div>
                         </div>
                     </form>
@@ -296,12 +284,145 @@
 @endif
 
 <script>
+function disableInvalidStatusOptions(orderId, originalStatus, isWalkInCustomer) {
+    const select = document.getElementById('statusSelect' + orderId);
+    const statusOrder = { 'pending': 0, 'processing': 1, 'shipping': 2, 'completed': 3, 'cancelled': 4 };
+
+    [...select.options].forEach(option => {
+        const val = option.value;
+        option.disabled = false;
+
+        // Cho phép đơn hàng nhân viên chuyển từ "Hoàn thành" sang "Đã hủy"
+        if (isWalkInCustomer && originalStatus === 'completed' && val === 'cancelled') {
+            option.disabled = false;
+            return;
+        }
+
+        // Final states: cannot be changed from (trừ đơn hàng nhân viên)
+        if ((originalStatus === 'completed' || originalStatus === 'cancelled') && !isWalkInCustomer) {
+            if (val !== originalStatus) {
+                option.disabled = true;
+            }
+            return;
+        }
+
+        // Cho khách lẻ: chỉ cho phép chuyển từ processing -> completed hoặc cancelled
+        if (isWalkInCustomer) {
+            if (originalStatus === 'processing') {
+                if (val !== 'completed' && val !== 'cancelled') {
+                    option.disabled = true;
+                }
+            } else if (originalStatus === 'completed') {
+                // Khách lẻ đã hoàn thành thì không thể hủy nữa
+                if (val !== 'completed') {
+                    option.disabled = true;
+                }
+            } else if (originalStatus === 'cancelled') {
+                if (val !== 'cancelled') {
+                    option.disabled = true;
+                }
+            }
+            return;
+        }
+
+        // Cho khách online: logic cũ
+        if (statusOrder[val] < statusOrder[originalStatus] && val !== 'cancelled') {
+            option.disabled = true;
+        }
+
+        // Cho phép chuyển sang trạng thái tiếp theo hoặc cancelled
+        const isJumping = statusOrder[val] > statusOrder[originalStatus] + 1;
+        if (isJumping && val !== 'cancelled') {
+            option.disabled = true;
+        }
+    });
+}
+
+function disableInvalidPayStatusOptions(orderId, originalPayStatus, currentOrderStatus) {
+    const select = document.getElementById('payStatusSelect' + orderId);
+    const statusSelect = document.getElementById('statusSelect' + orderId);
+    const isWalkIn = statusSelect.getAttribute('data-is-walk-in') === 'true';
+    const original = parseInt(originalPayStatus);
+    const status = currentOrderStatus;
+
+    // Nếu là khách lẻ thì đã disable ở HTML rồi
+    if (isWalkIn) return;
+
+    // Nếu trạng thái đơn hàng là 'Đã hủy' thì chỉ cho phép chọn 'Đã hủy'
+    if (status === 'cancelled') {
+        const originalPayStatus = select.getAttribute('data-current');
+        if (originalPayStatus === '1') {
+            // Nếu đã thanh toán từ trước, chỉ cho chọn Hoàn tiền
+            [...select.options].forEach(option => {
+                if (option.value !== '3') {
+                    option.disabled = true;
+                } else {
+                    option.disabled = false;
+                }
+            });
+        } else {
+            // Nếu chưa thanh toán, chỉ cho chọn Đã hủy
+            [...select.options].forEach(option => {
+                if (option.value !== '2') {
+                    option.disabled = true;
+                } else {
+                    option.disabled = false;
+                }
+            });
+        }
+        select.setAttribute('name', 'pay_status');
+        // Chỉ disable nếu trạng thái đơn hàng đã là cancelled từ trước và TTTT là 2 hoặc 3
+        const originalStatus = statusSelect.getAttribute('data-current');
+        if ((select.value === '2' && originalStatus === 'cancelled') || (select.value === '3' && originalStatus === 'cancelled')) {
+            select.setAttribute('disabled', 'disabled');
+        } else {
+            select.removeAttribute('disabled');
+        }
+        return;
+    }
+
+    // Nếu trạng thái đơn hàng là 'Hoàn thành' thì chỉ cho phép chọn 'Đã thanh toán'
+    if (status === 'completed') {
+        [...select.options].forEach(option => {
+            if (option.value !== '1') {
+                option.disabled = true;
+            } else {
+                option.disabled = false;
+            }
+        });
+        select.setAttribute('name', 'pay_status');
+        // Chỉ disable nếu trạng thái đơn hàng đã là completed từ trước và TTTT là 1
+        const originalStatus = statusSelect.getAttribute('data-current');
+        if (select.value === '1' && originalStatus === 'completed') {
+            select.setAttribute('disabled', 'disabled');
+        } else {
+            select.removeAttribute('disabled');
+        }
+        return;
+    }
+
+    // Khi chuyển sang hoàn thành, dropdown TTTT luôn enable và cho phép chọn lại
+    select.removeAttribute('disabled');
+    [...select.options].forEach(option => {
+        const val = parseInt(option.value);
+        option.disabled = false;
+        if (status === 'pending' || status === 'processing' || status === 'shipping') {
+            option.disabled = true;
+        }
+    });
+    if (status === 'pending' || status === 'processing' || status === 'shipping') {
+        select.removeAttribute('name');
+    } else {
+        select.setAttribute('name', 'pay_status');
+    }
+}
+
 function handleStatusChange(orderId, newStatusValue, currentStatusInt, isWalkInCustomer = false) {
     const cancelReasonDiv = document.getElementById('cancelReasonDiv' + orderId);
     const cancelReasonInput = document.getElementById('cancelReasonInput' + orderId);
     const statusSelect = document.getElementById('statusSelect' + orderId);
     const payStatusSelect = document.getElementById('payStatusSelect' + orderId);
-
+    
     // Reset cancel reason display
     cancelReasonDiv.style.display = 'none';
     cancelReasonInput.required = false;
@@ -315,10 +436,10 @@ function handleStatusChange(orderId, newStatusValue, currentStatusInt, isWalkInC
         'completed': 3,
         'cancelled': 4
     };
-
+    
     let currentStatus = currentStatusInt;
     let newStatus = newStatusValue;
-
+    
     // Convert string status to integer if needed
     if (typeof currentStatus === 'string') {
         currentStatus = statusMapping[currentStatus] || 0;
@@ -326,86 +447,81 @@ function handleStatusChange(orderId, newStatusValue, currentStatusInt, isWalkInC
     if (typeof newStatus === 'string') {
         newStatus = statusMapping[newStatus] || 0;
     }
-
+    
     // Convert to integers for comparison
     currentStatus = parseInt(currentStatus);
     newStatus = parseInt(newStatus);
 
-    // Nếu đơn đã hoàn thành, không cho phép đổi trạng thái nào nữa, kể cả hủy
-    if (currentStatus === 3) {
-        statusSelect.value = 'completed';
-        showAlert('Đơn hàng đã hoàn thành không thể thay đổi trạng thái!', 'error');
-        return false;
-    }
-
     // For walk-in customers
     if (isWalkInCustomer) {
-        // Nếu đơn đã hủy thì không cho đổi trạng thái
-        if (currentStatus === 4) {
+        // Logic cho khách lẻ: chỉ có 3 trạng thái (processing, completed, cancelled)
+        if (currentStatus === 1) { // processing
+            if (newStatus === 3) { // completed
+                return true;
+            } else if (newStatus === 4) { // cancelled
+                cancelReasonDiv.style.display = 'block';
+                cancelReasonInput.required = true;
+                return true;
+            } else {
+                statusSelect.value = 'processing';
+                showAlert('Khách lẻ chỉ có thể chuyển từ "Đã xác nhận" sang "Hoàn thành" hoặc "Đã hủy"!', 'error');
+                return false;
+            }
+        } else if (currentStatus === 3) { // completed
+            // Khách lẻ đã hoàn thành thì không thể hủy nữa
+            statusSelect.value = 'completed';
+            showAlert('Đơn hàng khách lẻ đã hoàn thành không thể hủy!', 'error');
+            return false;
+        } else if (currentStatus === 4) { // cancelled
             statusSelect.value = 'cancelled';
             showAlert('Đơn hàng đã hủy không thể thay đổi trạng thái!', 'error');
             return false;
         }
-        // Nếu chọn hủy
-        if (newStatus === 4) {
-            cancelReasonDiv.style.display = 'block';
-            cancelReasonInput.required = true;
-            if (payStatusSelect) payStatusSelect.value = '2'; // Đã hủy
-            return true;
-        }
-        // Chỉ cho phép chọn các trạng thái: Đã xác nhận (1), Hoàn thành (3), Đã hủy (4)
-        if (![1, 3, 4].includes(newStatus)) {
-            statusSelect.value = currentStatus === 3 ? 'completed' : (currentStatus === 1 ? 'processing' : 'processing');
-            showAlert('Khách lẻ chỉ có thể chọn "Đã xác nhận", "Hoàn thành" hoặc "Đã hủy"!', 'error');
-            return false;
-        }
+
         return true;
     }
 
     // For online orders
-    // If order is already cancelled, don't allow status change
-    if (currentStatus === 4) {
-        statusSelect.value = 'cancelled';
-        showAlert('Đơn hàng đã hủy không thể thay đổi trạng thái!', 'error');
+    // Final states: cannot be changed from
+    if ((currentStatus === 3 || currentStatus === 4) && newStatus !== currentStatus) {
+        statusSelect.value = Object.keys(statusMapping).find(key => statusMapping[key] === currentStatus) || 'pending';
+        showAlert('Đơn hàng đã hoàn thành hoặc hủy không thể thay đổi trạng thái!', 'error');
         return false;
     }
-
+    
     // Prevent going backwards (except for cancellation)
     if (newStatus < currentStatus && newStatus !== 4) {
         statusSelect.value = Object.keys(statusMapping).find(key => statusMapping[key] === currentStatus) || 'pending';
         showAlert('Không thể lùi trạng thái đơn hàng!', 'error');
         return false;
     }
-
+    
     // Prevent skipping steps (must go one step at a time, except for cancellation)
     if (newStatus > currentStatus + 1 && newStatus !== 4) {
         statusSelect.value = Object.keys(statusMapping).find(key => statusMapping[key] === currentStatus) || 'pending';
         showAlert('Chỉ có thể chuyển sang trạng thái tiếp theo!', 'error');
         return false;
     }
-
+    
+    // Validate completed orders must have paid status - chỉ kiểm tra khi submit form, không block việc chọn
+    // Logic này sẽ được xử lý trong form validation
+    
     // If choosing to cancel
     if (newStatus === 4) {
         cancelReasonDiv.style.display = 'block';
         cancelReasonInput.required = true;
-        if (payStatusSelect) payStatusSelect.value = '2';
         return true;
     }
-
-    // If choosing completed, set payment status to paid
-    if (newStatus === 3 && payStatusSelect) {
-        payStatusSelect.value = '1';
-    }
-
+    
     return true;
 }
 
 function handlePayStatusChange(orderId, newPayStatus, currentPayStatus, currentOrderStatus) {
     const payStatusSelect = document.getElementById('payStatusSelect' + orderId);
     const statusSelect = document.getElementById('statusSelect' + orderId);
+    const isWalkIn = statusSelect.getAttribute('data-is-walk-in') === 'true';
     newPayStatus = parseInt(newPayStatus);
     currentPayStatus = parseInt(currentPayStatus);
-    currentOrderStatus = parseInt(currentOrderStatus);
 
     // Nếu trạng thái hiện tại là Hoàn tiền thì không cho đổi nữa
     if (currentPayStatus === 3 && newPayStatus !== 3) {
@@ -413,51 +529,23 @@ function handlePayStatusChange(orderId, newPayStatus, currentPayStatus, currentO
         showAlert('Đơn đã hoàn tiền, không thể thay đổi trạng thái thanh toán!', 'error');
         return false;
     }
-    // Nếu trạng thái hiện tại là Đã thanh toán, không cho quay lại Chờ thanh toán
-    if (currentPayStatus === 1 && newPayStatus === 0) {
-        payStatusSelect.value = '1';
-        showAlert('Không thể chuyển từ Đã thanh toán về Chờ thanh toán!', 'error');
-        return false;
-    }
-    // Nếu đơn hàng đã hủy, chỉ cho phép trạng thái thanh toán "Đã hủy" hoặc "Hoàn tiền"
-    if (currentOrderStatus === 4) {
-        if (newPayStatus !== 2 && newPayStatus !== 3) {
-            payStatusSelect.value = currentPayStatus.toString();
-            showAlert('Đơn hàng đã hủy chỉ có thể có trạng thái thanh toán "Đã hủy" hoặc "Hoàn tiền"!', 'error');
-            return false;
-        }
-    }
-    // Nếu đơn hàng đã hoàn thành, không cho phép chuyển về "Chờ thanh toán"
-    if (currentOrderStatus === 3 && newPayStatus === 0) {
+    
+    // Validate: Nếu đơn hàng online đã hoàn thành thì không thể đổi trạng thái thanh toán
+    // Chỉ áp dụng khi đơn hàng đã hoàn thành từ trước, không block khi đang chuyển sang completed
+    if (!isWalkIn && statusSelect.value === 'completed' && currentOrderStatus === 'completed' && newPayStatus !== 1) {
         payStatusSelect.value = currentPayStatus.toString();
-        showAlert('Đơn hàng đã hoàn thành không thể chuyển về "Chờ thanh toán"!', 'error');
+        showAlert('Đơn hàng online đã hoàn thành không thể thay đổi trạng thái thanh toán!', 'error');
         return false;
     }
-    // Không cho phép chuyển từ "Chờ thanh toán" trực tiếp sang "Hoàn tiền"
-    if (currentPayStatus === 0 && newPayStatus === 3) {
-        payStatusSelect.value = currentPayStatus.toString();
-        showAlert('Không thể chuyển từ "Chờ thanh toán" trực tiếp sang "Hoàn tiền"!', 'error');
-        return false;
-    }
-    // Chỉ cho phép hoàn tiền khi đã thanh toán trước đó
-    if (newPayStatus === 3 && currentPayStatus !== 1) {
-        payStatusSelect.value = currentPayStatus.toString();
-        showAlert('Chỉ có thể hoàn tiền khi đã thanh toán!', 'error');
-        return false;
-    }
-    // Không cho phép chuyển trạng thái thanh toán thành "Đã hủy" nếu đơn hàng chưa hủy
-    if (newPayStatus === 2 && currentOrderStatus !== 4) {
-        payStatusSelect.value = currentPayStatus.toString();
-        showAlert('Chỉ có thể chuyển trạng thái thanh toán thành "Đã hủy" khi đơn hàng đã hủy!', 'error');
-        return false;
-    }
-    // Nếu chọn Hoàn tiền thì chỉ hiện input lý do hủy, không đổi trạng thái đơn
+    
+    // Nếu chọn Hoàn tiền thì hiện input lý do hủy
     if (newPayStatus === 3) {
         const cancelReasonDiv = document.getElementById('cancelReasonDiv' + orderId);
         const cancelReasonInput = document.getElementById('cancelReasonInput' + orderId);
         cancelReasonDiv.style.display = 'block';
         cancelReasonInput.required = true;
     }
+    
     return true;
 }
 
@@ -485,17 +573,179 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', function(e) {
             const orderId = this.id.replace('orderForm', '');
             const statusSelect = document.getElementById('statusSelect' + orderId);
+            const payStatusSelect = document.getElementById('payStatusSelect' + orderId);
             const cancelReasonInput = document.getElementById('cancelReasonInput' + orderId);
+            const isWalkIn = statusSelect.getAttribute('data-is-walk-in') === 'true';
+            const currentPayStatus = parseInt(payStatusSelect.getAttribute('data-current'));
 
-            if (statusSelect.value === '4' && (!cancelReasonInput.value || cancelReasonInput.value.trim() === '')) {
+            // Validate cancel reason
+            if ((statusSelect.value === 'cancelled' || payStatusSelect.value === '2') && (!cancelReasonInput.value || cancelReasonInput.value.trim() === '')) {
                 e.preventDefault();
                 showAlert('Vui lòng nhập lý do hủy đơn hàng!', 'error');
                 cancelReasonInput.focus();
                 return false;
             }
+
+            // Validate status for walk-in orders
+            if (isWalkIn && (statusSelect.value === 'shipping' || statusSelect.value === 'pending')) {
+                e.preventDefault();
+                showAlert('Khách lẻ chỉ có thể có trạng thái "Đã xác nhận", "Hoàn thành" hoặc "Đã hủy"!', 'error');
+                return false;
+            }
+
+            // Validate completed orders must have paid status
+            if (!isWalkIn && statusSelect.value === 'completed' && payStatusSelect.value !== '1') {
+                e.preventDefault();
+                showAlert('Đơn hàng online hoàn thành phải có trạng thái thanh toán là "Đã thanh toán"!', 'error');
+                payStatusSelect.focus();
+                return false;
+            }
+
+            // Validate: Nếu chọn hủy mà TTTT ban đầu là đã thanh toán nhưng không chọn Hoàn tiền thì báo lỗi
+            if (!isWalkIn && statusSelect.value === 'cancelled' && payStatusSelect.getAttribute('data-current') === '1' && payStatusSelect.value !== '3') {
+                e.preventDefault();
+                showAlert('Đơn đã thanh toán. Khi hủy, trạng thái thanh toán phải được chuyển thành "Hoàn tiền".', 'error');
+                payStatusSelect.focus();
+                return false;
+            }
         });
     });
+    
+    // Gán sự kiện onchange cho các select trạng thái đơn hàng
+    document.querySelectorAll('.status-select').forEach(function(select) {
+        select.addEventListener('change', function() {
+            const orderId = this.getAttribute('data-order-id');
+            const isWalkIn = this.getAttribute('data-is-walk-in') === 'true';
+            const currentStatusInt = parseInt(this.getAttribute('data-current'));
+            handleStatusChange(orderId, this.value, currentStatusInt, isWalkIn);
+            
+            // Update payment status handling when order status changes
+            const payStatusSelect = document.getElementById('payStatusSelect' + orderId);
+            if (payStatusSelect) {
+                const currentPayStatus = parseInt(payStatusSelect.getAttribute('data-current'));
+                const newOrderStatus = this.value;
+                
+                // Nếu là khách online, chọn Hoàn thành mà TTTT chưa phải Đã thanh toán thì cảnh báo và tự động chuyển
+                if (!isWalkIn && newOrderStatus === 'completed' && payStatusSelect.value !== '1') {
+                    showAlert('Đơn hàng online hoàn thành phải có trạng thái thanh toán là "Đã thanh toán"!', 'error');
+                    payStatusSelect.value = '1';
+                }
+                
+                handlePayStatusChange(orderId, payStatusSelect.value, currentPayStatus, newOrderStatus);
+                disableInvalidPayStatusOptions(orderId, currentPayStatus, newOrderStatus);
+                // Đóng băng cả hai select nếu đơn hàng hoàn thành và đã thanh toán
+                // Chỉ áp dụng khi đơn hàng đã hoàn thành từ trước, không phải đang chuyển sang
+                const originalStatus = this.getAttribute('data-current');
+                if (newOrderStatus === 'completed' && payStatusSelect.value === '1' && originalStatus === 'completed') {
+                    disableCompletedPaidOrder(orderId);
+                }
+            }
+        });
+    });
+    
+    // Gán sự kiện onchange cho các select trạng thái thanh toán
+    document.querySelectorAll('.pay-status-select').forEach(function(select) {
+        select.addEventListener('change', function() {
+            const orderId = this.getAttribute('data-order-id');
+            const currentPayStatus = parseInt(this.getAttribute('data-current'));
+            const statusSelect = document.getElementById('statusSelect' + orderId);
+            const currentOrderStatus = statusSelect ? statusSelect.value : 'pending';
+            handlePayStatusChange(orderId, this.value, currentPayStatus, currentOrderStatus);
+            
+            // Đóng băng cả hai select nếu đơn hàng hoàn thành và đã thanh toán
+            // Chỉ áp dụng khi đơn hàng đã hoàn thành từ trước
+            const originalPayStatus = this.getAttribute('data-current');
+            if (currentOrderStatus === 'completed' && this.value === '1' && originalPayStatus === '1') {
+                disableCompletedPaidOrder(orderId);
+            }
+        });
+    });
+
+    // Khởi tạo disable options khi trang load
+    document.querySelectorAll('.status-select').forEach(function(select) {
+        const orderId = select.getAttribute('data-order-id');
+        const isWalkIn = select.getAttribute('data-is-walk-in') === 'true';
+        const currentStatus = select.value;
+        disableInvalidStatusOptions(orderId, currentStatus, isWalkIn);
+        
+        // Kiểm tra và đóng băng đơn hàng đã hoàn thành và đã thanh toán
+        const payStatusSelect = document.getElementById('payStatusSelect' + orderId);
+        if (payStatusSelect && currentStatus === 'completed' && payStatusSelect.value === '1') {
+            disableCompletedPaidOrder(orderId);
+        }
+    });
+
+    document.querySelectorAll('.pay-status-select').forEach(function(select) {
+        const orderId = select.getAttribute('data-order-id');
+        const currentPayStatus = parseInt(select.getAttribute('data-current'));
+        const statusSelect = document.getElementById('statusSelect' + orderId);
+        const currentOrderStatus = statusSelect ? statusSelect.value : 'pending';
+        disableInvalidPayStatusOptions(orderId, currentPayStatus, currentOrderStatus);
+    });
 });
+
+function disableCompletedPaidOrder(orderId) {
+    const statusSelect = document.getElementById('statusSelect' + orderId);
+    const payStatusSelect = document.getElementById('payStatusSelect' + orderId);
+    
+    if (statusSelect) {
+        // Disable tất cả options trạng thái đơn hàng
+        [...statusSelect.options].forEach(option => {
+            option.disabled = true;
+        });
+        statusSelect.setAttribute('disabled', 'disabled');
+    }
+    
+    if (payStatusSelect) {
+        // Disable tất cả options trạng thái thanh toán
+        [...payStatusSelect.options].forEach(option => {
+            option.disabled = true;
+        });
+        payStatusSelect.setAttribute('disabled', 'disabled');
+    }
+}
 </script>
+
+<style>
+    .equal-width-input {
+        min-width: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .status-label[data-color="orange"] { color: orange; }
+    .status-label[data-color="gray"] { color: gray; }
+    .status-label[data-color="blue"] { color: blue; }
+    .status-label[data-color="green"] { color: green; }
+    .status-label[data-color="red"] { color: red; }
+    .status-label[data-color="black"] { color: black; }
+    
+    .pay-status-label[data-color="orange"] { color: orange; }
+    .pay-status-label[data-color="green"] { color: green; }
+    .pay-status-label[data-color="red"] { color: red; }
+    .pay-status-label[data-color="purple"] { color: #e67e22; }
+    .pay-status-label[data-color="black"] { color: black; }
+
+    /* Làm mờ option bị disabled trong select */
+    select:disabled, select option:disabled {
+        color: #b0b0b0 !important;
+        background: #f5f5f5 !important;
+    }
+    /* Option đang được chọn trong select bị disabled vẫn đậm và rõ */
+    select:disabled option:checked,
+    select:disabled option[selected] {
+        color: #222 !important;
+        font-weight: bold;
+        background: #f5f5f5 !important;
+    }
+
+    /* Hiển thị select bị disabled rõ ràng hơn */
+    select:disabled {
+        background: #fff !important;
+        color: #222 !important;
+        opacity: 1 !important;
+        cursor: not-allowed;
+    }
+</style>
 
 @endsection
