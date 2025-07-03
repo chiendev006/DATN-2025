@@ -7,7 +7,7 @@
                 <div class="container">
                     <div class="breadcrumb-nav-inner">
                         <ul>
-                            <li><a href="index-2.html">Home</a></li>
+                            <li><a href="/">Home</a></li>
                             <li><a href="shop.html">Shop</a></li>
                             <li class="active"><a href="#">Login / Register</a></li>
                         </ul>
@@ -43,16 +43,16 @@
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <div class="row">
-                                                <div class="col-md-6 col-sm-6 col-xs-12">
-                                                    <a href="{{ route('forgot-password') }}" class="pull-right">Quên mật khẩu</a>
+                                                <div class="col-md-4 col-sm-4 col-xs-4">
+                                                    <a class="href_matches" style="margin-left:0px;" href="{{ route('forgot-password') }}" class="pull-right">Quên mật khẩu</a>
                                                 </div>
-                                                <div class="col-md-6 col-sm-6 col-xs-12">
-                                                    <a href="{{ route('register') }}" class="pull-right">Đăng kí</a>
+                                                <div class="col-md-4 col-sm-4 col-xs-4">
+                                                    <a class="href_matches" style="margin-left:0px;" href="{{ route('register') }}" class="pull-right">Đăng kí</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <button type="submit" class="button-default button-default-submit">LOGIN</button>
+                                        <div class="col-md-12 col-sm-12 col-xs-6">
+                                            <button  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" type="submit" class="button-default button-default-submit">LOGIN</button>
                                         </div>
                                     </div>
                                 </form>
@@ -67,6 +67,11 @@
 
         </div>
     </main>
+    <style>
+        .href_matches:hover{
+            color: blue;
+        }
+    </style>
 @endsection
 
 @section('scripts')

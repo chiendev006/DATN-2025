@@ -7,7 +7,7 @@
                 <div class="container">
                     <div class="breadcrumb-nav-inner">
                         <ul>
-                            <li><a href="index-2.html">Home</a></li>
+                            <li><a href="/">Home</a></li>
                             <li><a href="shop.html">Shop</a></li>
                             <li class="active"><a href="#">Login / Register</a></li>
                         </ul>
