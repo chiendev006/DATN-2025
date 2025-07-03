@@ -213,46 +213,21 @@ class StaffController extends Controller
         $status = $request->input('status');
         $pay_status = $request->input('pay_status');
 
-        // Khách lẻ: Nếu chọn hoàn tiền
-        if ($order->name == 'Khách lẻ' && $pay_status == '3') {
-            $order->pay_status = '3';
-            $order->status = 'cancelled';
-        }
-        // Khách online: Nếu chọn hoàn tiền
-        else if ($order->name != 'Khách lẻ' && $pay_status == '3') {
-            $order->pay_status = '3';
-            $order->status = 'cancelled';
-        }
-        // Nếu chọn hủy ở bất kỳ loại đơn nào
-        else if ($status == '4' || $status === 4 || $status == 'cancelled' || $pay_status == '2' || $pay_status === 2) {
-            $order->status = 'cancelled';
-            $order->pay_status = '2';
-        } else if ($order->name == 'Khách lẻ') {
-            if (($status == 'completed' || $status == 3)) {
-                $order->status = 'completed';
-                $order->pay_status = '1';
-            } else if (($status == 'cancelled' || $status == 4)) {
-                $order->status = 'cancelled';
-                $order->pay_status = '2';
-            }
-        } else {
-            // Khách online
+        // Cập nhật trạng thái đơn hàng
+        $order->status = $status;
+        
+        // Cập nhật trạng thái thanh toán (nếu có)
+        if ($pay_status !== null) {
             $order->pay_status = (string) $pay_status;
-            $order->status = $status;
         }
 
-        $oldStatus = $order->getOriginal('status');
-
-        if ($order->status === 'cancelled') {
-            if (!$order->cancel_reason || $oldStatus !== 'cancelled') {
-                $cancelReason = $request->input('cancel_reason');
-                if (!str_contains($cancelReason, '(Nhân viên hủy)')) {
-                    $cancelReason = '(Nhân viên hủy) ' . $cancelReason;
-                }
-                $order->cancel_reason = $cancelReason;
+        // Xử lý lý do hủy
+        if ($status === 'cancelled' || $pay_status == '2') {
+            $cancelReason = $request->input('cancel_reason');
+            if ($cancelReason && !str_contains($cancelReason, '(Nhân viên hủy)')) {
+                $cancelReason = '(Nhân viên hủy) ' . $cancelReason;
             }
-        } else {
-            $order->cancel_reason = $request->input('cancel_reason');
+            $order->cancel_reason = $cancelReason;
         }
 
         $order->save();
