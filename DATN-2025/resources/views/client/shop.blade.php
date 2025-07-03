@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const productList = document.getElementById('product-list');
     const paginationContainer = document.querySelector('.gallery-pagination-inner ul');
     const resultText = document.querySelector('.shop-search h6');
-    let currentDanhmucId = '{{ $firstDanhmuc->id ?? "" }}';
+    let currentDanhmucId = '';
 
     // --- Thay thế toàn bộ phần xử lý filter price và phân trang filter price ---
     let isFilteringByPrice = false;
@@ -290,11 +290,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // Highlight category based on URL parameter when page loads
     const urlParams = new URLSearchParams(window.location.search);
     const danhmucIdFromUrl = urlParams.get('danhmuc_id');
+    currentDanhmucId = danhmucIdFromUrl || '';
+
     if (danhmucIdFromUrl) {
         document.querySelectorAll('#category-list li').forEach(li => li.classList.remove('current'));
         const categoryLink = document.querySelector(`#category-list a[data-id="${danhmucIdFromUrl}"]`);
         if (categoryLink) {
             categoryLink.parentElement.classList.add('current');
+        }
+    } else {
+        // Highlight "Tất cả" when no danhmuc_id
+        document.querySelectorAll('#category-list li').forEach(li => li.classList.remove('current'));
+        const allCategoryLink = document.querySelector('#category-list a[data-id=""]');
+        if (allCategoryLink) {
+            allCategoryLink.parentElement.classList.add('current');
         }
     }
 

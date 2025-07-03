@@ -207,4 +207,22 @@ $(document).ready(function() {
     }
 });
 </script>
+<style>
+    /* CSS để highlight danh mục hiện tại */
+    #category-list li.current {
+
+        border-radius: 5px; /* Bo góc nhẹ, tùy chọn */
+    }
+
+    #category-list li.current a {
+        color: #ffffff !important; /* Thay đổi màu chữ ở đây để tương phản */
+        font-weight: bold; /* Làm chữ đậm hơn */
+    }
+
+    /* Tùy chọn: chỉnh màu khi di chuột qua các danh mục */
+    #category-list li a:hover {
+
+        color: #ffffff;
+    }
+</style>
 @endsection
