@@ -103,12 +103,14 @@
                                         <div class="shop-main-list">
                                             <div class="shop-product">
                                                 <a href="{{ route('client.product.detail', $product->id) }}">
-                                                    <img src="{{ url('storage/uploads/'.$product->image) }}" alt="{{ $product->name }}" style="border-radius: 20px;">
+                                                    <img style="max-width: 263px; min-width: 263px; max-height: 275px; min-height: 275px; border-radius:23px"  src="{{ url('storage/uploads/'.$product->image) }}" alt="{{ $product->name }}" style="border-radius: 20px;">
                                                 </a>
                                                 <div class="cart-overlay-wrap">
+                                                    <a href="{{ route('client.product.detail', $product->id) }}">
                                                     <div class="cart-overlay">
                                                         <a style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="{{ route('client.product.detail', $product->id) }}" class="shop-cart-btn">ADD TO CART</a>
                                                     </div>
+                                                    </a>
                                                 </div>
                                             </div>
                                             <a href="{{ route('client.product.detail', $product->id) }}"><h5>{{ $product->name }}</h5></a>
@@ -158,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Đổi tên hàm fetchProducts gốc thành fetchProductsByCategory
     function fetchProductsByCategory(page, danhmucId) {
-        const url = `{{ route('shop.index') }}?page=${page}&danhmuc_id=${danhmucId}`;
+        const url = `{{ route('shop.index') }}?page=${page}${danhmucId && danhmucId !== '' ? `&danhmuc_id=${danhmucId}` : ''}`;
         fetch(url, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
@@ -173,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="shop-main-list">
                         <div class="shop-product">
                             <a href="${productDetailRoute.replace(':id', product.id)}">
-                                <img src="/storage/uploads/${product.image}" alt="${product.name}" style="border-radius: 20px;">
+                                <img style="max-width: 263px; min-width: 263px; max-height: 275px; min-height: 275px; border-radius:23px" src="/storage/uploads/${product.image}" alt="${product.name}" style="border-radius: 20px;">
                             </a>
                             <div class="cart-overlay-wrap">
                                 <div class="cart-overlay">
@@ -207,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
             resultText.textContent = `Showing ${data.products.length > 0 ? (data.current_page - 1) * data.per_page + 1 : 0}–${(data.current_page - 1) * data.per_page + data.products.length} of ${data.total} results`;
 
             // Update current danh muc id
-            currentDanhmucId = data.danhmuc_id;
+            currentDanhmucId = data.danhmuc_id || '';
         })
         .catch(error => {
             console.error('Error:', error);
@@ -220,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (isFilteringByPrice) {
             fetchProductsByPrice(page, filterPriceRange[0], filterPriceRange[1]);
         } else {
-            fetchProductsByCategory(page, danhmucId);
+            fetchProductsByCategory(page, danhmucId || '');
         }
     }
 
@@ -281,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             document.querySelectorAll('#category-list li').forEach(li => li.classList.remove('current'));
             this.parentElement.classList.add('current');
-            currentDanhmucId = this.getAttribute('data-id');
+            currentDanhmucId = this.getAttribute('data-id') || '';
             isFilteringByPrice = false;
             fetchProducts(1, currentDanhmucId); // Load page 1 of the selected category
         });
@@ -292,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const danhmucIdFromUrl = urlParams.get('danhmuc_id');
     currentDanhmucId = danhmucIdFromUrl || '';
 
-    if (danhmucIdFromUrl) {
+    if (danhmucIdFromUrl && danhmucIdFromUrl !== '') {
         document.querySelectorAll('#category-list li').forEach(li => li.classList.remove('current'));
         const categoryLink = document.querySelector(`#category-list a[data-id="${danhmucIdFromUrl}"]`);
         if (categoryLink) {
@@ -313,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const target = e.target.closest('a');
         if (!target || target.classList.contains('disabled')) return;
         const page = target.getAttribute('data-page');
-        fetchProducts(page, currentDanhmucId);
+        fetchProducts(page, currentDanhmucId || '');
     });
 
     // Handle search

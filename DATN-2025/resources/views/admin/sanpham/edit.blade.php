@@ -235,7 +235,7 @@
 <div class="card mb-6 custom-card">
 <div style="display: flex; justify-content: space-between; align-items: center; margin: 30px 30px 0 30px;">
     <strong><h2>Cập nhật sản phẩm</h2></strong>
-    <a href="{{ url()->previous() }}" style="min-width: 100px; text-align: center; background: #ccc; color: #333; border: none; border-radius: 5px; padding: 10px 20px; font-size: 16px; text-decoration: none;">Quay lại</a>
+    <a href="/admin/sanpham" style="min-width: 100px; text-align: center; background: #ccc; color: #333; border: none; border-radius: 5px; padding: 10px 20px; font-size: 16px; text-decoration: none;">Quay lại</a>
 </div>
 <br>
 <div class="card-content" style="display: flex; justify-content: space-around;">
