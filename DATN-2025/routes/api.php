@@ -13,6 +13,7 @@ Route::middleware('auth:sanctum')->group(function () {
         $request->validate([
             'receiver_id' => 'required|exists:users,id',
             'message_content' => 'required|string',
+            'type' => 'nullable|in:text,image',
         ]);
 
         $senderId = $request->user()->id; // ID của người gửi (client)
@@ -22,6 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
             'sender_id' => $senderId,
             'receiver_id' => $receiverId,
             'content' => $request->message_content,
+            'type' => $request->type ?? 'text',
         ]);
 
         // Broadcast tin nhắn
@@ -32,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
             'data' => [
                 'id' => $message->id,
                 'content' => $message->content,
+                'type' => $message->type,
                 'sender_id' => $message->sender_id,
                 'sender_name' => $message->sender->name,
                 'receiver_id' => $message->receiver_id,
@@ -58,10 +61,13 @@ Route::middleware('auth:sanctum')->group(function () {
             return [
                 'id' => $message->id,
                 'content' => $message->content,
+                'type' => $message->type,
+                'is_edited' => $message->is_edited,
                 'sender_id' => $message->sender_id,
                 'sender_name' => $message->sender->name,
                 'receiver_id' => $message->receiver_id,
                 'created_at' => $message->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $message->updated_at->format('Y-m-d H:i:s'),
             ];
         });
 
@@ -74,6 +80,7 @@ Route::middleware('auth:sanctum')->group(function () {
         $request->validate([
             'receiver_id' => 'required|exists:users,id',
             'message_content' => 'required|string',
+            'type' => 'nullable|in:text,image',
         ]);
 
         $senderId = $request->user()->id; // ID của người gửi (admin)
@@ -88,6 +95,7 @@ Route::middleware('auth:sanctum')->group(function () {
             'sender_id' => $senderId,
             'receiver_id' => $receiverId,
             'content' => $request->message_content,
+            'type' => $request->type ?? 'text',
         ]);
 
         broadcast(new MessageSent($message))->toOthers();
@@ -97,6 +105,7 @@ Route::middleware('auth:sanctum')->group(function () {
             'data' => [
                 'id' => $message->id,
                 'content' => $message->content,
+                'type' => $message->type,
                 'sender_id' => $message->sender_id,
                 'sender_name' => $message->sender->name,
                 'receiver_id' => $message->receiver_id,
@@ -148,10 +157,13 @@ Route::middleware('auth:sanctum')->group(function () {
             return [
                 'id' => $message->id,
                 'content' => $message->content,
+                'type' => $message->type,
+                'is_edited' => $message->is_edited,
                 'sender_id' => $message->sender_id,
                 'sender_name' => $message->sender->name,
                 'receiver_id' => $message->receiver_id,
                 'created_at' => $message->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $message->updated_at->format('Y-m-d H:i:s'),
             ];
         });
 
@@ -174,6 +186,63 @@ Route::middleware('auth:sanctum')->group(function () {
             ->where('is_read', false)
             ->count();
         return response()->json(['unread' => $count]);
+    });
+
+    // Route upload ảnh cho chat
+    Route::post('/chat/upload', function (Request $request) {
+        $request->validate([
+            'image' => 'required|image|max:4096' // Max 4MB
+        ]);
+
+        $path = $request->file('image')->store('chat_images', 'public');
+        return response()->json(['url' => asset('storage/' . $path)]);
+    });
+
+    // Sửa tin nhắn (chỉ cho phép người gửi, chỉ sửa text)
+    Route::patch('/chat/message/{id}', function (Request $request, $id) {
+        $request->validate([
+            'content' => 'required|string',
+        ]);
+        $userId = $request->user()->id;
+        $message = Message::findOrFail($id);
+        if ($message->sender_id !== $userId) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        if ($message->type !== 'text') {
+            return response()->json(['message' => 'Chỉ được sửa tin nhắn dạng text'], 422);
+        }
+        // Nếu thu hồi thì không set is_edited
+        if ($request->content === '*đã thu hồi*') {
+            $message->content = $request->content;
+            $message->is_edited = false;
+        } else {
+            $message->content = $request->content;
+            $message->is_edited = true;
+        }
+        $message->save();
+        broadcast(new MessageSent($message))->toOthers();
+        return response()->json(['success' => true, 'message' => [
+            'id' => $message->id,
+            'content' => $message->content,
+            'type' => $message->type,
+            'is_edited' => $message->is_edited,
+            'sender_id' => $message->sender_id,
+            'sender_name' => $message->sender->name,
+            'receiver_id' => $message->receiver_id,
+            'created_at' => $message->created_at->format('Y-m-d H:i:s'),
+            'updated_at' => $message->updated_at->format('Y-m-d H:i:s'),
+        ]]);
+    });
+
+    // Xóa tin nhắn (chỉ cho phép người gửi)
+    Route::delete('/chat/message/{id}', function (Request $request, $id) {
+        $userId = $request->user()->id;
+        $message = Message::findOrFail($id);
+        if ($message->sender_id !== $userId) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        $message->delete();
+        return response()->json(['success' => true]);
     });
 
 });

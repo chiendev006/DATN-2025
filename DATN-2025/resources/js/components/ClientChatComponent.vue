@@ -11,19 +11,42 @@
                 <button class="close-button" @click="closeChat">&times;</button>
             </div>
             <div class="messages-container" ref="messagesContainer">
-                <div v-for="message in messages" :key="message.id" :class="{ 'my-message': message.sender_id === currentUserId, 'their-message': message.sender_id !== currentUserId }">
+                <div v-for="message in messages" :key="message.id" :class="{ 'my-message': message.sender_id === currentUserId, 'their-message': message.sender_id !== currentUserId }"
+                    @mouseenter="hoveredMessageId = message.id" @mouseleave="hoveredMessageId = null">
                     <strong>
                         {{ message.sender_name === 'admin' ? 'Admin' : 'Bạn' }}
-                    </strong> {{ message.content }}
-                    <span class="timestamp">{{ message.created_at }}
-                        <i v-if="message.status === 'sending'" class="fa-regular fa-clock-rotate-left"></i>
-                        <i v-if="message.status === 'failed'" class="fa-solid fa-circle-exclamation" style="color: red;" title="Gửi thất bại"></i>
-                    </span>
+                    </strong>
+                    <template v-if="editingMessageId === message.id">
+                        <div class="edit-row">
+                            <input v-model="editingContent" @keyup.enter="confirmEditMessage(message)" class="edit-input" />
+                           <br> <button @mousedown.prevent="confirmEditMessage(message)" class="edit-btn">Lưu</button>
+                            <button @mousedown.prevent="cancelEditMessage" class="cancel-btn">Hủy</button>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <template v-if="message.type === 'image'">
+                            <img :src="message.content" style="max-width: 200px; max-height: 200px; border-radius: 8px; margin: 5px 0;">
+                        </template>
+                        <template v-else>
+                            <span class="message-content" v-html="formatMessageContent(message.content)"></span>
+                            <br><small><span style="color: red;" v-if="message.is_edited && message.content !== '*đã thu hồi*'" class="edited-flag">*đã chỉnh sửa</span></small>
+                        </template>
+                        <span class="timestamp">{{ message.created_at }}
+                            <i v-if="message.status === 'sending'" class="fa-regular fa-clock-rotate-left"></i>
+                            <i v-if="message.status === 'failed'" class="fa-solid fa-circle-exclamation" style="color: red;" title="Gửi thất bại"></i>
+                        </span>
+                        <div v-if="message.sender_id === currentUserId && hoveredMessageId === message.id && message.content !== '*đã thu hồi*'" class="message-actions">
+                            <button v-if="message.type === 'text'" @click="startEditMessage(message)" class="edit-btn">Sửa</button>
+                            <button @click="deleteMessage(message)" class="delete-btn">Thu hồi</button>
+                        </div>
+                    </template>
                 </div>
             </div>
             <div class="message-input">
-                <input type="text" v-model="newMessage" @keyup.enter="sendMessage" placeholder="Nhập tin nhắn...">
-                <button @click="sendMessage">Gửi</button>
+                <input type="file" ref="fileInput" style="display:none" @change="handleFileChange">
+                <button @click="$refs.fileInput.click()" class="attach-btn" title="Đính kèm ảnh"><i class="fa fa-paperclip"></i></button>
+                <input type="text" v-model="newMessage" @keyup.enter="sendMessage()" placeholder="Nhập tin nhắn...">
+                <button @click="sendMessage()">Gửi</button>
             </div>
         </div>
     </div>
@@ -31,6 +54,8 @@
 
 <script>
 import axios from 'axios';
+axios.defaults.withCredentials = true;
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 export default {
     props: ['currentUserId', 'adminId'], // `adminId` là ID của admin mà client sẽ chat
@@ -40,6 +65,9 @@ export default {
             messages: [],
             newMessage: '',
             hasNewMessage: false, // Để hiển thị chấm đỏ khi có tin nhắn mới
+            editingMessageId: null,
+            editingContent: '',
+            hoveredMessageId: null,
         };
     },
     watch: {
@@ -97,6 +125,7 @@ export default {
                         this.messages.push({
                             id: e.id,
                             content: e.content,
+                            type: e.type,
                             sender_id: e.sender_id,
                             sender_name: e.sender_name,
                             created_at: e.created_at,
@@ -108,27 +137,37 @@ export default {
                     }
                 });
         },
-        sendMessage() {
-            if (!this.newMessage.trim() || !this.adminId) return;
-
+        handleFileChange(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('image', file);
+            axios.post('/api/chat/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            }).then(res => {
+                this.sendMessage(res.data.url, 'image');
+            });
+        },
+        sendMessage(content = null, type = 'text') {
+            const messageContent = content || this.newMessage || '';
+            if (!messageContent.toString().trim() || !this.adminId) return;
             const tempId = `temp_${Date.now()}`;
             const optimisticMessage = {
                 id: tempId,
-                content: this.newMessage,
+                content: messageContent,
+                type,
                 sender_id: this.currentUserId,
                 sender_name: 'Bạn',
                 created_at: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
                 status: 'sending'
             };
-
             this.messages.push(optimisticMessage);
-            const messageToSend = this.newMessage;
-            this.newMessage = '';
+            if (!content) this.newMessage = '';
             this.$nextTick(this.scrollToBottom);
-
             axios.post('/api/client/chat/send', {
                 receiver_id: this.adminId,
-                message_content: messageToSend
+                message_content: messageContent,
+                type
             })
             .then(response => {
                 const sentMessage = this.messages.find(m => m.id === tempId);
@@ -139,6 +178,10 @@ export default {
             })
             .catch(error => {
                 console.error('Lỗi khi gửi tin nhắn từ client:', error);
+                if (error.response && error.response.data) {
+                    console.error('Chi tiết lỗi:', error.response.data);
+                    alert('Lỗi: ' + JSON.stringify(error.response.data.errors || error.response.data));
+                }
                 const failedMessage = this.messages.find(m => m.id === tempId);
                 if (failedMessage) {
                     failedMessage.status = 'failed';
@@ -150,7 +193,74 @@ export default {
             if (container) {
                 container.scrollTop = container.scrollHeight;
             }
-        }
+        },
+        isUrl(text) {
+            return /^(https?:\/\/[^\s]+)$/.test(text);
+        },
+        startEditMessage(message) {
+            this.editingMessageId = message.id;
+            this.editingContent = message.content;
+        },
+        cancelEditMessage() {
+            this.editingMessageId = null;
+            this.editingContent = '';
+        },
+        confirmEditMessage(message) {
+            if (!this.editingContent.trim()) return;
+            const idx = this.messages.findIndex(m => m.id === message.id);
+            const newContent = this.editingContent;
+            let oldMsg;
+            if (idx !== -1) {
+                oldMsg = { ...this.messages[idx] };
+                this.messages[idx] = { ...this.messages[idx], content: newContent, is_edited: true };
+            }
+            this.editingMessageId = null;
+            this.editingContent = '';
+            axios.patch(`/api/chat/message/${message.id}`, { content: newContent })
+                .then(res => {
+                    if (idx !== -1) {
+                        this.messages[idx] = { ...this.messages[idx], ...res.data.message };
+                    }
+                })
+                .catch(err => {
+                    if (idx !== -1) {
+                        this.messages[idx] = oldMsg;
+                    }
+                    console.error('Lỗi khi sửa tin nhắn:', err, err.response, err.request, err.message);
+                    if (err.response && (err.response.status === 401 || err.response.status === 419)) {
+                        alert('Phiên đăng nhập đã hết hạn, vui lòng tải lại trang!');
+                    } else {
+                        alert('Lỗi khi sửa tin nhắn!');
+                    }
+                });
+        },
+        deleteMessage(message) {
+            if (!confirm('Bạn có chắc chắn muốn thu hồi tin nhắn này?')) return;
+            axios.patch(`/api/chat/message/${message.id}`, { content: '*đã thu hồi*' })
+                .then(res => {
+                    const idx = this.messages.findIndex(m => m.id === message.id);
+                    if (idx !== -1) {
+                        const oldMsg = this.messages[idx];
+                        const newMsg = { ...oldMsg, ...res.data.message, type: 'text' };
+                        if (!newMsg.sender_name && oldMsg.sender_name) newMsg.sender_name = oldMsg.sender_name;
+                        this.messages[idx] = newMsg;
+                    }
+                })
+                .catch(err => {
+                    console.error('Lỗi khi thu hồi tin nhắn:', err, err.response, err.request, err.message);
+                    if (err.response && (err.response.status === 401 || err.response.status === 419)) {
+                        alert('Phiên đăng nhập đã hết hạn, vui lòng tải lại trang!');
+                    } else {
+                        alert('Lỗi khi thu hồi tin nhắn!');
+                    }
+                });
+        },
+        formatMessageContent(content) {
+            if (!content) return '';
+            const urlRegex = /(https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=%]+)(?=\s|$)/g;
+            const escapeHtml = (str) => str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+            return escapeHtml(content).replace(urlRegex, url => `<a href="${url}" target="_blank">${url}</a>`);
+        },
     }
 }
 </script>
@@ -316,5 +426,90 @@ export default {
 
 .message-input button:hover {
     background-color: #852e2e;
+}
+
+.attach-btn {
+    background-color: #813f3f;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-right: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.attach-btn:hover {
+    background-color: #852e2e;
+}
+
+.edit-row {
+    display: block;
+    gap: 6px;
+    align-items: center;
+}
+.edit-btn {
+    background: #813f3f;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    margin: 0 4px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 12px;
+}
+.delete-btn {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    margin: 0 4px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 12px;
+}
+.cancel-btn {
+    background: #aaa;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    margin: 0 4px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 12px;
+}
+.edit-input {
+    width: 100%;
+    margin: 4px 0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+.message-actions {
+    margin-top: 4px;
+    text-align: right;
+    display: none;
+}
+.my-message:hover .message-actions {
+    display: block;
+}
+.edited-flag {
+    color: #888;
+    font-size: 0.85em;
+    margin-left: 6px;
+    font-style: italic;
+}
+.message-content a {
+    color: #1976d2;
+    text-decoration: none;
+    word-break: break-all;
+    transition: text-decoration 0.2s;
+}
+.message-content a:hover {
+    text-decoration: underline;
 }
 </style>

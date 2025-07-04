@@ -62,8 +62,7 @@
     <link href="{{ url('asset') }}/css/Slick-slider/slick-theme.css" rel="stylesheet" />
     <link href="{{ url('asset') }}/css/theme.css" rel="stylesheet" />
     <link href="{{ url('asset') }}/css/responsive.css" rel="stylesheet" />
-  <!-- Bootstrap Slider CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/css/bootstrap-slider.min.css">
+
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -106,8 +105,6 @@
     <script src="{{ url('asset') }}/js/app.js"></script>
     <script src="{{ url('asset') }}/js/script.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    <!-- Bootstrap Slider JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/bootstrap-slider.min.js"></script>
     @yield('scripts')
     </div>
   </body>
