@@ -13,6 +13,8 @@ class Message extends Model
         'sender_id',
         'receiver_id',
         'content',
+        'type',
+        'is_edited',
     ];
 
     // Định nghĩa mối quan hệ với User (người gửi)

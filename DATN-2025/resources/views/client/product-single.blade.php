@@ -29,14 +29,14 @@
                             @endphp
                             @foreach ($allImages as $image)
                                 <div>
-                                    <img style= "width:555px;" src="{{ asset('storage/' . (str_contains($image, 'uploads/') ? $image : 'uploads/' . $image)) }}" alt="Ảnh sản phẩm">
+                                    <img style= "width:555px;height:312px" src="{{ asset('storage/' . (str_contains($image, 'uploads/') ? $image : 'uploads/' . $image)) }}" alt="Ảnh sản phẩm">
                                 </div>
                             @endforeach
                         </div>
                         <div class="slider slider-nav slick-shop-thumb">
                             @foreach ($allImages as $image)
                                 <div>
-                                    <img src="{{ asset('storage/' . (str_contains($image, 'uploads/') ? $image : 'uploads/' . $image)) }}" alt="Ảnh sản phẩm">
+                                    <img style="width: 100px;height:56px; border-radius:5px" src="{{ asset('storage/' . (str_contains($image, 'uploads/') ? $image : 'uploads/' . $image)) }}" alt="Ảnh sản phẩm">
                                 </div>
                             @endforeach
                         </div>

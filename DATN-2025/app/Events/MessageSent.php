@@ -60,6 +60,7 @@ class MessageSent implements ShouldBroadcast
         return [
             'id' => $this->message->id,
             'content' => $this->message->content,
+            'type' => $this->message->type,
             'sender_id' => $this->message->sender_id,
             'sender_name' => $this->message->sender->name, // Lấy tên người gửi
             'receiver_id' => $this->message->receiver_id,
