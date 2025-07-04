@@ -33,6 +33,8 @@
 
                     <div class="content-wrapper">
                     <div class="row gutters">
+                          <div class="card">
+                            <div class="card-body">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap" style="gap: 15px;">
                             <!-- Bên trái: chọn số bản ghi -->
@@ -63,7 +65,7 @@
                             </div>
                         </div>
 
-                                
+
                                         <div class="table-responsive">
                                         <table id="copy-print-csv" class="table v-middle">
                                 <thead>
@@ -112,6 +114,8 @@
                                             {{ $contact->appends(request()->except('page'))->links('pagination::bootstrap-4') }}
                                         </div>
                                     </div>
+                            </div>
+                          </div>
                                 </div>
 
                             </div>

@@ -338,7 +338,7 @@ Cà phê - Cao cấp<br />
 					<div class="item">
 					<div class="product-img">
 						<a href="{{ route('client.product.detail', $sp->id) }}">
-					<img src="{{ url('storage/uploads/'.$sp->image) }}" width="250px" alt="{{ $sp->name }}">
+					<img src="{{ url('storage/uploads/'.$sp->image) }}" style="border-radius: 23px; max-width: 250px; min-width: 250px; max-height: 275px; min-height: 275px;" alt="{{ $sp->name }}">
 						<span class="icon-basket fontello"></span>
 						</a>
 					</div>

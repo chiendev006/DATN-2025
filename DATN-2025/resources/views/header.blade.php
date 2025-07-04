@@ -53,8 +53,8 @@
     $currentAdminId = (Auth::check() && Auth::user()->role == 1) ? Auth::id() : null;
 @endphp
 @php
-    $isHomeTab = request()->is('admin') ||request()->is('admin/contact') ||request()->is('admin/address') ||request()->is('admin/address/search') ||request()->is('admin/coupon') || request()->is('admin/danhmuc*') ||  request()->is('admin/blogs*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*') || request()->is('admin/point-settings*') || request()->is('admin/point-transactions*');
-    $isAuthTab = request()->is('admin/staff*') || request()->is('admin/payroll*');
+    $isHomeTab = request()->is('admin') ||request()->is('admin/address') ||request()->is('admin/address/search') ||request()->is('admin/coupon') || request()->is('admin/danhmuc*') ||  request()->is('admin/blogs*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*');
+    $isAuthTab = request()->is('admin/staff*') || request()->is('admin/payroll*') ||request()->is('admin/contact') || request()->is('admin/point-settings*') || request()->is('admin/point-transactions*');
 @endphp
 
 		<!-- Loading wrapper start -->
@@ -85,7 +85,12 @@
 
 						<a class="nav-link {{ $isAuthTab ? 'active' : '' }}" id="authentication-tab" data-bs-toggle="tab" href="#tab-authentication" role="tab" aria-controls="tab-authentication" aria-selected="false">
 							<i class="icon-unlock"></i>
-							<span class="nav-link-text">Tài khoản - Điều hướng</span>
+							<span class="nav-link-text">Tài khoản </span>
+						</a>
+
+                        <a class="nav-link" id="product-tab" data-bs-toggle="tab" href="#tab-product" role="tab" aria-controls="tab-product" aria-selected="false">
+							<i class="icon-layers2"></i>
+							<span class="nav-link-text">Điều hướng</span>
 						</a>
 						<a class="nav-link settings" id="settings-tab" data-bs-toggle="tab" href="#tab-settings" role="tab" aria-controls="tab-authentication" aria-selected="false">
 							<i class="icon-settings1"></i>
@@ -126,9 +131,6 @@
 										<li>
 											<a href="{{ route('admin.order.index') }}" class="{{ request()->is('admin/order*') ? 'current-page' : '' }}">Đơn hàng</a>
 										</li>
-										<li>
-                                        <a href="{{ route('contact.index') }}" class="{{ request()->is('admin/contact*') ? 'current-page' : '' }}">Hỗ trợ</a>
-										</li>
                                         <li>
                                         <a href="{{ route('coupon.index') }}" class="{{ request()->is('admin/coupon*') ? 'current-page' : '' }}">Mã giảm giá</a>
 										</li>
@@ -138,12 +140,7 @@
                                         <li>
 											<a href="{{ route('address.index') }}" class="{{ request()->is('admin/address*') ? 'current-page' : '' }}">Ship</a>
 										</li>
-										<li>
-											<a href="{{ route('admin.point_settings.index') }}" class="{{ request()->is('admin/point-settings*') ? 'current-page' : '' }}">Cấu hình điểm</a>
-										</li>
-										<li>
-											<a href="{{ route('admin.point_transactions.index') }}" class="{{ request()->is('admin/point-transactions*') ? 'current-page' : '' }}">Giao dịch điểm</a>
-										</li>
+
 									</ul>
 
 								</div>
@@ -187,20 +184,15 @@
 										<li>
 											<a href="{{ route('payroll.index') }}" class="{{ request()->is('admin/payroll*') ? 'current-page' : '' }}">Bảng lương</a>
 										</li>
-
                                         <li>
-											<a href="{{ route('staff.index') }}">Trang thu ngân</a>
+                                        <a href="{{ route('contact.index') }}" class="{{ request()->is('admin/contact*') ? 'current-page' : '' }}">Liên hệ</a>
 										</li>
                                         <li>
-											<a href="{{ route('bartender.index') }}">Trang pha chế</a>
+											<a href="{{ route('admin.point_settings.index') }}" class="{{ request()->is('admin/point-settings*') ? 'current-page' : '' }}">Cấu hình điểm</a>
 										</li>
-                                        <li>
-											<a href="{{ route('danhmuc1.index') }}">Trang cửa hàng</a>
+										<li>
+											<a href="{{ route('admin.point_transactions.index') }}" class="{{ request()->is('admin/point-transactions*') ? 'current-page' : '' }}">Giao dịch điểm</a>
 										</li>
-                                        <li>
-											<a href="{{ route('admin.logout') }}">Logout</a>
-										</li>
-
 									</ul>
 								</div>
 							</div>
@@ -209,6 +201,44 @@
 
 
 						</div>
+
+
+						<!-- Authentication tab -->
+						<div class="tab-pane fade " id="tab-product" role="tabpanel" aria-labelledby="product-tab">
+
+<!-- Tab content header start -->
+<div class="tab-pane-header">
+   Điều hướng
+</div>
+<!-- Tab content header end -->
+
+<!-- Sidebar menu starts -->
+<div class="sidebarMenuScroll">
+    <div class="sidebar-menu">
+        <ul>
+
+
+            <li>
+                <a href="{{ route('staff.index') }}">Trang thu ngân</a>
+            </li>
+            <li>
+                <a href="{{ route('bartender.index') }}">Trang pha chế</a>
+            </li>
+            <li>
+                <a href="{{ route('danhmuc1.index') }}">Trang cửa hàng</a>
+            </li>
+            <li>
+                <a href="{{ route('admin.logout') }}">Logout</a>
+            </li>
+
+        </ul>
+    </div>
+</div>
+<!-- Sidebar menu ends -->
+
+
+
+</div>
 
 						<!-- Settings tab -->
 						<div class="tab-pane fade" id="tab-settings" role="tabpanel" aria-labelledby="settings-tab">

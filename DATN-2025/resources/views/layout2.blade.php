@@ -354,8 +354,11 @@
                                   <span  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="mega-title">DANH MỤC</span>
                                         <?php $danhmucs= \App\Models\Danhmuc::with('sanphams')->get();?>
                                       <ul>
+                                        <li class="{{ request('danhmuc_id') == null ? 'current' : '' }}">
+                                            <a style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="{{ route('shop.index') }}">Tất cả</a>
+                                        </li>
                                       @foreach ($danhmucs as $index => $danhmuc)
-                                        <li class="{{ $index == 0 && request('danhmuc_id') != null ? 'current' : '' }}">
+                                        <li class="{{ request('danhmuc_id') == $danhmuc->id ? 'current' : '' }}">
                                             <a style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="{{ route('shop.index') }}?danhmuc_id={{ $danhmuc->id }}">{{ $danhmuc->name }}</a>
                                         </li>
                                     @endforeach

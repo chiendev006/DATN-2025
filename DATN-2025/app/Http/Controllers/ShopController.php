@@ -14,31 +14,31 @@ class ShopController extends Controller
         $danhmucs = Danhmuc::with(['sanphams' => function($query) {
             $query->withMin('sizes', 'price');
         }])->get();
-    
-        $danhmucId = $request->input('danhmuc_id', $danhmucs->first()->id ?? null);
+
+        $danhmucId = $request->input('danhmuc_id');
         $page = $request->input('page', 1);
         $perPage = 12;
         $sort = $request->input('sort', '');
-    
+
         // Nếu không chọn danh mục (hoặc chọn "Tất cả") hoặc là chuỗi 'null'
-        if (empty($danhmucId) || $danhmucId === 'null') {
+        if (empty($danhmucId) || $danhmucId === 'null' || $danhmucId === '') {
             $firstDanhmuc = null;
             $firstProducts = sanpham::withMin('sizes', 'price')->paginate($perPage);
         } else {
             $firstDanhmuc = $danhmucs->where('id', $danhmucId)->first();
             $firstProducts = $firstDanhmuc ? $firstDanhmuc->sanphams()->withMin('sizes', 'price')->paginate($perPage) : collect([]);
         }
-    
+
         foreach ($firstProducts as $sp) {
             $sp->min_price = $sp->sizes_min_price ?? 0;
         }
-    
+
         // Add best deals
         $bestDeals = sanpham::withMin('sizes as min_price', 'price')
                         ->orderBy('min_price', 'asc')
                         ->take(3)
                         ->get();
-    
+
         if ($request->ajax()) {
             return response()->json([
                 'products' => $firstProducts->items(),
@@ -46,10 +46,10 @@ class ShopController extends Controller
                 'last_page' => $firstProducts->lastPage(),
                 'total' => $firstProducts->total(),
                 'per_page' => $firstProducts->perPage(),
-                'danhmuc_id' => $danhmucId
+                'danhmuc_id' => $danhmucId ?: null
             ]);
         }
-    
+
         return view('client.shop', compact('danhmucs', 'firstDanhmuc', 'firstProducts', 'bestDeals', 'sort'));
     }
     public function getByCategory($id)
