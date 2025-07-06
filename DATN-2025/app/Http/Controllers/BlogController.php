@@ -20,7 +20,7 @@ class BlogController extends Controller
         $blogs = Blogs::paginate(10); // Lấy danh sách bài viết
         $categories = DanhmucBlog::all(); // Lấy danh mục blog
         $recentBlogs = Blogs::orderBy('created_at', 'desc')->limit(3)->get();
-
+        $blogs = Blogs::paginate(3);
         // Lấy sản phẩm rẻ nhất từ bảng product_attributes
         $bestDeals = DB::table('sanphams')
             ->join('product_attributes', 'sanphams.id', '=', 'product_attributes.product_id')

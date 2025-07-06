@@ -138,6 +138,56 @@
                                     @endforeach
                                 </div>
                             </div>
+                            <div style="text-align: center;" class="gallery-pagination">
+   <div style="text-align: center;" class="gallery-pagination">
+    <div class="gallery-pagination-inner">
+        <ul>
+            {{-- Nút PREV --}}
+            <li>
+                <a href="{{ $blogs->onFirstPage() ? '#' : $blogs->previousPageUrl() }}"
+                   class="pagination-prev {{ $blogs->onFirstPage() ? 'disabled' : '' }}">
+                    <i class="icon-left-4"></i>
+                    <span style="font-family: system-ui">PREV PAGE</span>
+                </a>
+            </li>
+
+            {{-- Hiển thị tối đa 3 trang gần nhất --}}
+            @php
+                $start = max(1, $blogs->currentPage() - 1);
+                $end = min($blogs->lastPage(), $blogs->currentPage() + 1);
+
+                // Nếu đang ở đầu -> dịch phải
+                if ($blogs->currentPage() == 1) {
+                    $end = min(3, $blogs->lastPage());
+                }
+
+                // Nếu đang ở cuối -> dịch trái
+                if ($blogs->currentPage() == $blogs->lastPage()) {
+                    $start = max($blogs->lastPage() - 2, 1);
+                }
+            @endphp
+
+            @for ($i = $start; $i <= $end; $i++)
+                <li class="{{ $i == $blogs->currentPage() ? 'active' : '' }}">
+                    <a href="{{ $blogs->url($i) }}"><span>{{ $i }}</span></a>
+                </li>
+            @endfor
+
+            {{-- Nút NEXT --}}
+            <li>
+                <a href="{{ $blogs->hasMorePages() ? $blogs->nextPageUrl() : '#' }}"
+                   class="pagination-next {{ $blogs->hasMorePages() ? '' : 'disabled' }}">
+                    <span style="font-family: system-ui">NEXT PAGE</span>
+                    <i class="icon-right-4"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+</div>
+
                         </div>
                     </div>
                 </section>
