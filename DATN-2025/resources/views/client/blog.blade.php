@@ -62,7 +62,7 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <div class="blog-recent-post blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                    {{-- <div class="blog-recent-post blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <h5>Recent Posts</h5>
                                         <div class="recent-blog-list">
                                             <p><img src="{{ url('asset') }}/images/img18.png" alt=""></p>
@@ -74,7 +74,36 @@
                                             <p><small>October 13, 2017</small></p>
                                             <h6>Disclosue - Real food here</h6>
                                         </div>
-                                    </div>
+                                    </div> --}}
+<div class="blog-recent-post blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+    <h5 style="margin-bottom: 20px;">Recent Posts</h5>
+
+    @foreach ($recentBlogs as $blog)
+        <div class="recent-blog-list" style="text-align: center; margin-bottom: 20px;">
+            {{-- Ngày --}}
+            <p style="font-size: 13px; color: #999; margin-top: 8px;">
+                {{ \Carbon\Carbon::parse($blog->created_at)->format('F d, Y') }}
+            </p>
+            {{-- Ảnh lớn hơn --}}
+            <a href="{{ route('blog.show', $blog->id) }}">
+                <img src="{{ asset('storage/uploads/' . $blog->image) }}"
+                     alt="{{ $blog->title }}"
+                     style="width: 100%; max-width: 150px; height: auto; border-radius: 6px; object-fit: cover;">
+            </a>
+
+            {{-- Tiêu đề --}}
+            <h6 style="font-size: 15px; margin-top: 5px;">
+                <a href="{{ route('blog.show', $blog->id) }}" style="color: #333; text-decoration: none;">
+                    {{ \Illuminate\Support\Str::limit($blog->title, 60) }}
+                </a>
+            </h6>
+        </div>
+    @endforeach
+</div>
+
+
+
+                                    
 
                                     <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <h5>Best Deals</h5>
@@ -115,7 +144,7 @@
                                     <div class="blog-right-listing wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <div class="feature-img">
                                             <a href="{{route('client.blogsingle',$item->id)}}">
-                                                 <img src="{{ asset('storage/'.$item->image) }} " width="300" height="350" alt="">
+                                                 <img src="{{ asset('storage/uploads/'.$item->image) }} " width="300" height="350" alt="">
                                             </a>
 
                                             <div class="date-feature">{{ \Carbon\Carbon::parse($item->created_at)->diffInDays(now()) }}<br> <small>Ngày</small></div>
