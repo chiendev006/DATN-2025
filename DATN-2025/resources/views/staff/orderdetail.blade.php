@@ -14,7 +14,7 @@
     <div class="space-y-8">
         @foreach ($donhangs as $item)
         @php
-            $isWalkInCustomer = ($item->name == 'Khách lẻ') || ($item->district_name == null && $item->shipping_fee == 0);
+            $isWalkInCustomer = ($item->name == 'Khách Vãng Lai') || ($item->district_name == null && $item->shipping_fee == 0);
             $statusMapping = [
                 'pending' => 0,
                 'processing' => 1,
@@ -69,7 +69,7 @@
                     </thead>
                     <tbody>
                         <tr @if($isWalkInCustomer) class="px-4 py-2 border" style="background-color: #ffe066;" @else class="px-4 py-2 border" @endif>
-                            <td class="px-4 py-2 border text-gray-700 font-medium">{{ $item->name ?? 'Khách lẻ' }}</td>
+                            <td class="px-4 py-2 border text-gray-700 font-medium">{{ $item->name ?? 'Khách Vãng Lai' }}</td>
                             <td class="px-4 py-2 border">{{ $item->phone ?? 'không có' }}</td>
                             <td class="px-4 py-2 border text-center text-sm font-semibold">
                                 @php
@@ -81,7 +81,7 @@
                 4 => ['Đã hủy', 'red']
             ];
             
-            // Cho khách lẻ, nếu trạng thái là pending thì chuyển thành processing
+            // Cho Khách Vãng Lai, nếu trạng thái là pending thì chuyển thành processing
             if ($isWalkInCustomer && $currentStatusInt === 0) {
                 $currentStatusInt = 1;
             }
@@ -140,7 +140,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <label class="text-primary">Email</label>
-                                        <input type="text" class="form-control equal-width-input" value="{{ $item->email ?? ($isWalkInCustomer ? 'Khách lẻ' : 'Không có') }}" readonly>
+                                        <input type="text" class="form-control equal-width-input" value="{{ $item->email ?? 'Không có' }}" readonly>
                                     </div>
                                     <div class="col-md-3">
                                         <label class="text-primary">Trạng thái đơn hàng</label>
@@ -306,14 +306,14 @@ function disableInvalidStatusOptions(orderId, originalStatus, isWalkInCustomer) 
             return;
         }
 
-        // Cho khách lẻ: chỉ cho phép chuyển từ processing -> completed hoặc cancelled
+        // Cho Khách Vãng Lai: chỉ cho phép chuyển từ processing -> completed hoặc cancelled
         if (isWalkInCustomer) {
             if (originalStatus === 'processing') {
                 if (val !== 'completed' && val !== 'cancelled') {
                     option.disabled = true;
                 }
             } else if (originalStatus === 'completed') {
-                // Khách lẻ đã hoàn thành thì không thể hủy nữa
+                // Khách Vãng Lai đã hoàn thành thì không thể hủy nữa
                 if (val !== 'completed') {
                     option.disabled = true;
                 }
@@ -454,7 +454,7 @@ function handleStatusChange(orderId, newStatusValue, currentStatusInt, isWalkInC
 
     // For walk-in customers
     if (isWalkInCustomer) {
-        // Logic cho khách lẻ: chỉ có 3 trạng thái (processing, completed, cancelled)
+        // Logic cho Khách Vãng Lai: chỉ có 3 trạng thái (processing, completed, cancelled)
         if (currentStatus === 1) { // processing
             if (newStatus === 3) { // completed
                 return true;
@@ -464,13 +464,13 @@ function handleStatusChange(orderId, newStatusValue, currentStatusInt, isWalkInC
                 return true;
             } else {
                 statusSelect.value = 'processing';
-                showAlert('Khách lẻ chỉ có thể chuyển từ "Đã xác nhận" sang "Hoàn thành" hoặc "Đã hủy"!', 'error');
+                showAlert('Khách Vãng Lai chỉ có thể chuyển từ "Đã xác nhận" sang "Hoàn thành" hoặc "Đã hủy"!', 'error');
                 return false;
             }
         } else if (currentStatus === 3) { // completed
-            // Khách lẻ đã hoàn thành thì không thể hủy nữa
+            // Khách Vãng Lai đã hoàn thành thì không thể hủy nữa
             statusSelect.value = 'completed';
-            showAlert('Đơn hàng khách lẻ đã hoàn thành không thể hủy!', 'error');
+            showAlert('Đơn hàng Khách Vãng Lai đã hoàn thành không thể hủy!', 'error');
             return false;
         } else if (currentStatus === 4) { // cancelled
             statusSelect.value = 'cancelled';
@@ -589,7 +589,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Validate status for walk-in orders
             if (isWalkIn && (statusSelect.value === 'shipping' || statusSelect.value === 'pending')) {
                 e.preventDefault();
-                showAlert('Khách lẻ chỉ có thể có trạng thái "Đã xác nhận", "Hoàn thành" hoặc "Đã hủy"!', 'error');
+                showAlert('Khách Vãng Lai chỉ có thể có trạng thái "Đã xác nhận", "Hoàn thành" hoặc "Đã hủy"!', 'error');
                 return false;
             }
 

@@ -80,8 +80,8 @@ class StaffController extends Controller
             // Lưu order
             $order = new Order();
             $order->user_id = Auth::guard('staff')->user()->id;
-            $order->name = 'Khách lẻ';
-            $order->phone = 'N/A';
+            $order->name = 'Khách Vãng Lai';
+            $order->phone = 'Không có';
             $order->address_id = $request->input('address_id') ?? 1;
             $order->address_detail = null;
             $order->shipping_fee = 0;
