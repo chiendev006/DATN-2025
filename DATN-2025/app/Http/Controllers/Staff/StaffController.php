@@ -87,7 +87,7 @@ class StaffController extends Controller
             $order->shipping_fee = 0;
             $order->status = 'processing';
             $order->pay_status = '1';
-            $order->payment_method = $request->payment_method ?? 'cash';
+            $order->payment_method = $request->payment_method;
             $order->total = $request->total;
             $order->coupon_summary = $request->coupon_code;
             $order->coupon_total_discount = $request->coupon_discount ?? 0;
@@ -215,7 +215,7 @@ class StaffController extends Controller
 
         // Cập nhật trạng thái đơn hàng
         $order->status = $status;
-        
+
         // Cập nhật trạng thái thanh toán (nếu có)
         if ($pay_status !== null) {
             $order->pay_status = (string) $pay_status;
