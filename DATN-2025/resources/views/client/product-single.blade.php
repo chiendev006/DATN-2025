@@ -29,14 +29,14 @@
                             @endphp
                             @foreach ($allImages as $image)
                                 <div>
-                                    <img style= "width:555px;height:312px" src="{{ asset('storage/' . (str_contains($image, 'uploads/') ? $image : 'uploads/' . $image)) }}" alt="Ảnh sản phẩm">
+                                    <img class="product-main-img" src="{{ asset('storage/' . (str_contains($image, 'uploads/') ? $image : 'uploads/' . $image)) }}" alt="Ảnh sản phẩm">
                                 </div>
                             @endforeach
                         </div>
                         <div class="slider slider-nav slick-shop-thumb">
                             @foreach ($allImages as $image)
                                 <div>
-                                    <img style="width: 100px;height:56px; border-radius:5px" src="{{ asset('storage/' . (str_contains($image, 'uploads/') ? $image : 'uploads/' . $image)) }}" alt="Ảnh sản phẩm">
+                                    <img class="product-thumb-img" src="{{ asset('storage/' . (str_contains($image, 'uploads/') ? $image : 'uploads/' . $image)) }}" alt="Ảnh sản phẩm">
                                 </div>
                             @endforeach
                         </div>
@@ -364,4 +364,21 @@ $(document).ready(function(){
 
 
 </script>
+@endsection
+
+@section('styles')
+<style>
+.product-main-img {
+    width: 100%;
+    height: 312px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+.product-thumb-img {
+    width: 100px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+</style>
 @endsection
