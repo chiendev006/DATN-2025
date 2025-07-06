@@ -44,7 +44,7 @@
                         >
                             <ul class="nav nav-tabs mb-4">
                                 <li class="nav-item">
-                                    <a class="nav-link {{ !isset($selectedDanhmuc) ? 'active' : '' }}"
+                                    <a class="nav-link {{ request()->routeIs('staff.products') && !request()->routeIs('staff.products.category') ? 'active' : '' }}"
                                        href="{{ route('staff.products') }}">
                                         <i class="fa fa-fw fa-utensils"></i> Tất cả
                                     </a>

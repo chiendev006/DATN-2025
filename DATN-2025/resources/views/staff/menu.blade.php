@@ -71,6 +71,55 @@
   opacity: 1;
   transform: rotate(-45deg) translateY(100%);
 }
+/* Tăng chiều rộng thanh tìm kiếm */
+.search-bar {
+    width: 90%; /* Tăng từ 70% lên 90% */
+    max-width: 1200px; /* Tăng max-width từ 800px lên 1200px */
+}
+
+/* Tăng kích thước input và button */
+.search-form .form-control {
+    height: 60px; /* Tăng chiều cao input */
+    font-size: 18px; /* Tăng font size */
+    padding: 15px 20px; /* Tăng padding */
+}
+
+.search-form .btn {
+    height: 60px; /* Tăng chiều cao button */
+    font-size: 18px; /* Tăng font size */
+    padding: 15px 40px; /* Tăng padding ngang từ 25px lên 40px */
+    min-width: 120px; /* Thêm min-width để button không bị quá nhỏ */
+    background: linear-gradient(45deg, #28a745, #20c997); /* Đổi màu xanh lá cây */
+    border: none;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.search-form .btn:hover {
+    background: linear-gradient(45deg, #20c997, #17a2b8);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+}
+
+/* Các hiệu ứng chuyên nghiệp */
+.search-form input.form-control:focus {
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.25);
+    outline: none;
+    border-color: #28a745;
+}
+
+.search-form .input-group {
+    transition: all 0.3s ease-in-out;
+    border-radius: 50px !important; /* Bo tròn hơn */
+}
+
+.search-form .input-group:hover {
+    box-shadow: 0 0 20px rgba(40, 167, 69, 0.3);
+    transform: translateY(-1px);
+}
+
+
 
     </style>
     <!-- ================== END core-css ================== -->
@@ -138,13 +187,15 @@
                 <div class="pos-content">
     <div class="pos-content-container h-100">
         <div class="search-bar-container text-center my-4">
-            <form action="{{ route('staff.products.search') }}" method="GET" class="d-flex mb-3">
-                <input type="text" name="keyword" class="form-control me-2" placeholder="Tìm sản phẩm..." value="{{ request('keyword') }}">
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-search"></i> Tìm
-                </button>
-            </form>
-        </div>
+                <form action="{{ route('staff.products.search') }}" method="GET" class="d-flex justify-content-center search-form">
+                    <div class="input-group search-bar shadow-sm rounded-pill overflow-hidden">
+                        <input type="text" name="keyword" class="form-control border-0 px-4" placeholder="Tìm sản phẩm..." value="{{ request('keyword') }}">
+                        <button type="submit" class="btn btn-primary px-7 rounded-end">
+                            <i class="bi bi-search"></i> Tìm
+                        </button>
+                    </div>
+                </form>
+            </div>
         @if(session('message'))
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
           <strong>Thông báo!</strong> {{ session('message') }}
