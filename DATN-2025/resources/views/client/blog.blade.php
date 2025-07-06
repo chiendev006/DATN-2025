@@ -62,19 +62,7 @@
                                         </div>
                                         @endif
                                     </div>
-                                    {{-- <div class="blog-recent-post blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <h5>Recent Posts</h5>
-                                        <div class="recent-blog-list">
-                                            <p><img src="{{ url('asset') }}/images/img18.png" alt=""></p>
-                                            <p><small>October 13, 2017</small></p>
-                                            <h6>Disclosue - Real food here</h6>
-                                        </div>
-                                        <div class="recent-blog-list">
-                                            <p><img src="{{ url('asset') }}/images/img19.png" alt=""></p>
-                                            <p><small>October 13, 2017</small></p>
-                                            <h6>Disclosue - Real food here</h6>
-                                        </div>
-                                    </div> --}}
+                                   
 <div class="blog-recent-post blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
     <h5 style="margin-bottom: 20px;">Recent Posts</h5>
 
@@ -102,39 +90,29 @@
 </div>
 
 
+<div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+    <h5>Best Deals</h5>
+
+    @if(isset($bestDeals) && $bestDeals->count())
+        @foreach($bestDeals as $deal)
+            <div class="best-deal-blog">
+                <div class="best-deal-left">
+                    <img src="{{ asset('storage/uploads/' . $deal->image) }}" alt="{{ $deal->name }}">
+                </div>
+                <div class="best-deal-right">
+                    <p>{{ $deal->name }}</p>
+                    <p><strong>{{ number_format($deal->price, 0, ',', '.') }} đ</strong></p>
+                </div>
+            </div>
+        @endforeach
+    @else
+        <p>Không có sản phẩm nào.</p>
+    @endif
+</div>
 
                                     
 
-                                    <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <h5>Best Deals</h5>
-                                        <div class="best-deal-blog">
-                                            <div class="best-deal-left">
-                                                <img src="{{ url('asset') }}/images/img20.png" alt="">
-                                            </div>
-                                            <div class="best-deal-right">
-                                                <p>Lasal Cheese</p>
-                                                <p><strong>$ 15</strong></p>
-                                            </div>
-                                        </div>
-                                        <div class="best-deal-blog">
-                                            <div class="best-deal-left">
-                                                <img src="{{ url('asset') }}/images/img21.png" alt="">
-                                            </div>
-                                            <div class="best-deal-right">
-                                                <p>Lasal Cheese</p>
-                                                <p><strong>$ 15</strong></p>
-                                            </div>
-                                        </div>
-                                        <div class="best-deal-blog">
-                                            <div class="best-deal-left">
-                                                <img src="{{ url('asset') }}/images/img22.png" alt="">
-                                            </div>
-                                            <div class="best-deal-right">
-                                                <p>Lasal Cheese</p>
-                                                <p><strong>$ 15</strong></p>
-                                            </div>
-                                        </div>
-                                    </div>
+
                                 </div>
                             </div>
 
