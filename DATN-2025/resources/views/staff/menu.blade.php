@@ -311,6 +311,13 @@
                         </div>
                         <hr class="opacity-1 my-10px"/>
                         <div class="d-flex align-items-center mb-2">
+                            <label for="payment-method" class="me-2 mb-0 fw-bold">Thanh toán:</label>
+                            <select id="payment-method" class="form-select w-auto">
+                                <option value="cash">Tiền mặt</option>
+                                <option value="banking">Chuyển khoản</option>
+                            </select>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
                             <div>Total</div>
                             <div class="flex-1 text-end h4 mb-0" id="cart-total">0đ</div>
                         </div>
