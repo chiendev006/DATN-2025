@@ -7,8 +7,7 @@
 
         <div class="chat-box" :class="{ 'open': isChatOpen }">
             <div class="chat-header">
-                <h3>Chat với Mira Café</h3>
-                <button class="close-button" @click="closeChat">&times;</button>
+                <h3>Chat với Mira Café</h3>s
             </div>
             <div class="messages-container" ref="messagesContainer">
                 <div v-for="message in messages" :key="message.id" :class="{ 'my-message': message.sender_id === currentUserId, 'their-message': message.sender_id !== currentUserId }"
@@ -29,16 +28,13 @@
                         </template>
                         <template v-else>
                             <span class="message-content" v-html="formatMessageContent(message.content)"></span>
-                            <br><small><span style="color: red;" v-if="message.is_edited && message.content !== '*đã thu hồi*'" class="edited-flag">*đã chỉnh sửa</span></small>
+
                         </template>
                         <span class="timestamp">{{ message.created_at }}
                             <i v-if="message.status === 'sending'" class="fa-regular fa-clock-rotate-left"></i>
                             <i v-if="message.status === 'failed'" class="fa-solid fa-circle-exclamation" style="color: red;" title="Gửi thất bại"></i>
                         </span>
-                        <div v-if="message.sender_id === currentUserId && hoveredMessageId === message.id && message.content !== '*đã thu hồi*'" class="message-actions">
-                            <button v-if="message.type === 'text'" @click="startEditMessage(message)" class="edit-btn">Sửa</button>
-                            <button @click="deleteMessage(message)" class="delete-btn">Thu hồi</button>
-                        </div>
+
                     </template>
                 </div>
             </div>
@@ -68,6 +64,7 @@ export default {
             editingMessageId: null,
             editingContent: '',
             hoveredMessageId: null,
+            notificationSound: null,
         };
     },
     watch: {
@@ -83,6 +80,7 @@ export default {
         if (this.currentUserId && this.adminId) {
             // Chỉ fetch lịch sử khi chat được mở lần đầu hoặc khi component được mount
             // hoặc khi có tin nhắn mới đến
+            this.initNotificationSound();
             this.listenForNewMessages();
             // Nếu muốn chat mở sẵn khi trang load, bỏ comment dòng dưới
             // this.isChatOpen = true;
@@ -99,6 +97,11 @@ export default {
         },
         closeChat() {
             this.isChatOpen = false;
+            if (!this.isChatOpen) { // Nếu chat đang đóng, báo có tin nhắn mới
+                this.hasNewMessage = true;
+                // Phát âm thanh thông báo khi có tin nhắn mới và chat đang đóng
+                this.playNotificationSound();
+            }
         },
         fetchChatHistory() {
             axios.get(`/api/client/chat/history/${this.adminId}`)
@@ -132,6 +135,8 @@ export default {
                         });
                         if (!this.isChatOpen) { // Nếu chat đang đóng, báo có tin nhắn mới
                             this.hasNewMessage = true;
+                            // Phát âm thanh thông báo khi có tin nhắn mới và chat đang đóng
+                            this.playNotificationSound();
                         }
                         this.$nextTick(this.scrollToBottom);
                     }
@@ -261,6 +266,83 @@ export default {
             const escapeHtml = (str) => str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
             return escapeHtml(content).replace(urlRegex, url => `<a href="${url}" target="_blank">${url}</a>`);
         },
+        initNotificationSound() {
+            try {
+                this.notificationSound = new Audio('/sounds/notification.mp3');
+                this.notificationSound.volume = 0.5;
+
+                // Thêm event listeners để debug
+                this.notificationSound.addEventListener('loadstart', () => console.log('Bắt đầu tải âm thanh'));
+                this.notificationSound.addEventListener('canplay', () => console.log('Âm thanh đã sẵn sàng phát'));
+                this.notificationSound.addEventListener('error', (e) => console.error('Lỗi tải âm thanh:', e));
+                this.notificationSound.addEventListener('ended', () => console.log('Âm thanh đã kết thúc'));
+
+                console.log('Âm thanh thông báo đã được khởi tạo thành công');
+            } catch (error) {
+                console.error('Không thể khởi tạo âm thanh thông báo:', error);
+            }
+        },
+        playNotificationSound() {
+            if (this.notificationSound) {
+                try {
+                    console.log('Đang cố gắng phát âm thanh thông báo...');
+
+                    // Kiểm tra trạng thái của audio
+                    if (this.notificationSound.readyState >= 2) { // HAVE_CURRENT_DATA
+                        // Reset audio để có thể phát lại
+                        this.notificationSound.currentTime = 0;
+
+                        // Thử phát âm thanh
+                        const playPromise = this.notificationSound.play();
+
+                        if (playPromise !== undefined) {
+                            playPromise.then(() => {
+                                console.log('Đã phát âm thanh thông báo thành công');
+                            }).catch(error => {
+                                console.log('Không thể phát âm thanh thông báo:', error);
+                                // Thử tạo âm thanh đơn giản bằng Web Audio API như fallback
+                                this.playFallbackSound();
+                            });
+                        }
+                    } else {
+                        console.log('Âm thanh chưa sẵn sàng, thử fallback...');
+                        this.playFallbackSound();
+                    }
+                } catch (error) {
+                    console.log('Lỗi khi phát âm thanh thông báo:', error);
+                    this.playFallbackSound();
+                }
+            } else {
+                console.log('Không có âm thanh thông báo, thử fallback...');
+                this.playFallbackSound();
+            }
+        },
+
+        playFallbackSound() {
+            try {
+                // Tạo âm thanh đơn giản bằng Web Audio API
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+
+                console.log('Đã phát âm thanh fallback');
+            } catch (error) {
+                console.log('Không thể phát âm thanh fallback:', error);
+            }
+        },
     }
 }
 </script>
@@ -358,6 +440,8 @@ export default {
     font-size: 1.5em;
     cursor: pointer;
 }
+
+
 
 .messages-container {
     flex-grow: 1;
