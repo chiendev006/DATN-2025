@@ -194,7 +194,8 @@ class StaffController extends Controller
         $sanpham = SanPham::all();
         $danhmuc = DanhMuc::all();
         $message = session('message');
-        return view('staff.menu', compact('sanpham', 'danhmuc', 'message'));
+        $vndPerPoint = (int) (\DB::table('point_settings')->where('key', 'vnd_per_point')->value('value') ?? 1000);
+        return view('staff.menu', compact('sanpham', 'danhmuc', 'message', 'vndPerPoint'));
     }
 
     public function productsByCategory($id)
@@ -203,10 +204,11 @@ class StaffController extends Controller
         $danhmuc = DanhMuc::all();
         $selectedDanhmuc = DanhMuc::find($id);
         $message = session('message');
+        $vndPerPoint = (int) (\DB::table('point_settings')->where('key', 'vnd_per_point')->value('value') ?? 1000);
         if (!$selectedDanhmuc) {
             return redirect()->route('staff.products')->with('error', 'Danh mục không tồn tại.');
         }
-        return view('staff.menu', compact('sanpham', 'danhmuc', 'selectedDanhmuc', 'message'));
+        return view('staff.menu', compact('sanpham', 'danhmuc', 'selectedDanhmuc', 'message', 'vndPerPoint'));
     }
     public function orderdetailtoday()
 {

@@ -319,7 +319,19 @@
                             </select>
                         </div>
                         <div class="d-flex align-items-center mb-2">
-                            <div>Total</div>
+                            <div class="fw-bold">Tổng tiền hàng:</div>
+                            <div class="flex-1 text-end h6 mb-0" id="cart-subtotal">0đ</div>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <div>Giảm giá từ mã:</div>
+                            <div class="flex-1 text-end h6 mb-0" id="cart-discount">-0đ</div>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <div>Giảm giá từ điểm:</div>
+                            <div class="flex-1 text-end h6 mb-0" id="points-discount">-0đ</div>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="fw-bold">Tổng tiền:</div>
                             <div class="flex-1 text-end h4 mb-0" id="cart-total">0đ</div>
                         </div>
                         <div class="mt-3">
@@ -421,6 +433,26 @@
     src="{{ url('assetstaff') }}/js/demo/pos-customer-order.demo.js"
 ></script>
 <script>
+    // Truyền giá trị từ backend sang JS
+    var vndPerPoint = {{ $vndPerPoint }};
+
+    function updateSidebarTotal() {
+        // Lấy tổng tiền hàng (chưa giảm)
+        let subtotal = parseInt($('#cart-subtotal').text().replace(/\D/g, '')) || 0;
+        // Lấy giảm giá từ mã (nếu có)
+        let discount = parseInt($('#cart-discount').text().replace(/\D/g, '')) || 0;
+        // Lấy số điểm sử dụng
+        let points = parseInt($('#points-used').val()) || 0;
+        // Tính giảm giá từ điểm (dùng cấu hình backend)
+        let pointsDiscount = points * vndPerPoint;
+        // Hiển thị giảm giá từ điểm
+        $('#points-discount').text('-' + pointsDiscount.toLocaleString('vi-VN') + 'đ');
+        // Tính tổng tiền cuối cùng
+        let total = subtotal - discount - pointsDiscount;
+        if (total < 0) total = 0;
+        // Hiển thị tổng tiền
+        $('#cart-total').text(total.toLocaleString('vi-VN') + 'đ');
+    }
     $(document).ready(function(){
         $('#customer-phone').on('blur', function(){
             var phone = $(this).val();
@@ -429,16 +461,24 @@
                     if(res.success) {
                         $('#customer-point-info').text('Điểm hiện có: ' + res.points);
                         $('#points-used').prop('disabled', false).attr('max', res.points).val(0);
+                        updateSidebarTotal();
                     } else {
                         $('#customer-point-info').text('Không tìm thấy khách hàng.');
                         $('#points-used').prop('disabled', true).val(0);
+                        updateSidebarTotal();
                     }
                 });
             } else {
                 $('#customer-point-info').text('');
                 $('#points-used').prop('disabled', true).val(0);
+                updateSidebarTotal();
             }
         });
+        $('#points-used').on('input', function() {
+            updateSidebarTotal();
+        });
+        // Gọi lại khi render lại giỏ hàng
+        // updateSidebarTotal();
     });
 </script>
 </body>
