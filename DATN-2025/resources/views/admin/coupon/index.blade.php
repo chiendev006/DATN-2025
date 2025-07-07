@@ -58,21 +58,26 @@
                                 <button type="button" id="btn-add-Coupon" class="btn-success">Thêm Coupon</button>
                                     <div class="card-body">
                                         <form method="GET" action="" style="margin-bottom: 20px;">
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <label for="code" style="font-weight: 500;">Mã coupon</label>
+                                        <div class="row">
+                                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
+                                                <div class="field-wrapper">
+                                                    <div class="field-placeholder">Mã coupon</div>
                                                     <input type="text" name="code" id="code" class="form-control" value="{{ request('code') }}" placeholder="Nhập mã coupon...">
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <label for="type" style="font-weight: 500;">Loại giảm giá</label>
+                                            </div>
+                                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
+                                                <div class="field-wrapper">
+                                                    <div class="field-placeholder">Loại giảm giá</div>
                                                     <select name="type" id="type" class="form-control">
                                                         <option value="">Tất cả</option>
                                                         <option value="percent" {{ request('type') == 'percent' ? 'selected' : '' }}>%</option>
                                                         <option value="fixed" {{ request('type') == 'fixed' ? 'selected' : '' }}>VNĐ</option>
                                                     </select>
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <label for="status" style="font-weight: 500;">Trạng thái</label>
+                                            </div>
+                                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
+                                                <div class="field-wrapper">
+                                                    <div class="field-placeholder">Trạng thái</div>
                                                     <select name="status" id="status" class="form-control">
                                                         <option value="">Tất cả</option>
                                                         <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Còn hạn</option>
@@ -81,20 +86,26 @@
                                                         <option value="not_used" {{ request('status') == 'not_used' ? 'selected' : '' }}>Chưa dùng</option>
                                                     </select>
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <label for="starts_at" style="font-weight: 500;">Ngày bắt đầu từ</label>
+                                            </div>
+                                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
+                                                <div class="field-wrapper">
+                                                    <div class="field-placeholder">Ngày bắt đầu từ</div>
                                                     <input type="date" name="starts_at" id="starts_at" class="form-control" value="{{ request('starts_at') }}">
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <label for="expires_at" style="font-weight: 500;">Ngày kết thúc đến</label>
+                                            </div>
+                                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
+                                                <div class="field-wrapper">
+                                                    <div class="field-placeholder">Ngày kết thúc đến</div>
                                                     <input type="date" name="expires_at" id="expires_at" class="form-control" value="{{ request('expires_at') }}">
                                                 </div>
-
-                                                <div class="col-md-1" style="display: flex; align-items: end; gap: 10px;">
-                                                    <button type="submit" class="btn btn-primary" style="height: 38px;">Lọc</button>
-                                                    <a href="{{ route('coupon.index') }}" class="btn btn-secondary" style="height: 38px;">Làm mới</a>
-                                                </div>
                                             </div>
+                                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
+                                            <div class="field-wrapper" style="display:flex; gap: 5px;">
+                                                <button type="submit" class="btn btn-primary" style="height: 38px;">Lọc</button>
+                                                <a href="{{ route('coupon.index') }}" class="btn btn-secondary" style="height: 38px;">Làm mới</a>
+                                            </div>
+                                            </div>
+                                        </div>
                                         </form>
                                         <div class="table-responsive">
                                             <table id="copy-print-csv" class="table v-middle">

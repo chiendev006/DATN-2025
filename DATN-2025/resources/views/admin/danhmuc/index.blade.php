@@ -182,20 +182,25 @@
                                         <!-- Form tìm kiếm và lọc -->
                                         <form method="GET" action="" style="margin-bottom: 20px;">
                                             <div class="row">
-                                                <div class="col-md-4">
-                                                    <label for="search" style="margin-bottom: 5px; font-weight: 500;">Tìm kiếm theo tên:</label>
+                                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
+                                                <div class="field-wrapper">
+                                                <div class="field-placeholder">Tìm kiêm theo tên</div>
                                                     <input type="text" name="search" id="search" class="form-control" value="{{ $search }}" placeholder="Nhập tên danh mục...">
                                                 </div>
-                                                <div class="col-md-3">
-                                                    <label for="filter_type" style="margin-bottom: 5px; font-weight: 500;">Lọc theo loại:</label>
-                                                    <select name="filter_type" id="filter_type" class="form-control">
+                                                </div>
+
+                                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
+                                                <div class="field-wrapper">
+                                                <div class="field-placeholder">Tìm kiêm theo tên</div>                                                    <select name="filter_type" id="filter_type" class="form-control">
                                                         <option value="">Tất cả</option>
                                                         <option value="1" {{ $filterType === '1' ? 'selected' : '' }}>Có sử dụng topping</option>
                                                         <option value="0" {{ $filterType === '0' ? 'selected' : '' }}>Không sử dụng topping</option>
                                                     </select>
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <label for="per_page" style="margin-bottom: 5px; font-weight: 500;">Bản/trang:</label>
+                                                </div>
+                                                <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-1">
+                                                <div class="field-wrapper">
+                                                <div class="field-placeholder">Bản/trang</div>
                                                     <select name="per_page" id="per_page" class="form-control" onchange="this.form.submit()">
                                                         <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản</option>
                                                         <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 bản</option>
@@ -203,9 +208,14 @@
                                                         <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
                                                     </select>
                                                 </div>
-                                                <div class="col-md-3" style="display: flex; align-items: end; gap: 10px;">
-                                                    <button type="submit" class="btn btn-primary" style="height: 38px;">Tìm kiếm</button>
-                                                    <a href="{{ route('danhmuc.index') }}" class="btn btn-secondary" style="height: 38px;">Làm mới</a>
+                                                </div>
+                                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+                                                <div class="field-wrapper col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="col-md-12" style="display: flex; align-items: end; gap: 10px;">
+                                                    <button style="border-radius: 5px;" type="submit" class="btn btn-primary" style="height: 38px;">Tìm kiếm</button>
+                                                    <a style="border-radius: 5px;"  href="{{ route('danhmuc.index') }}" class="btn btn-secondary" style="height: 38px;">Làm mới</a>
+                                                </div>
+                                                </div>
                                                 </div>
                                             </div>
                                         </form>

@@ -69,20 +69,9 @@
         <div class="row gutters">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                 <div class="card">
-                    <button type="button" id="btn-add-point-setting" class="btn-success">Thêm cấu hình điểm</button>
+                    <button style="display: none;" type="button" id="btn-add-point-setting" class="btn-success">Thêm cấu hình điểm</button>
                     <div class="card-body">
-                        <form method="GET" action="" style="margin-bottom: 20px;">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <label for="key" style="font-weight: 500;">Tìm theo key</label>
-                                    <input type="text" name="key" id="key" class="form-control" value="{{ request('key') }}" placeholder="Nhập key...">
-                                </div>
-                                <div class="col-md-1" style="display: flex; align-items: end; gap: 10px;">
-                                    <button type="submit" class="btn btn-primary" style="height: 38px;">Lọc</button>
-                                    <a href="{{ route('admin.point_settings.index') }}" class="btn btn-secondary" style="height: 38px;">Resets</a>
-                                </div>
-                            </div>
-                        </form>
+                    <h2>Cấu hình điểm</h2>
                         @if(session('success'))
                             <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
@@ -117,11 +106,7 @@
                                                         data-value="{{ $item->value }}"
                                                         data-description="{{ $item->description }}"
                                                     >Sửa</button>
-                                                    <form action="{{ route('admin.point_settings.delete', $item->id) }}" method="POST" style="display:inline;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa cấu hình này?')">Xóa</button>
-                                                    </form>
+
                                                 </div>
                                             </td>
                                         </tr>
@@ -129,13 +114,6 @@
                                     @endif
                                 </tbody>
                             </table>
-                        </div>
-                        <div class="text-muted mb-2" style="font-size:13px;">
-                            Trang {{ $pointSettings->currentPage() }}/{{ $pointSettings->lastPage() }},
-                            Hiển thị {{ $pointSettings->firstItem() }}-{{ $pointSettings->lastItem() }}/{{ $pointSettings->total() }} bản ghi
-                        </div>
-                        <div class="d-flex justify-content-center mt-3">
-                            {{ $pointSettings->appends(request()->except('page'))->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
                 </div>
@@ -266,4 +244,4 @@ const errorValue = document.getElementById('error-value');
         }
     });
 </script>
-@include('footer') 
+@include('footer')

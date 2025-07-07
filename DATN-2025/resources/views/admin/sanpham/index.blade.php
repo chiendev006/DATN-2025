@@ -61,7 +61,7 @@
                                     <input type="hidden" name="min_price" value="{{ request('min_price') }}">
                                     <input type="hidden" name="max_price" value="{{ request('max_price') }}">
 
-                                    <button class="btn btn-primary" type="submit">
+                                    <button style="border-radius:0px 5px 5px 0px;"  class="btn btn-primary" type="submit">
                                         <span class="icon-search"></span>
                                     </button>
                                 </div>
@@ -76,7 +76,7 @@
                                         {{-- Giữ lại tên tìm kiếm nếu có --}}
                                         <input type="hidden" name="q" value="{{ request('q') }}">
 
-                                        <button class="btn btn-primary" type="submit">
+                                        <button style="border-radius:0px 5px 5px 0px;"  class="btn btn-primary" type="submit">
                                             <span class="icon-search"></span>
                                         </button>
                                     </div>
@@ -108,7 +108,7 @@
                                                                <td>
                                                                	{{ $sp['name'] }}
                                                                </td>
-                                                               <td><img src="{{ url("/storage/uploads/$sp->image") }}"  width="100px" alt=""></td>
+                                                               <td><img src="{{ url("/storage/uploads/$sp->image") }}"  width="100px" height="110px" alt=""></td>
                                                                <td>
                                                                	@php
                                                                		$minSize = $sp->attributes->sortBy('price')->first();
