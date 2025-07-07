@@ -283,6 +283,8 @@ Route::get('/checkout/success', [App\Http\Controllers\CheckoutController::class,
 Route::get('staff/login', [AuthenController::class, 'login'])->name('staff.login');
 Route::post('staff/postlogin', [AuthenController::class, 'postlogin'])->name('staff.postlogin');
 Route::get('staff/logout', [AuthenController::class, 'logout'])->name('staff.logout');
+Route::get('/staff/get-customer-point', [\App\Http\Controllers\Staff\StaffController::class, 'getCustomerPoint']);
+Route::get('/staff/point-settings', [\App\Http\Controllers\Staff\StaffController::class, 'getPointSettings']);
 Route::prefix('staff')->middleware('checkStaff')->group(function () {
         Route::get('/', [StaffController::class, 'index'])->name('staff.index');
         Route::get('/product/{id}', [StaffController::class, 'ajaxShow'])->name('staff.options');

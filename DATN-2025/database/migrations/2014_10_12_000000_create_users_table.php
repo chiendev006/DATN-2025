@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name',255);
-            $table->string('email',191)->unique();
+            $table->string('email',191)->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('phone',255)->nullable();
             $table->string('image',255)->nullable(); // Lưu đường dẫn file ảnh

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\ProductAttribute;
 use App\Models\ProductTopping;
+use Illuminate\Support\Str;
 
 class StaffController extends Controller
 {
@@ -75,6 +76,7 @@ class StaffController extends Controller
 
     public function store(Request $request)
     {
+        \Log::info('DEBUG_POINT: store method called', [$request->all()]);
         DB::beginTransaction();
         try {
             // Lưu order
@@ -91,6 +93,53 @@ class StaffController extends Controller
             $order->total = $request->total;
             $order->coupon_summary = $request->coupon_code;
             $order->coupon_total_discount = $request->coupon_discount ?? 0;
+
+            // Xử lý thông tin khách hàng để tích điểm
+            $customerPhone = $request->input('customer_phone');
+            $customer = null;
+            if ($customerPhone) {
+                $customer = \App\Models\User::where('phone', $customerPhone)->where('role', 0)->first();
+                if (!$customer) {
+                    $customer = \App\Models\User::create([
+                        'phone' => $customerPhone,
+                        'name' => 'Khách lẻ',
+                        'role' => 0,
+                        'password' => bcrypt(\Illuminate\Support\Str::random(8)),
+                    ]);
+                }
+                $order->customer_id = $customer->id;
+                $order->name = $customer->name;
+                $order->phone = $customer->phone;
+            }
+
+            // Xử lý sử dụng điểm nếu có
+            $pointsUsed = (int) $request->input('points_used', 0);
+            $pointsDiscount = 0;
+            if ($customer && $pointsUsed > 0) {
+                // Lấy cấu hình quy đổi điểm
+                $vndPerPoint = (int) (\DB::table('point_settings')->where('key', 'vnd_per_point')->value('value') ?? 1000);
+                $maxPoints = min($customer->points, $pointsUsed);
+                $pointsDiscount = $maxPoints * $vndPerPoint;
+                // Trừ điểm
+                $customer->points -= $maxPoints;
+                $customer->save();
+                // Ghi log
+                \DB::table('point_transactions')->insert([
+                    'user_id' => $customer->id,
+                    'points' => -$maxPoints,
+                    'type' => 'spend',
+                    'description' => 'Sử dụng điểm giảm giá đơn hàng POS #' . $order->id,
+                    'order_id' => $order->id,
+                    'created_by' => Auth::guard('staff')->user()->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                // Lưu vào order
+                $order->points_used = $maxPoints;
+                $order->points_discount = $pointsDiscount;
+                $order->total -= $pointsDiscount;
+            }
+
             $order->save();
             // Lưu chi tiết order
             foreach ($request->cart as $item) {
@@ -120,6 +169,13 @@ class StaffController extends Controller
                     \DB::table('coupons')->where('id', $coupon->id)->increment('used');
                 }
             }
+
+            // Tích điểm cho khách hàng nếu có
+            // (ĐÃ BỎ, chuyển sang updateStatus khi đơn hoàn thành)
+            // if ($customer) {
+            //     ...
+            // }
+
             DB::commit();
             return response()->json(['message' => 'Đặt hàng thành công!']);
         } catch (\Exception $e) {
@@ -232,6 +288,55 @@ class StaffController extends Controller
 
         $order->save();
 
+        // Cộng điểm khi đơn chuyển sang hoàn thành
+        if ($status === 'completed' && $order->customer_id) {
+            // Kiểm tra đã cộng điểm chưa (dựa vào point_transactions)
+            $alreadyEarned = \DB::table('point_transactions')
+                ->where('order_id', $order->id)
+                ->where('user_id', $order->customer_id)
+                ->where('type', 'earn')
+                ->exists();
+            if (!$alreadyEarned) {
+                $pointsPerVnd = (int) (\DB::table('point_settings')->where('key', 'points_per_vnd')->value('value') ?? 10000);
+                $points = floor($order->total / $pointsPerVnd);
+                if ($points > 0) {
+                    $customer = \App\Models\User::find($order->customer_id);
+                    $customer->points += $points;
+                    $customer->save();
+                    // Ghi log
+                    \DB::table('point_transactions')->insert([
+                        'user_id' => $customer->id,
+                        'points' => $points,
+                        'type' => 'earn',
+                        'description' => 'Tích điểm đơn hàng POS #' . $order->id,
+                        'order_id' => $order->id,
+                        'created_by' => \Auth::guard('staff')->user()->id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+        }
+
         return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');
+    }
+
+    public function getCustomerPoint(Request $request)
+    {
+        $phone = $request->query('phone');
+        $user = \App\Models\User::where('phone', $phone)->where('role', 0)->first();
+        if ($user) {
+            return response()->json(['success' => true, 'points' => $user->points]);
+        } else {
+            return response()->json(['success' => false, 'points' => 0]);
+        }
+    }
+
+    public function getPointSettings()
+    {
+        $settings = \DB::table('point_settings')
+            ->whereIn('key', ['min_points_to_use', 'max_points_per_order', 'vnd_per_point'])
+            ->pluck('value', 'key');
+        return response()->json($settings);
     }
 }

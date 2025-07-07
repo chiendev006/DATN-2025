@@ -330,15 +330,69 @@ function updateTotalPrice() {
                 total: total,
                 coupon_code: appliedCoupon ? appliedCoupon.code : null,
                 coupon_discount: appliedCoupon ? appliedCoupon.discountValue : 0,
-                pay_status: 0 // Mặc định là chờ thanh toán
+                pay_status: 0, // Mặc định là chờ thanh toán
+                customer_phone: $('#customer-phone').val() || '',
+                points_used: parseInt($('#points-used').val()) || 0
             };
         }
 
         // Xử lý sự kiện click cho nút "Xác nhận" và "Thanh toán"
-        $(document).on('click', '#btn-confirm-order, #btn-pay-order', function(e) {
-            e.preventDefault();
+        let pointSettings = {
+        min_points_to_use: 10,
+        max_points_per_order: 50,
+        vnd_per_point: 1000
+    };
+    // Lấy cấu hình từ backend
+    $.get('/staff/point-settings', function(data) {
+        if (data) {
+            pointSettings = {
+                min_points_to_use: parseInt(data.min_points_to_use) || 10,
+                max_points_per_order: parseInt(data.max_points_per_order) || 50,
+                vnd_per_point: parseInt(data.vnd_per_point) || 1000
+            };
+        }
+    });
 
-            const payStatus = $(this).data('pay_status');
+    // Validate điểm khi nhập
+    $('#points-used').on('input', function() {
+        let points = parseInt($(this).val()) || 0;
+        let customerPoints = parseInt($('#customer-point-info').text().replace(/[^\d]/g, '')) || 0;
+        let subtotal = getCartSubtotal();
+        let maxPointByPercent = Math.floor((subtotal * pointSettings.max_points_per_order / 100) / pointSettings.vnd_per_point);
+        let error = '';
+        
+        if (points > 0) { // Chỉ validate khi có nhập điểm
+            if (points < pointSettings.min_points_to_use) {
+                error = 'Số điểm tối thiểu là ' + pointSettings.min_points_to_use + ' điểm';
+            } else if (points > customerPoints) {
+                error = 'Bạn không đủ điểm! Chỉ có ' + customerPoints + ' điểm';
+            } else if (points > maxPointByPercent) {
+                error = 'Chỉ được dùng tối đa ' + maxPointByPercent + ' điểm cho đơn này (' + pointSettings.max_points_per_order + '% giá trị đơn hàng)';
+            }
+        }
+        
+        if (error) {
+            $('#points-used').addClass('is-invalid');
+            $('#points-error').text(error).show();
+        } else {
+            $('#points-used').removeClass('is-invalid');
+            $('#points-error').hide();
+        }
+    });
+
+    // Kiểm tra điểm trước khi xác nhận đơn
+    $(document).on('click', '#btn-confirm-order, #btn-pay-order', function(e) {
+        e.preventDefault();
+
+        // Kiểm tra điểm có hợp lệ không
+        let points = parseInt($('#points-used').val()) || 0;
+        if (points > 0 && $('#points-error').is(':visible')) {
+            alert('Vui lòng kiểm tra lại số điểm sử dụng!');
+            $('#points-used').focus();
+            return;
+        }
+
+        const payStatus = $(this).data('pay_status');
 
             // Lấy dữ liệu order
             var orderData = collectOrderData();
@@ -370,6 +424,12 @@ function updateTotalPrice() {
                     $('#coupon-select').val('');
                     // Reset biến global coupon nếu có
                     appliedCoupon = null;
+                    // Reset số điện thoại, điểm
+                    $('#customer-phone').val('');
+                    $('#points-used').val('');
+                    $('#customer-point-info').text('');
+                    $('#points-error').hide();
+                    $('#points-used').removeClass('is-invalid').prop('disabled', true);
                 },
                 error: function(xhr){
                     console.log(xhr.responseText);
