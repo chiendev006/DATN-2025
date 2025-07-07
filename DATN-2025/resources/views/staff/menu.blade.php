@@ -220,7 +220,7 @@
                                data-name="{{ $item->name }}"
                                data-image="{{ url("/storage/uploads/$item->image") }}" >
                                 <div class="img">
-                                    <img src="{{ url("/storage/uploads/$item->image") }}" width="100%" alt="{{ $item->name }}">
+                                    <img src="{{ url("/storage/uploads/$item->image") }}" width="200px" height="250px" alt="{{ $item->name }}">
                                 </div>
                                 <div class="info">
                                     <div class="title">{{ $item->name }}</div>
@@ -371,7 +371,7 @@
             <div class="modal-pos-product">
                 <div class="modal-pos-product-img">
                     <div class="img">
-                        <img class="product-image" src="" width="100%" alt="">
+                        <img class="product-image" src="" width="350px" height="400px" alt="">
                     </div>
                 </div>
                 <div class="modal-pos-product-info">

@@ -205,7 +205,7 @@ Route::prefix('admin')->middleware(['auth', 'checkAdmin', 'check.valid.id'])->gr
                 Route::post('/toggle-workday', [PayrollController::class, 'toggleWorkDay'])->name('payroll.toggleWorkDay');
                 Route::get('/attendance/form', [\App\Http\Controllers\admin\PayrollController::class, 'getAttendanceForm'])->name('attendance.form');
                 Route::post('/attendance/store', [\App\Http\Controllers\admin\PayrollController::class, 'storeAttendance'])->name('attendance.store');
-                Route::post('/pay/{id}', [PayrollController::class, 'pay'])->name('payroll.pay');
+                Route::get('/pay/{id}', [PayrollController::class, 'pay'])->name('payroll.pay');
         });
         // Staff
         Route::prefix('staff')->group(function () {

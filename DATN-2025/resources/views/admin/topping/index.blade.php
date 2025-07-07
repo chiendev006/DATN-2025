@@ -58,44 +58,55 @@
                                 <button type="button" id="btn-add-topping" class="btn-success">Thêm topping</button>
                                              <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap" style="gap: 15px;">
                             <!-- Bên trái: chọn số bản ghi -->
-                            <form method="GET" action="" style="margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
-                                            <label for="per_page" style="margin-bottom:0;">Bản/trang:</label>
-                                            <select name="per_page" id="per_page" class="form-control" style="width: 80px;" onchange="this.form.submit()">
-                                                <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản</option>
-                                                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 bản</option>
-                                                <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản</option>
-                                                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
-                                            </select>
-                                            @foreach(request()->except(['per_page','page']) as $key => $val)
-                                                <input type="hidden" name="{{ $key }}" value="{{ $val }}">
-                                            @endforeach
-                                        </form>
+
 
                             <!-- Bên phải: các form tìm kiếm -->
                             <div class="d-flex align-items-center" style="gap: 15px;">
                                 <!-- Tìm theo tên -->
-                                @if ($errors->any())
-                                    <div class="alert alert-danger" style="margin-top: 10px;">
-                                        <ul style="margin-bottom: 0;">
-                                            @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
+                                <form method="GET" action="{{ url()->current() }}" class="field-wrapper" style="display: flex; align-items: center;">
+                                                       <div class="field-placeholder">Bản/trang</div>
+                                                        <select name="per_page" class="form-control" style="width: 80px; margin-left: 12px;" onchange="this.form.submit()">
+                                                            <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 bản </option>
+                                                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản  </option>
+                                                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
+                                                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
+                                                        </select>
+                                                        @foreach(request()->except(['per_page','page']) as $key => $val)
+                                                            <input type="hidden" name="{{ $key }}" value="{{ $val }}">
+                                                        @endforeach
+                                                    </form>
+
+
+
+                                    <form class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4" action="{{ route('topping.search') }}" method="GET">
+                                    <div class="field-wrapper" style="display:flex;">
+                                    <div class="field-placeholder">Tìm kiếm theo tên</div>
+
+                                        <input type="text" name="name" placeholder="Nhập tên..." value="{{ request('name') }}">
+
+                                        <button style="border-radius:0px 5px 5px 0px;"  class="btn btn-primary" type="submit">
+                                            <span class="icon-search"></span>
+                                        </button>
                                     </div>
-                                @endif
-                                   <form method="GET" action="{{ route('topping.search') }}" class="form-inline" style="float: right; display: flex; align-items: center;">
-                                        <input type="text" name="name" class="form-control" placeholder="Tìm kiếm tên và số điện thoại ..." value="{{ request('name') }}" style="width: 220px; margin-right: 8px;">
-                                        <button type="submit" class="btn btn-success">Tìm kiếm</button>
                                     </form>
-                                    <form method="GET" action="{{ route('topping.search') }}" class="form-inline" style="float: right; display: flex; align-items: center;">
-                                        <input type="number" name="min_price" class="form-control" placeholder="Giá từ" value="{{ request('min_price') }}" style="width: 220px; margin-right: 8px;">
-                                        <input type="number" name="max_price" class="form-control" placeholder="Đến" value="{{ request('max_price') }}" style="width: 220px; margin-right: 8px;">
 
-                                        {{-- Giữ lại name nếu có --}}
-                                        <input type="hidden" name="name" value="{{ request('name') }}">
 
-                                        <button type="submit" class="btn btn-success">Lọc</button>
-                                    </form>
+                                    <form class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4" action="{{ route('topping.search') }}" method="GET">
+                                    <div class="input-group" style="max-width: 400px;">
+                                    <div class="field-wrapper" style="display:flex;">
+                                           <div class="field-placeholder">Lọc theo giá</div>
+                                        <input type="number" name="min_price" class="form-control" placeholder="Giá từ" value="{{ request('min_price') }}">
+                                        <input type="number" name="max_price" class="form-control" placeholder="Đến" value="{{ request('max_price') }}" >
+
+                                        {{-- Giữ lại tên tìm kiếm nếu có --}}
+                                        <input type="hidden" name="q" value="{{ request('q') }}">
+
+                                        <button style="border-radius:0px 5px 5px 0px;"  class="btn btn-primary" type="submit">
+                                            <span class="icon-search"></span>
+                                        </button>
+                                    </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                                         <div class="table-responsive">
