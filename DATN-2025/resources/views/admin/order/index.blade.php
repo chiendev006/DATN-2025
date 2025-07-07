@@ -131,6 +131,24 @@
     font-weight: bold;
 }
 </style>
+<style>
+select:disabled, select option:disabled {
+    color: #b0b0b0 !important;
+    background: #f5f5f5 !important;
+}
+select:disabled option:checked,
+select:disabled option[selected] {
+    color: #222 !important;
+    font-weight: bold;
+    background: #f5f5f5 !important;
+}
+select:disabled {
+    background: #fff !important;
+    color: #222 !important;
+    opacity: 1 !important;
+    cursor: not-allowed;
+}
+</style>
   <div class="content-wrapper-scroll">
 
                     <div class="content-wrapper">
@@ -273,6 +291,7 @@
                                                 data-pay_status="{{ $order->pay_status }}"
                                                 data-created_at="{{ $order->created_at->format('d/m/Y') }}"
                                                 data-shipping_fee="{{ number_format($order->shipping_fee ?? 0, 0, ',', '.') }} đ"
+                                                data-district_name="{{ $order->district_name ?? '' }}"
                                                 data-coupon_total_discount="{{ number_format($order->coupon_total_discount ?? 0, 0, ',', '.') }} đ"
                                                 data-address_detail="{{ $order->district_name ? $order->district_name . ', ' : '' }}{{ $order->address_detail }}"
                                                 data-product_total="{{ number_format(($order->total ?? 0) - ($order->shipping_fee ?? 0) + ($order->coupon_total_discount ?? 0), 0, ',', '.') }} đ"
@@ -489,27 +508,10 @@ function openOrderModal(btn) {
 
     if( btn.getAttribute('data-phone')=='N/A'){
         document.getElementById('modal_phone').value = 'Nhân viên thu ngân';
-
-        const shippingOption = statusSelect.querySelector('option[value="shipping"]');
-        if (shippingOption) shippingOption.style.display = 'none';
-
-        const pendingOption = statusSelect.querySelector('option[value="pending"]');
-        if (pendingOption) pendingOption.style.display = 'none';
-
-        // Ẩn option Hoàn tiền trong trạng thái thanh toán
-        const payStatusSelect = document.getElementById('modal_pay_status');
-        const refundOption = payStatusSelect.querySelector('option[value="3"]');
-        if (refundOption) refundOption.style.display = 'none';
-
-        // Ẩn option Đã hủy trong trạng thái thanh toán cho đơn nhân viên
-        const cancelledPayOption = payStatusSelect.querySelector('option[value="2"]');
-        if (cancelledPayOption) cancelledPayOption.style.display = 'none';
-
+        // Không ẩn option nào nữa, chỉ xử lý disable ở hàm disableInvalidStatusOptions
     } else {
         document.getElementById('modal_phone').value = btn.getAttribute('data-phone');
-
         [...statusSelect.options].forEach(option => option.style.display = '');
-
         const payStatusSelect = document.getElementById('modal_pay_status');
         const pendingPayOption = payStatusSelect.querySelector('option[value="0"]');
         if (pendingPayOption) pendingPayOption.style.display = '';
@@ -653,15 +655,31 @@ function disableInvalidStatusOptions(originalStatus) {
     const select = document.getElementById('modal_status');
     const statusOrder = { 'pending': 0, 'processing': 1, 'shipping': 2, 'completed': 3, 'cancelled': 4 };
     const phone = document.getElementById('modal_phone').value;
-    const isStaffOrder = (phone === 'Nhân viên thu ngân');
+    const name = document.getElementById('modal_name').value;
+    const shippingFee = document.querySelector('.btn-view[data-id="' + document.getElementById('modal_id').value + '"]').getAttribute('data-shipping_fee');
+    const districtName = document.querySelector('.btn-view[data-id="' + document.getElementById('modal_id').value + '"]').getAttribute('data-district_name');
+
+    // Đơn tại quầy nếu:
+    // - Số điện thoại là 'Nhân viên thu ngân', 'N/A', 'Không có'
+    // - Hoặc tên chứa 'Khách lẻ', 'Khách Vãng Lai'
+    // - Hoặc shipping_fee = 0 và district_name rỗng/null
+    const isStaffOrder =
+        phone === 'Nhân viên thu ngân' ||
+        phone === 'N/A' ||
+        phone === 'Không có' ||
+        name.includes('Khách lẻ') ||
+        name.includes('Khách Vãng Lai') ||
+        ((shippingFee === '0 đ' || shippingFee === '0.00' || !shippingFee) && (!districtName || districtName === ''));
 
     [...select.options].forEach(option => {
         const val = option.value;
         option.disabled = false;
 
-        // Cho phép đơn hàng nhân viên chuyển từ "Hoàn thành" sang "Đã hủy"
-        if (isStaffOrder && originalStatus === 'completed' && val === 'cancelled') {
-            option.disabled = false;
+        // Nếu là đơn tại quầy thì chỉ disable "pending" và "shipping"
+        if (isStaffOrder) {
+            if (val === 'pending' || val === 'shipping') {
+                option.disabled = true;
+            }
             return;
         }
 

@@ -14,6 +14,7 @@ return new class extends Migration
        Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->unsignedBigInteger('customer_id')->nullable()->after('user_id');
             $table->string('name', 255);
             $table->string('phone', 15);
             $table->string('email', 255)->nullable();
@@ -34,6 +35,9 @@ return new class extends Migration
             $table->text('note')->nullable();
             $table->softDeletes();
             $table->timestamps();
+        });
+        Schema::table('orders', function (Blueprint $table) {
+            $table->foreign('customer_id')->references('id')->on('users')->onDelete('set null');
         });
     }
     /**

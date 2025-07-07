@@ -170,17 +170,11 @@
                     <label class="coupon-label">Chọn mã giảm giá:</label>
                     <p>Lưu ý: Bạn chỉ được áp dụng 1 mã giảm giá cho 1 đơn hàng.</p>
                    @php
-    $filteredCoupons = $availableCoupons->filter(function ($coupon) use ($subtotal) {
-        $userCondition = !$coupon->user_id || (Auth::check() && Auth::id() === $coupon->user_id);
-        
-        $minOrderCondition = !$coupon->min_order_value || $subtotal >= $coupon->min_order_value;
-        
-        return $userCondition && $minOrderCondition;
-    });
+    $availableCoupons = \App\Models\Coupon::where('is_active', true)->get();
 @endphp
 
 <div class="coupon-list-wrapper">
-    @forelse($filteredCoupons as $coupon)
+    @forelse($availableCoupons as $coupon)
         <div class="coupon-card @if(session('coupons') && array_key_exists($coupon->code, session('coupons'))) selected-coupon @endif" data-code="{{ $coupon->code }}">
             <div class="coupon-header">
                 <span class="coupon-code">{{ $coupon->code }}</span>
@@ -352,13 +346,14 @@ document.addEventListener("DOMContentLoaded", function () {
             if (subtotalEl) subtotalEl.textContent = formatCurrency(data.subtotal);
             
             console.log('Updating coupon visibility with subtotal:', data.subtotal);
-            updateCouponVisibility(data.subtotal);
+            // Gọi updateCouponVisibility ngay lập tức với subtotal mới
+            setTimeout(() => updateCouponVisibility(data.subtotal), 0);
         } else {
             const subtotalEl = document.getElementById('cart-subtotal');
             if (subtotalEl) {
                 const currentSubtotal = parseCurrencyText(subtotalEl.textContent);
                 console.log('Fallback: updating coupon visibility with calculated subtotal:', currentSubtotal);
-                updateCouponVisibility(currentSubtotal);
+                setTimeout(() => updateCouponVisibility(currentSubtotal), 0);
             }
         }
 
@@ -389,6 +384,8 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             appliedCouponsDisplay.innerHTML = discountHtml;
         }
+        
+        // Cập nhật trạng thái coupon cards
         document.querySelectorAll('.remove-applied-coupon-btn').forEach(btn => {
             btn.removeEventListener('click', handleRemoveCouponClick);
         });
@@ -437,19 +434,27 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.log(`Card ${index} minOrderValue:`, minOrderValue, 'subtotal:', subtotal);
                     if (subtotal >= minOrderValue) {
                         card.style.display = 'flex';
+                        card.style.opacity = '1';
+                        card.style.transform = 'scale(1)';
                         visibleCoupons++;
                         console.log(`Card ${index} SHOWED`);
                     } else {
                         card.style.display = 'none';
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.8)';
                         console.log(`Card ${index} HIDDEN`);
                     }
                 } else {
                     card.style.display = 'flex';
+                    card.style.opacity = '1';
+                    card.style.transform = 'scale(1)';
                     visibleCoupons++;
                     console.log(`Card ${index} SHOWED (no min order)`);
                 }
             } else {
                 card.style.display = 'flex';
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
                 visibleCoupons++;
                 console.log(`Card ${index} SHOWED (no condition text)`);
             }
@@ -477,17 +482,42 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    setTimeout(() => {
+    // Khởi tạo coupon visibility khi trang load
+    function initializeCouponVisibility() {
         const initialSubtotal = parseCurrencyText(document.getElementById('cart-subtotal')?.textContent);
         console.log('Initial subtotal:', initialSubtotal);
         updateCouponVisibility(initialSubtotal);
         
+        // Retry sau 500ms để đảm bảo DOM đã sẵn sàng
         setTimeout(() => {
             const retrySubtotal = parseCurrencyText(document.getElementById('cart-subtotal')?.textContent);
             console.log('Retry subtotal:', retrySubtotal);
             updateCouponVisibility(retrySubtotal);
         }, 500);
-    }, 200);
+    }
+
+    // Gọi khởi tạo sau khi DOM đã sẵn sàng
+    setTimeout(initializeCouponVisibility, 200);
+    
+    // Thêm observer để theo dõi thay đổi trong cart-subtotal
+    const subtotalElement = document.getElementById('cart-subtotal');
+    if (subtotalElement) {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                    const currentSubtotal = parseCurrencyText(subtotalElement.textContent);
+                    console.log('Subtotal changed, updating coupon visibility:', currentSubtotal);
+                    setTimeout(() => updateCouponVisibility(currentSubtotal), 50);
+                }
+            });
+        });
+        
+        observer.observe(subtotalElement, {
+            childList: true,
+            characterData: true,
+            subtree: true
+        });
+    }
 
     document.querySelectorAll('.remove-item').forEach(btn => {
         btn.addEventListener('click', async function (e) {
@@ -550,11 +580,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                     updateUIElements(data);
                     
+                    // Đảm bảo coupon visibility được cập nhật sau khi xóa item
                     setTimeout(() => {
                         const currentSubtotal = parseCurrencyText(document.getElementById('cart-subtotal')?.textContent);
                         console.log('Force refresh coupon visibility after remove with subtotal:', currentSubtotal);
                         updateCouponVisibility(currentSubtotal);
-                    }, 50);
+                    }, 100);
                 } else {
                     alert(data.message || "Không thể xóa sản phẩm.");
                 }
@@ -610,11 +641,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 input.value = data.quantity;
                 updateUIElements(data);
                 
+                // Đảm bảo coupon visibility được cập nhật sau khi UI đã được cập nhật
                 setTimeout(() => {
                     const currentSubtotal = parseCurrencyText(document.getElementById('cart-subtotal')?.textContent);
                     console.log('Force refresh coupon visibility with subtotal:', currentSubtotal);
                     updateCouponVisibility(currentSubtotal);
-                }, 50);
+                }, 100);
                 
                 return true;
             } else {
@@ -778,9 +810,14 @@ document.addEventListener("DOMContentLoaded", function () {
     transition: all 0.3s ease;
 }
 
+.coupon-card {
+    transition: all 0.3s ease;
+}
+
 .coupon-card[style*="display: none"] {
     opacity: 0;
     transform: scale(0.8);
+    pointer-events: none;
 }
 
 .coupon-header {

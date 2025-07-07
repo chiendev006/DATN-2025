@@ -300,17 +300,18 @@
                             <div id="apply-coupon-btn"></div>
                             <div id="coupon-message" style="font-size:14px;margin-top:4px;"></div>
                         </div>
-                        <hr class="opacity-1 my-10px"/>
-                        <div class="d-flex align-items-center mb-2">
-                            <div>Subtotal</div>
-                            <div class="flex-1 text-end h6 mb-0" id="cart-subtotal">0đ</div>
+                        <div class="mb-2">
+                            <label for="customer-phone" class="form-label mb-1">Số điện thoại khách hàng (tích điểm):</label>
+                            <input type="text" class="form-control" id="customer-phone" name="customer_phone" placeholder="Nhập số điện thoại...">
+                            <div id="customer-point-info" class="mt-1" style="font-size:14px;color:#28a745;"></div>
                         </div>
-                        <div class="d-flex align-items-center mb-2 text-danger">
-                            <div>Discount</div>
-                            <div class="flex-1 text-end h6 mb-0" id="cart-discount">0đ</div>
+                        <div class="mb-2">
+                            <label for="points-used" class="form-label mb-1">Sử dụng điểm (tối đa):</label>
+                            <input type="number" class="form-control" id="points-used" name="points_used" min="0" value="0" disabled>
+                            <div id="points-error" class="invalid-feedback" style="display: none; font-size: 12px; color: #dc3545;"></div>
                         </div>
-                        <hr class="opacity-1 my-10px"/>
-                        <div class="d-flex align-items-center mb-2">
+                        <div class="mb-2">
+
                             <label for="payment-method" class="me-2 mb-0 fw-bold">Thanh toán:</label>
                             <select id="payment-method" class="form-select w-auto">
                                 <option value="cash">Tiền mặt</option>
@@ -419,5 +420,26 @@
 <script
     src="{{ url('assetstaff') }}/js/demo/pos-customer-order.demo.js"
 ></script>
+<script>
+    $(document).ready(function(){
+        $('#customer-phone').on('blur', function(){
+            var phone = $(this).val();
+            if(phone) {
+                $.get('/staff/get-customer-point?phone=' + encodeURIComponent(phone), function(res){
+                    if(res.success) {
+                        $('#customer-point-info').text('Điểm hiện có: ' + res.points);
+                        $('#points-used').prop('disabled', false).attr('max', res.points).val(0);
+                    } else {
+                        $('#customer-point-info').text('Không tìm thấy khách hàng.');
+                        $('#points-used').prop('disabled', true).val(0);
+                    }
+                });
+            } else {
+                $('#customer-point-info').text('');
+                $('#points-used').prop('disabled', true).val(0);
+            }
+        });
+    });
+</script>
 </body>
 </html>
