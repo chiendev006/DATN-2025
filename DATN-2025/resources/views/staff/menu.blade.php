@@ -310,6 +310,13 @@
                             <input type="number" class="form-control" id="points-used" name="points_used" min="0" value="0" disabled>
                             <div id="points-error" class="invalid-feedback" style="display: none; font-size: 12px; color: #dc3545;"></div>
                         </div>
+                        <div class="mb-2">
+                            <label for="payment-method" class="me-2 mb-0 fw-bold">Thanh toán:</label>
+                            <select id="payment-method" class="form-select w-auto">
+                                <option value="cash">Tiền mặt</option>
+                                <option value="banking">Chuyển khoản</option>
+                            </select>
+                        </div>
                         <div class="mt-3">
                             <div class="d-flex justify-content-sm-around">
                                 <a style="max-width: 130px;"
