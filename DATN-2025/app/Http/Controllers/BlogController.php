@@ -46,7 +46,13 @@ class BlogController extends Controller
 
         $categories = DanhmucBlog::all(); // Lấy tất cả danh mục cho sidebar trên trang chi tiết
         $recentBlogs = Blogs::orderBy('created_at', 'desc')->limit(3)->get();
-        return view('client.blog-single', compact('blog', 'categories'));
+        $bestDeals = DB::table('sanphams')
+            ->join('product_attributes', 'sanphams.id', '=', 'product_attributes.product_id')
+            ->select('sanphams.*', 'product_attributes.price')
+            ->orderBy('product_attributes.price', 'asc')
+            ->limit(2)
+            ->get();
+        return view('client.blog-single', compact('blog', 'categories', 'recentBlogs', 'bestDeals'));
     }
 
     /**
