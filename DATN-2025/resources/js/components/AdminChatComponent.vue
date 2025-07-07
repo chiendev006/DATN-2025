@@ -8,7 +8,7 @@
             <div class="chat-box" :class="{ 'open': isChatOpen }">
                 <div class="chat-header">
 <h3>Admin Chat</h3>
-<button class="close-button" @click="closeChat">&times;</button>
+
                 </div>
                 <div class="admin-chat-container">
 <div class="user-list">
@@ -22,29 +22,16 @@
 <div class="chat-window">
     <div v-if="selectedUser" class="chat-content">
         <div class="messages-container" ref="messagesContainer">
-            <div v-for="message in messages" :key="message.id" :class="{ 'my-message': message.sender_id === currentUserId, 'their-message': message.sender_id !== currentUserId }"
-                @mouseenter="hoveredMessageId = message.id" @mouseleave="hoveredMessageId = null">
+            <div v-for="message in messages" :key="message.id" :class="{ 'my-message': message.sender_id === currentUserId, 'their-message': message.sender_id !== currentUserId }">
                 <div class="message-bubble">
                     <strong>{{ message.sender_name === 'admin' ? 'Bạn' : message.sender_name }} <br></strong>
-                 <template v-if="editingMessageId === message.id">
-                        <input v-model="editingContent" @keyup.enter="confirmEditMessage(message)" @blur="cancelEditMessage" class="edit-input" />
-                      <div style="display: block;">  <button @mousedown.prevent="confirmEditMessage(message)" class="edit-btn">Lưu</button>
-                        <button @click="cancelEditMessage" class="cancel-btn">Hủy</button></div>
+                    <template v-if="message.type === 'image'">
+                        <img :src="message.content" style="max-width: 200px; max-height: 200px; border-radius: 8px; margin: 5px 0;">
                     </template>
                     <template v-else>
-                        <template v-if="message.type === 'image'">
-                            <img :src="message.content" style="max-width: 200px; max-height: 200px; border-radius: 8px; margin: 5px 0;">
-                        </template>
-                        <template v-else>
-                            <span class="message-content" v-html="formatMessageContent(message.content)"></span>
-                        <small><span style="margin-left: 0px; color: red;" v-if="message.is_edited && message.content !== '*đã thu hồi*'" class="edited-flag">*đã chỉnh sửa</span></small>
-                        </template>
-                        <div class="timestamp">{{ message.created_at }}</div>
-                        <div v-if="message.sender_id === currentUserId && hoveredMessageId === message.id && message.content !== '*đã thu hồi*'" class="message-actions">
-                            <button v-if="message.type === 'text'" @click="startEditMessage(message)" class="edit-btn">Sửa</button>
-                            <button @click="deleteMessage(message)" class="delete-btn">Thu hồi</button>
-                        </div>
+                        <span class="message-content" v-html="formatMessageContent(message.content)"></span>
                     </template>
+                    <div class="timestamp">{{ message.created_at }}</div>
                 </div>
             </div>
         </div>
@@ -78,9 +65,7 @@
                 messages: [],
                 newMessage: '',
                 unreadMessages: {},
-                editingMessageId: null,
-                editingContent: '',
-                hoveredMessageId: null,
+                notificationSound: null,
             };
         },
         watch: {
@@ -95,6 +80,7 @@ if (this.users.length === 0) {
         },
         mounted() {
             if (this.currentUserId) {
+                this.initNotificationSound();
                 this.listenForIncomingMessages();
             }
         },
@@ -109,8 +95,40 @@ if (this.users.length === 0) {
                 axios.get('/api/admin/chat/users')
 .then(response => {
     this.users = response.data.users;
+    this.sortUsersByLastMessage();
 })
 .catch(error => console.error('Lỗi khi lấy danh sách người dùng:', error));
+            },
+            fetchUserInfo(userId) {
+                return axios.get(`/api/admin/chat/user/${userId}`)
+                    .then(response => response.data.user)
+                    .catch(error => {
+                        console.error('Lỗi khi lấy thông tin user:', error);
+                        return null;
+                    });
+            },
+            addNewUserToUsersList(user) {
+                const existingUser = this.users.find(u => u.id === user.id);
+                if (!existingUser) {
+                    user.last_message_time = new Date().toISOString();
+                    this.users.push(user);
+                    this.sortUsersByLastMessage();
+                    console.log('Đã thêm user mới vào danh sách:', user);
+                }
+            },
+            sortUsersByLastMessage() {
+                this.users.sort((a, b) => {
+                    const timeA = new Date(a.last_message_time || 0);
+                    const timeB = new Date(b.last_message_time || 0);
+                    return timeB - timeA;
+                });
+            },
+            updateUserLastMessageTime(userId) {
+                const user = this.users.find(u => u.id === userId);
+                if (user) {
+                    user.last_message_time = new Date().toISOString();
+                    this.sortUsersByLastMessage();
+                }
             },
             selectUser(user) {
                 this.selectedUser = user;
@@ -144,6 +162,22 @@ return;
                 window.Echo.private(`chat.user.${this.currentUserId}`)
 .listen('.message.sent', (e) => {
     console.log('[Chat] Message received by admin:', e);
+
+    // Kiểm tra xem sender có trong danh sách users hiện tại không
+    const existingUser = this.users.find(u => u.id === e.sender_id);
+
+    if (!existingUser) {
+        // Nếu user chưa có trong danh sách, fetch thông tin user mới
+        this.fetchUserInfo(e.sender_id).then(newUser => {
+            if (newUser) {
+                this.addNewUserToUsersList(newUser);
+            }
+        });
+    } else {
+        // Nếu user đã có trong danh sách, cập nhật thời gian tin nhắn cuối cùng
+        this.updateUserLastMessageTime(e.sender_id);
+    }
+
     if (this.isChatOpen && this.selectedUser && this.selectedUser.id === e.sender_id) {
         this.messages.push({ ...e, sender_name: this.selectedUser.name });
         this.$nextTick(this.scrollToBottom);
@@ -152,6 +186,11 @@ return;
         this.unreadMessages[senderId] = (this.unreadMessages[senderId] || 0) + 1;
         this.recalculateTotalUnread();
         console.log(`[Chat] Unread message from user ${senderId}. Total unread:`, this.unreadMessages);
+
+        // Phát âm thanh thông báo khi có tin nhắn mới và chat đang đóng
+        if (!this.isChatOpen) {
+            this.playNotificationSound();
+        }
     }
 })
 .error((error) => {
@@ -186,6 +225,10 @@ return;
                 this.messages.push(optimisticMessage);
                 if (!content) this.newMessage = '';
                 this.$nextTick(this.scrollToBottom);
+
+                // Cập nhật thời gian tin nhắn cuối cùng khi admin gửi tin nhắn
+                this.updateUserLastMessageTime(this.selectedUser.id);
+
                 axios.post('/api/admin/chat/send', {
                     receiver_id: this.selectedUser.id,
                     message_content: messageContent,
@@ -217,55 +260,83 @@ return;
                 const escapeHtml = (str) => str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
                 return escapeHtml(content).replace(urlRegex, url => `<a href="${url}" target="_blank">${url}</a>`);
             },
-            startEditMessage(message) {
-                this.editingMessageId = message.id;
-                this.editingContent = message.content;
-            },
-            cancelEditMessage() {
-                this.editingMessageId = null;
-                this.editingContent = '';
-            },
-            confirmEditMessage(message) {
-                if (!this.editingContent.trim()) return;
-                const idx = this.messages.findIndex(m => m.id === message.id);
-                const newContent = this.editingContent;
-                let oldMsg;
-                if (idx !== -1) {
-                    oldMsg = { ...this.messages[idx] };
-                    this.messages[idx] = { ...this.messages[idx], content: newContent, is_edited: true };
+            initNotificationSound() {
+                try {
+                    this.notificationSound = new Audio('/sounds/notification.mp3');
+                    this.notificationSound.volume = 0.5;
+
+                    // Thêm event listeners để debug
+                    this.notificationSound.addEventListener('loadstart', () => console.log('Bắt đầu tải âm thanh'));
+                    this.notificationSound.addEventListener('canplay', () => console.log('Âm thanh đã sẵn sàng phát'));
+                    this.notificationSound.addEventListener('error', (e) => console.error('Lỗi tải âm thanh:', e));
+                    this.notificationSound.addEventListener('ended', () => console.log('Âm thanh đã kết thúc'));
+
+                    console.log('Âm thanh thông báo đã được khởi tạo thành công');
+                } catch (error) {
+                    console.error('Không thể khởi tạo âm thanh thông báo:', error);
                 }
-                this.editingMessageId = null;
-                this.editingContent = '';
-                axios.patch(`/api/chat/message/${message.id}`, { content: newContent })
-                    .then(res => {
-                        if (idx !== -1) {
-                            this.messages[idx] = { ...this.messages[idx], ...res.data.message };
-                        }
-                    })
-                    .catch(err => {
-                        if (idx !== -1) {
-                            this.messages[idx] = oldMsg;
-                        }
-                        alert('Lỗi khi sửa tin nhắn!');
-                    });
             },
-            deleteMessage(message) {
-                if (!confirm('Bạn có chắc chắn muốn thu hồi tin nhắn này?')) return;
-                axios.patch(`/api/chat/message/${message.id}`, { content: '*đã thu hồi*' })
-                    .then(res => {
-                        const idx = this.messages.findIndex(m => m.id === message.id);
-                        if (idx !== -1) {
-                            this.messages[idx] = {
-                                ...this.messages[idx],
-                                ...res.data.message,
-                                type: 'text',
-                            };
+            playNotificationSound() {
+                if (this.notificationSound) {
+                    try {
+                        console.log('Đang cố gắng phát âm thanh thông báo...');
+
+                        // Kiểm tra trạng thái của audio
+                        if (this.notificationSound.readyState >= 2) { // HAVE_CURRENT_DATA
+                            // Reset audio để có thể phát lại
+                            this.notificationSound.currentTime = 0;
+
+                            // Thử phát âm thanh
+                            const playPromise = this.notificationSound.play();
+
+                            if (playPromise !== undefined) {
+                                playPromise.then(() => {
+                                    console.log('Đã phát âm thanh thông báo thành công');
+                                }).catch(error => {
+                                    console.log('Không thể phát âm thanh thông báo:', error);
+                                    // Thử tạo âm thanh đơn giản bằng Web Audio API như fallback
+                                    this.playFallbackSound();
+                                });
+                            }
+                        } else {
+                            console.log('Âm thanh chưa sẵn sàng, thử fallback...');
+                            this.playFallbackSound();
                         }
-                    })
-                    .catch(err => {
-                        alert('Lỗi khi thu hồi tin nhắn!');
-                    });
+                    } catch (error) {
+                        console.log('Lỗi khi phát âm thanh thông báo:', error);
+                        this.playFallbackSound();
+                    }
+                } else {
+                    console.log('Không có âm thanh thông báo, thử fallback...');
+                    this.playFallbackSound();
+                }
             },
+            playFallbackSound() {
+                try {
+                    // Tạo âm thanh đơn giản bằng Web Audio API
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+
+                    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                    oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+                    oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+
+                    console.log('Đã phát âm thanh fallback');
+                } catch (error) {
+                    console.log('Không thể phát âm thanh fallback:', error);
+                }
+            },
+
         }
     }
     </script>
@@ -340,6 +411,7 @@ return;
         background: none; border: none; color: white; font-size: 1.5em; cursor: pointer;
     }
 
+
     /* Admin layout inside chatbox */
     .admin-chat-container {
         display: flex;
@@ -409,57 +481,6 @@ return;
 
     .no-chat-selected { display: flex;justify-content: center; align-items: center; height: 100%; color: #888; }
 
-    .edit-btn {
-        background: #428cd6;
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        margin: 0 4px;
-        padding: 2px 8px;
-        cursor: pointer;
-        font-size: 12px;
-    }
-    .delete-btn {
-        background: #e74c3c;
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        margin: 0 4px;
-        padding: 2px 8px;
-        cursor: pointer;
-        font-size: 12px;
-    }
-    .cancel-btn {
-        background: #aaa;
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        margin: 0 4px;
-        padding: 2px 8px;
-        cursor: pointer;
-        font-size: 12px;
-    }
-    .edit-input {
-        width: 100%;
-        margin: 4px 0;
-        padding: 2px 6px;
-        border-radius: 4px;
-        border: 1px solid #ccc;
-    }
-    .message-actions {
-        margin-top: 4px;
-        text-align: right;
-        display: none;
-    }
-    .my-message:hover .message-actions {
-        display: block;
-    }
-    .edited-flag {
-        color: #888;
-        font-size: 0.85em;
-        margin-left: 6px;
-        font-style: italic;
-    }
     .message-content a {
         color: #1976d2;
         text-decoration: none;

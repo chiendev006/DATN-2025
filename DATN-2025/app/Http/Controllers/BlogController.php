@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
+use App\Models\Sanpham;
 use App\Models\Blogs;
 use App\Models\DanhmucBlog; // Import model DanhmucBlog
 use Illuminate\Http\Request;
@@ -16,10 +18,20 @@ class BlogController extends Controller
     public function index()
     {
         $blogs = Blogs::paginate(10); // Lấy danh sách bài viết
-        $categories = DanhmucBlog::all(); // Lấy tất cả danh mục để hiển thị ở sidebar
+        $categories = DanhmucBlog::all(); // Lấy danh mục blog
+        $recentBlogs = Blogs::orderBy('created_at', 'desc')->limit(3)->get();
+        $blogs = Blogs::paginate(3);
+        // Lấy sản phẩm rẻ nhất từ bảng product_attributes
+        $bestDeals = DB::table('sanphams')
+            ->join('product_attributes', 'sanphams.id', '=', 'product_attributes.product_id')
+            ->select('sanphams.*', 'product_attributes.price')
+            ->orderBy('product_attributes.price', 'asc')
+            ->limit(2)
+            ->get();
 
-        return view('client.blog', compact('blogs', 'categories'));
+        return view('client.blog', compact('blogs', 'categories', 'recentBlogs', 'bestDeals'));
     }
+
 
     /**
      * Display the specified blog post.
@@ -33,6 +45,7 @@ class BlogController extends Controller
         }
 
         $categories = DanhmucBlog::all(); // Lấy tất cả danh mục cho sidebar trên trang chi tiết
+        $recentBlogs = Blogs::orderBy('created_at', 'desc')->limit(3)->get();
         return view('client.blog-single', compact('blog', 'categories'));
     }
 
@@ -49,6 +62,7 @@ class BlogController extends Controller
             ->paginate(10);
 
         $categories = DanhmucBlog::all(); // Lấy tất cả danh mục cho sidebar
+        $recentBlogs = Blogs::orderBy('created_at', 'desc')->limit(5)->get();
         return view('client.blog', compact('blogs', 'keyword', 'categories'));
     }
 
@@ -72,9 +86,9 @@ class BlogController extends Controller
         $blogs = $danhmucBlog->blogs()->paginate(10);
 
         $categories = DanhmucBlog::all(); // Lấy tất cả danh mục để hiển thị ở sidebar
+        $recentBlogs = Blogs::orderBy('created_at', 'desc')->limit(3)->get();
         $currentCategory = $danhmucBlog; // Để biết đang ở danh mục nào và có thể highlight
 
-        return view('client.blog', compact('blogs', 'categories', 'currentCategory'));
+        return view('client.blog', compact('blogs', 'categories', 'currentCategory', 'recentBlogs'));
     }
-   
 }

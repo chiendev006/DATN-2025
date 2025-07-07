@@ -62,50 +62,57 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <div class="blog-recent-post blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <h5>Recent Posts</h5>
-                                        <div class="recent-blog-list">
-                                            <p><img src="{{ url('asset') }}/images/img18.png" alt=""></p>
-                                            <p><small>October 13, 2017</small></p>
-                                            <h6>Disclosue - Real food here</h6>
-                                        </div>
-                                        <div class="recent-blog-list">
-                                            <p><img src="{{ url('asset') }}/images/img19.png" alt=""></p>
-                                            <p><small>October 13, 2017</small></p>
-                                            <h6>Disclosue - Real food here</h6>
-                                        </div>
-                                    </div>
+                                   
+<div class="blog-recent-post blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+    <h5 style="margin-bottom: 20px;">Recent Posts</h5>
 
-                                    <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                        <h5>Best Deals</h5>
-                                        <div class="best-deal-blog">
-                                            <div class="best-deal-left">
-                                                <img src="{{ url('asset') }}/images/img20.png" alt="">
-                                            </div>
-                                            <div class="best-deal-right">
-                                                <p>Lasal Cheese</p>
-                                                <p><strong>$ 15</strong></p>
-                                            </div>
-                                        </div>
-                                        <div class="best-deal-blog">
-                                            <div class="best-deal-left">
-                                                <img src="{{ url('asset') }}/images/img21.png" alt="">
-                                            </div>
-                                            <div class="best-deal-right">
-                                                <p>Lasal Cheese</p>
-                                                <p><strong>$ 15</strong></p>
-                                            </div>
-                                        </div>
-                                        <div class="best-deal-blog">
-                                            <div class="best-deal-left">
-                                                <img src="{{ url('asset') }}/images/img22.png" alt="">
-                                            </div>
-                                            <div class="best-deal-right">
-                                                <p>Lasal Cheese</p>
-                                                <p><strong>$ 15</strong></p>
-                                            </div>
-                                        </div>
-                                    </div>
+    @foreach ($recentBlogs as $blog)
+        <div class="recent-blog-list" style="text-align: center; margin-bottom: 20px;">
+            {{-- Ngày --}}
+            <p style="font-size: 13px; color: #999; margin-top: 8px;">
+                {{ \Carbon\Carbon::parse($blog->created_at)->format('F d, Y') }}
+            </p>
+            {{-- Ảnh lớn hơn --}}
+            <a href="{{ route('blog.show', $blog->id) }}">
+                <img src="{{ asset('storage/uploads/' . $blog->image) }}"
+                     alt="{{ $blog->title }}"
+                     style="width: 100%; max-width: 150px; height: auto; border-radius: 6px; object-fit: cover;">
+            </a>
+
+            {{-- Tiêu đề --}}
+            <h6 style="font-size: 15px; margin-top: 5px;">
+                <a href="{{ route('blog.show', $blog->id) }}" style="color: #333; text-decoration: none;">
+                    {{ \Illuminate\Support\Str::limit($blog->title, 60) }}
+                </a>
+            </h6>
+        </div>
+    @endforeach
+</div>
+
+
+<div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+    <h5>Best Deals</h5>
+
+    @if(isset($bestDeals) && $bestDeals->count())
+        @foreach($bestDeals as $deal)
+            <div class="best-deal-blog">
+                <div class="best-deal-left">
+                    <img src="{{ asset('storage/uploads/' . $deal->image) }}" alt="{{ $deal->name }}">
+                </div>
+                <div class="best-deal-right">
+                    <p>{{ $deal->name }}</p>
+                    <p><strong>{{ number_format($deal->price, 0, ',', '.') }} đ</strong></p>
+                </div>
+            </div>
+        @endforeach
+    @else
+        <p>Không có sản phẩm nào.</p>
+    @endif
+</div>
+
+                                    
+
+
                                 </div>
                             </div>
 
@@ -115,7 +122,7 @@
                                     <div class="blog-right-listing wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <div class="feature-img">
                                             <a href="{{route('client.blogsingle',$item->id)}}">
-                                                 <img src="{{ asset('storage/'.$item->image) }} " width="300" height="350" alt="">
+                                                 <img src="{{ asset('storage/uploads/'.$item->image) }} " width="300" height="350" alt="">
                                             </a>
 
                                             <div class="date-feature">{{ \Carbon\Carbon::parse($item->created_at)->diffInDays(now()) }}<br> <small>Ngày</small></div>
@@ -131,6 +138,56 @@
                                     @endforeach
                                 </div>
                             </div>
+                            <div style="text-align: center;" class="gallery-pagination">
+   <div style="text-align: center;" class="gallery-pagination">
+    <div class="gallery-pagination-inner">
+        <ul>
+            {{-- Nút PREV --}}
+            <li>
+                <a href="{{ $blogs->onFirstPage() ? '#' : $blogs->previousPageUrl() }}"
+                   class="pagination-prev {{ $blogs->onFirstPage() ? 'disabled' : '' }}">
+                    <i class="icon-left-4"></i>
+                    <span style="font-family: system-ui">PREV PAGE</span>
+                </a>
+            </li>
+
+            {{-- Hiển thị tối đa 3 trang gần nhất --}}
+            @php
+                $start = max(1, $blogs->currentPage() - 1);
+                $end = min($blogs->lastPage(), $blogs->currentPage() + 1);
+
+                // Nếu đang ở đầu -> dịch phải
+                if ($blogs->currentPage() == 1) {
+                    $end = min(3, $blogs->lastPage());
+                }
+
+                // Nếu đang ở cuối -> dịch trái
+                if ($blogs->currentPage() == $blogs->lastPage()) {
+                    $start = max($blogs->lastPage() - 2, 1);
+                }
+            @endphp
+
+            @for ($i = $start; $i <= $end; $i++)
+                <li class="{{ $i == $blogs->currentPage() ? 'active' : '' }}">
+                    <a href="{{ $blogs->url($i) }}"><span>{{ $i }}</span></a>
+                </li>
+            @endfor
+
+            {{-- Nút NEXT --}}
+            <li>
+                <a href="{{ $blogs->hasMorePages() ? $blogs->nextPageUrl() : '#' }}"
+                   class="pagination-next {{ $blogs->hasMorePages() ? '' : 'disabled' }}">
+                    <span style="font-family: system-ui">NEXT PAGE</span>
+                    <i class="icon-right-4"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+</div>
+
                         </div>
                     </div>
                 </section>

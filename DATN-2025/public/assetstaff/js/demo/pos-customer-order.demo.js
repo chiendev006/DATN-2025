@@ -397,6 +397,7 @@ function updateTotalPrice() {
             // Lấy dữ liệu order
             var orderData = collectOrderData();
             orderData.pay_status = payStatus;
+            orderData.payment_method = $('#payment-method').val();
 
             if(orderData.cart.length === 0) {
                 alert('Giỏ hàng đang trống!');

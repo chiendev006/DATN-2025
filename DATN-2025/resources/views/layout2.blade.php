@@ -409,12 +409,12 @@
                               </a>
                               <ul  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="drop-nav">
                                   <li>
+                                      <a href="{{ route('client.myaccount') }}">Tài khoản của tôi</a>
+
                                       <a class="dropdown-item" href="{{ route('logout') }}"
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                           Đăng xuất
                                       </a>
-                                      <a href="{{ route('client.myaccount') }}">Tài khoản của tôi</a>
-
                                       <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                           @csrf
                                       </form>

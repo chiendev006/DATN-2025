@@ -1,42 +1,42 @@
 <?php
 
-        use App\Http\Controllers\AboutController;
-        use App\Http\Controllers\admin\AddressController;
-        use App\Http\Controllers\admin\AdminStaffController;
-        use App\Http\Controllers\admin\Product_attributesController;
-        use Illuminate\Support\Facades\Route;
-        use App\Http\Controllers\Controller;
-        use App\Http\Controllers\ContactController;
-        use App\Http\Controllers\admin\HomeController;
-        use App\Http\Controllers\admin\DanhmucController;
-        use App\Http\Controllers\admin\DanhmucBlogController;
-        use App\Http\Controllers\admin\SanphamController;
-        use App\Http\Controllers\admin\ProductImageController;
-        use App\Http\Controllers\admin\ContactAdminController;
-        use App\Http\Controllers\admin\SizeController;
-        use App\Http\Controllers\admin\ToppingController;
-        use App\Http\Controllers\admin\BlogsController;
-        use App\Http\Controllers\AuthenticationController;
-        use App\Http\Controllers\BlogController;
-        use App\Http\Controllers\CartController;
-        use App\Http\Controllers\ServicesController;
-        use App\Http\Controllers\ShowproductController;
-        use App\Http\Controllers\ResetPasswordController;
-        use App\Http\Controllers\admin\AuthController;
-        use App\Http\Controllers\admin\CouponController;
-        use App\Http\Controllers\OrderController;
-        use App\Http\Controllers\admin\PayrollController;
-        use App\Http\Controllers\CheckoutController;
-        use App\Http\Controllers\MyaccountController;
-        use App\Http\Controllers\OrderSearchController;
-        use App\Http\Controllers\ShopController;
-        use App\Http\Controllers\Staff\StaffController;
-        use App\Http\Controllers\VNPayController;
-        use App\Http\Controllers\Staff\AuthenController;
-        use App\Http\Controllers\Staff\BartenderController;
-        use App\Http\ViewComposers\CartComposer;
-        use Illuminate\Support\Facades\Auth;
-        use App\Http\Controllers\CommentController;
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\admin\AddressController;
+use App\Http\Controllers\admin\AdminStaffController;
+use App\Http\Controllers\admin\Product_attributesController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\admin\HomeController;
+use App\Http\Controllers\admin\DanhmucController;
+use App\Http\Controllers\admin\DanhmucBlogController;
+use App\Http\Controllers\admin\SanphamController;
+use App\Http\Controllers\admin\ProductImageController;
+use App\Http\Controllers\admin\ContactAdminController;
+use App\Http\Controllers\admin\SizeController;
+use App\Http\Controllers\admin\ToppingController;
+use App\Http\Controllers\admin\BlogsController;
+use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ServicesController;
+use App\Http\Controllers\ShowproductController;
+use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\admin\AuthController;
+use App\Http\Controllers\admin\CouponController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\admin\PayrollController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\MyaccountController;
+use App\Http\Controllers\OrderSearchController;
+use App\Http\Controllers\ShopController;
+use App\Http\Controllers\Staff\StaffController;
+use App\Http\Controllers\VNPayController;
+use App\Http\Controllers\Staff\AuthenController;
+use App\Http\Controllers\Staff\BartenderController;
+use App\Http\ViewComposers\CartComposer;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\CommentController;
 
 
 
@@ -73,8 +73,8 @@ Route::get('/menu/ctsp', [Controller::class, 'showsp'])->name('client.showsp');
 Route::get('/menu', [Controller::class, 'show'])->name('menu.show');
 Route::get('/menu/category/{categoryId}', [Controller::class, 'getCategoryProducts'])->name('menu.category');
 
-        Route::post('comment', [Controller::class, 'postComment'])->name('comment.store');
-        Route::get('/comment/{id}', [CommentController::class, 'index'])->name('comment.index');
+Route::post('comment', [Controller::class, 'postComment'])->name('comment.store');
+Route::get('/comment/{id}', [CommentController::class, 'index'])->name('comment.index');
 
 
 
@@ -265,6 +265,7 @@ Route::prefix('admin')->middleware(['auth', 'checkAdmin', 'check.valid.id'])->gr
                 Route::post('/update/{id}', [BlogsController::class, 'update'])->name('blogs.update');
                 Route::delete('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
                 Route::get('/search', [BlogsController::class, 'search'])->name('blogs.search');
+                Route::get('blog/{id}', [BlogController::class, 'show'])->name('blog.show');
         });
 });
 Route::delete('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->middleware(['auth', 'checkAdmin'])->name('product_img.delete');
@@ -368,43 +369,43 @@ Route::fallback(function () {
 
 // Point System Routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('/points/info', [App\Http\Controllers\PointController::class, 'getUserPoints'])->name('points.info');
-    Route::get('/points/available', [App\Http\Controllers\PointController::class, 'getAvailablePointsForOrder'])->name('points.available');
-    Route::get('/points/history', [App\Http\Controllers\PointController::class, 'getPointHistory'])->name('points.history');
-    Route::post('/points/calculate-discount', [App\Http\Controllers\PointController::class, 'calculateDiscount'])->name('points.calculate-discount');
+        Route::get('/points/info', [App\Http\Controllers\PointController::class, 'getUserPoints'])->name('points.info');
+        Route::get('/points/available', [App\Http\Controllers\PointController::class, 'getAvailablePointsForOrder'])->name('points.available');
+        Route::get('/points/history', [App\Http\Controllers\PointController::class, 'getPointHistory'])->name('points.history');
+        Route::post('/points/calculate-discount', [App\Http\Controllers\PointController::class, 'calculateDiscount'])->name('points.calculate-discount');
 });
 
 // Public point settings
 Route::get('/points/settings', [App\Http\Controllers\PointController::class, 'getPointSettings'])->name('points.settings');
 
 // Debug route for testing points
-Route::get('/test-points', function() {
-    if (!Auth::check()) {
-        return response()->json(['error' => 'Not logged in']);
-    }
-    
-    $user = Auth::user();
-    $pointService = app(\App\Services\PointService::class);
-    
-    return response()->json([
-        'user_points' => $user->points,
-        'can_use_points' => $user->canUsePoints(),
-        'min_points' => \App\Models\PointSetting::getMinPointsToUse(),
-        'points_per_vnd' => \App\Models\PointSetting::getPointsPerVnd(),
-        'vnd_per_point' => \App\Models\PointSetting::getVndPerPoint(),
-        'system_enabled' => \App\Models\PointSetting::isPointsSystemEnabled(),
-        'test_calculation' => $pointService->calculateDiscountFromPoints(10)
-    ]);
-        })->name('test.points');
-        Route::prefix('admin/point-settings')->name('admin.point_settings.')->group(function () {
+Route::get('/test-points', function () {
+        if (!Auth::check()) {
+                return response()->json(['error' => 'Not logged in']);
+        }
+
+        $user = Auth::user();
+        $pointService = app(\App\Services\PointService::class);
+
+        return response()->json([
+                'user_points' => $user->points,
+                'can_use_points' => $user->canUsePoints(),
+                'min_points' => \App\Models\PointSetting::getMinPointsToUse(),
+                'points_per_vnd' => \App\Models\PointSetting::getPointsPerVnd(),
+                'vnd_per_point' => \App\Models\PointSetting::getVndPerPoint(),
+                'system_enabled' => \App\Models\PointSetting::isPointsSystemEnabled(),
+                'test_calculation' => $pointService->calculateDiscountFromPoints(10)
+        ]);
+})->name('test.points');
+Route::prefix('admin/point-settings')->name('admin.point_settings.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\PointSettingController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Admin\PointSettingController::class, 'create'])->name('create');
         Route::post('/store', [\App\Http\Controllers\Admin\PointSettingController::class, 'store'])->name('store');
         Route::get('/edit/{id}', [\App\Http\Controllers\Admin\PointSettingController::class, 'edit'])->name('edit');
         Route::post('/update/{id}', [\App\Http\Controllers\Admin\PointSettingController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [\App\Http\Controllers\Admin\PointSettingController::class, 'destroy'])->name('delete');
-        });
+});
 
 Route::prefix('admin/point-transactions')->name('admin.point_transactions.')->group(function () {
-    Route::get('/', [\App\Http\Controllers\admin\PointTransactionController::class, 'index'])->name('index');
+        Route::get('/', [\App\Http\Controllers\admin\PointTransactionController::class, 'index'])->name('index');
 });

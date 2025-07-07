@@ -24,9 +24,9 @@ class AuthenticationController extends Controller
             'email' => 'required|email',
             'password' => 'required|min:6'
         ], [
-            'email.required' => 'Email khong duoc de trong',
-            'password.required' => 'Mat khau khong duoc de trong',
-            'password.min' => 'Mat khau phai it nhat 6 ki tu',
+            'email.required' => 'Email không được để trống',
+            'password.required' => 'Mật khẩu không được để trôống',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 kí tự',
         ]);
 
         if (Auth::guard('web')->attempt($data)) {
@@ -61,11 +61,11 @@ class AuthenticationController extends Controller
             // Nếu là yêu cầu AJAX, trả về lỗi
              if ($request->expectsJson()) {
                 return response()->json([
-                    'message' => 'Email hoac mat khau khong chinh xac'
+                    'message' => 'Email hoặc mật khẩu không chính xác'
                 ], 401);
             }
             return redirect()->back()->with([
-                'message' => 'Email hoac mat khau khong chinh xac'
+                'message' => 'Email hoặc mật khẩu không chính xác'
             ]);
         }
     }
@@ -97,20 +97,20 @@ class AuthenticationController extends Controller
                 'password' => 'required|min:6|confirmed',
                 'phone' => 'required|numeric|min:10',
             ], [
-                'name.required' => 'Ten khong duoc de trong',
-                'email.required' => 'Email khong duoc de trong',
-                'password.required' => 'Mat khau khong duoc de trong',
-                'password.min' => 'Mat khau phai it nhat 6 ki tu',
+                'name.required' => 'Tên không được để trống',
+                'email.required' => 'Email không được để trống',
+                'password.required' => 'Mật khẩu không được để trống',
+                'password.min' => 'Mật khẩu phải có ít nhất 6 kí tự',
                 'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
-                'phone.required' => 'So dien thoai khong duoc de trong',
-                'phone.phone' =>  'So dien thoai khong dung dinh dang'
+                'phone.required' => 'Số điện thoại không được để trống',
+                'phone.phone' =>  'Số điện thoại không đúng định dạng'
             ]);
         }
         $data['password'] = Hash::make($data['password']);
         $data['image'] = 'default.jpg';
         User::create($data);
         return redirect()->route('login')->with([
-            'success' => 'Dang ki thanh cong'
+            'success' => 'Đăng kí thành công'
         ]);
     }
     public function forgotPassword()
@@ -122,19 +122,19 @@ class AuthenticationController extends Controller
         $request->validate([
             'email' => 'required|email|exists:users,email',
         ], [
-            'email.required' => 'Email khong duoc de trong',
-            'email.email' => 'Email khong dung dinh dang',
-            'email.exists' => 'Email khong co trong he thong'
+            'email.required' => 'Email không được để trống',
+            'email.email' => 'Email không đúng định dạng',
+            'email.exists' => 'Email không có trong hệ thống'
         ]);
         $status = Password::sendResetLink($request->only('email'));
 
         if ($status === Password::RESET_LINK_SENT) {
             return redirect()->back()->with([
-                'message' => 'Check email đi bạn hẹ hẹ hẹ'
+                'message' => 'Vui lòng check email để tạo mới mật khẩu'
             ]);
         } else {
             return redirect()->back()->withErrors([
-                'email' => 'Gửi link reset thất bại rồi bạn ơi'
+                'email' => 'Gửi link reset thất bại'
             ]);
         }
     }
