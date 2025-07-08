@@ -300,6 +300,10 @@
                             <div id="apply-coupon-btn"></div>
                             <div id="coupon-message" style="font-size:14px;margin-top:4px;"></div>
                         </div>
+                        @php
+                            $enablePointsSystem = \DB::table('point_settings')->where('key', 'enable_points_system')->value('value') == '1';
+                        @endphp
+                        @if($enablePointsSystem)
                         <div class="mb-2">
                             <label for="customer-phone" class="form-label mb-1">Số điện thoại khách hàng (tích điểm):</label>
                             <input type="text" class="form-control" id="customer-phone" name="customer_phone" placeholder="Nhập số điện thoại...">
@@ -310,6 +314,7 @@
                             <input type="number" class="form-control" id="points-used" name="points_used" min="0" value="0" disabled>
                             <div id="points-error" class="invalid-feedback" style="display: none; font-size: 12px; color: #dc3545;"></div>
                         </div>
+                        @endif
                         <div class="mb-2">
 
                             <label for="payment-method" class="me-2 mb-0 fw-bold">Thanh toán:</label>

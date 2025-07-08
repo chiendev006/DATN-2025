@@ -411,4 +411,9 @@ class PointService
 
         return $pointsToRefund;
     }
+
+    public static function isPointsSystemEnabled()
+    {
+        return \DB::table('point_settings')->where('key', 'enable_points_system')->value('value') == '1';
+    }
 } 
