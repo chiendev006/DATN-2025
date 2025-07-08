@@ -85,17 +85,24 @@ class AuthenticationController extends Controller
     public function postRegister(Request $request)
     {
         $hasEmail = User::whereEmail($request->email)->exists();
+        $hasPhone = User::where('phone', $request->phone)->exists();
 
         if ($hasEmail) {
             return redirect()->back()->with([
-                'message' => 'Email da ton tai'
+                'message' => 'Email đã tồn tại'
             ]);
-        }else{
+        }
+
+        if ($hasPhone){
+            return redirect()->back()->with([
+                'message' => 'Số điện thoại đã tồn tại'
+            ]);
+        } else{
             $data = $request->validate([
                 'name' => 'required',
                 'email' => 'required|email|unique:users',
                 'password' => 'required|min:6|confirmed',
-                'phone' => 'required|numeric|min:10',
+                'phone' => 'required|numeric|min:10|unique:users',
             ], [
                 'name.required' => 'Tên không được để trống',
                 'email.required' => 'Email không được để trống',
@@ -103,7 +110,8 @@ class AuthenticationController extends Controller
                 'password.min' => 'Mật khẩu phải có ít nhất 6 kí tự',
                 'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
                 'phone.required' => 'Số điện thoại không được để trống',
-                'phone.phone' =>  'Số điện thoại không đúng định dạng'
+                'phone.phone' =>  'Số điện thoại không đúng định dạng',
+                'phone.unique' => 'Số điện thoại đã tồn tại'
             ]);
         }
         $data['password'] = Hash::make($data['password']);
