@@ -14,6 +14,7 @@ class Order extends Model
     use SoftDeletes;
     protected $fillable = [
         'user_id',
+        'customer_id',
         'name',
         'email',
         'phone',
@@ -51,5 +52,10 @@ public function coupons()
 public function user()
 {
     return $this->belongsTo(User::class, 'user_id');
+}
+
+public function customer()
+{
+    return $this->belongsTo(User::class, 'customer_id');
 }
 }
