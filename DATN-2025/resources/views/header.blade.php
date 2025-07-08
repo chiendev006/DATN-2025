@@ -54,7 +54,7 @@
 @endphp
 @php
     $isHomeTab = request()->is('admin') ||request()->is('admin/address') ||request()->is('admin/address/search') ||request()->is('admin/coupon') || request()->is('admin/danhmuc*') ||  request()->is('admin/blogs*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*');
-    $isAuthTab = request()->is('admin/staff*') || request()->is('admin/payroll*') ||request()->is('admin/contact') || request()->is('admin/point-settings*') || request()->is('admin/point-transactions*');
+    $isAuthTab = request()->is('admin/staff*') || request()->is('admin/payroll*') || request()->is('admin/historylog*') ||request()->is('admin/contact') || request()->is('admin/point-settings*') || request()->is('admin/point-transactions*');
 @endphp
 
 		<!-- Loading wrapper start -->
@@ -192,6 +192,9 @@
 										</li>
 										<li>
 											<a href="{{ route('admin.point_transactions.index') }}" class="{{ request()->is('admin/point-transactions*') ? 'current-page' : '' }}">Giao dịch điểm</a>
+										</li>
+                                        <li>
+											<a href="{{ route('historylog.index') }}" class="{{ request()->is('admin/historylog*') ? 'current-page' : '' }}">Lịch sử hoạt động</a>
 										</li>
 									</ul>
 								</div>

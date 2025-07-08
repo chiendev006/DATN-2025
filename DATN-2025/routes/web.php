@@ -24,6 +24,7 @@ use App\Http\Controllers\ShowproductController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\admin\AuthController;
 use App\Http\Controllers\admin\CouponController;
+use App\Http\Controllers\admin\HistorylogController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\admin\PayrollController;
 use App\Http\Controllers\CheckoutController;
@@ -184,6 +185,13 @@ Route::prefix('admin')->middleware(['auth', 'checkAdmin', 'check.valid.id'])->gr
                 Route::delete('/delete/{id}', [AddressController::class, 'delete'])->name('address.delete');
                 Route::get('/search', [AddressController::class, 'search'])->name('address.search');
         });
+
+        // Lịch sử log
+        Route::prefix('historylog')->group(function () {
+            Route::get('/', [HistorylogController::class, 'index'])->name('historylog.index');
+            Route::post('/create', [HistorylogController::class, 'store'])->name('historylog.create');
+            Route::delete('/delele', [HistorylogController::class, 'delete'])->name('historylog.delete');
+    });
 
         // Sản phẩm
         Route::prefix('sanpham')->group(function () {
