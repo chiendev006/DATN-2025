@@ -315,6 +315,19 @@ class StaffController extends Controller
 
         $order->save();
 
+        // Hoàn điểm khi đơn bị hủy (nếu có)
+        if ($status === 'cancelled') {
+            try {
+                \App::make('App\\Services\\PointService')->refundPointsFromOrder($order);
+                \App::make('App\\Services\\PointService')->refundEarnedPointsFromOrder($order);
+            } catch (\Exception $e) {
+                \Log::error('POINT_DEBUG: Error refunding points in StaffController', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
         // Cộng điểm khi đơn chuyển sang hoàn thành
         if ($status === 'completed' && $order->customer_id) {
             // Kiểm tra đã cộng điểm chưa (dựa vào point_transactions)
