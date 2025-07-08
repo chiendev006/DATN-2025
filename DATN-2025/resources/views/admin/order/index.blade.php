@@ -506,11 +506,23 @@ function openOrderModal(btn) {
     document.getElementById('modal_name').value = btn.getAttribute('data-name') + ' - ' + btn.getAttribute('data-id');
     const statusSelect = document.getElementById('modal_status');
 
-    if( btn.getAttribute('data-phone')=='N/A'){
+    // Xác định đơn tại quầy ngay từ đầu
+    const phone = btn.getAttribute('data-phone');
+    const name = btn.getAttribute('data-name');
+    const shippingFee = btn.getAttribute('data-shipping_fee');
+    const districtName = btn.getAttribute('data-district_name');
+    
+    const isStaffOrder =
+        phone === 'N/A' ||
+        name.includes('Khách lẻ') ||
+        name.includes('Khách Vãng Lai') ||
+        ((shippingFee === '0 đ' || shippingFee === '0.00' || !shippingFee) && (!districtName || districtName === ''));
+
+    if( phone == 'N/A'){
         document.getElementById('modal_phone').value = 'Nhân viên thu ngân';
         // Không ẩn option nào nữa, chỉ xử lý disable ở hàm disableInvalidStatusOptions
     } else {
-        document.getElementById('modal_phone').value = btn.getAttribute('data-phone');
+        document.getElementById('modal_phone').value = phone;
         [...statusSelect.options].forEach(option => option.style.display = '');
         const payStatusSelect = document.getElementById('modal_pay_status');
         const pendingPayOption = payStatusSelect.querySelector('option[value="0"]');
@@ -531,7 +543,8 @@ function openOrderModal(btn) {
     disableInvalidPayStatusOptions(originalPayStatusFromButton);
 
     // Đặt đoạn này SAU các hàm disable khác để đảm bảo không bị override
-    if ((initialStatusValue === 'completed' && originalPayStatusFromButton === '1') || (initialStatusValue === 'cancelled' && originalPayStatusFromButton === '2')) {
+    // CHỈ ÁP DỤNG CHO ĐƠN ONLINE, KHÔNG ÁP DỤNG CHO ĐƠN TẠI QUẦY
+    if (!isStaffOrder && ((initialStatusValue === 'completed' && originalPayStatusFromButton === '1') || (initialStatusValue === 'cancelled' && originalPayStatusFromButton === '2'))) {
         // Disable tất cả option trạng thái đơn
         [...statusSelect.options].forEach(option => {
             if (option.value !== initialStatusValue) {
@@ -557,10 +570,40 @@ function openOrderModal(btn) {
         payStatusSelect.setAttribute('disabled', 'disabled');
     }
 
-    // Nếu trạng thái đơn là 'Đã hủy' thì không cho chọn trạng thái thanh toán nữa
-    if (initialStatusValue === 'cancelled') {
+    // ĐƠN TẠI QUẦY: Nếu đã thanh toán thì chặn chọn trạng thái thanh toán khác
+    if (isStaffOrder && originalPayStatusFromButton === '1') {
+        // Disable tất cả option trạng thái thanh toán
+        [...payStatusSelect.options].forEach(option => {
+            if (option.value !== originalPayStatusFromButton) {
+                option.disabled = true;
+                option.style.display = 'none';
+            } else {
+                option.disabled = false;
+                option.style.display = '';
+            }
+        });
+        payStatusSelect.setAttribute('disabled', 'disabled');
+    }
+
+    // ĐƠN TẠI QUẦY: Nếu đã hoàn thành hoặc đã hủy thì chặn chọn trạng thái đơn khác
+    if (isStaffOrder && (initialStatusValue === 'completed' || initialStatusValue === 'cancelled')) {
+        // Disable tất cả option trạng thái đơn
+        [...statusSelect.options].forEach(option => {
+            if (option.value !== initialStatusValue) {
+                option.disabled = true;
+                option.style.display = 'none';
+            } else {
+                option.disabled = false;
+                option.style.display = '';
+            }
+        });
+        statusSelect.setAttribute('disabled', 'disabled');
+    }
+
+    // Nếu trạng thái đơn là 'Đã hủy' thì không cho chọn trạng thái thanh toán nữa (CHỈ CHO ĐƠN ONLINE)
+    if (initialStatusValue === 'cancelled' && !isStaffOrder) {
         // Nếu là đơn nhân viên thì ẩn option 'Chờ thanh toán' (value='0') trong trạng thái thanh toán
-        if (btn.getAttribute('data-phone') == 'N/A') {
+        if (phone === 'N/A') {
             const pendingPayOption = payStatusSelect.querySelector('option[value="0"]');
             if (pendingPayOption) pendingPayOption.style.display = 'none';
         }
@@ -606,8 +649,10 @@ function openOrderModal(btn) {
         .then(data => {
             const tbody = document.querySelector('#order_products_table tbody');
             tbody.innerHTML = '';
+            let productTotal = 0;
             if (data.details && Array.isArray(data.details) && data.details.length > 0) {
                 data.details.forEach(product => {
+                    productTotal += parseInt(product.total) || 0;
                     const row = `<tr>
                         <td>${product.product_name ?? ''}</td>
                         <td>${product.product_image ? `<img src='/storage/uploads/${product.product_image}' width='50'>` : ''}</td>
@@ -621,6 +666,7 @@ function openOrderModal(btn) {
             } else {
                 tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Không có sản phẩm</td></tr>';
             }
+            document.getElementById('summary_product_total').textContent = productTotal.toLocaleString('vi-VN') + ' đ';
         })
         .catch(() => {
             document.querySelector('#order_products_table tbody').innerHTML =
@@ -741,7 +787,22 @@ function validateForm() {
     const payStatus = document.getElementById('modal_pay_status').value;
     const cancelReason = document.getElementById('modal_cancel_reason').value;
     const phone = document.getElementById('modal_phone').value;
+    const name = document.getElementById('modal_name').value;
     const originalPayStatus = document.getElementById('orderForm').getAttribute('data-original-pay-status');
+    
+    // Lấy thông tin shipping_fee và district_name để xác định đơn tại quầy
+    const orderId = document.getElementById('modal_id').value;
+    const shippingFee = document.querySelector('.btn-view[data-id="' + orderId + '"]').getAttribute('data-shipping_fee');
+    const districtName = document.querySelector('.btn-view[data-id="' + orderId + '"]').getAttribute('data-district_name');
+
+    // Xác định đơn tại quầy
+    const isStaffOrder =
+        phone === 'Nhân viên thu ngân' ||
+        phone === 'N/A' ||
+        phone === 'Không có' ||
+        name.includes('Khách lẻ') ||
+        name.includes('Khách Vãng Lai') ||
+        ((shippingFee === '0 đ' || shippingFee === '0.00' || !shippingFee) && (!districtName || districtName === ''));
 
     // Validate: Đơn nhân viên, trạng thái đơn đã hủy, không được chọn trạng thái thanh toán là chờ thanh toán
     if (phone === 'Nhân viên thu ngân' && status === 'cancelled' && payStatus === '0') {
@@ -759,12 +820,13 @@ function validateForm() {
         return false;
     }
 
-    if (status === 'cancelled') {
+    // Validation cho đơn hủy - BỎ QUA cho đơn tại quầy
+    if (status === 'cancelled' && !isStaffOrder) {
         if (originalPayStatus === '0' && payStatus !== '2') {
             alert('Đơn chưa thanh toán. Khi hủy, trạng thái thanh toán phải được chuyển thành "Đã hủy".');
             return false;
         }
-        if (originalPayStatus === '1' && payStatus !== '3' && phone !== 'Nhân viên thu ngân') {
+        if (originalPayStatus === '1' && payStatus !== '3') {
             alert('Đơn đã thanh toán. Khi hủy, trạng thái thanh toán phải được chuyển thành "Hoàn tiền".');
             return false;
         }
@@ -773,6 +835,25 @@ function validateForm() {
     if ((status === 'cancelled' || payStatus === '2') && !cancelReason.trim()) {
         alert('Vui lòng nhập lý do hủy đơn hàng');
         document.getElementById('modal_cancel_reason').focus();
+        return false;
+    }
+
+    // ĐƠN TẠI QUẦY: Nếu đã thanh toán thì không được thay đổi trạng thái thanh toán
+    if (isStaffOrder && originalPayStatus === '1' && payStatus !== '1') {
+        alert('Đơn tại quầy đã thanh toán không được thay đổi trạng thái thanh toán.');
+        return false;
+    }
+
+    // ĐƠN TẠI QUẦY: Nếu đã hoàn thành thì không được thay đổi trạng thái đơn
+    const originalStatus = document.getElementById('modal_status').getAttribute('data-original-status');
+    if (isStaffOrder && originalStatus === 'completed' && status !== 'completed') {
+        alert('Đơn tại quầy đã hoàn thành không được thay đổi trạng thái đơn.');
+        return false;
+    }
+
+    // ĐƠN TẠI QUẦY: Nếu đã hủy thì không được thay đổi trạng thái đơn
+    if (isStaffOrder && originalStatus === 'cancelled' && status !== 'cancelled') {
+        alert('Đơn tại quầy đã hủy không được thay đổi trạng thái đơn.');
         return false;
     }
 
