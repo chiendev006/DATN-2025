@@ -65,24 +65,20 @@
                                                     <tr>
                                                         <td>{{ ($historylog->currentPage()-1) * $historylog->perPage() + $key + 1 }}</td>
                                                         <td>
-                                                         {{ $item['name'] }}
+                                                        {{ $item->userlog->name ?? 'Không xác định' }}
                                                         </td>
                                                         <td>
-                                                          {{ $item['content'] }}
+                                                          {!!  $item->content  !!}
                                                         </td>
                                                         <td>
-                                                            {{ $item['created_at'] }}
+                                                            {{ $item->created_at }}
                                                         </td>
                                                         <td>
                                                             <div class="actions" style="display: flex; gap: 10px; justify-content: center;">
-                                                            <button type="button" class="btn-edit-historylog" data-id="{{ $item->id }}" data-name="{{ $item->name }}" data-role="{{ $item->role }}" style=" background-color: rgb(76, 106, 175); color: white; border: none; border-radius: 5px; cursor: pointer;font-size: 12px;padding: 5px 10px;text-align: center;text-decoration: none;display: inline-block;">
-                                                                Sửa
-                                                                </button>
-
-                                                              <form action="{{ route('historylog.delete', ['id' => $item->id]) }}" method="POST">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?')">Xóa</button>
+                                                                <form action="{{ route('historylog.delete', ['id' => $item->id]) }}" method="POST">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                            <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa Coupon này?')">Xóa</button>
                                                                 </form>
                                                             </div>
                                                         </td>

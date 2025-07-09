@@ -248,7 +248,7 @@
                                 <div class="field-body">
                                     <div class="field" style="display: flex; align-items: center; gap: 12px;">
                                         <div class="control icons-left">
-                                            <input class="input" type="file" id="edit-image" name="image" placeholder="Ảnh nhân viên" required>
+                                            <input class="input" type="file" id="edit-image" name="image" placeholder="Ảnh nhân viên" >
                                             <span class="icon left"><i class="mdi mdi-image"></i></span>
                                         </div>
                                         <img id="edit-image-preview" src="{{ url("/storage/uploads/$staff->image") }}" alt="Ảnh hiện tại" style="max-width: 60px; max-height: 60px; display: none; border-radius: 6px; border: 1px solid #ccc;" />

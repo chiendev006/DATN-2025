@@ -33,6 +33,13 @@ class AuthenticationController extends Controller
             /** @var \App\Models\User $user */
             $user = Auth::user();
 
+            // Ghi log đăng nhập client
+            \App\Models\historylog::create([
+                'user_id' => $user->id,
+                'role' => $user->role,
+                'content' => '<span style="color: green;">Đăng nhập vào hệ thống, trang Cửa hàng</span>',
+            ]);
+
             if ($user->role === 1 || $user->role === '1') {
                 Auth::guard('admin')->login($user);
                 Auth::guard('staff')->login($user);
@@ -71,6 +78,14 @@ class AuthenticationController extends Controller
     }
     public function logout()
     {
+        $user = Auth::user();
+        if ($user) {
+            \App\Models\historylog::create([
+                'user_id' => $user->id,
+                'role' => $user->role,
+                'content' => '<span style="color: red;">Đăng xuất khỏi hệ thống, trang Cửa hàng</span>',
+            ]);
+        }
         // Logout from all guards
         Auth::guard('admin')->logout();
         Auth::guard('staff')->logout();

@@ -36,19 +36,12 @@ class HistorylogController extends Controller
         return view('admin.historylog.index', compact('historylog'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
 
-    public function store(StorehistorylogRequest $request)
+
+    public function delete($id)
     {
-        //
-    }
-
-
-
-    public function destroy(historylog $historylog)
-    {
-        //
+        $histotylog = historylog::find($id);
+        $histotylog->delete();
+    return redirect()->route('historylog.index');
     }
 }

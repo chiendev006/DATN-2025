@@ -189,8 +189,7 @@ Route::prefix('admin')->middleware(['auth', 'checkAdmin', 'check.valid.id'])->gr
         // Lịch sử log
         Route::prefix('historylog')->group(function () {
             Route::get('/', [HistorylogController::class, 'index'])->name('historylog.index');
-            Route::post('/create', [HistorylogController::class, 'store'])->name('historylog.create');
-            Route::delete('/delele', [HistorylogController::class, 'delete'])->name('historylog.delete');
+            Route::delete('/delete/{id}', [HistorylogController::class, 'delete'])->name('historylog.delete');
     });
 
         // Sản phẩm

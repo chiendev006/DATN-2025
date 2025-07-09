@@ -25,6 +25,13 @@ class AuthController extends Controller
                 Auth::guard('staff')->login($user);
                 Auth::login($user); // Default web guard
 
+                // Ghi log đăng nhập admin
+                \App\Models\historylog::create([
+                    'user_id' => $user->id,
+                    'role' => $user->role,
+                    'content' => '<span style="color: green;">Đăng nhập vào hệ thống, trang Admin</span>',
+                ]);
+
                 if ($request->expectsJson()) {
                     $token = $user->createToken('admin-auth-token')->plainTextToken;
                     return response()->json([
@@ -51,6 +58,14 @@ class AuthController extends Controller
     }
     public function logout()
     {
+        $user = Auth::guard('admin')->user();
+        if ($user) {
+            \App\Models\historylog::create([
+                'user_id' => $user->id,
+                'role' => $user->role,
+                'content' => '<span style="color: red;">Đăng xuất khỏi hệ thống, trang Admin</span>' ,
+            ]);
+        }
         Auth::guard('admin')->logout();
         Auth::guard('staff')->logout();
         Auth::logout();

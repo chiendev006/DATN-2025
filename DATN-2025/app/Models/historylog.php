@@ -9,6 +9,10 @@ class historylog extends Model
 {
     use HasFactory;
     protected  $table = 'historylogs';
-    protected $fillable = ['id', 'name','role','content'];
-    use HasFactory;
+    protected $fillable = ['user_id', 'role', 'content'];
+
+    public function userlog()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
