@@ -201,7 +201,7 @@
                                                             @php
                                                                 $statusMap = [
                                                                     'pending' => 'Chờ xác nhận',
-                                                                    'processing' => 'Đã xác nhận',
+                                                                    'processing' => 'Đang xử lý',
                                                                     'shipping' => 'Đang giao hàng',
                                                                     'completed' => 'Hoàn thành',
                                                                     'cancelled' => 'Đã hủy',
@@ -508,14 +508,21 @@ function filterRevenue(page = 1) {
         let couponStatsHtml = '';
         if (data.couponStats && data.couponStats.length > 0) {
             data.couponStats.forEach(item => {
-                couponStatsHtml += `<tr>
-                    <td>${item.code}</td>
-                    <td>${item.used_count}</td>
-                    <td>${new Intl.NumberFormat('vi-VN').format(item.total_discount)} đ</td>
-                    <td>${new Intl.NumberFormat('vi-VN').format(item.total_revenue)} đ</td>
-                </tr>`;
+                let isExpired = false;
+                let isOutOfUses = false;
+                if (item.expires_at && new Date(item.expires_at) < new Date()) isExpired = true;
+                if (item.max_uses && item.used_count >= item.max_uses) isOutOfUses = true;
+                if (!isExpired && !isOutOfUses) {
+                    couponStatsHtml += `<tr>
+                        <td>${item.code}</td>
+                        <td>${item.used_count}</td>
+                        <td>${new Intl.NumberFormat('vi-VN').format(item.total_discount)} đ</td>
+                        <td>${new Intl.NumberFormat('vi-VN').format(item.total_revenue)} đ</td>
+                    </tr>`;
+                }
             });
-        } else {
+        }
+        if (!couponStatsHtml) {
             couponStatsHtml = '<tr><td colspan="4" class="text-center">Không có dữ liệu</td></tr>';
         }
         document.getElementById('couponStatsTableBody').innerHTML = couponStatsHtml;
@@ -538,7 +545,7 @@ function filterRevenue(page = 1) {
             // Cập nhật tổng quan
             document.getElementById('totalEarnedPoints').innerHTML = new Intl.NumberFormat('vi-VN').format(pointsData.total_earned || 0);
             document.getElementById('totalSpentPoints').innerHTML = new Intl.NumberFormat('vi-VN').format(pointsData.total_spent || 0);
-            document.getElementById('usageRate').innerHTML = (pointsData.usage_rate || 0) + '%';
+            document.getElementById('usageRate').innerHTML = (Math.min(pointsData.usage_rate || 0, 100)) + '%';
             document.getElementById('usersUsedPoints').innerHTML = pointsData.users_used || 0;
             
             // Top người tích điểm
