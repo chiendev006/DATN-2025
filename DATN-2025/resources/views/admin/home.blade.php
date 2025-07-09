@@ -91,11 +91,13 @@
 <h2>Doanh thu
     <form id="revenueFilterForm" method="post">
         @csrf
+        <input type="hidden" name="_token" value="{{ csrf_token() }}">
         từ
-        <input type="date" name="start" id="start_date">
+        <input type="date" name="start" id="start_date" required>
         đến
-        <input type="date" name="end" id="end_date">
+        <input type="date" name="end" id="end_date" required>
         <button style="border-radius: 5px;" type="button" onclick="filterRevenue()">Lọc</button>
+        <span id="dateError" style="color: red; margin-left: 10px; display: none;">Ngày kết thúc phải sau hoặc bằng ngày bắt đầu!</span>
     </form>
 </h2>
     <div class="card">
@@ -195,7 +197,18 @@
                                                         <td>{{ $order->phone }}</td>
                                                         @endif
 														<td>{{ number_format($order->total) }} đ</td>
-														<td>{{ $order->status }}</td>
+														<td>
+                                                            @php
+                                                                $statusMap = [
+                                                                    'pending' => 'Chờ xác nhận',
+                                                                    'processing' => 'Đã xác nhận',
+                                                                    'shipping' => 'Đang giao hàng',
+                                                                    'completed' => 'Hoàn thành',
+                                                                    'cancelled' => 'Đã hủy',
+                                                                ];
+                                                            @endphp
+                                                            {{ $statusMap[$order->status] ?? $order->status }}
+                                                        </td>
 													</tr>
                                                     @endforeach
 												</tbody>
@@ -300,28 +313,38 @@
 </script>
 <script>
 window.onload = function() {
+    // Set ngày mặc định khi trang load
+    setDefaultDates();
+    
+    // Thêm event listeners cho input date để ẩn thông báo lỗi khi người dùng thay đổi
+    document.getElementById('start_date').addEventListener('change', hideDateError);
+    document.getElementById('end_date').addEventListener('change', hideDateError);
 
-var muaThang = {{ isset($muaThang) ? (int)$muaThang : 0 }};
-var muaTaiKhoan = {{ isset($muaTaiKhoan) ? (int)$muaTaiKhoan : 0 }};
+    var muaThang = {{ isset($muaThang) ? (int)$muaThang : 0 }};
+    var muaTaiKhoan = {{ isset($muaTaiKhoan) ? (int)$muaTaiKhoan : 0 }};
 
-var chart = new CanvasJS.Chart("chartContainer", {
-	animationEnabled: true,
-	title: {
+    var chart = new CanvasJS.Chart("chartContainer", {
+        animationEnabled: true,
+        title: {
 
-	},
-	data: [{
-		type: "pie",
-		startAngle: 180,
-		yValueFormatString: "#,##0 đơn",
-		indexLabel: "{label} {y}",
-		dataPoints: [
-			{y: muaThang, label: "Mua thẳng"},
-			{y: muaTaiKhoan, label: "Mua với tài khoản shop"},
-		]
-	}]
-});
-chart.render();
-
+        },
+        data: [{
+            type: "pie",
+            startAngle: 180,
+            yValueFormatString: "#,##0 đơn",
+            indexLabel: "{label} {y}",
+            dataPoints: [
+                {y: muaThang, label: "Mua thẳng"},
+                {y: muaTaiKhoan, label: "Mua với tài khoản shop"},
+            ]
+        }]
+    });
+    chart.render();
+    
+    // Tự động load dữ liệu thống kê khi trang load
+    setTimeout(function() {
+        filterRevenue();
+    }, 500); // Delay 500ms để đảm bảo các element đã được render
 }
 </script>
 
@@ -330,13 +353,50 @@ chart.render();
 let currentRecentPage = 1;
 let currentDailyPage = 1;
 
-function filterRevenue(page = 1) {
+// Hàm set ngày mặc định khi trang load
+function setDefaultDates() {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    
+    // Set cả ngày bắt đầu và ngày kết thúc đều là ngày hiện tại
+    document.getElementById('start_date').value = todayStr;
+    document.getElementById('end_date').value = todayStr;
+}
+
+// Hàm validate ngày
+function validateDates() {
     const startDate = document.getElementById('start_date').value;
     const endDate = document.getElementById('end_date').value;
+    const dateError = document.getElementById('dateError');
+    
     if (!startDate || !endDate) {
-        alert('Vui lòng chọn cả ngày bắt đầu và ngày kết thúc');
+        dateError.textContent = 'Vui lòng chọn cả ngày bắt đầu và ngày kết thúc';
+        dateError.style.display = 'inline';
+        return false;
+    }
+    
+    if (new Date(startDate) > new Date(endDate)) {
+        dateError.textContent = 'Ngày kết thúc phải sau hoặc bằng ngày bắt đầu!';
+        dateError.style.display = 'inline';
+        return false;
+    }
+    
+    dateError.style.display = 'none';
+    return true;
+}
+
+// Hàm ẩn thông báo lỗi khi người dùng thay đổi ngày
+function hideDateError() {
+    document.getElementById('dateError').style.display = 'none';
+}
+
+function filterRevenue(page = 1) {
+    if (!validateDates()) {
         return;
     }
+    
+    const startDate = document.getElementById('start_date').value;
+    const endDate = document.getElementById('end_date').value;
     
     // Reset về trang 1 khi filter mới
     if (page === 1) {
@@ -371,7 +431,7 @@ function filterRevenue(page = 1) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : document.querySelector('input[name="_token"]').value
         },
         body: JSON.stringify({
             start_date: startDate,
