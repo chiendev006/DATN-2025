@@ -1,5 +1,13 @@
 @include('header')
 
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+@if(session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
+
+
     <div class="content-wrapper-scroll">
 
                     <div class="content-wrapper">
@@ -9,18 +17,24 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <!-- Form tìm kiếm và lọc -->
-                                        <form method="GET" action="" style="margin-bottom: 20px;">
+                                       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="display: flex;">
+                                       <form class="col-xl-10 col-lg-10 col-md-10 col-sm-10 col-10" method="GET" action="" style="margin-bottom: 20px;">
                                             <div class="row">
-                                                <div class="col-md-2">
-                                                    <label for="from_date" style="margin-bottom: 5px; font-weight: 500;">Từ ngày:</label>
+                                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
+                                                <div class="field-wrapper">
+                                                <div class="field-placeholder">Bản/trang</div>
                                                     <input type="date" name="from_date" id="from_date" class="form-control" value="{{ request('from_date') }}">
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <label for="to_date" style="margin-bottom: 5px; font-weight: 500;">Đến ngày:</label>
+                                                </div>
+                                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
+                                                <div class="field-wrapper">
+                                                <div class="field-placeholder">Bản/trang</div>
                                                     <input type="date" name="to_date" id="to_date" class="form-control" value="{{ request('to_date') }}">
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <label for="role" style="margin-bottom: 5px; font-weight: 500;">Role:</label>
+                                                </div>
+                                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
+                                                <div class="field-wrapper">
+                                                <div class="field-placeholder">Bản/trang</div>
                                                     <select name="role" id="role" class="form-control">
                                                         <option value="">Tất cả</option>
                                                         <option value="1" {{ request('role') == '1' ? 'selected' : '' }}>Admin</option>
@@ -29,21 +43,44 @@
                                                         <!-- Thêm các role khác nếu có -->
                                                     </select>
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <label for="per_page" style="margin-bottom: 5px; font-weight: 500;">Bản/trang:</label>
+                                                </div>
+                                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
+                                                <div class="field-wrapper">
+                                                <div class="field-placeholder">Bản/trang</div>
                                                     <select name="per_page" id="per_page" class="form-control" onchange="this.form.submit()">
-                                                        <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản</option>
-                                                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 bản</option>
-                                                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản</option>
-                                                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
+                                                        <option value="5" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 bản</option>
+                                                        <option value="10" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản</option>
+                                                        <option value="25" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
+                                                        <option value="50" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
                                                     </select>
                                                 </div>
-                                                <div class="col-md-2" style="display: flex; align-items: flex-end;">
-                                                    <button type="submit" class="btn btn-primary" style="margin-top: 24px;">Lọc</button>
-                                                    <a href="{{ route('historylog.index') }}" class="btn btn-secondary" style="margin-top: 24px; margin-left: 8px;">Reset</a>
+                                                </div>
+                                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
+                                                <div class="field-wrapper">
+
+                                                    <button type="submit" class="btn btn-primary" style="margin-top: 0px;">Lọc</button>
+                                                    <a href="{{ route('historylog.index') }}" class="btn btn-secondary" style="margin-top: 0px; margin-left: 8px;">Reset</a>
+                                                </div>
                                                 </div>
                                             </div>
                                         </form>
+                                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
+                                        <div class="field-wrapper">
+                                            <form method="POST" action="{{ route('historylog.deleteByTime') }}" style="display:inline;">
+                                                @csrf
+                                                <div class="field-placeholder">Xóa khoảng</div>
+                                                <select name="range" id="delete-range" class="form-control" style="width:auto;display:inline-block;margin-right:8px;">
+                                                    <option value="1hour">1 giờ qua</option>
+                                                    <option value="1day">1 ngày qua</option>
+                                                    <option value="1week">1 tuần qua</option>
+                                                    <option value="1month">1 tháng qua</option>
+                                                    <option value="all">Toàn bộ</option>
+                                                </select>
+                                                <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                                            </form>
+                                        </div>
+                                        </div>
+                                       </div>
                                         <div class="table-responsive">
                                             <table id="copy-print-csv" class="table v-middle">
                                                 <thead>

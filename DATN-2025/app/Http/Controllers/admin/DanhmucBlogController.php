@@ -5,6 +5,8 @@ namespace App\Http\Controllers\admin;
 use App\Models\DanhmucBlog;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\historylog;
+use Illuminate\Support\Facades\Auth;
 
 class DanhmucBlogController extends Controller
 {
@@ -15,16 +17,16 @@ class DanhmucBlogController extends Controller
     {
        $perPage = $request->input('per_page', 5);
        $search = $request->input('search', '');
-       
+
        $query = DanhmucBlog::query();
 
        // Lọc theo tên
        if (!empty($search)) {
            $query->where('name', 'like', '%' . $search . '%');
        }
-       
+
        $danhmucBlog = $query->paginate($perPage);
-       
+
        return view('admin.danhmucblog.index', [
            'danhmucBlog' => $danhmucBlog,
            'search' => $search,
@@ -58,17 +60,24 @@ class DanhmucBlogController extends Controller
         DanhmucBlog::insert([
             'name' => $name,
         ]);
+
+        $content1='';
+        $title='<strong>Thêm danh mục bài viết:</strong> <br>';
+            $content1=" *<span style='color: red;'>Tên:</span> `$name` <br>";
+
+
+        historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' =>$title.$content1,
+        ]);
         return redirect()->route('danhmucblog.index')->with('success', 'Thêm danh mục blog thành công!');
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
-    {
-        $danhmucBlog = DanhmucBlog::find($id);
-        return view('admin.danhmucblog.edit',['danhmucBlog'=>$danhmucBlog]);
-    }
+
 
     /**
      * Update the specified resource in storage.
@@ -84,11 +93,26 @@ class DanhmucBlogController extends Controller
             'name.min' => 'Tên danh mục blog phải có ít nhất 2 ký tự',
             'name.unique' => 'Tên danh mục blog đã tồn tại',
         ]);
-
+        $nameid=DanhmucBlog::find($id);
         $name = $request->name;
         DanhmucBlog::where('id', $id)->update([
             'name' => $name,
         ]);
+        $content1='';
+
+
+        $title="<strong>Sửa bài viết: $request->name</strong> <br>";
+        if($nameid->name!=$request->name){
+            $content1=" *<span style='color: red;'>Tên:</span> ` $nameid->name`<span style='color: blue;'> thành </span>`$request->name` <br>";
+        }
+
+      if($content1!=''){
+        historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' =>$title.$content1,
+        ]);
+      }
         return redirect()->route('danhmucblog.index')->with('success', 'Sửa danh mục blog thành công!');
     }
 
@@ -97,6 +121,17 @@ class DanhmucBlogController extends Controller
      */
     public function delete($id)
     {
+        $name=DanhmucBlog::find($id)->name;
+        $content1='';
+        $title='<strong>Xóa danh mục bài viết:</strong> <br>';
+            $content1=" *<span style='color: red;'>Tên:</span> `$name` <br>";
+
+
+        historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' =>$title.$content1,
+        ]);
         DanhmucBlog::destroy($id);
         return redirect()->route('danhmucblog.index')->with('success', 'Xóa danh mục blog thành công!');
     }
