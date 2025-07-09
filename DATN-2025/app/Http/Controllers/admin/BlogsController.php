@@ -5,7 +5,9 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Blogs;
 use App\Models\DanhmucBlog; // THÊM DÒNG NÀY: Import model DanhmucBlog
+use App\Models\historylog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class BlogsController extends Controller
@@ -39,14 +41,25 @@ class BlogsController extends Controller
             $imagePath = $request->file('image')->store('blogs', 'public');
         }
 
-        Blogs::create([
+        $blog=Blogs::create([
             'title'   => $request->title,
             'content' => $request->content,
             'image'   => $imagePath,
             // CẬP NHẬT DÒNG NÀY: Lấy giá trị blog_id từ request
             'blog_id' => $request->blog_id,
         ]);
+        $content1='';
+        $content2='';
+        $title='<strong>Thêm bài viết:</strong> <br>';
+            $content1=" *<span style='color: red;'>Tên:</span> `$blog->title` <br>";
+            $content2= "*<span style='color: red;'>Ảnh bìa:</span> <img src=\"" . url("/storage/$blog->image") . "\" alt=\"\" width=\"100px\" height=\"100px\">";
 
+
+        historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' =>$title.$content1.$content2,
+        ]);
         return redirect()->route('blogs.index')->with('success', 'Thêm thành công!');
     }
 
@@ -60,6 +73,7 @@ class BlogsController extends Controller
 
     public function update(Request $request, $id)
     {
+
         $request->validate([
             'title'   => 'required|string|max:255',
             'content' => 'required|string',
@@ -82,7 +96,39 @@ class BlogsController extends Controller
             $blog->image = $request->file('image')->store('blogs', 'public');
         }
 
-        $blog->save();
+
+        $blogid=Blogs::find($id);
+        $content1='';
+        $content2='';
+        $content3='';
+        $content4='';
+
+
+        $title="<strong>Sửa bài viết: $blog->name</strong> <br>";
+        if($blogid->title!=$blog->title){
+            $content1=" *<span style='color: red;'>Tên:</span> ` $blogid->title`<span style='color: blue;'> thành </span>`$blog->title` <br>";
+        }
+
+        if($blogid->blog_id!=$blog->blog_id){
+            $content2 = " *<span style='color: red;'>Chức vụ:</span>`" . $blogid->DanhmucBlog->name . "` <span style='color: blue;'>thành</span> `" . $blog->DanhmucBlog->name . "` <br>";
+        }
+
+          if($blogid->content!=$blog->content){
+            $content3=" *<span style='color: red;'>Nội dung:</span> $blogid->content<span style='color: blue;'> thành </span>$blog->content <br>";        }
+          if ($blogid->image!=$blog->image) {
+
+            $content4 = "*<span style='color: red;'>Ảnh nhân viên:</span> <img src=\"" . url("/storage/$blog->image") . "\" alt=\"\" width=\"100px\" height=\"100px\">";
+        }
+
+
+      if($content1!=''||$content2!=''||$content3!=''||$content4!=''){
+        historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' =>$title.$content1.$content2.$content3.$content4,
+        ]);
+      }
+      $blog->save();
 
         return redirect()->route('blogs.index')->with('success', 'Cập nhật blog thành công!');
     }
@@ -95,7 +141,18 @@ class BlogsController extends Controller
         if ($blog->image && Storage::disk('public')->exists($blog->image)) {
             Storage::disk('public')->delete($blog->image);
         }
+        $content1='';
+        $content2='';
+        $title='<strong>Xóa bài viết:</strong> <br>';
+            $content1=" *<span style='color: red;'>Tên:</span> `$blog->title` <br>";
+            $content2= "*<span style='color: red;'>Ảnh bìa:</span> <img src=\"" . url("/storage/$blog->image") . "\" alt=\"\" width=\"100px\" height=\"100px\">";
 
+
+        historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' =>$title.$content1.$content2,
+        ]);
         $blog->delete();
 
         return redirect()->route('blogs.index')->with('success', 'Xóa blog thành công!');

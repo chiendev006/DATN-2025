@@ -5,7 +5,9 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Coupon;
+use App\Models\historylog;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 class CouponController extends Controller
 {
@@ -82,7 +84,7 @@ class CouponController extends Controller
         return redirect()->back()
                     ->withErrors($validator)
                     ->withInput()
-                    ->with('showAddCouponModal', true); 
+                    ->with('showAddCouponModal', true);
     }
 
     $time = null;
@@ -90,7 +92,7 @@ class CouponController extends Controller
         $time = Carbon::parse($request->expires_at);
     }
 
-    Coupon::create([
+    $coupon=Coupon::create([
         'code' => $request->code,
         'discount' => $request->discount,
         'min_order_value' => $request->min_order_value,
@@ -100,6 +102,23 @@ class CouponController extends Controller
         'usage_limit' => $request->usage_limit,
     ]);
 
+    $content1='';
+    $content2='';
+    $title='<strong>Thêm mã giảm giá:</strong> <br>';
+        $content1=" *<span style='color: red;'>Mã:</span> `$coupon->code` <br>";
+        $content2= "*<span style='color: red;'>Giá trị giảm giá:</span> `$coupon->discount` <br>";
+        $content3= "*<span style='color: red;'>Giá trị đơn tối thiểu:</span> `$coupon->min_order_value` <br>";
+        $content4= "*<span style='color: red;'>Loại giảm giá:</span> `$coupon->type` <br>";
+        $content5= "*<span style='color: red;'>Số lượng:</span> `$coupon->usage_limit` <br>";
+        $content6= "*<span style='color: red;'>Ngày bắt đầu:</span> `$coupon->starts_at` <br>";
+        $content7= "*<span style='color: red;'>Ngày kết thúc:</span> `$coupon->expires_at` <br>";
+
+
+    historylog::create([
+        'user_id' => Auth::user()->id,
+        'role' => Auth::user()->role,
+        'content' =>$title.$content1.$content2.$content3.$content4.$content5.$content6.$content7,
+    ]);
     return redirect()->route('coupon.index')->with('success', 'Coupon added successfully');
 }
 
@@ -144,6 +163,7 @@ public function update(Request $request, $id)
     if($request->expires_at){
         $time = Carbon::parse($request->expires_at);
     }
+    $coupon=Coupon::find($id);
     Coupon::where('id', $id)->update([
         'code' => $request->code,
         'discount' => $request->discount,
@@ -153,12 +173,73 @@ public function update(Request $request, $id)
         'type' => $request->type,
         'usage_limit' => $request->usage_limit,
     ]);
+    $content1='';
+    $content2='';
+    $content3='';
+    $content4='';
+    $content5='';
+    $content6='';
+
+    $title="<strong>Sửa mã giảm giá: $coupon->code</strong> <br>";
+    if($coupon->code!=$request->code){
+        $content1=" *<span style='color: red;'>Mã:</span> ` $coupon->code`<span style='color: blue;'> thành </span>`$request->code` <br>";
+    }
+    if($coupon->starts_at!=$request->starts_at){
+        $content2=" *<span style='color: red;'>Ngày bắt đầu:</span> $coupon->starts_at<span style='color: blue;'> thành </span>$request->starts_at <br>";
+    }
+    if($coupon->expires_at!=$request->expires_at){
+        $content3=" *<span style='color: red;'>Ngày kết thúc:</span> $coupon->expires_at<span style='color: blue;'> thành </span>$request->expires_at <br>";
+    }
+
+    if($coupon->discount!=$request->discount){
+        $content4 = " *<span style='color: red;'>Giá trị giảm giá:</span>`" . $coupon->discount . "` <span style='color: blue;'>thành</span> `" . $request->discount . "` <br>";
+    }
+
+    if($coupon->min_order_value!=$request->min_order_value){
+        $content5=" *<span style='color: red;'>Giá trị đơn tối thiểu:</span> $coupon->min_order_value<span style='color: blue;'> thành </span>$request->min_order_value <br>";
+    }
+
+    if($coupon->type!=$request->type){
+        $content6   =" *<span style='color: red;'>Loại giảm giá:</span> $coupon->type<span style='color: blue;'> thành </span>$request->type <br>";
+    }
+
+
+  if($content1!=''||$content2!=''||$content3!=''||$content4!=''||$content5!=''||$content6!=''){
+    historylog::create([
+        'user_id' => Auth::user()->id,
+        'role' => Auth::user()->role,
+        'content' =>$title.$content1.$content2.$content3.$content4.$content5.$content6,
+    ]);
+  }
     return redirect()->route('coupon.index')->with('success', 'Coupon updated successfully');
 }
 
     public function delete($id)
     {
         $coupon = Coupon::findOrFail($id);
+
+    $content1='';
+    $content2='';
+    $content3='';
+    $content4='';
+    $content5='';
+    $content6='';
+    $content7='';
+    $title='<strong>Xóa mã giảm giá: $coupon->code</strong> <br>';
+        $content1=" *<span style='color: red;'>Mã:</span> `$coupon->code` <br>";
+        $content2= "*<span style='color: red;'>Giá trị giảm giá:</span> `$coupon->discount` <br>";
+        $content3= "*<span style='color: red;'>Giá trị đơn tối thiểu:</span> `$coupon->min_order_value` <br>";
+        $content4= "*<span style='color: red;'>Loại giảm giá:</span> `$coupon->type` <br>";
+        $content5= "*<span style='color: red;'>Số lượng:</span> `$coupon->usage_limit` <br>";
+        $content6= "*<span style='color: red;'>Ngày bắt đầu:</span> `$coupon->starts_at` <br>";
+        $content7= "*<span style='color: red;'>Ngày kết thúc:</span> `$coupon->expires_at` <br>";
+
+
+    historylog::create([
+        'user_id' => Auth::user()->id,
+        'role' => Auth::user()->role,
+        'content' =>$title.$content1.$content2.$content3.$content4.$content5.$content6.$content7,
+    ]);
         $coupon->delete();
         return redirect()->route('coupon.index')->with('success', 'Coupon deleted successfully');
     }

@@ -1,8 +1,11 @@
 <?php
 namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\Authenticate;
 use App\Models\Address;
+use App\Models\historylog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AddressController extends Controller
 {
@@ -23,6 +26,18 @@ class AddressController extends Controller
         $address->name = $request->name;
         $address->shipping_fee = $request->shipping_fee;
         $address->save();
+        $content1='';
+        $content2='';
+        $title='<strong>Thêm khu vực ship:</strong> <br>';
+            $content1=" *<span style='color: red;'>Tên:</span> `$address->name` <br>";
+            $content2=" *<span style='color: red;'>Giá:</span> `$address->shipping_fee`  <br>";
+
+
+        historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' =>$title.$content1.$content2,
+        ]);
         return redirect()->route('address.index')->with('success', 'Thêm Khu vực thành công');
     }
 
@@ -35,9 +50,27 @@ class AddressController extends Controller
             'shipping_fee' => 'required|numeric|min:0',
         ]);
         $address = Address::find($id);
+        $addressshopping_fee=$address->shipping_fee;
+        $addressname= $address->name;
         $address->name = $request->name;
         $address->shipping_fee = $request->shipping_fee;
         $address->save();
+        $content1='';
+        $content2='';
+        $title="<strong>Cập nhật khu vực: $address->name </strong><br>";
+        if($request->name!=$addressname){
+            $content1=" *Tên ` $addressname` thành `$address->name` <br>";
+        }
+        if($request->shipping_fee!=$addressshopping_fee){
+            $content2=" *Giá `$addressshopping_fee` VND thành `$address->shipping_fee` VND <br>";
+        }
+       if($content1!=''||$content2!=''){
+        historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' =>$title.$content1.$content2,
+        ]);
+       }
         return redirect()->route('address.index')->with('success', 'Cập nhật Khu vực thành công');
     }
 
@@ -45,7 +78,23 @@ class AddressController extends Controller
     {
         $address = Address::find($id);
         $address->delete();
+          $addressshopping_fee=$address->shipping_fee;
+        $addressname= $address->name;
+        $address->save();
+        $content1='';
+        $content2='';
+        $title='<strong>Xóa khu vực ship:</strong> <br>';
+        $content1=" *<span style='color: red;'>Tên:</span> `$address->name` <br>";
+        $content2=" *<span style='color: red;'>Giá:</span> `$address->shipping_fee`  <br>";
+
+
+        historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' =>$title.$content1.$content2,
+        ]);
         return redirect()->route('address.index')->with('success', 'Xóa Khu vực thành công');
+
     }
     public function search(Request $request)
     {

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Contact;
+use App\Models\historylog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ContactAdminController extends Controller
 {
@@ -13,6 +15,23 @@ class ContactAdminController extends Controller
         return view('admin.contact.index',compact('contact'));
     }
     public function delete($id) {
+        $contact=Contact::find($id);
+        $content1='';
+        $content2='';
+        $content3='';
+        $content4='';
+        $title='<strong>Xóa bài viết:</strong> <br>';
+            $content1=" *<span style='color: red;'>Tên:</span> `$contact->name` <br>";
+            $content1=" *<span style='color: red;'>Tên:</span> `$contact->email` <br>";
+            $content1=" *<span style='color: red;'>Tên:</span> `$contact->phone` <br>";
+            $content1=" *<span style='color: red;'>Tên:</span> `$contact->message` <br>";
+
+
+        historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' =>$title.$content1.$content2,
+        ]);
         Contact::destroy($id);
         return redirect()->route('contact.index')->with('success', 'Xóa thành công!');
     }

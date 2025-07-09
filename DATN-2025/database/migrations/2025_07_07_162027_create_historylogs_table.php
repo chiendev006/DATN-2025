@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('historylogs', function (Blueprint $table) {
             $table->id();
-            $table->string('name',255);
+            $table->tinyInteger('user_id');
             $table->tinyInteger('role');
-            $table->string('content',255);
+            $table->text('content');
             $table->timestamps();
         });
     }

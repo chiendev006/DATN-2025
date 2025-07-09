@@ -23,6 +23,13 @@ class AuthenController extends Controller
             $staffUser = Auth::guard('staff')->user();
             $role = $staffUser->role;
 
+            // Ghi log đăng nhập staff
+            \App\Models\historylog::create([
+                'user_id' => $staffUser->id,
+                'role' => $staffUser->role,
+                'content' => '<span style="color: green;">Đăng nhập vào hệ thống, trang Nhân viên</span>' ,
+            ]);
+
             // If user is admin (role 1), also authenticate admin and web guards
             if ($role == 1) {
                 Auth::guard('admin')->login($staffUser);
@@ -54,8 +61,16 @@ class AuthenController extends Controller
     }
     public function logout()
     {
+        $user = Auth::guard('staff')->user();
+        if ($user) {
+            \App\Models\historylog::create([
+                'user_id' => $user->id,
+                'role' => $user->role,
+                'content' => '<span style="color: red;">Đăng xuất khỏi hệ thống, trang Nhân viên</span>',
+            ]);
+        }
         // Check if the user is an admin before logging out
-        $isAdmin = Auth::guard('staff')->check() && Auth::guard('staff')->user()->role == 1;
+        $isAdmin = $user && $user->role == 1;
 
         // If admin, logout from all guards
         if ($isAdmin) {
