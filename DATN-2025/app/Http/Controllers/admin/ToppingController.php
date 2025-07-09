@@ -39,10 +39,7 @@ class ToppingController extends Controller
         return redirect()->route('topping.index')->with('success', 'Thêm thành công!');
     }
 
-     public function edit($id) {
-        $topping = Topping::find($id);
-        return view('admin.topping.edit', compact('topping'));
-    }
+
     public function update(Request $request, $id) {
         $request->validate([
             'name' => 'required|string',

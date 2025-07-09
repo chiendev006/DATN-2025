@@ -6,10 +6,12 @@ use App\Models\sanpham;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Danhmuc;
+use App\Models\historylog;
 use App\Models\Product_topping;
 use App\Models\ProductImage;
 use App\Models\Size;
 use App\Models\Topping;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -107,7 +109,42 @@ class SanphamController extends Controller
             ]);
         }
     }
+    $sanphamid=sanpham::with(['danhmuc', 'sizes', 'topping'])->find($sanpham->id);
+    $content1='';
+    $content2='';
+    $content3='';
+    $content4='';
+    $content5='';
+    $content6='';
 
+
+    $title='<strong>Thêm sản phẩm:</strong> <br>';
+        $content1=" *<span style='color: red;'>Tên:</span> `$sanphamid->name` <br>";
+        $content2= "*<span style='color: red;'>Danh mục:</span> `" . $sanphamid->danhmuc->name . "` <br>";
+        $content3= "*<span style='color: red;'>Mô tả:</span> `$sanphamid->mota` <br>";
+        $content4= "*<span style='color: red;'>Ảnh bìa:</span> <img src=\"" . url("/storage/uploads/$sanphamid->image") . "\" alt=\"\" width=\"100px\" height=\"100px\"><br>";
+
+$content5 = "<span style='color: red;'>Size:</span><br>";
+if (!empty($sanphamid->sizes)) {
+    foreach ($sanphamid->sizes as $sizes) {
+        $content5 .= ($sizes->size ?? 'N/A') . ' - ' . ($sizes->price ?? 'N/A') . ' VNĐ<br>';
+    }
+}
+
+if($request->has('topping_ids') && is_array($request->topping_ids)){
+$content6 = "<span style='color: red;'>Topping:</span><br>";
+if (!empty($sanphamid->topping)) {
+    foreach ($sanphamid->topping as $topping) {
+        $content6 .= $topping->topping . ' - ' . $topping->price . ' VNĐ<br>';
+    }
+}
+}
+
+    historylog::create([
+        'user_id' => Auth::user()->id,
+        'role' => Auth::user()->role,
+        'content' =>$title.$content1.$content2.$content3.$content5.$content6.$content4,
+    ]);
     return redirect()->route('sanpham.edit', ['id' => $sanpham->id])
                      ->with('success', 'Thêm sản phẩm thành công!');
 }
@@ -149,27 +186,62 @@ class SanphamController extends Controller
    public function update(Request $request, $id){
 
         $sanpham = sanpham::findOrFail($id);
+        $oldSanpham = clone $sanpham;
+
+        // Validate
         $request->validate([
-        'name'=> 'required|string',
-        'image'=> 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        'mota'=> 'required|string',
-        'id_danhmuc'=> 'required|exists:danhmucs,id',
+            'name'=> 'required|string',
+            'image'=> 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'mota'=> 'required|string',
+            'id_danhmuc'=> 'required|exists:danhmucs,id',
         ]);
+
+        // Xử lý ảnh mới
         if ($request->hasFile('image')) {
-        if ($sanpham->image && Storage::exists('public/uploads/' . $sanpham->image)) {
-            Storage::delete('public/uploads/' . $sanpham->image);
+            if ($sanpham->image && Storage::exists('public/uploads/' . $sanpham->image)) {
+                Storage::delete('public/uploads/' . $sanpham->image);
+            }
+            $image    = $request->file('image');
+            $fileName = uniqid() . '_' . $image->getClientOriginalName();
+            $image->storeAs('public/uploads', $fileName);
+            $sanpham->image = $fileName;
         }
-        $image    = $request->file('image');
-        $fileName = uniqid() . '_' . $image->getClientOriginalName();
-        $image->storeAs('public/uploads', $fileName);
-        $sanpham->image = $fileName;
-        }
+
+        // Cập nhật các trường khác
         $sanpham->name = $request->name;
         $sanpham->mota = $request->mota;
         $sanpham->id_danhmuc = $request->id_danhmuc;
         $sanpham->save();
+
+        $content1 = $content2 = $content3 = $content4 = '';
+
+        $title = "<strong>Sửa thông tin sản phẩm: $oldSanpham->name</strong> <br>";
+        if($oldSanpham->name != $sanpham->name){
+            $content1 = " *<span style='color: red;'>Tên:</span> `$oldSanpham->name`<span style='color: blue;'> thành </span>`$sanpham->name` <br>";
+        }
+        if($oldSanpham->id_danhmuc != $sanpham->id_danhmuc){
+            $oldDanhmuc = $oldSanpham->danhmuc ? $oldSanpham->danhmuc->name : '';
+            $newDanhmuc = $sanpham->danhmuc ? $sanpham->danhmuc->name : '';
+            $content2 = " *<span style='color: red;'>Danh mục:</span> `$oldDanhmuc` <span style='color: blue;'>thành</span> `$newDanhmuc` <br>";
+        }
+        if($oldSanpham->mota != $sanpham->mota){
+            $content3 = " *<span style='color: red;'>Mô tả:</span> $oldSanpham->mota<span style='color: blue;'> thành </span>$sanpham->mota <br>";
+        }
+        if($oldSanpham->image != $sanpham->image){
+            $content4 = "*<span style='color: red;'>Ảnh bìa:</span> <img src=\"" . url("/storage/uploads/$sanpham->image") . "\" alt=\"\" width=\"100px\" height=\"100px\">";
+        }
+
+        if($content1 || $content2 || $content3 || $content4){
+            historylog::create([
+                'user_id' => Auth::user()->id,
+                'role' => Auth::user()->role,
+                'content' => $title.$content1.$content2.$content3.$content4,
+            ]);
+        }
+
         return redirect()->route('sanpham.edit', ['id' => $sanpham->id])
-        ->with('success', 'Cập nhật sản phẩm thành công!');        }
+            ->with('success', 'Cập nhật sản phẩm thành công!');
+    }
     /**
      * Remove the specified resource from storage.
      */
