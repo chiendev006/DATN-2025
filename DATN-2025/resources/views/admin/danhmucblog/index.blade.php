@@ -250,7 +250,7 @@
                         <div class="custom-modal-content" style="background:#fff;border-radius:10px;padding:32px 24px 24px 24px;min-width:320px;max-width:90vw;box-shadow:0 4px 24px 0 rgba(0,0,0,0.08),0 1.5px 4px 0 rgba(0,0,0,0.03);position:relative;">
                             <span class="custom-modal-close" id="close-edit-danhmucblog-modal" style="position:absolute;top:12px;right:18px;font-size:2rem;color:#888;cursor:pointer;font-weight:bold;z-index:2;">&times;</span>
                             <h3>Chỉnh sửa danh mục blog</h3>
-                            <form id="editDanhMucBlogForm" method="post">
+                            <form id="editDanhMucBlogForm" method="POST" action="">
                                 @csrf
                                 <input type="hidden" name="id" id="edit-id">
                                 <div class="field-wrapper">
@@ -275,6 +275,93 @@
                             </form>
                         </div>
                     </div>
+                    <!-- Modal popup thêm danh mục blog -->
+                    <div id="addDanhMucBlogModal" class="custom-modal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);align-items:center;justify-content:center;">
+                        <div class="custom-modal-content" style="background:#fff;border-radius:10px;padding:32px 24px 24px 24px;min-width:320px;max-width:90vw;box-shadow:0 4px 24px 0 rgba(0,0,0,0.08),0 1.5px 4px 0 rgba(0,0,0,0.03);position:relative;">
+                            <span class="custom-modal-close" id="close-add-danhmucblog-modal" style="position:absolute;top:12px;right:18px;font-size:2rem;color:#888;cursor:pointer;font-weight:bold;z-index:2;">&times;</span>
+                            <h3>Thêm danh mục blog</h3>
+                            <form id="addDanhMucBlogForm" method="POST" action="/admin/blogs/danhmucblog/store">
+                                @csrf
+                                <div class="field-wrapper">
+                                    <div class="field-placeholder">Tên danh mục blog <span class="text-danger"></span></div>
+                                    <div class="field-body">
+                                        <div class="field">
+                                            <div class="control icons-left">
+                                                <input class="input" type="text" id="add-name" name="name" placeholder="Nhập tên danh mục blog">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field grouped">
+                                    <div class="control">
+                                        <button type="submit" class="btn-success">Thêm mới</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
+                    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Thêm danh mục blog
+    const btnAdd = document.getElementById('btn-add-danhmucblog');
+    const editModal = document.getElementById('editDanhMucBlogModal');
+    const closeEditModal = document.getElementById('close-edit-danhmucblog-modal');
+    const editForm = document.getElementById('editDanhMucBlogForm');
+    const editId = document.getElementById('edit-id');
+    const editName = document.getElementById('edit-name');
+
+    // Mở popup sửa
+    document.querySelectorAll('.btn-edit-danhmucblog').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            editId.value = btn.getAttribute('data-id');
+            editName.value = btn.getAttribute('data-name');
+            editForm.action = '/admin/blogs/danhmucblog/update/' + btn.getAttribute('data-id');
+            editModal.style.display = 'flex';
+            editModal.classList.add('show');
+        });
+    });
+
+    // Đóng popup
+    if (closeEditModal) {
+        closeEditModal.addEventListener('click', function() {
+            editModal.style.display = 'none';
+            editModal.classList.remove('show');
+        });
+    }
+
+    // Đóng popup khi click ra ngoài nội dung
+    editModal.addEventListener('click', function(e) {
+        if (e.target === editModal) {
+            editModal.style.display = 'none';
+            editModal.classList.remove('show');
+        }
+    });
+
+    const addModal = document.getElementById('addDanhMucBlogModal');
+    const closeAddModal = document.getElementById('close-add-danhmucblog-modal');
+    const btnAddNew = document.getElementById('btn-add-danhmucblog');
+
+    if (btnAddNew) {
+        btnAddNew.addEventListener('click', function() {
+            addModal.style.display = 'flex';
+            addModal.classList.add('show');
+        });
+    }
+    if (closeAddModal) {
+        closeAddModal.addEventListener('click', function() {
+            addModal.style.display = 'none';
+            addModal.classList.remove('show');
+        });
+    }
+    addModal.addEventListener('click', function(e) {
+        if (e.target === addModal) {
+            addModal.style.display = 'none';
+            addModal.classList.remove('show');
+        }
+    });
+});
+</script>
 
 
