@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\historylog;
 use App\Models\Product_topping;
+use App\Models\sanpham;
 use App\Models\Size;
 use App\Models\Topping;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class Product_attributesController extends Controller
 {
@@ -19,12 +22,27 @@ class Product_attributesController extends Controller
             'sizes.*.name' => 'required|string',
             'sizes.*.price' => 'required|numeric',
         ]);
+        $sanpham = sanpham::find($request->product_id)->name    ;
 
-                Size::create([
+                $size= Size::create([
                     'product_id' => $request->product_id,
                     'size' => $request->size_name,
                     'price' => $request->size_price,
                 ]);
+
+
+    $content1='';
+    $content2='';
+    $title='<strong>Thêm size cho sản phẩm: '.$sanpham.'</strong> <br>';
+        $content1=" *<span style='color: red;'>Tên size:</span> `$size->size` <br>";
+        $content2= "*<span style='color: red;'>Giá:</span> `$size->price` <br>";
+
+
+    historylog::create([
+        'user_id' => Auth::user()->id,
+        'role' => Auth::user()->role,
+        'content' =>$title.$content1.$content2,
+    ]);
              return redirect()->route('sanpham.edit', ['id' => session('sanpham_id'), ])->with('success', 'Thêm sản phẩm và size thành công!');
 
     }
@@ -35,8 +53,23 @@ class Product_attributesController extends Controller
         return view('admin.size.edit', compact('size'));
     }
 
-    public function delete($id) {
-        \App\Models\Size::destroy($id);
+    public function delete($id)
+     {
+        $size = Size::find($id);
+        $sanpham = sanpham::find($size->product_id)->name    ;
+        Size::where('id', $id)->delete();
+        $content1='';
+        $content2='';
+        $title='<strong>Xóa size cho sản phẩm: '.$sanpham.'</strong> <br>';
+        $content1=" *<span style='color: red;'>Tên size:</span> `$size->size` <br>";
+        $content2= "*<span style='color: red;'>Giá:</span> `$size->price` VNĐ <br>";
+
+        historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' =>$title.$content1.$content2,
+        ]);
+
         if (request()->ajax()) {
             return response()->json(['success' => true]);
         }
@@ -45,7 +78,21 @@ class Product_attributesController extends Controller
 
     public function deleteTopping($id)
 {
-   Product_topping::where('id', $id)->delete();
+    $topping = Product_topping::find($id);
+    $sanpham = sanpham::find($topping->product_id)->name    ;
+    Product_topping::where('id', $id)->delete();
+    $content1='';
+    $content2='';
+    $title='<strong>Xóa topping cho sản phẩm: '.$sanpham.'</strong> <br>';
+        $content1=" *<span style='color: red;'>Tên topping:</span> `$topping->topping` <br>";
+        $content2= "*<span style='color: red;'>Giá:</span> `$topping->price` VNĐ <br>";
+
+
+    historylog::create([
+        'user_id' => Auth::user()->id,
+        'role' => Auth::user()->role,
+        'content' =>$title.$content1.$content2,
+    ]);
     if (request()->ajax()) {
         return response()->json(['success' => true]);
     }
@@ -61,18 +108,35 @@ class Product_attributesController extends Controller
         'topping_ids'   => 'required|array',
         'topping_ids.*' => 'exists:topping,id',
     ]);
+    $sanpham = sanpham::find($request->id)->name    ;
+
 
         $topping_ids = $request->input('topping_ids', []);
          foreach ($topping_ids as $topping_id) {
             $topping = Topping::find($topping_id);
             if ($topping) {
-                Product_topping::create([
+                $topping=Product_topping::create([
                     'product_id' => $request->id,
                     'topping'    => $topping->name,
                     'price'      => $topping->price,
                 ]);
             }
         }
+        $content1='';
+        $content2='';
+        $title='<strong>Thêm topping cho sản phẩm: '.$sanpham.'</strong> <br>';
+            $content1=" *<span style='color: red;'>Tên topping - Giá:</span> <br>";
+            foreach ($topping_ids as $topping_id) {
+                $topping = Topping::find($topping_id);
+                if ($topping) {
+                $content2 .= $topping->name. ' - ' . $topping->price . ' VNĐ<br>';
+            }
+        }
+        historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' =>$title.$content1.$content2,
+        ]);
         return redirect()->route('sanpham.edit', ['id' => $request->id])->with('success', 'Thêm topping thành công!');
 
         }
