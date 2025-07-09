@@ -41,21 +41,28 @@ class HomeController extends Controller
         $ordersThisWeek = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek]);
         $success = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('pay_status', '1')->count();
         $pending = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('pay_status', '0')->count();
-        $cancel = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('pay_status', '2')->orwhere('pay_status','3')->count();
+        $cancel = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where(function($query) {
+            $query->where('pay_status', '2')->orWhere('pay_status', '3');
+        })->count();
 
         // Pie chart: Xu hướng khách hàng
-        // Lấy tất cả user_id là null hoặc user_id có role=21
+        // Lấy tất cả user_id là null hoặc user_id có role=21 hoặc role=1
         $orders = Order::all();
         $userIds = $orders->pluck('user_id')->filter()->unique();
-        $role21Ids = [];
+        $role21And1Ids = [];
         if ($userIds->count() > 0) {
-            $role21Ids = \App\Models\User::whereIn('id', $userIds)->where('role', 21)->orwhere('role', 1)->pluck('id')->toArray();
+            $role21And1Ids = \App\Models\User::whereIn('id', $userIds)
+                ->where(function($query) {
+                    $query->where('role', 21)->orWhere('role', 1);
+                })
+                ->pluck('id')
+                ->toArray();
         }
-        $muaThang = $orders->where(function($order) use ($role21Ids) {
-            return is_null($order->user_id) || in_array($order->user_id, $role21Ids);
+        $muaThang = $orders->where(function($order) use ($role21And1Ids) {
+            return is_null($order->user_id) || in_array($order->user_id, $role21And1Ids);
         })->count();
-        $muaTaiKhoan = $orders->where(function($order) use ($role21Ids) {
-            return !is_null($order->user_id) && !in_array($order->user_id, $role21Ids);
+        $muaTaiKhoan = $orders->where(function($order) use ($role21And1Ids) {
+            return !is_null($order->user_id) && !in_array($order->user_id, $role21And1Ids);
         })->count();
 
         $recentOrders = Order::orderBy('created_at', 'desc')->limit(5)->get();
@@ -87,17 +94,40 @@ class HomeController extends Controller
         $startDate = $request->start_date;
         $endDate = date('Y-m-d 23:59:59', strtotime($request->end_date));
 
-        $revenueData = Order::whereBetween('created_at', [$startDate, $endDate])
+        // Bước 1: Lấy danh sách ngày, số lượng đơn, hoàn thành, hủy
+        $orderStats = Order::whereBetween('created_at', [$startDate, $endDate])
             ->select(
                 DB::raw('DATE(created_at) as date'),
                 DB::raw('COUNT(*) as total_orders'),
-                DB::raw("SUM(CASE WHEN pay_status = '1' THEN total ELSE 0 END) as revenue"),
                 DB::raw("COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_count"),
                 DB::raw("COUNT(CASE WHEN status = 'cancelled' THEN 1 END) as cancelled_count")
             )
             ->groupBy('date')
             ->orderBy('date')
-            ->get();
+            ->get()
+            ->keyBy('date');
+
+        // Bước 2: Lấy doanh thu từng ngày (chỉ đơn đã thanh toán)
+        $revenues = Order::whereBetween('created_at', [$startDate, $endDate])
+            ->where('pay_status', '1')
+            ->select(
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('SUM(total) as revenue')
+            )
+            ->groupBy('date')
+            ->pluck('revenue', 'date');
+
+        // Bước 3: Merge doanh thu vào mảng kết quả
+        $revenueData = [];
+        foreach ($orderStats as $date => $stat) {
+            $revenueData[] = [
+                'date' => $date,
+                'total_orders' => $stat->total_orders,
+                'completed_count' => $stat->completed_count,
+                'cancelled_count' => $stat->cancelled_count,
+                'revenue' => isset($revenues[$date]) ? $revenues[$date] : 0,
+            ];
+        }
 
         // Top khách hàng (role != 1, 21, 22)
         $topCustomer = Order::whereBetween('created_at', [$startDate, $endDate])
@@ -126,7 +156,7 @@ class HomeController extends Controller
         // Top sản phẩm bán chạy
         $topProducts = \App\Models\Orderdetail::whereHas('order', function($q) use ($startDate, $endDate) {
                 $q->whereBetween('created_at', [$startDate, $endDate])
-                  ->where('status', 'completed');
+                  ->where('pay_status', '1'); // Chỉ đơn đã thanh toán
             })
             ->select('product_id', DB::raw('SUM(quantity) as total_sold'))
             ->groupBy('product_id')
@@ -137,7 +167,7 @@ class HomeController extends Controller
 
         // Thống kê mã giảm giá
         $coupons = \App\Models\Coupon::with(['orders' => function($q) use ($startDate, $endDate) {
-            $q->where('status', 'completed')
+            $q->where('pay_status', '1') // Chỉ đơn đã thanh toán
               ->whereBetween('orders.created_at', [$startDate, $endDate]);
         }])->get();
         $couponStats = [];
@@ -173,13 +203,13 @@ class HomeController extends Controller
         // 2. Số lượng người dùng tham gia
         $usersEarnedPoints = \App\Models\PointTransaction::where('type', 'earn')
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->distinct('user_id')->count('user_id');
+            ->distinct()->count('user_id');
         $usersUsedPoints = \App\Models\PointTransaction::where('type', 'spend')
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->distinct('user_id')->count('user_id');
+            ->distinct()->count('user_id');
         $usersAdjustedPoints = \App\Models\PointTransaction::where('type', 'adjust')
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->distinct('user_id')->count('user_id');
+            ->distinct()->count('user_id');
         
         // 3. Top người tích điểm nhiều nhất
         $topEarners = \App\Models\PointTransaction::where('type', 'earn')
@@ -252,7 +282,8 @@ class HomeController extends Controller
             'total_spent' => $totalSpent,
             'total_adjusted' => $totalAdjusted,
             'total_expired' => $totalExpired,
-            'usage_rate' => $totalEarned > 0 ? round(($totalSpent / $totalEarned) * 100, 2) : 0,
+            // Giới hạn usage_rate tối đa 100%
+            'usage_rate' => $totalEarned > 0 ? min(round(($totalSpent / $totalEarned) * 100, 2), 100) : 0,
             'users_earned' => $usersEarnedPoints,
             'users_used' => $usersUsedPoints,
             'users_adjusted' => $usersAdjustedPoints,
