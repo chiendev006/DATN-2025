@@ -16,11 +16,11 @@
                 @foreach ($comments as $item)
                     <div class="comment-inner-list d-flex mb-4">
                         <div class="comment-img mr-3">
-                            <img src="{{ asset('storage/' . $item->user->image) }}" alt="User Image"
+                            <img src="{{ $item->user && $item->user->image ? asset('storage/' . $item->user->image) : 'https://placehold.co/60x60?text=No+User' }}" alt="User Image"
                                  style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
                         </div>
                         <div class="comment-info">
-                            <h5 class="mb-1">{{ $item->user->name }}</h5>
+                            <h5 class="mb-1">{{ $item->user ? $item->user->name : 'Người dùng đã xóa' }}</h5>
                             <span class="comment-date d-block mb-2 text-muted">
                                 {{ $item->created_at->format('d/m/Y H:i') }}
                             </span>

@@ -192,9 +192,13 @@
                 @if($coupon->expires_at)
                     <p class="coupon-expiry">HSD: {{ \Carbon\Carbon::parse($coupon->expires_at)->format('d/m/Y') }}</p>
                 @endif
-                @if(!is_null($coupon->used) && !is_null($coupon->usage_limit))
+                @php
+                    $usageLimit = $coupon->usage_limit;
+                    $used = $coupon->used ?? 0;
+                @endphp
+                @if(!is_null($usageLimit) && $usageLimit > 0)
                     <p class="coupon-usage">
-                        Còn lại: {{ $coupon->usage_limit - $coupon->used }} / {{ $coupon->usage_limit }} lần
+                        Còn lại: {{ max($usageLimit - $used, 0) }} / {{ $usageLimit }} lần
                     </p>
                 @endif
             </div>

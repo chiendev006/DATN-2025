@@ -89,10 +89,9 @@
                 <div class="discount-part">
                     <div class="row">
                         <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="700ms" data-wow-delay="700ms">
-                            <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">HAPPY CUSTOMER EVENT</h6>
-                            <h2  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="text-coffee">DISCOUNT <span>50%</span></h2>
-                            <p  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor int et lamp dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</p>
-                            <a  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="#" class="button-default buttone-text-dark">LEARN MORE</a>
+                            <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">SỰ KIỆN KHÁCH HÀNG HÀI LÒNG</h6>
+                            <h2  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="text-coffee">GIẢM GIÁ <span>50%</span></h2>
+                            <p  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">"Đau đớn bản thân nó là điều quan trọng, được yêu thích những người đang chịu đựng điều gì đó. Để có thể làm việc ít hơn, người ta tránh..."</p>
                         </div>
                         <div class="col-md-7 col-sm-7 col-xs-12">
                             <div class="discount-right">
