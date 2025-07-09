@@ -168,24 +168,27 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => response.json())
         .then(data => {
             // Update product list
-            productList.innerHTML = data.products.map(product => `
-                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                    <div class="shop-main-list">
-                        <div class="shop-product">
-                            <a href="${productDetailRoute.replace(':id', product.id)}">
-                                <img style="max-width: 263px; min-width: 263px; max-height: 275px; min-height: 275px; border-radius:23px" src="/storage/uploads/${product.image}" alt="${product.name}" style="border-radius: 20px;">
-                            </a>
-                            <div class="cart-overlay-wrap">
-                                <div class="cart-overlay">
-                                    <a href="${productDetailRoute.replace(':id', product.id)}" class="shop-cart-btn">ADD TO CART</a>
+            productList.innerHTML = data.products.map(product => {
+                let imageUrl = product.image_url || (product.image ? (product.image.startsWith('/') ? product.image : '/storage/uploads/' + product.image) : 'https://placehold.co/263x275/f8f8f8/ccc?text=No+Image');
+                return `
+                    <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                        <div class="shop-main-list">
+                            <div class="shop-product">
+                                <a href="${productDetailRoute.replace(':id', product.id)}">
+                                    <img src="${imageUrl}" alt="${product.name}" style="border-radius: 20px;">
+                                </a>
+                                <div class="cart-overlay-wrap">
+                                    <div class="cart-overlay">
+                                        <a href="${productDetailRoute.replace(':id', product.id)}" class="shop-cart-btn">ADD TO CART</a>
+                                    </div>
                                 </div>
                             </div>
+                            <a href="${productDetailRoute.replace(':id', product.id)}"><h5>${product.name}</h5></a>
+                            <h5><strong>${new Intl.NumberFormat('vi-VN').format(product.min_price)} VND</strong></h5>
                         </div>
-                        <a href="${productDetailRoute.replace(':id', product.id)}"><h5>${product.name}</h5></a>
-                        <h5><strong>${new Intl.NumberFormat('vi-VN').format(product.min_price)} VND</strong></h5>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
             // Update pagination
             let paginationHtml = `
@@ -231,24 +234,27 @@ document.addEventListener('DOMContentLoaded', function () {
             data: { min: minPrice, max: maxPrice, page: page },
             success: function (data) {
                 // Update product list
-                productList.innerHTML = data.products.map(product => `
-                    <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                        <div class="shop-main-list">
-                            <div class="shop-product">
-                                <a href="${productDetailRoute.replace(':id', product.id)}">
-                                    <img src="/storage/uploads/${product.image}" alt="${product.name}" style="border-radius: 20px;">
-                                </a>
-                                <div class="cart-overlay-wrap">
-                                    <div class="cart-overlay">
-                                        <a href="${productDetailRoute.replace(':id', product.id)}" class="shop-cart-btn">ADD TO CART</a>
+                productList.innerHTML = data.products.map(product => {
+                    let imageUrl = product.image_url || (product.image ? (product.image.startsWith('/') ? product.image : '/storage/uploads/' + product.image) : 'https://placehold.co/263x275/f8f8f8/ccc?text=No+Image');
+                    return `
+                        <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                            <div class="shop-main-list">
+                                <div class="shop-product">
+                                    <a href="${productDetailRoute.replace(':id', product.id)}">
+                                        <img src="${imageUrl}" alt="${product.name}" style="border-radius: 20px;">
+                                    </a>
+                                    <div class="cart-overlay-wrap">
+                                        <div class="cart-overlay">
+                                            <a href="${productDetailRoute.replace(':id', product.id)}" class="shop-cart-btn">ADD TO CART</a>
+                                        </div>
                                     </div>
                                 </div>
+                                <a href="${productDetailRoute.replace(':id', product.id)}"><h5>${product.name}</h5></a>
+                                <h5><strong>${new Intl.NumberFormat('vi-VN').format(product.min_price)} VND</strong></h5>
                             </div>
-                            <a href="${productDetailRoute.replace(':id', product.id)}"><h5>${product.name}</h5></a>
-                            <h5><strong>${new Intl.NumberFormat('vi-VN').format(product.min_price)} VND</strong></h5>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
 
                 // Update pagination
                 let paginationHtml = `
@@ -327,14 +333,16 @@ document.addEventListener('DOMContentLoaded', function () {
             success: function (response) {
                 let html = '';
 
+                // --- Tìm kiếm sản phẩm ---
                 if (response.sanpham.length > 0) {
                     response.sanpham.forEach(function (item) {
+                        let imageUrl = item.image_url || (item.image ? (item.image.startsWith('/') ? item.image : '/storage/uploads/' + item.image) : 'https://placehold.co/263x275/f8f8f8/ccc?text=No+Image');
                         html += `
                             <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown">
                                 <div class="shop-main-list">
                                     <div class="shop-product">
                                         <a href="${productDetailRoute.replace(':id', item.id)}">
-                                            <img src="/storage/uploads/${item.image}" alt="${item.name}" style="border-radius: 20px;">
+                                            <img src="${imageUrl}" alt="${item.name}" style="border-radius: 20px;">
                                         </a>
                                         <div class="cart-overlay-wrap">
                                             <div class="cart-overlay">

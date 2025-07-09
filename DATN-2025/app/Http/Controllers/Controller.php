@@ -99,10 +99,19 @@ public function ajaxSearch(Request $request)
         ->get();
     $data = $sanphams->map(function ($item) {
         $minPrice = $item->sizes->min('price');
+        $imageUrl = null;
+        if ($item->image) {
+            $imageUrl = str_starts_with($item->image, 'http')
+                ? $item->image
+                : url('storage/uploads/' . ltrim($item->image, '/'));
+        } else {
+            $imageUrl = 'https://placehold.co/263x275/f8f8f8/ccc?text=No+Image';
+        }
         return [
             'id' => $item->id,
             'name' => $item->name,
-            'image' => asset('storage/' . ltrim($item->image, '/')),
+            'image' => $imageUrl, // giữ lại cho tương thích cũ
+            'image_url' => $imageUrl, // trường mới, frontend nên ưu tiên dùng
             'min_price' => $minPrice ?? 0,
         ];
     });
@@ -125,10 +134,19 @@ public function filterByPrice(Request $request)
     $products = $query->paginate($perPage, ['*'], 'page', $page);
 
     $data = $products->map(function ($item) {
+        $imageUrl = null;
+        if ($item->image) {
+            $imageUrl = str_starts_with($item->image, 'http')
+                ? $item->image
+                : url('storage/uploads/' . ltrim($item->image, '/'));
+        } else {
+            $imageUrl = 'https://placehold.co/263x275/f8f8f8/ccc?text=No+Image';
+        }
         return [
             'id' => $item->id,
             'name' => $item->name,
-            'image' => asset('storage/' . (str_contains($item->image, 'uploads/') ? $item->image : 'uploads/' . $item->image)),
+            'image' => $imageUrl, // giữ lại cho tương thích cũ
+            'image_url' => $imageUrl, // trường mới, frontend nên ưu tiên dùng
             'min_price' => $item->attributes->min('price') ?? 0,
         ];
     });

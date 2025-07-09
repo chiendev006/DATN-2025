@@ -31,6 +31,8 @@ class ShopController extends Controller
 
         foreach ($firstProducts as $sp) {
             $sp->min_price = $sp->sizes_min_price ?? 0;
+            $sp->image = $sp->image ?? '';
+            $sp->image_url = $sp->image ? url('storage/uploads/' . $sp->image) : 'https://placehold.co/263x275/f8f8f8/ccc?text=No+Image';
         }
 
         // Add best deals
