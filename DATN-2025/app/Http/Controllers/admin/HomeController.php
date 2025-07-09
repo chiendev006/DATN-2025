@@ -180,6 +180,8 @@ class HomeController extends Controller
                 'used_count' => $usedCount,
                 'total_discount' => $totalDiscount,
                 'total_revenue' => $totalRevenue,
+                'expires_at' => $coupon->expires_at ?? null,
+                'max_uses' => $coupon->max_uses ?? null,
             ];
         }
 
