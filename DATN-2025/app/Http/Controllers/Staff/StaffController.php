@@ -112,6 +112,9 @@ class StaffController extends Controller
                 $order->phone = $customer->phone;
             }
 
+            // Lưu order trước để có ID
+            $order->save();
+
             // Xử lý sử dụng điểm nếu có
             $pointsUsed = (int) $request->input('points_used', 0);
             $pointsDiscount = 0;
@@ -120,27 +123,49 @@ class StaffController extends Controller
                 $vndPerPoint = (int) (\DB::table('point_settings')->where('key', 'vnd_per_point')->value('value') ?? 1000);
                 $maxPoints = min($customer->points, $pointsUsed);
                 $pointsDiscount = $maxPoints * $vndPerPoint;
+                
+                \Log::info('DEBUG_POINT: Creating point transaction', [
+                    'order_id' => $order->id,
+                    'customer_id' => $customer->id,
+                    'points_used' => $pointsUsed,
+                    'max_points' => $maxPoints,
+                    'points_discount' => $pointsDiscount
+                ]);
+                
                 // Trừ điểm
                 $customer->points -= $maxPoints;
                 $customer->save();
-                // Ghi log
-                \DB::table('point_transactions')->insert([
-                    'user_id' => $customer->id,
-                    'points' => -$maxPoints,
-                    'type' => 'spend',
-                    'description' => 'Sử dụng điểm giảm giá đơn hàng POS #' . $order->id,
-                    'order_id' => $order->id,
-                    'created_by' => Auth::guard('staff')->user()->id,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-                // Lưu vào order
+                
+                // Ghi log transaction
+                try {
+                    \DB::table('point_transactions')->insert([
+                        'user_id' => $customer->id,
+                        'points' => -$maxPoints,
+                        'type' => 'spend',
+                        'description' => 'Sử dụng điểm giảm giá đơn hàng POS #' . $order->id,
+                        'order_id' => $order->id,
+                        'created_by' => Auth::guard('staff')->user()->id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                    
+                    \Log::info('DEBUG_POINT: Point transaction created successfully', [
+                        'order_id' => $order->id,
+                        'transaction_points' => -$maxPoints
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('DEBUG_POINT: Failed to create point transaction', [
+                        'order_id' => $order->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+                
+                // Cập nhật order
                 $order->points_used = $maxPoints;
                 $order->points_discount = $pointsDiscount;
                 $order->total -= $pointsDiscount;
+                $order->save();
             }
-
-            $order->save();
             // Lưu chi tiết order
             foreach ($request->cart as $item) {
                 $detail = new Orderdetail();
@@ -194,7 +219,8 @@ class StaffController extends Controller
         $sanpham = SanPham::all();
         $danhmuc = DanhMuc::all();
         $message = session('message');
-        return view('staff.menu', compact('sanpham', 'danhmuc', 'message'));
+        $vndPerPoint = (int) (\DB::table('point_settings')->where('key', 'vnd_per_point')->value('value') ?? 1000);
+        return view('staff.menu', compact('sanpham', 'danhmuc', 'message', 'vndPerPoint'));
     }
 
     public function productsByCategory($id)
@@ -203,10 +229,11 @@ class StaffController extends Controller
         $danhmuc = DanhMuc::all();
         $selectedDanhmuc = DanhMuc::find($id);
         $message = session('message');
+        $vndPerPoint = (int) (\DB::table('point_settings')->where('key', 'vnd_per_point')->value('value') ?? 1000);
         if (!$selectedDanhmuc) {
             return redirect()->route('staff.products')->with('error', 'Danh mục không tồn tại.');
         }
-        return view('staff.menu', compact('sanpham', 'danhmuc', 'selectedDanhmuc', 'message'));
+        return view('staff.menu', compact('sanpham', 'danhmuc', 'selectedDanhmuc', 'message', 'vndPerPoint'));
     }
     public function orderdetailtoday()
 {
@@ -287,6 +314,19 @@ class StaffController extends Controller
         }
 
         $order->save();
+
+        // Hoàn điểm khi đơn bị hủy (nếu có)
+        if ($status === 'cancelled') {
+            try {
+                \App::make('App\\Services\\PointService')->refundPointsFromOrder($order);
+                \App::make('App\\Services\\PointService')->refundEarnedPointsFromOrder($order);
+            } catch (\Exception $e) {
+                \Log::error('POINT_DEBUG: Error refunding points in StaffController', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
 
         // Cộng điểm khi đơn chuyển sang hoàn thành
         if ($status === 'completed' && $order->customer_id) {

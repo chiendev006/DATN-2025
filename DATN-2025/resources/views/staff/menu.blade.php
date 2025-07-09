@@ -300,6 +300,10 @@
                             <div id="apply-coupon-btn"></div>
                             <div id="coupon-message" style="font-size:14px;margin-top:4px;"></div>
                         </div>
+                        @php
+                            $enablePointsSystem = \DB::table('point_settings')->where('key', 'enable_points_system')->value('value') == '1';
+                        @endphp
+                        @if($enablePointsSystem)
                         <div class="mb-2">
                             <label for="customer-phone" class="form-label mb-1">Số điện thoại khách hàng (tích điểm):</label>
                             <input type="text" class="form-control" id="customer-phone" name="customer_phone" placeholder="Nhập số điện thoại...">
@@ -310,6 +314,7 @@
                             <input type="number" class="form-control" id="points-used" name="points_used" min="0" value="0" disabled>
                             <div id="points-error" class="invalid-feedback" style="display: none; font-size: 12px; color: #dc3545;"></div>
                         </div>
+                        @endif
                         <div class="mb-2">
 
                             <label for="payment-method" class="me-2 mb-0 fw-bold">Thanh toán:</label>
@@ -319,7 +324,19 @@
                             </select>
                         </div>
                         <div class="d-flex align-items-center mb-2">
-                            <div>Total</div>
+                            <div class="fw-bold">Tổng tiền hàng:</div>
+                            <div class="flex-1 text-end h6 mb-0" id="cart-subtotal">0đ</div>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <div>Giảm giá từ mã:</div>
+                            <div class="flex-1 text-end h6 mb-0" id="cart-discount">-0đ</div>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <div>Giảm giá từ điểm:</div>
+                            <div class="flex-1 text-end h6 mb-0" id="points-discount">-0đ</div>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="fw-bold">Tổng tiền:</div>
                             <div class="flex-1 text-end h4 mb-0" id="cart-total">0đ</div>
                         </div>
                         <div class="mt-3">
@@ -421,6 +438,26 @@
     src="{{ url('assetstaff') }}/js/demo/pos-customer-order.demo.js"
 ></script>
 <script>
+    // Truyền giá trị từ backend sang JS
+    var vndPerPoint = {{ $vndPerPoint }};
+
+    function updateSidebarTotal() {
+        // Lấy tổng tiền hàng (chưa giảm)
+        let subtotal = parseInt($('#cart-subtotal').text().replace(/\D/g, '')) || 0;
+        // Lấy giảm giá từ mã (nếu có)
+        let discount = parseInt($('#cart-discount').text().replace(/\D/g, '')) || 0;
+        // Lấy số điểm sử dụng
+        let points = parseInt($('#points-used').val()) || 0;
+        // Tính giảm giá từ điểm (dùng cấu hình backend)
+        let pointsDiscount = points * vndPerPoint;
+        // Hiển thị giảm giá từ điểm
+        $('#points-discount').text('-' + pointsDiscount.toLocaleString('vi-VN') + 'đ');
+        // Tính tổng tiền cuối cùng
+        let total = subtotal - discount - pointsDiscount;
+        if (total < 0) total = 0;
+        // Hiển thị tổng tiền
+        $('#cart-total').text(total.toLocaleString('vi-VN') + 'đ');
+    }
     $(document).ready(function(){
         $('#customer-phone').on('blur', function(){
             var phone = $(this).val();
@@ -429,16 +466,24 @@
                     if(res.success) {
                         $('#customer-point-info').text('Điểm hiện có: ' + res.points);
                         $('#points-used').prop('disabled', false).attr('max', res.points).val(0);
+                        updateSidebarTotal();
                     } else {
                         $('#customer-point-info').text('Không tìm thấy khách hàng.');
                         $('#points-used').prop('disabled', true).val(0);
+                        updateSidebarTotal();
                     }
                 });
             } else {
                 $('#customer-point-info').text('');
                 $('#points-used').prop('disabled', true).val(0);
+                updateSidebarTotal();
             }
         });
+        $('#points-used').on('input', function() {
+            updateSidebarTotal();
+        });
+        // Gọi lại khi render lại giỏ hàng
+        // updateSidebarTotal();
     });
 </script>
 </body>

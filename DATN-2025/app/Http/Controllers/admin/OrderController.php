@@ -30,7 +30,7 @@ class OrderController extends Controller
 
     public function update(Request $request, $id)
     {
-        $order = \App\Models\Order::findOrFail($id);
+        $order = \App\Models\Order::with(['user', 'customer'])->findOrFail($id);
         
         if ($request->has('pay_status') && $request->input('pay_status') !== '') {
             $order->pay_status = (string) $request->input('pay_status');
@@ -57,7 +57,19 @@ class OrderController extends Controller
         $order->save();
 
         // Tích điểm khi đơn hàng hoàn thành
-        if ($status === 'Hoàn thành' && $order->pay_status === 'Đã thanh toán') {
+        if ($status === 'completed' && $order->pay_status === '1') {
+            \Log::info('POINT_DEBUG: Attempting to earn points', [
+                'order_id' => $order->id,
+                'status' => $status,
+                'pay_status' => $order->pay_status,
+                'user_id' => $order->user_id,
+                'customer_id' => $order->customer_id,
+                'has_user' => $order->user ? 'yes' : 'no',
+                'has_customer' => $order->customer ? 'yes' : 'no',
+                'user_role' => $order->user ? $order->user->role : 'no_user',
+                'customer_role' => $order->customer ? $order->customer->role : 'no_customer'
+            ]);
+            
             try {
                 $earnedPoints = $this->pointService->earnPointsFromOrder($order);
                 if ($earnedPoints > 0) {
@@ -66,10 +78,112 @@ class OrderController extends Controller
                     $msg = 'Cập nhật đơn hàng thành công!';
                 }
             } catch (\Exception $e) {
+                \Log::error('POINT_DEBUG: Error earning points', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
                 $msg = 'Cập nhật đơn hàng thành công! (Lỗi tích điểm: ' . $e->getMessage() . ')';
             }
+        }
+        // Hoàn điểm khi hủy đơn hàng
+        elseif ($status === 'cancelled' && $oldStatus !== 'cancelled') {
+            // Xác định đơn tại quầy
+            $isStaffOrder = false;
+            if ($order->customer_id) {
+                // Đơn tại quầy có customer_id
+                $isStaffOrder = true;
+            } elseif ($order->user_id && $order->user && $order->user->role === 1) {
+                // Đơn online có user_id là nhân viên
+                $isStaffOrder = true;
+            } elseif ($order->phone === 'N/A' || $order->phone === 'Không có' || $order->phone === 'Nhân viên thu ngân') {
+                // Đơn tại quầy không có customer_id nhưng có phone đặc biệt
+                $isStaffOrder = true;
+            } elseif (str_contains($order->name, 'Khách lẻ') || str_contains($order->name, 'Khách Vãng Lai')) {
+                // Đơn tại quầy có tên đặc biệt
+                $isStaffOrder = true;
+            }
+
+            // Logic hoàn điểm khác nhau cho đơn tại quầy và đơn online
+            $shouldRefund = false;
+            if ($isStaffOrder) {
+                // Đơn tại quầy: Chỉ cần trạng thái đơn là đã hủy
+                $shouldRefund = true;
+            } else {
+                // Đơn online: Cần cả trạng thái đơn và trạng thái thanh toán đều là đã hủy
+                $shouldRefund = ($order->pay_status === '2');
+            }
+
+            if ($shouldRefund) {
+                \Log::info('POINT_DEBUG: Attempting to refund points', [
+                    'order_id' => $order->id,
+                    'status' => $status,
+                    'old_status' => $oldStatus,
+                    'pay_status' => $order->pay_status,
+                    'is_staff_order' => $isStaffOrder,
+                    'user_id' => $order->user_id,
+                    'customer_id' => $order->customer_id,
+                    'order_name' => $order->name,
+                    'order_phone' => $order->phone,
+                    'has_user' => $order->user ? 'yes' : 'no',
+                    'has_customer' => $order->customer ? 'yes' : 'no',
+                    'user_role' => $order->user ? $order->user->role : 'no_user',
+                    'customer_role' => $order->customer ? $order->customer->role : 'no_customer'
+                ]);
+                
+                try {
+                    $refundedPoints = $this->pointService->refundPointsFromOrder($order);
+                    $refundedEarnedPoints = $this->pointService->refundEarnedPointsFromOrder($order);
+                    
+                    $totalRefunded = $refundedPoints + $refundedEarnedPoints;
+                    
+                    if ($totalRefunded > 0) {
+                        $msg = "Cập nhật đơn hàng thành công! Đã hoàn {$totalRefunded} điểm cho khách hàng.";
+                        if ($refundedPoints > 0 && $refundedEarnedPoints > 0) {
+                            $msg = "Cập nhật đơn hàng thành công! Đã hoàn {$refundedPoints} điểm sử dụng và {$refundedEarnedPoints} điểm tích lũy cho khách hàng.";
+                        } elseif ($refundedPoints > 0) {
+                            $msg = "Cập nhật đơn hàng thành công! Đã hoàn {$refundedPoints} điểm sử dụng cho khách hàng.";
+                        } elseif ($refundedEarnedPoints > 0) {
+                            $msg = "Cập nhật đơn hàng thành công! Đã hoàn {$refundedEarnedPoints} điểm tích lũy cho khách hàng.";
+                        }
+                    } else {
+                        $msg = 'Cập nhật đơn hàng thành công!';
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('POINT_DEBUG: Error refunding points', [
+                        'order_id' => $order->id,
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                    $msg = 'Cập nhật đơn hàng thành công! (Lỗi hoàn điểm: ' . $e->getMessage() . ')';
+                }
+            } else {
+                \Log::info('POINT_DEBUG: Not refunding points - conditions not met', [
+                    'order_id' => $order->id,
+                    'status' => $status,
+                    'pay_status' => $order->pay_status,
+                    'is_staff_order' => $isStaffOrder,
+                    'order_name' => $order->name,
+                    'order_phone' => $order->phone,
+                    'user_id' => $order->user_id,
+                    'customer_id' => $order->customer_id,
+                    'user_role' => $order->user ? $order->user->role : 'no_user',
+                    'customer_role' => $order->customer ? $order->customer->role : 'no_customer',
+                    'should_refund' => $shouldRefund,
+                    'refund_condition' => $isStaffOrder ? 'staff_order_should_refund' : 'online_order_needs_pay_status_2'
+                ]);
+                $msg = 'Cập nhật đơn hàng thành công!';
+            }
         } else {
-        $msg = 'Cập nhật đơn hàng thành công!';
+            \Log::info('POINT_DEBUG: No point operations', [
+                'order_id' => $order->id,
+                'status' => $status,
+                'pay_status' => $order->pay_status,
+                'old_status' => $oldStatus,
+                'earn_condition_met' => ($status === 'completed' && $order->pay_status === '1') ? 'yes' : 'no',
+                'refund_condition_met' => ($status === 'cancelled' && $oldStatus !== 'cancelled') ? 'yes' : 'no'
+            ]);
+            $msg = 'Cập nhật đơn hàng thành công!';
         }
 
         return redirect()->route('admin.order.index')->with('success', $msg);
