@@ -23,7 +23,7 @@ class PointController extends Controller
     public function getUserPoints()
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return response()->json(['error' => 'Chưa đăng nhập'], 401);
         }
@@ -45,7 +45,7 @@ class PointController extends Controller
     public function getAvailablePointsForOrder(Request $request)
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return response()->json(['error' => 'Chưa đăng nhập'], 401);
         }
@@ -66,7 +66,7 @@ class PointController extends Controller
     public function getPointHistory(Request $request)
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return response()->json(['error' => 'Chưa đăng nhập'], 401);
         }
@@ -86,7 +86,7 @@ class PointController extends Controller
     public function calculateDiscount(Request $request)
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return response()->json(['error' => 'Chưa đăng nhập'], 401);
         }
@@ -103,7 +103,7 @@ class PointController extends Controller
             // Kiểm tra có thể sử dụng điểm không
             if (!$user->canUsePoints($pointsToUse)) {
                 return response()->json([
-                    'error' => 'Không đủ điểm để sử dụng'
+                    'error' => '*Điểm tối đa có thể dùng < Điểm tối thiểu phải dùng'
                 ], 400);
             }
 
@@ -147,4 +147,4 @@ class PointController extends Controller
             'is_enabled' => PointSetting::isPointsSystemEnabled()
         ]);
     }
-} 
+}

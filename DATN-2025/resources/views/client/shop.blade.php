@@ -60,7 +60,7 @@
                                 @foreach($bestDeals as $deal)
                                     <div class="best-deal-blog">
                                         <div class="best-deal-left">
-                                            <a href="{{ route('client.product.detail', $deal->id) }}">  <img style="border-radius: 10px;" src="{{ url('storage/uploads/' . $deal->image) }}" alt="{{ $deal->name }}"
+                                            <a href="{{ route('client.product.detail', $deal->id) }}">  <img style="max-width: 73px; min-width: 73px; max-height: 73px; min-height: 73px; border-radius:23px" src="{{ url('storage/uploads/' . $deal->image) }}" alt="{{ $deal->name }}"
                                             onerror="this.onerror=null;this.src='https://placehold.co/80x80/f8f8f8/ccc?text=Image';">
                                         </a>
 
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="shop-main-list">
                             <div class="shop-product">
                                 <a href="${productDetailRoute.replace(':id', product.id)}">
-                                    <img src="${imageUrl}" alt="${product.name}" style="border-radius: 20px;">
+                                    <img style="max-width: 263px; min-width: 263px; max-height: 275px; min-height: 275px; border-radius:23px" src="${imageUrl}" alt="${product.name}" ">
                                 </a>
                                 <div class="cart-overlay-wrap">
                                     <div class="cart-overlay">
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div class="shop-main-list">
                                 <div class="shop-product">
                                     <a href="${productDetailRoute.replace(':id', product.id)}">
-                                        <img src="${imageUrl}" alt="${product.name}" style="border-radius: 20px;">
+                                        <img style="max-width: 263px; min-width: 263px; max-height: 275px; min-height: 275px; border-radius:23px" src="${imageUrl}" alt="${product.name}" s>
                                     </a>
                                     <div class="cart-overlay-wrap">
                                         <div class="cart-overlay">
@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <div class="shop-main-list">
                                     <div class="shop-product">
                                         <a href="${productDetailRoute.replace(':id', item.id)}">
-                                            <img src="${imageUrl}" alt="${item.name}" style="border-radius: 20px;">
+                                            <img src="${imageUrl}" alt="${item.name}" style="max-width: 263px; min-width: 263px; max-height: 275px; min-height: 275px; border-radius:23px">
                                         </a>
                                         <div class="cart-overlay-wrap">
                                             <div class="cart-overlay">
