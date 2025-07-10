@@ -557,7 +557,10 @@ class CheckoutController extends Controller
                         foreach ($coupons as $c) {
                             $code = $c['code'] ?? '';
                             $discount = $c['discount_value'] ?? 0;
-                            $content5_coupon .= "<span style='color: red;'>Sử dụng mã:</span> <b>" . htmlspecialchars($code) . "</b><br>";
+                            $couponModel = \App\Models\Coupon::where('code', $code)->first();
+                            $type = $couponModel ? $couponModel->type : '';
+                            $typeText = $type === 'percent' ? 'Phần trăm' : ($type === 'fixed' ? 'VND' : $type);
+                            $content5_coupon .= "<span style='color: red;'>Sử dụng mã:</span> <b>" . htmlspecialchars($code) . " (Giảm " . number_format($discount, 0, '.', '') . " $typeText)</b><br>";
                         }
                     }
                 }
