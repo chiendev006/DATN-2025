@@ -1,21 +1,28 @@
 @extends('staff.layout')
 
 @section('main-content')
-<div class="flex flex-row items-center justify-center gap-6 mb-8 w-full">
-    <form method="GET" class="flex items-center gap-3 mb-0 p-0" style="margin-bottom:0; padding:0;">
-        <label for="per_page" class="mb-0 font-semibold text-indigo-700">Đơn/trang:</label>
-        <select id="per_page" name="per_page" class="form-control" style="width: 90px; margin-left: 8px; display: inline-block; vertical-align: middle;">
-            <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản</option>
-            <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 bản</option>
-            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản</option>
-            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
-            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
-        </select>
-        <button type="submit" class="btn btn-primary" style="margin: 0; display: inline-block; vertical-align: middle;">Lọc</button>
-    </form>
-    <h2 class="text-3xl font-extrabold text-indigo-800 flex items-center gap-2 text-center justify-center mb-0" style="margin-bottom:0;">
-        Hóa đơn hôm nay
-    </h2>
+<div class="container-fluid px-0">
+    <div class="row align-items-center mb-4" style="min-height: 56px;">
+        <div class="col-12 col-md-3 d-flex align-items-center justify-content-start mb-2 mb-md-0">
+            <form method="GET" class="d-flex align-items-center gap-2 mb-0" style="margin-bottom:0;">
+                <label for="per_page" class="mb-0 font-semibold text-indigo-700">Đơn/trang:</label>
+                <select id="per_page" name="per_page" class="form-control" style="width: 90px;">
+                    <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản</option>
+                    <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 bản</option>
+                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản</option>
+                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
+                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Lọc</button>
+            </form>
+        </div>
+        <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+            <h2 class="text-3xl font-extrabold text-indigo-800 mb-0" style="white-space:nowrap;">
+                Hóa đơn hôm nay
+            </h2>
+        </div>
+        <div class="col-12 col-md-3"></div>
+    </div>
 </div>
 
 @if ($donhangs->count() == 0)
@@ -127,6 +134,7 @@
                         </tr>
                     </tbody>
                 </table>
+                
             </div>
 
             <!-- Modal Chi tiết đơn hàng -->
@@ -293,8 +301,8 @@
         </div>
         @endforeach
     </div>
-    <div class="mt-6 flex justify-center">
-        {{ $donhangs->withQueryString()->links() }}
+    <div class="mt-6 d-flex justify-content-center" style="margin-top: 20px;">
+        {{ $donhangs->withQueryString()->links('pagination::bootstrap-4') }}
     </div>
 @endif
 
