@@ -1,10 +1,21 @@
 @extends('staff.layout')
 
 @section('main-content')
-
-<h2 class="text-3xl font-extrabold text-indigo-800 mb-8 flex items-center gap-2 text-center justify-center">
-    Hóa đơn hôm nay
-</h2>
+<div>
+    <div  class="field-wrapper">
+        <div class="field-placeholder">Đơn/trang</div>
+            <select name="per_page" class="form-control" style="width: 80px; margin-left: 12px;" onchange="this.form.submit()">
+                <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản </option>
+                <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 bản </option>
+                <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản  </option>
+                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
+                <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
+            </select>
+         <button style="margin-top: -8px;" type="submit" class="btn btn-primary">Lọc</button>
+        <h2 class="text-3xl font-extrabold text-indigo-800 mb-8 flex items-center gap-2 text-center justify-center">
+            Hóa đơn hôm nay
+        </h2> 
+</div>
 
 @if ($donhangs->isEmpty())
     <div class="bg-gray-50 p-6 rounded-xl shadow text-gray-500 italic text-center border border-dashed">
