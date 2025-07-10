@@ -47,107 +47,116 @@ class SanphamController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-    // Validate dữ liệu đầu vào
-    $request->validate([
-        'name' => 'required|string',
-        'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-        'mota' => 'required|string',
-        'id_danhmuc'  => 'required|exists:danhmucs,id',
-    ]);
+    {
+        // Validate dữ liệu đầu vào
+        $request->validate([
+            'name' => 'required|string',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'mota' => 'required|string',
+            'id_danhmuc' => 'required|exists:danhmucs,id', // Đảm bảo bảng 'danhmucs' và cột 'id' tồn tại
+        ]);
 
-    // Lưu session tạm nếu cần
+        // Xử lý ảnh đại diện
+        $image = $request->file('image');
+        $fileName = uniqid() . $image->getClientOriginalName();
+        $image->storeAs('public/uploads/', $fileName); // Lưu ảnh vào storage/app/public/uploads
 
-    // Xử lý ảnh đại diện
-    $image = $request->file('image');
-    $fileName = uniqid() . $image->getClientOriginalName();
-    $image->storeAs('public/uploads/', $fileName);
+        // Tạo sản phẩm mới
+        $sanpham = sanpham::create([
+            'name' => $request->name,
+            'image' => $fileName,
+            'title' => $request->title, // Đảm bảo 'title' có trong fillable của model SanPham
+            'mota' => $request->mota,
+            'id_danhmuc' => $request->id_danhmuc,
+        ]);
 
-    // Tạo sản phẩm
-    $sanpham = sanpham::create([
-        'name' => $request->name,
-        'image' => $fileName,
-        'title' => $request->title,
-        'mota' => $request->mota,
-        'id_danhmuc' => $request->id_danhmuc,
-    ]);
-
-    // Thêm size nếu có
-    if ($request->has('sizes') && is_array($request->sizes)) {
-        foreach ($request->sizes as $size) {
-            Size::create([
-                'product_id' => $sanpham->id,
-                'size' => $size['size'],
-                'price' => $size['price'],
-            ]);
-        }
-    }
-
-    // Thêm topping nếu có
-    if ($request->has('topping_ids') && is_array($request->topping_ids)) {
-        foreach ($request->topping_ids as $topping_id) {
-            $topping = Topping::find($topping_id);
-            if ($topping) {
-                Product_topping::create([
+        // Thêm size nếu có
+        if ($request->has('sizes') && is_array($request->sizes)) {
+            foreach ($request->sizes as $size) {
+                // Đảm bảo các khóa 'size' và 'price' tồn tại trong mỗi phần tử của mảng 'sizes'
+                Size::create([
                     'product_id' => $sanpham->id,
-                    'topping'    => $topping->name,
-                    'price'      => $topping->price,
+                    'size' => $size['size'] ?? null, // Sử dụng null coalescing operator để an toàn
+                    'price' => $size['price'] ?? null,
                 ]);
             }
         }
-    }
 
-    // Thêm nhiều ảnh nếu có
-    if ($request->hasFile('hasFile')) {
-        foreach ($request->file('hasFile') as $file) {
-            $fileName = uniqid() . '_' . $file->getClientOriginalName();
-            $file->storeAs('public/uploads', $fileName);
-
-            ProductImage::create([
-                'product_id' => $sanpham->id,
-                'image_url' => $fileName,
-            ]);
+        // Thêm topping nếu có
+        if ($request->has('topping_ids') && is_array($request->topping_ids)) {
+            foreach ($request->topping_ids as $topping_id) {
+                $topping = Topping::find($topping_id);
+                if ($topping) {
+                    Product_topping::create([
+                        'product_id' => $sanpham->id,
+                        'topping' => $topping->name,
+                        'price' => $topping->price,
+                    ]);
+                }
+            }
         }
+
+        // Thêm nhiều ảnh nếu có
+        if ($request->hasFile('hasFile')) { // Đổi tên input nếu bạn muốn từ 'hasFile' sang tên rõ ràng hơn, ví dụ 'product_images[]'
+            foreach ($request->file('hasFile') as $file) {
+                $fileName = uniqid() . '_' . $file->getClientOriginalName();
+                $file->storeAs('public/uploads', $fileName);
+
+                ProductImage::create([
+                    'product_id' => $sanpham->id,
+                    'image_url' => $fileName,
+                ]);
+            }
+        }
+
+        // Lấy lại sản phẩm với các mối quan hệ để ghi log
+        $sanphamid = sanpham::with(['danhmuc', 'sizes', 'topping'])->find($sanpham->id);
+
+        $content1 = '';
+        $content2 = '';
+        $content4 = '';
+        $content5 = '';
+        $content6 = '';
+
+        $title = '<strong>Thêm sản phẩm:</strong> <br>';
+        $content1 = "<span style='color: red;'>*Tên:</span> `" . ($sanphamid->name ?? 'N/A') . "` ";
+        $content2 = "*<span style='color: red;'>Danh mục:</span> `" . ($sanphamid->danhmuc->name ?? 'N/A') . "` <br>";
+        $content4 = "*<span style='color: red;'>Ảnh bìa:</span> <img src=\"" . url("/storage/uploads/" . ($sanphamid->image ?? '')) . "\" alt=\"\" width=\"100px\" height=\"100px\"><br>";
+
+        // Xây dựng nội dung cho Size
+        $content5 = "<div style='flex: 1; padding-right: 10px;'><span style='color: red;'>Size:</span><br>";
+        if (!empty($sanphamid->sizes)) {
+            foreach ($sanphamid->sizes as $size) {
+                $content5 .= ($size->size ?? 'N/A') . ' - ' . ($size->price ?? 'N/A') . ' VNĐ<br>';
+            }
+        }
+        $content5 .= '</div>';
+
+        // Xây dựng nội dung cho Topping
+        $content6 = ''; // Khởi tạo rỗng
+        if (!empty($sanphamid->topping)) { // Kiểm tra sau khi đã load mối quan hệ
+            $content6 = "<div style='flex: 1;'><span style='color: red;'>Topping:</span><br>";
+            foreach ($sanphamid->topping as $topping) {
+                $content6 .= ($topping->topping ?? 'N/A') . ' - ' . ($topping->price ?? 'N/A') . ' VNĐ<br>';
+            }
+            $content6 .= '</div>';
+        }
+
+        // Ghi log lịch sử hành động
+        historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' => '<div style="max-width: 500px;">' .
+                         $title . $content1 . $content2 .
+                         '<div style="display:flex; justify-content: space-between;">' . $content6 . $content5 . '</div>' .
+                         $content4 .
+                         '</div>',
+        ]);
+
+        // Chuyển hướng về trang chỉnh sửa sản phẩm với thông báo thành công
+        return redirect()->route('sanpham.edit', ['id' => $sanpham->id])
+                         ->with('success', 'Thêm sản phẩm thành công!');
     }
-    $sanphamid=sanpham::with(['danhmuc', 'sizes', 'topping'])->find($sanpham->id);
-    $content1='';
-    $content2='';
-    $content3='';
-    $content4='';
-    $content5='';
-    $content6='';
-
-
-    $title='<strong>Thêm sản phẩm:</strong> <br>';
-        $content1=" *<span style='color: red;'>Tên:</span> `$sanphamid->name` <br>";
-        $content2= "*<span style='color: red;'>Danh mục:</span> `" . $sanphamid->danhmuc->name . "` <br>";
-        $content3= "*<span style='color: red;'>Mô tả:</span> `$sanphamid->mota` <br>";
-        $content4= "*<span style='color: red;'>Ảnh bìa:</span> <img src=\"" . url("/storage/uploads/$sanphamid->image") . "\" alt=\"\" width=\"100px\" height=\"100px\"><br>";
-
-$content5 = "<span style='color: red;'>Size:</span><br>";
-if (!empty($sanphamid->sizes)) {
-    foreach ($sanphamid->sizes as $sizes) {
-        $content5 .= ($sizes->size ?? 'N/A') . ' - ' . ($sizes->price ?? 'N/A') . ' VNĐ<br>';
-    }
-}
-
-if($request->has('topping_ids') && is_array($request->topping_ids)){
-$content6 = "<span style='color: red;'>Topping:</span><br>";
-if (!empty($sanphamid->topping)) {
-    foreach ($sanphamid->topping as $topping) {
-        $content6 .= $topping->topping . ' - ' . $topping->price . ' VNĐ<br>';
-    }
-}
-}
-
-    historylog::create([
-        'user_id' => Auth::user()->id,
-        'role' => Auth::user()->role,
-        'content' =>$title.$content1.$content2.$content3.$content5.$content6.$content4,
-    ]);
-    return redirect()->route('sanpham.edit', ['id' => $sanpham->id])
-                     ->with('success', 'Thêm sản phẩm thành công!');
-}
 
     /**
      * Display the specified resource.
