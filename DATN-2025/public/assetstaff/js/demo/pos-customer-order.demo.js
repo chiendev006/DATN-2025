@@ -360,17 +360,17 @@ function updateTotalPrice() {
         let subtotal = getCartSubtotal();
         let maxPointByPercent = Math.floor((subtotal * pointSettings.max_points_per_order / 100) / pointSettings.vnd_per_point);
         let error = '';
-        
+
         if (points > 0) { // Chỉ validate khi có nhập điểm
             if (points < pointSettings.min_points_to_use) {
                 error = 'Số điểm tối thiểu là ' + pointSettings.min_points_to_use + ' điểm';
             } else if (points > customerPoints) {
-                error = 'Bạn không đủ điểm! Chỉ có ' + customerPoints + ' điểm';
+                error = 'Khách hàng không đủ điểm! Chỉ có ' + customerPoints + ' điểm';
             } else if (points > maxPointByPercent) {
                 error = 'Chỉ được dùng tối đa ' + maxPointByPercent + ' điểm cho đơn này (' + pointSettings.max_points_per_order + '% giá trị đơn hàng)';
             }
         }
-        
+
         if (error) {
             $('#points-used').addClass('is-invalid');
             $('#points-error').text(error).show();

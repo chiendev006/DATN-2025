@@ -22,13 +22,13 @@
                                             <div class="row">
                                             <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
                                                 <div class="field-wrapper">
-                                                <div class="field-placeholder">Bản/trang</div>
+                                                <div class="field-placeholder">Từ ngày</div>
                                                     <input type="date" name="from_date" id="from_date" class="form-control" value="{{ request('from_date') }}">
                                                 </div>
                                                 </div>
                                                 <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2">
                                                 <div class="field-wrapper">
-                                                <div class="field-placeholder">Bản/trang</div>
+                                                <div class="field-placeholder">Đến ngày</div>
                                                     <input type="date" name="to_date" id="to_date" class="form-control" value="{{ request('to_date') }}">
                                                 </div>
                                                 </div>
@@ -48,10 +48,10 @@
                                                 <div class="field-wrapper">
                                                 <div class="field-placeholder">Bản/trang</div>
                                                     <select name="per_page" id="per_page" class="form-control" onchange="this.form.submit()">
-                                                        <option value="5" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 bản</option>
-                                                        <option value="10" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản</option>
-                                                        <option value="25" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
-                                                        <option value="50" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
+                                                        <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 bản</option>
+                                                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản</option>
+                                                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
+                                                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
                                                     </select>
                                                 </div>
                                                 </div>
