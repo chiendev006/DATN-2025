@@ -1,23 +1,24 @@
 @extends('staff.layout')
 
 @section('main-content')
-<div>
-    <div  class="field-wrapper">
-        <div class="field-placeholder">Đơn/trang</div>
-            <select name="per_page" class="form-control" style="width: 80px; margin-left: 12px;" onchange="this.form.submit()">
-                <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản </option>
-                <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 bản </option>
-                <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản  </option>
-                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
-                <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
-            </select>
-         <button style="margin-top: -8px;" type="submit" class="btn btn-primary">Lọc</button>
-        <h2 class="text-3xl font-extrabold text-indigo-800 mb-8 flex items-center gap-2 text-center justify-center">
-            Hóa đơn hôm nay
-        </h2> 
+<div class="flex flex-row items-center justify-center gap-6 mb-8 w-full">
+    <form method="GET" class="flex items-center gap-3 mb-0 p-0" style="margin-bottom:0; padding:0;">
+        <label for="per_page" class="mb-0 font-semibold text-indigo-700">Đơn/trang:</label>
+        <select id="per_page" name="per_page" class="form-control" style="width: 90px; margin-left: 8px; display: inline-block; vertical-align: middle;">
+            <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản</option>
+            <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 bản</option>
+            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản</option>
+            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
+            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
+        </select>
+        <button type="submit" class="btn btn-primary" style="margin: 0; display: inline-block; vertical-align: middle;">Lọc</button>
+    </form>
+    <h2 class="text-3xl font-extrabold text-indigo-800 flex items-center gap-2 text-center justify-center mb-0" style="margin-bottom:0;">
+        Hóa đơn hôm nay
+    </h2>
 </div>
 
-@if ($donhangs->isEmpty())
+@if ($donhangs->count() == 0)
     <div class="bg-gray-50 p-6 rounded-xl shadow text-gray-500 italic text-center border border-dashed">
         Chưa có hóa đơn nào hôm nay.
     </div>
@@ -291,6 +292,9 @@
             </div>
         </div>
         @endforeach
+    </div>
+    <div class="mt-6 flex justify-center">
+        {{ $donhangs->withQueryString()->links() }}
     </div>
 @endif
 

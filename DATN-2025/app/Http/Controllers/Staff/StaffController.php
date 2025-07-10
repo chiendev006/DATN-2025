@@ -235,14 +235,15 @@ class StaffController extends Controller
         }
         return view('staff.menu', compact('sanpham', 'danhmuc', 'selectedDanhmuc', 'message', 'vndPerPoint'));
     }
-    public function orderdetailtoday()
+    public function orderdetailtoday(Request $request)
 {
+    $perPage = $request->input('per_page', 10); // lấy số bản ghi/trang, mặc định 10
     $donhangs = Order::with([
         'details.product',
         'details.size'
     ])->whereDate('created_at', Carbon::today())
     ->orderBy('created_at', 'desc')
-    ->get();
+    ->paginate($perPage); // dùng paginate thay vì get()
 
     // Load thông tin topping cho nhiều topping
     foreach($donhangs as $donhang) {
