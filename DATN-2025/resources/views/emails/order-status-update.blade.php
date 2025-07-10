@@ -288,33 +288,88 @@
                 </div>
             </div>
             
-            <div class="products-section">
+              <div class="products-section">
                 <div class="section-title">📦 Chi tiết sản phẩm</div>
                 
                 @foreach($orderDetails as $detail)
                 <div class="product-item">
-                    <div>
+                    <div style="flex: 1;">
                         <div class="product-name">{{ $detail->product->name ?? 'Sản phẩm đã xóa' }}</div>
                         <div class="product-details">
                             @if($detail->size)
-                                Size: {{ $detail->size->name }} | 
+                                Size: {{ $detail->size->size }} ({{ number_format($detail->size->price, 0, ',', '.') }} đ) |
                             @endif
                             Số lượng: {{ $detail->quantity }}
+                            @php
+                                $toppingNames = [];
+                                $toppingTotal = 0;
+                                if (!empty($detail->topping_id)) {
+                                    $toppingIds = array_filter(array_map('trim', explode(',', $detail->topping_id)));
+                                    if (!empty($toppingIds)) {
+                                        $toppings = \App\Models\Product_topping::whereIn('id', $toppingIds)->get();
+                                        foreach ($toppings as $tp) {
+                                            $toppingNames[] = $tp->topping . ' (' . number_format($tp->price, 0, ',', '.') . ' đ)';
+                                            $toppingTotal += $tp->price;
+                                        }
+                                    }
+                                }
+                            @endphp
+                            @if(count($toppingNames))
+                                <br>Topping: {!! implode(', ', $toppingNames) !!}
+                            @else
+                                <br>Topping: <span style="color: red;">Không chọn</span>
+                            @endif
                         </div>
                     </div>
-                    <div class="product-price">{{ number_format($detail->price, 0, ',', '.') }} đ</div>
+                    <div class="product-price" style="text-align: right;">
+                        @php
+                            $sizePrice = $detail->size ? $detail->size->price : 0;
+                            $lineTotal = ($sizePrice + $toppingTotal) * $detail->quantity;
+                            // Nếu đã có trường total trong detail thì dùng luôn cho chuẩn admin
+                            if (isset($detail->total)) {
+                                $lineTotal = $detail->total;
+                            }
+                        @endphp
+                        <div>{{ number_format($lineTotal, 0, ',', '.') }} đ</div>
+                        <div style="font-size: 12px; color: #6c757d;">
+                            ({{ number_format($sizePrice + $toppingTotal, 0, ',', '.') }} đ × {{ $detail->quantity }})
+                        </div>
+                    </div>
                 </div>
                 @endforeach
             </div>
             
+            @php
+                $productTotal = 0;
+                foreach($orderDetails as $detail) {
+                    $lineTotal = 0;
+                    $sizePrice = $detail->size ? $detail->size->price : 0;
+                    $toppingTotal = 0;
+                    if (!empty($detail->topping_id)) {
+                        $toppingIds = array_filter(array_map('trim', explode(',', $detail->topping_id)));
+                        if (!empty($toppingIds)) {
+                            $toppings = \App\Models\Product_topping::whereIn('id', $toppingIds)->get();
+                            foreach ($toppings as $tp) {
+                                $toppingTotal += $tp->price;
+                            }
+                        }
+                    }
+                    $lineTotal = ($sizePrice + $toppingTotal) * $detail->quantity;
+                    if (isset($detail->total)) {
+                        $lineTotal = $detail->total;
+                    }
+                    $productTotal += $lineTotal;
+                }
+            @endphp
             <div class="total-section">
                 <div class="section-title">💰 Tổng thanh toán</div>
                 
-                @if($order->coupon_total_discount > 0)
                 <div class="total-row">
-                    <span>Tạm tính:</span>
-                    <span>{{ number_format($order->total + $order->coupon_total_discount, 0, ',', '.') }} đ</span>
+                    <span>Tiền sản phẩm:</span>
+                    <span>{{ number_format($productTotal, 0, ',', '.') }} đ</span>
                 </div>
+                
+                @if($order->coupon_total_discount > 0)
                 <div class="total-row">
                     <span>Giảm giá coupon:</span>
                     <span>-{{ number_format($order->coupon_total_discount, 0, ',', '.') }} đ</span>
