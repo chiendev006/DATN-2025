@@ -101,7 +101,7 @@ class DanhmucBlogController extends Controller
         $content1='';
 
 
-        $title="<strong>Sửa bài viết: $request->name</strong> <br>";
+        $title="<strong>Sửa danh mục bài viết: $request->name</strong> <br>";
         if($nameid->name!=$request->name){
             $content1=" *<span style='color: red;'>Tên:</span> ` $nameid->name`<span style='color: blue;'> thành </span>`$request->name` <br>";
         }

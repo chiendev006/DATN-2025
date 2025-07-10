@@ -305,24 +305,32 @@
                         @endphp
                         @if($enablePointsSystem)
                         <div class="mb-2">
-                            <label for="customer-phone" class="form-label mb-1">Số điện thoại khách hàng (tích điểm):</label>
+                            <div style="display: flex;">
+                            <label for="customer-phone" class="form-label mb-1">Số điện thoại (tích điểm):&nbsp;</label>
+                            <label id="customer-point-info" class="form-label mb-1" style="color:#28a745;"></label>
+                            <label id="customer-point-info-danger" class="form-label mb-1" style="color:red;"></label>
+                        </div>
                             <input type="text" class="form-control" id="customer-phone" name="customer_phone" placeholder="Nhập số điện thoại...">
-                            <div id="customer-point-info" class="mt-1" style="font-size:14px;color:#28a745;"></div>
-                        </div>
-                        <div class="mb-2">
-                            <label for="points-used" class="form-label mb-1">Sử dụng điểm (tối đa):</label>
-                            <input type="number" class="form-control" id="points-used" name="points_used" min="0" value="0" disabled>
-                            <div id="points-error" class="invalid-feedback" style="display: none; font-size: 12px; color: #dc3545;"></div>
-                        </div>
-                        @endif
-                        <div class="mb-2">
 
-                            <label for="payment-method" class="me-2 mb-0 fw-bold">Thanh toán:</label>
-                            <select id="payment-method" class="form-select w-auto">
-                                <option value="cash">Tiền mặt</option>
-                                <option value="banking">Chuyển khoản</option>
-                            </select>
                         </div>
+                       <div style="display: flex;; ">
+                       <div class="mb-1" style="margin-left: 0px;  max-width:33%;">
+                        <label for="payment-method" class="me-2 mb-0 fw-bold">Thanh toán:</label>
+                        <select id="payment-method" class="form-select">
+                            <option value="cash">Tiền mặt</option>
+                            <option value="banking">Chuyển khoản</option>
+                        </select>
+                        </div>
+                        <div id="use-poin" style=" display: none;max-width:63%; min-width:63%;">
+                        <div style="width: 100%; margin-left: 10px;"  >
+                        <label for="payment-method" class="me-2 mb-0 fw-bold">Sử dụng điểm (tối đa)</label>
+                        <input type="number" class="form-control" id="points-used" name="points_used" min="0" value="0" disabled>
+                        <div id="points-error" class="invalid-feedback" style="display: none; font-size: 12px; color: #dc3545;"></div>
+                        </div>
+                        </div>
+                       </div>
+                        @endif
+
                         <div class="d-flex align-items-center mb-2">
                             <div class="fw-bold">Tổng tiền hàng:</div>
                             <div class="flex-1 text-end h6 mb-0" id="cart-subtotal">0đ</div>
@@ -348,8 +356,7 @@
                                     data-pay_status="0"
                                 >
                                     <span>
-                                    <i class="fa fa-check-circle fa-lg my-10px d-block"></i>
-                                      <span class="small fw-semibold">Xác nhận</span>
+                                    <i class="fa fa-check-circle fa-lg "></i> Xác nhận
                                     </span>
                                 </a>
                             </div>
@@ -464,11 +471,15 @@
             if(phone) {
                 $.get('/staff/get-customer-point?phone=' + encodeURIComponent(phone), function(res){
                     if(res.success) {
-                        $('#customer-point-info').text('Điểm hiện có: ' + res.points);
+                        $('#customer-point-info').text(res.points+' điểm');
+                        $('#customer-point-info-danger').text('');
+                        document.getElementById('use-poin').style.display='flex';
                         $('#points-used').prop('disabled', false).attr('max', res.points).val(0);
                         updateSidebarTotal();
                     } else {
-                        $('#customer-point-info').text('Không tìm thấy khách hàng.');
+                        $('#customer-point-info').text('');
+                        $('#customer-point-info-danger').text('Không tìm thấy.');
+                        document.getElementById('use-poin').style.display='none';
                         $('#points-used').prop('disabled', true).val(0);
                         updateSidebarTotal();
                     }
