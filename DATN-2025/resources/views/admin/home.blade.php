@@ -189,7 +189,7 @@
                                                     @foreach ($recentOrders as $order)
 													<tr>
 														<td>{{ $order->id }}</td>
-														<td>{{ $order->created_at }}</td>
+														<td>{{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y') }}</td>
 														<td>{{ $order->name }}</td>
 														@if( $order->phone=="N/A")
                                                         <td>Nhân viên order</td>
