@@ -155,7 +155,8 @@
                                 <input type="hidden" name="redirect" value="1">
                                 <div style="margin-top: 30px;" class="row mb-4">
                                     <div class="col-md-12 text-center">
-                                        <button type="submit" class="btn btn-primary btn-lg">Đặt hàng</button>
+                                        <button type="submit" class="btn btn-primary btn-lg" id="submit-order-btn">Đặt hàng</button>
+                                        <img id="checkout-loading-gif" src="{{ url('asset/images/Spin@1x-1.0s-200px-200px (1).gif') }}" alt="Loading..." style="display:none; height:40px; vertical-align:middle; margin-left:10px;">
                                     </div>
                                 </div>
                             </form>
@@ -619,8 +620,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const totalWithShippingElement = document.getElementById("total-with-shipping");
     const checkoutForm = document.getElementById("checkout-form");
 
-    const subtotal = parseFloat({{ $subtotal }});
-    const discount = parseFloat({{ $discount }});
+    // Đảm bảo truyền đúng giá trị từ PHP sang JS
+    const subtotal = parseFloat("{{ $subtotal }}");
+    const discount = parseFloat("{{ $discount }}");
 
     function formatCurrency(amount) {
         return amount.toLocaleString('vi-VN') + " đ";
@@ -851,6 +853,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Form submission validation
+    const submitBtn = document.getElementById('submit-order-btn');
+    const loadingGif = document.getElementById('checkout-loading-gif');
+
     checkoutForm.addEventListener("submit", function (event) {
         let hasErrors = false;
 
@@ -926,6 +931,14 @@ document.addEventListener("DOMContentLoaded", function () {
             if (firstError) {
                 firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
+            if (loadingGif) loadingGif.style.display = 'none';
+        } else {
+            event.preventDefault(); // Chặn submit mặc định
+            if (loadingGif) loadingGif.style.display = 'inline-block';
+            if (submitBtn) submitBtn.disabled = true;
+            setTimeout(() => {
+                checkoutForm.submit();
+            }, 200);
         }
     });
 
@@ -933,7 +946,6 @@ document.addEventListener("DOMContentLoaded", function () {
     updateShippingAndTotal();
 
     // Point System JavaScript
-    @if($isLoggedIn)
     let pointsApplied = 0;
     let pointsDiscount = 0;
     let maxPointsCanUse = 0;
@@ -1123,7 +1135,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Initialize points check
     checkAvailablePoints();
-    @endif
 });
 </script>
 @endsection
