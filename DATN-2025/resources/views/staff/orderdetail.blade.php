@@ -2,7 +2,7 @@
 
 @section('main-content')
 
-<h2 class="text-3xl font-extrabold text-indigo-800 mb-8 flex items-center gap-2">
+<h2 class="text-3xl font-extrabold text-indigo-800 mb-8 flex items-center gap-2 text-center justify-center">
     Hóa đơn hôm nay
 </h2>
 
