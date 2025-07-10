@@ -7,9 +7,9 @@ use App\Models\OrderDetail;
 use App\Models\Cart;
 use App\Models\Cartdetail;
 use App\Models\sanpham;
-use App\Models\Product_topping; 
-use App\Models\Address; 
-use App\Models\Coupon; 
+use App\Models\Product_topping;
+use App\Models\Address;
+use App\Models\Coupon;
 use App\Models\User;
 use App\Models\Size;
 use App\Services\PointService;
@@ -35,8 +35,8 @@ class CheckoutController extends Controller
     {
         $items = [];
         $cart = [];
-        $subtotal = 0; 
-        $discount = 0; 
+        $subtotal = 0;
+        $discount = 0;
 
         if (Auth::check()) {
             $userCart = Cart::where('user_id', Auth::id())->first();
@@ -124,7 +124,7 @@ class CheckoutController extends Controller
         }
         $totalAfterDiscount = max(0, round($subtotal - $discount));
 
-        $districts = Address::all(); 
+        $districts = Address::all();
         Log::info('Districts fetched', ['districts_count' => $districts->count()]);
 
         session()->forget('_old_input');
@@ -137,7 +137,7 @@ class CheckoutController extends Controller
         try {
             $request->validate([
                 'name' => 'required|string|max:255|min:2',
-                'phone_raw' => 'required|string|regex:/^[0-9]{10,11}$/', 
+                'phone_raw' => 'required|string|regex:/^[0-9]{10,11}$/',
                 'district' => 'required|exists:address,id',
                 'address_detail' => 'required|string|max:255|min:10',
                 'payment_method' => 'required|in:cash,banking',
@@ -211,7 +211,7 @@ class CheckoutController extends Controller
                     $orderDetails[] = [
                         'product_id' => $item->product->id,
                         'product_name' => $item->product->name,
-                        'product_price' => $unitPrice, 
+                        'product_price' => $unitPrice,
                         'quantity' => $item->quantity,
                         'total' => $itemTotal,
                         'size_id' => $item->size_id ?? null,
@@ -245,7 +245,7 @@ class CheckoutController extends Controller
                         $minSizeAttribute = DB::table('product_attributes')
                             ->where('product_id', $product->id)
                             ->orderBy('price')
-                            ->first(); 
+                            ->first();
                         $basePrice = $minSizeAttribute->price ?? 0;
                     }
 
@@ -281,7 +281,7 @@ class CheckoutController extends Controller
             }
             $appliedCouponsData = session()->get('coupons', []);
             $couponSummaryArray = [];
-            $couponTotalDiscount = 0; 
+            $couponTotalDiscount = 0;
 
             foreach ($appliedCouponsData as $couponData) {
                 $couponSummaryArray[] = [
@@ -297,13 +297,13 @@ class CheckoutController extends Controller
                     ? round($total * $coupon['discount'] / 100)
                     : round($coupon['discount']);
             }
-            $couponTotalDiscount = $discount; 
-            $total = max(0, round($total - $discount)); 
+            $couponTotalDiscount = $discount;
+            $total = max(0, round($total - $discount));
 
             // Xử lý điểm tích lũy
             $pointsUsed = 0;
             $pointsDiscount = 0;
-            
+
             Log::info('DEBUG: Starting points processing', [
                 'has_points_used' => $request->has('points_used'),
                 'points_used_value' => $request->points_used ?? 'null',
@@ -311,42 +311,42 @@ class CheckoutController extends Controller
                 'user_id' => Auth::id(),
                 'total_before_points' => $total
             ]);
-            
+
             if (Auth::check() && $request->has('points_used') && $request->points_used > 0) {
                 try {
                     $pointsUsed = (int) $request->points_used;
-                    
+
                     Log::info('DEBUG: Processing points', [
                         'points_used' => $pointsUsed,
                         'user_points_before' => Auth::user()->points
                     ]);
-                    
+
                     // Kiểm tra user có đủ điểm không
                     if (Auth::user()->points < $pointsUsed) {
                         throw new \Exception('Không đủ điểm để sử dụng');
                     }
-                    
+
                     // Tính số tiền giảm giá từ điểm (1 điểm = 1000đ)
                     $pointsDiscount = $pointsUsed * 1000;
-                    
+
                     Log::info('DEBUG: Points calculation', [
                         'points_used' => $pointsUsed,
                         'points_discount' => $pointsDiscount,
                         'current_total' => $total
                     ]);
-                    
+
                     // Kiểm tra không vượt quá 50% giá trị đơn hàng
                     $maxPointsByPercent = ($total * 50) / 100;
                     $maxPointsByVnd = $maxPointsByPercent / 1000;
                     $maxPoints = min(Auth::user()->points, (int) $maxPointsByVnd);
-                    
+
                     if ($pointsUsed > $maxPoints) {
                         throw new \Exception("Chỉ có thể sử dụng tối đa {$maxPoints} điểm cho đơn hàng này");
                     }
-                    
+
                     // Cập nhật tổng tiền sau khi trừ điểm
                     $total = max(0, $total - $pointsDiscount);
-                    
+
                     Log::info('DEBUG: Points processing completed', [
                         'user_id' => Auth::id(),
                         'points_used' => $pointsUsed,
@@ -369,12 +369,12 @@ class CheckoutController extends Controller
             }
             $shippingFee = $selectedAddress->shipping_fee;
             $districtName = $selectedAddress->name;
-            $total += $shippingFee; 
+            $total += $shippingFee;
             if ($request->payment_method === 'banking') {
                 session([
                     'vnp_order' => [
                         'name' => $request->name,
-                        'phone' => $request->phone_raw, 
+                        'phone' => $request->phone_raw,
                         'email' => $request->email,
                         'address_id' => $selectedAddress->id,
                         'address_detail' => $request->address_detail,
@@ -386,7 +386,7 @@ class CheckoutController extends Controller
                         'user_id' => Auth::check() ? Auth::id() : null,
                         'note' => $request->note,
                         'status' => 'pending_payment',
-                        'coupon_summary' => $couponSummaryJson, 
+                        'coupon_summary' => $couponSummaryJson,
                         'coupon_total_discount' => $couponTotalDiscount,
                         'points_used' => $pointsUsed,
                         'points_discount' => $pointsDiscount,
@@ -399,7 +399,7 @@ class CheckoutController extends Controller
             $order = new Order();
             $order->user_id = Auth::check() ? Auth::id() : null;
             $order->name = $request->name;
-            $order->phone = $request->phone_raw; 
+            $order->phone = $request->phone_raw;
             $order->email = $request->email;
             $order->address_id = $selectedAddress->id;
             $order->address_detail = $request->address_detail;
@@ -408,7 +408,7 @@ class CheckoutController extends Controller
             $order->status = 'pending';
             $order->shipping_fee = $shippingFee;
             $order->total = $total;
-            $order->coupon_summary = $couponSummaryJson; 
+            $order->coupon_summary = $couponSummaryJson;
             $order->coupon_total_discount = $couponTotalDiscount;
             $order->note = $request->note;
             $order->pay_status = $request->payment_method === 'banking' ? '1' : '0';
@@ -466,11 +466,8 @@ class CheckoutController extends Controller
                 foreach ($appliedCouponsData as $couponData) {
                     $couponModel = Coupon::where('code', $couponData['code'])->first();
                     if ($couponModel) {
-
                         $order->coupons()->attach($couponModel->id);
-
                         $couponModel->increment('used');
-                    } else {
                     }
                 }
             }
@@ -494,14 +491,14 @@ class CheckoutController extends Controller
                         'points_used' => $pointsUsed,
                         'user_points_before' => Auth::user()->points
                     ]);
-                    
+
                     // Trừ điểm trực tiếp từ database bằng query
                     $user = Auth::user();
                     $newPoints = $user->points - $pointsUsed;
-                    
+
                     // Cập nhật điểm user
                     \DB::table('users')->where('id', $user->id)->update(['points' => $newPoints]);
-                    
+
                     // Tạo transaction record
                     \DB::table('point_transactions')->insert([
                         'user_id' => $user->id,
@@ -512,7 +509,7 @@ class CheckoutController extends Controller
                         'created_at' => now(),
                         'updated_at' => now()
                     ]);
-                    
+
                     Log::info('DEBUG: Points deducted successfully', [
                         'user_id' => Auth::id(),
                         'order_id' => $order->id,
@@ -539,10 +536,42 @@ class CheckoutController extends Controller
             ]);
 
             DB::commit();
-            
+
             Log::info('DEBUG: Transaction committed successfully', [
                 'order_id' => $order->id
             ]);
+
+            // Ghi log lịch sử đặt đơn thành công
+            try {
+                $title = '<strong>Khách hàng đặt đơn thành công:</strong> <br>';
+                $content1 = "<span style='color: red;'>Tên khách:</span> <b>$order->name</b> <br>";
+                $content2 = "<span style='color: red;'>Số điện thoại:</span> <b>$order->phone</b> <br>";
+                $content3 = "<span style='color: red;'>Mã đơn hàng:</span> <b>$order->id</b> <br>";
+                $content4 = "<span style='color: red;'>Tổng tiền:</span> <b>" . number_format($order->total) . " VNĐ</b> <br>";
+                $content5 = $order->points_used > 0 ? "<span style='color: red;'>Sử dụng điểm:</span> <b>$order->points_used</b> (giảm <b>" . number_format($order->points_discount) . " VNĐ</b>)<br>" : '';
+                // Bổ sung ghi sử dụng mã giảm giá
+                $content5_coupon = '';
+                if (!empty($order->coupon_summary)) {
+                    $coupons = json_decode($order->coupon_summary, true);
+                    if (is_array($coupons)) {
+                        foreach ($coupons as $c) {
+                            $code = $c['code'] ?? '';
+                            $discount = $c['discount_value'] ?? 0;
+                            $content5_coupon .= "<span style='color: red;'>Sử dụng mã:</span> <b>" . htmlspecialchars($code) . "</b><br>";
+                        }
+                    }
+                }
+                $content6 = "<span style='color: red;'>Trạng thái:</span> <b>$order->status</b> <br>";
+                $content7 = "<span style='color: red;'>Thời gian đặt:</span> <b>" . $order->created_at->format('H:i d/m/Y') . "</b> <br>";
+
+                \App\Models\historylog::create([
+                    'user_id' => Auth::id(),
+                    'role' => Auth::user()->role,
+                    'content' => $title . $content1 . $content2 . $content3 . $content4 . $content5 . $content5_coupon . $content6 . $content7,
+                ]);
+            } catch (\Exception $e) {
+                // Nếu cần log lỗi, có thể thêm Log::error ở đây
+            }
 
             // Gửi email xác nhận đơn hàng
             try {
@@ -555,7 +584,7 @@ class CheckoutController extends Controller
                 ]);
                 // Không throw exception để không ảnh hưởng đến quá trình đặt hàng
             }
-            
+
             return redirect()->route('order.complete', $order->id)
                 ->with('success', 'Đặt hàng thành công!')
                 ->with('order_number', $order->id);
@@ -577,14 +606,14 @@ class CheckoutController extends Controller
             Log::info('DEBUG: success method called', [
                 'order_id' => $orderId
             ]);
-            
+
             $order = Order::with('orderDetails.size', 'orderDetails.product')->findOrFail($orderId);
-            
+
             Log::info('DEBUG: Order found', [
                 'order_id' => $order->id,
                 'order_details_count' => $order->orderDetails->count()
             ]);
-            
+
             $allToppings = Product_topping::all()->keyBy('id');
             return view('client.order-complete', compact('order', 'allToppings'));
         } catch (\Exception $e) {

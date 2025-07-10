@@ -164,7 +164,7 @@
                     <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                         <div class="shop-checkout-right">
                             <div  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="shop-checkout-box">
-                               
+
                                 <div class="col-12">
                                         <h5>Đơn Hàng Của Bạn</h5>
                                     </div>
@@ -300,11 +300,11 @@
                                     <div class="checkout-total" id="points-section">
                                         <h6 style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; text-align: left;">
                                         ⭐ Điểm tích lũy: <span id="user-points">{{ Auth::user()->formatted_points ?? '0' }}</span>
-                                        </h6>                                        
+                                        </h6>
                                         <div id="points-info" style="font-size: 1.2rem; color: #666; margin-top: 5px; display: none;">
                                             <span id="points-message"></span>
                                         </div>
-                                        
+
                                         <div id="points-input-section" class="points-input-section-custom">
                                             <label for="points-to-use" class="points-label">
                                             Sử dụng điểm tích lũy:
@@ -320,11 +320,11 @@
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
                                         </div>
-                                    
-                                        
+
+
                                         <div id="points-discount" style="display: none; margin-top: 10px;">
                                             <div class="alert alert-success" style="border-radius: 20px; padding: 10px 15px; margin: 0;">
-                                                <i class="fas fa-gift"></i> 
+                                                <i class="fas fa-gift"></i>
                                                 Giảm giá từ điểm: <strong>-<span id="points-discount-amount">0</span> VND</strong>
                                                 <button type="button" id="remove-points" class="btn btn-sm btn-outline-danger" style="float: right; border-radius: 15px;">
                                                     <i class="fas fa-times"></i>
@@ -953,7 +953,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Check available points on page load
     function checkAvailablePoints() {
         const currentTotal = subtotal + (parseInt(districtSelect.options[districtSelect.selectedIndex]?.getAttribute("data-ship")) || 0) - discount;
-        
+
         fetch(`/points/available?order_total=${currentTotal}`)
             .then(response => response.json())
             .then(data => {
@@ -963,7 +963,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     pointsInputSection.style.display = 'block';
                     maxPointsCanUse = data.max_points;
                     maxPointsSpan.textContent = data.max_points;
-                    
+
                     // Set max value for input
                     pointsToUseInput.max = data.max_points;
                 } else {
@@ -982,19 +982,19 @@ document.addEventListener("DOMContentLoaded", function () {
     // Apply points
     function applyPoints() {
         const pointsToUse = parseInt(pointsToUseInput.value) || 0;
-        
+
         if (pointsToUse <= 0) {
             alert('Vui lòng nhập số điểm muốn sử dụng');
             return;
         }
-        
+
         if (pointsToUse > maxPointsCanUse) {
             alert(`Chỉ có thể sử dụng tối đa ${maxPointsCanUse} điểm cho đơn hàng này`);
             return;
         }
 
         const currentTotal = subtotal + (parseInt(districtSelect.options[districtSelect.selectedIndex]?.getAttribute("data-ship")) || 0) - discount;
-        
+
         fetch('/points/calculate-discount', {
             method: 'POST',
             headers: {
@@ -1012,18 +1012,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert(data.error);
                 return;
             }
-            
+
             pointsApplied = data.points_used;
             pointsDiscount = data.discount_amount;
-            
+
             // Update display
             pointsDiscountAmount.textContent = data.discount_amount.toLocaleString('vi-VN');
             pointsDiscountDiv.style.display = 'block';
             pointsInputSection.style.display = 'none';
-            
+
             // Update total
             updateTotalWithPoints();
-            
+
             // Add hidden input for form submission
             addPointsToForm();
         })
@@ -1037,11 +1037,11 @@ document.addEventListener("DOMContentLoaded", function () {
     function removePoints() {
         pointsApplied = 0;
         pointsDiscount = 0;
-        
+
         pointsDiscountDiv.style.display = 'none';
         pointsInputSection.style.display = 'block';
         pointsToUseInput.value = '';
-        
+
         updateTotalWithPoints();
         removePointsFromForm();
     }
@@ -1050,7 +1050,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateTotalWithPoints() {
         const shippingCost = parseInt(districtSelect.options[districtSelect.selectedIndex]?.getAttribute("data-ship")) || 0;
         const newTotal = subtotal + shippingCost - discount - pointsDiscount;
-        
+
         if (totalWithShippingElement) {
             totalWithShippingElement.textContent = formatCurrency(Math.max(0, newTotal));
         }
@@ -1060,7 +1060,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function addPointsToForm() {
         // Remove existing points input
         removePointsFromForm();
-        
+
         // Add new points input
         const pointsInput = document.createElement('input');
         pointsInput.type = 'hidden';
@@ -1080,7 +1080,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Event listeners
     applyPointsBtn.addEventListener('click', applyPoints);
     removePointsBtn.addEventListener('click', removePoints);
-    
+
     pointsToUseInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -1093,7 +1093,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (pointsApplied > 0) {
             // Recalculate points discount if shipping changes
             const currentTotal = subtotal + (parseInt(districtSelect.options[districtSelect.selectedIndex]?.getAttribute("data-ship")) || 0) - discount;
-            
+
             fetch('/points/calculate-discount', {
                 method: 'POST',
                 headers: {

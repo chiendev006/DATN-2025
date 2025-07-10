@@ -71,6 +71,26 @@ public function cancelOrder($id, Request $request)
     $order->cancel_reason = '(Khách hàng hủy) ' . $reason;
     $order->save();
 
+    // Ghi log lịch sử hủy đơn thành công
+    try {
+        $title = '<strong>Khách hàng hủy đơn thành công:</strong> <br>';
+        $content1 = "<span style='color: red;'>Tên khách:</span> <b>$order->name</b> <br>";
+        $content2 = "<span style='color: red;'>Số điện thoại:</span> <b>$order->phone</b> <br>";
+        $content3 = "<span style='color: red;'>Mã đơn hàng:</span> <b>$order->id</b> <br>";
+        $content4 = "<span style='color: red;'>Lý do hủy:</span> <b>$order->cancel_reason</b> <br>";
+        $content5 = $order->points_used > 0 ? "<span style='color: red;'>Hoàn điểm đã sử dụng:</span> <b>$order->points_used</b><br>" : '';
+        $content6 = "<span style='color: red;'>Trạng thái:</span> <b>$order->status</b> <br>";
+        $content7 = "<span style='color: red;'>Thời gian hủy:</span> <b>" . $order->updated_at->format('H:i d/m/Y') . "</b> <br>";
+
+        \App\Models\historylog::create([
+            'user_id' => Auth::id(),
+            'role' => Auth::user()->role,
+            'content' => $title . $content1 . $content2 . $content3 . $content4 . $content5 . $content6 . $content7,
+        ]);
+    } catch (\Exception $e) {
+        // Nếu cần log lỗi, có thể thêm Log::error ở đây
+    }
+
     return response()->json([
         'success' => true,
         'message' => 'Đơn hàng đã được hủy thành công.'
@@ -139,7 +159,7 @@ public function ajaxUpdate(Request $request)
 
 public function checkOrderStatus($id)
 {
-    
+
     $order = Order::where('id', $id)
                   ->where('user_id', auth()->id())
                   ->first();

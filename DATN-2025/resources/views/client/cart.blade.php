@@ -202,7 +202,7 @@
                     </p>
                 @endif
             </div>
-            <button type="button" class="apply-coupon-btn" data-code="{{ $coupon->code }}">Áp dụng</button>
+            <button type="button" id="addcoupon" class="apply-coupon-btn" data-code="{{ $coupon->code }}">Áp dụng</button>
             @if(session('coupons') && array_key_exists($coupon->code, session('coupons')))
                 <button type="button" class="remove-applied-coupon-btn" data-code="{{ $coupon->code }}">Gỡ bỏ</button>
             @endif
@@ -348,7 +348,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (data.subtotal !== undefined) {
             const subtotalEl = document.getElementById('cart-subtotal');
             if (subtotalEl) subtotalEl.textContent = formatCurrency(data.subtotal);
-            
+
             console.log('Updating coupon visibility with subtotal:', data.subtotal);
             // Gọi updateCouponVisibility ngay lập tức với subtotal mới
             setTimeout(() => updateCouponVisibility(data.subtotal), 0);
@@ -388,7 +388,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             appliedCouponsDisplay.innerHTML = discountHtml;
         }
-        
+
         // Cập nhật trạng thái coupon cards
         document.querySelectorAll('.remove-applied-coupon-btn').forEach(btn => {
             btn.removeEventListener('click', handleRemoveCouponClick);
@@ -398,13 +398,21 @@ document.addEventListener("DOMContentLoaded", function () {
             card.classList.remove('selected-coupon');
             const removeBtn = card.querySelector('.remove-applied-coupon-btn');
             if (removeBtn) removeBtn.remove();
+            // Hiện lại nút áp dụng nếu có
+            const applyBtn = card.querySelector('.apply-coupon-btn');
+            if (applyBtn) applyBtn.style.display = '';
         });
 
+        // Trong JS, khi updateUIElements, nếu coupon đã được áp dụng (selected-coupon), ẩn nút 'Áp dụng' của coupon đó
         if (data.applied_coupons) {
             for (const code in data.applied_coupons) {
                 const selectedCouponCard = document.querySelector(`.coupon-card[data-code="${code}"]`);
                 if (selectedCouponCard) {
                     selectedCouponCard.classList.add('selected-coupon');
+                    let applyBtn = selectedCouponCard.querySelector('.apply-coupon-btn');
+                    if (applyBtn) {
+                        applyBtn.style.display = 'none';
+                    }
                     let removeBtn = selectedCouponCard.querySelector('.remove-applied-coupon-btn');
                     if (!removeBtn) {
                         removeBtn = document.createElement('button');
@@ -424,13 +432,13 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log('updateCouponVisibility called with subtotal:', subtotal);
         const couponCards = document.querySelectorAll('.coupon-card');
         let visibleCoupons = 0;
-        
+
         console.log('Found coupon cards:', couponCards.length);
-        
+
         couponCards.forEach((card, index) => {
             const minOrderText = card.querySelector('.coupon-condition');
             console.log(`Card ${index}:`, card.dataset.code, 'minOrderText:', minOrderText?.textContent);
-            
+
             if (minOrderText) {
                 const minOrderMatch = minOrderText.textContent.match(/Đơn hàng tối thiểu: ([\d,]+)đ/);
                 if (minOrderMatch) {
@@ -463,9 +471,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log(`Card ${index} SHOWED (no condition text)`);
             }
         });
-        
+
         console.log('Total visible coupons:', visibleCoupons);
-        
+
         const noCouponMessage = document.querySelector('.no-coupon-message');
         if (visibleCoupons === 0) {
             if (!noCouponMessage) {
@@ -491,7 +499,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const initialSubtotal = parseCurrencyText(document.getElementById('cart-subtotal')?.textContent);
         console.log('Initial subtotal:', initialSubtotal);
         updateCouponVisibility(initialSubtotal);
-        
+
         // Retry sau 500ms để đảm bảo DOM đã sẵn sàng
         setTimeout(() => {
             const retrySubtotal = parseCurrencyText(document.getElementById('cart-subtotal')?.textContent);
@@ -502,7 +510,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Gọi khởi tạo sau khi DOM đã sẵn sàng
     setTimeout(initializeCouponVisibility, 200);
-    
+
     // Thêm observer để theo dõi thay đổi trong cart-subtotal
     const subtotalElement = document.getElementById('cart-subtotal');
     if (subtotalElement) {
@@ -515,7 +523,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
         });
-        
+
         observer.observe(subtotalElement, {
             childList: true,
             characterData: true,
@@ -583,7 +591,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
                     updateUIElements(data);
-                    
+
                     // Đảm bảo coupon visibility được cập nhật sau khi xóa item
                     setTimeout(() => {
                         const currentSubtotal = parseCurrencyText(document.getElementById('cart-subtotal')?.textContent);
@@ -644,14 +652,14 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.success) {
                 input.value = data.quantity;
                 updateUIElements(data);
-                
+
                 // Đảm bảo coupon visibility được cập nhật sau khi UI đã được cập nhật
                 setTimeout(() => {
                     const currentSubtotal = parseCurrencyText(document.getElementById('cart-subtotal')?.textContent);
                     console.log('Force refresh coupon visibility with subtotal:', currentSubtotal);
                     updateCouponVisibility(currentSubtotal);
                 }, 100);
-                
+
                 return true;
             } else {
                 input.value = oldQuantity;
@@ -798,7 +806,7 @@ document.addEventListener("DOMContentLoaded", function () {
 }
 
 .coupon-card {
-    flex: 0 1 220px; 
+    flex: 0 1 220px;
     min-width: 220px;
     max-width: 220px;
     border: 1px solid #ddd;
@@ -856,6 +864,8 @@ document.addEventListener("DOMContentLoaded", function () {
     border-color: #28a745;
     background-color: #e9fbe9;
 }
+
+.selected-coupon .apply-coupon-btn { display: none !important; }
 
 .no-coupon-message {
     text-align: center;
