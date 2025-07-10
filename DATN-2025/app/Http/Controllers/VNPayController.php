@@ -7,9 +7,17 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
+use App\Services\EmailService;
 
 class VNPayController extends Controller
 {
+    protected $emailService;
+
+    public function __construct(EmailService $emailService)
+    {
+        $this->emailService = $emailService;
+    }
+
     public function redirectToVnpay(Request $request)
     {
         try {
@@ -237,6 +245,18 @@ class VNPayController extends Controller
                         'order_id' => $order->id,
                         'transaction_id' => $vnpData['vnp_TransactionNo']
                     ]);
+
+                    // Gửi email xác nhận đơn hàng
+                    try {
+                        $this->emailService->sendOrderConfirmation($order);
+                        Log::info('VNPay order confirmation email sent', ['order_id' => $order->id]);
+                    } catch (\Exception $e) {
+                        Log::error('Failed to send VNPay order confirmation email', [
+                            'order_id' => $order->id,
+                            'error' => $e->getMessage()
+                        ]);
+                        // Không throw exception để không ảnh hưởng đến quá trình thanh toán
+                    }
 
                     return redirect()->route('order.complete', $order->id)
                         ->with('success', 'Thanh toán thành công!');

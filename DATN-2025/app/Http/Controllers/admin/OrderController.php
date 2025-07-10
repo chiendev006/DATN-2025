@@ -6,14 +6,17 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\PointService;
+use App\Services\EmailService;
 
 class OrderController extends Controller
 {
     protected $pointService;
+    protected $emailService;
 
-    public function __construct(PointService $pointService)
+    public function __construct(PointService $pointService, EmailService $emailService)
     {
         $this->pointService = $pointService;
+        $this->emailService = $emailService;
     }
 
     /**
@@ -55,6 +58,24 @@ class OrderController extends Controller
         }
 
         $order->save();
+
+        // Gửi email cập nhật trạng thái đơn hàng
+        try {
+            $this->emailService->sendOrderStatusUpdate($order, $oldStatus, $status);
+            \Log::info('Order status update email sent', [
+                'order_id' => $order->id,
+                'old_status' => $oldStatus,
+                'new_status' => $status
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to send order status update email', [
+                'order_id' => $order->id,
+                'old_status' => $oldStatus,
+                'new_status' => $status,
+                'error' => $e->getMessage()
+            ]);
+            // Không throw exception để không ảnh hưởng đến quá trình cập nhật
+        }
 
         // Tích điểm khi đơn hàng hoàn thành
         if ($status === 'completed' && $order->pay_status === '1') {

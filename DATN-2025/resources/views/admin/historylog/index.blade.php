@@ -108,7 +108,7 @@
                                                           {!!  $item->content  !!}
                                                         </td>
                                                         <td>
-                                                            {{ $item->created_at }}
+                                                            {{ ($item->created_at)->format('H:i d/m/Y') }}
                                                         </td>
                                                         <td>
                                                             <div class="actions" style="display: flex; gap: 10px; justify-content: center;">

@@ -11,7 +11,9 @@ use App\Models\Product_topping;
 use App\Models\Address; 
 use App\Models\Coupon; 
 use App\Models\User;
+use App\Models\Size;
 use App\Services\PointService;
+use App\Services\EmailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -21,10 +23,12 @@ use Illuminate\Support\Str;
 class CheckoutController extends Controller
 {
     protected $pointService;
+    protected $emailService;
 
-    public function __construct(PointService $pointService)
+    public function __construct(PointService $pointService, EmailService $emailService)
     {
         $this->pointService = $pointService;
+        $this->emailService = $emailService;
     }
 
     public function index()
@@ -539,6 +543,18 @@ class CheckoutController extends Controller
             Log::info('DEBUG: Transaction committed successfully', [
                 'order_id' => $order->id
             ]);
+
+            // Gửi email xác nhận đơn hàng
+            try {
+                $this->emailService->sendOrderConfirmation($order);
+                Log::info('Order confirmation email sent', ['order_id' => $order->id]);
+            } catch (\Exception $e) {
+                Log::error('Failed to send order confirmation email', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage()
+                ]);
+                // Không throw exception để không ảnh hưởng đến quá trình đặt hàng
+            }
             
             return redirect()->route('order.complete', $order->id)
                 ->with('success', 'Đặt hàng thành công!')
