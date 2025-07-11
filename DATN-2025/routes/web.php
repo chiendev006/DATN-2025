@@ -417,3 +417,6 @@ Route::prefix('admin/point-settings')->name('admin.point_settings.')->group(func
 Route::prefix('admin/point-transactions')->name('admin.point_transactions.')->group(function () {
         Route::get('/', [\App\Http\Controllers\admin\PointTransactionController::class, 'index'])->name('index');
 });
+
+// API lấy xu hướng khách hàng theo khoảng ngày
+Route::post('/admin/customer-trend/filter', [App\Http\Controllers\admin\HomeController::class, 'customerTrendFilter'])->name('admin.customerTrendFilter');

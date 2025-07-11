@@ -274,6 +274,39 @@ class OrderController extends Controller
         if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
         }
+        if ($request->filled('order_type')) {
+            if ($request->order_type == 'staff') {
+                $query->where(function($q) {
+                    $q->whereHas('user', function($u) {
+                        $u->whereIn('role', [1, 21, 22]);
+                    })
+                    ->orWhere(function($q2) {
+                        $q2->whereNull('user_id')
+                            ->where(function($q3) {
+                                $q3->where('phone', 'N/A')
+                                    ->orWhere('phone', 'Nhân viên thu ngân')
+                                    ->orWhere('phone', 'Không có')
+                                    ->orWhere('name', 'like', '%Khách lẻ%')
+                                    ->orWhere('name', 'like', '%Khách Vãng Lai%');
+                            });
+                    });
+                });
+            } elseif ($request->order_type == 'web') {
+                $query->where(function($q) {
+                    $q->whereHas('user', function($u) {
+                        $u->where('role', 0);
+                    })
+                    ->orWhere(function($q2) {
+                        $q2->whereNull('user_id')
+                            ->where('phone', '!=', 'N/A')
+                            ->where('phone', '!=', 'Nhân viên thu ngân')
+                            ->where('phone', '!=', 'Không có')
+                            ->where('name', 'not like', '%Khách lẻ%')
+                            ->where('name', 'not like', '%Khách Vãng Lai%');
+                    });
+                });
+            }
+        }
 
         $orders = $query->paginate($perPage);
         return view('admin.order.index', compact('orders'));
