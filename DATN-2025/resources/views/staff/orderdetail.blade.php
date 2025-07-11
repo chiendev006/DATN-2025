@@ -3,9 +3,7 @@
 @section('main-content')
 <div class="container-fluid px-0">
     <div class="row align-items-center mb-4" style="min-height: 56px;">
-        
         <div class="col-12 col-md-3 d-flex align-items-center justify-content-start mb-2 mb-md-0">
-            
             <form method="GET" class="d-flex align-items-center gap-2 mb-0" style="margin-bottom:0;">
                 <label for="per_page" class="mb-0 font-semibold text-indigo-700">Đơn/trang:</label>
                 <select id="per_page" name="per_page" class="form-control" style="width: 90px;">
@@ -24,6 +22,14 @@
                     <option value="completed" {{ request('status')==='completed' ? 'selected' : '' }}>Hoàn thành</option>
                     <option value="cancelled" {{ request('status')==='cancelled' ? 'selected' : '' }}>Đã hủy</option>
                 </select>
+                <label for="pay_status" class="mb-0 font-semibold text-indigo-700">Thanh toán:</label>
+                <select name="pay_status" id="pay_status" class="form-control" style="width: 130px;">
+                    <option value="">Tất cả</option>
+                    <option value="0" {{ request('pay_status')==='0' ? 'selected' : '' }}>Chờ thanh toán</option>
+                    <option value="1" {{ request('pay_status')==='1' ? 'selected' : '' }}>Đã thanh toán</option>
+                    <option value="2" {{ request('pay_status')==='2' ? 'selected' : '' }}>Đã hủy</option>
+                    <option value="3" {{ request('pay_status')==='3' ? 'selected' : '' }}>Hoàn tiền</option>
+                </select>
                 <button type="submit" class="btn btn-primary">Lọc</button>
             </form>
         </div>
@@ -35,7 +41,6 @@
         <div class="col-12 col-md-3"></div>
     </div>
 </div>
-
 @if ($donhangs->count() == 0)
     <div class="bg-gray-50 p-6 rounded-xl shadow text-gray-500 italic text-center border border-dashed">
         Chưa có hóa đơn nào hôm nay.
