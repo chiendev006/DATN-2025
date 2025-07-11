@@ -56,6 +56,24 @@
         background-color: #e9ecef;
         border-color: #dee2e6;
     }
+    .badge {
+        display: inline-block;
+        padding: 0.35em 0.65em;
+        font-size: 0.85em;
+        font-weight: 600;
+        line-height: 1;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 0.25rem;
+    }
+    .badge-secondary { background-color: #6c757d !important; color: #fff !important; }
+    .badge-info { background-color: #007bff !important; color: #fff !important; } /* Đang xử lý: xanh dương */
+    .badge-warning { background-color: #ff9800 !important; color: #212529 !important; } /* Đang giao hàng: cam */
+    .badge-success { background-color: #28a745 !important; color: #fff !important; } /* Hoàn thành: xanh lá */
+    .badge-danger { background-color: #dc3545 !important; color: #fff !important; } /* Đã hủy: đỏ */
+    .badge-pending { background-color: #6f42c1 !important; color: #fff !important; } /* Chờ xác nhận: tím */
 </style>
 
     <div class="content-wrapper-scroll">
@@ -200,14 +218,16 @@
 														<td>
                                                             @php
                                                                 $statusMap = [
-                                                                    'pending' => 'Chờ xác nhận',
-                                                                    'processing' => 'Đang xử lý',
-                                                                    'shipping' => 'Đang giao hàng',
-                                                                    'completed' => 'Hoàn thành',
-                                                                    'cancelled' => 'Đã hủy',
+                                                                    'pending' => ['label' => 'Chờ xác nhận', 'class' => 'badge-pending'], // tím
+                                                                    'processing' => ['label' => 'Đang xử lý', 'class' => 'badge-info'], // xanh dương
+                                                                    'shipping' => ['label' => 'Đang giao hàng', 'class' => 'badge-warning'], // cam
+                                                                    'completed' => ['label' => 'Hoàn thành', 'class' => 'badge-success'], // xanh lá
+                                                                    'cancelled' => ['label' => 'Đã hủy', 'class' => 'badge-danger'], // đỏ
                                                                 ];
+                                                                $status = $order->status;
+                                                                $statusInfo = $statusMap[$status] ?? ['label' => $status, 'class' => 'badge-secondary'];
                                                             @endphp
-                                                            {{ $statusMap[$order->status] ?? $order->status }}
+                                                            <span class="badge {{ $statusInfo['class'] }}">{{ $statusInfo['label'] }}</span>
                                                         </td>
 													</tr>
                                                     @endforeach
@@ -312,6 +332,7 @@
 
 </script>
 <script>
+var chart;
 window.onload = function() {
     // Set ngày mặc định khi trang load
     setDefaultDates();
@@ -323,11 +344,9 @@ window.onload = function() {
     var muaThang = {{ isset($muaThang) ? (int)$muaThang : 0 }};
     var muaTaiKhoan = {{ isset($muaTaiKhoan) ? (int)$muaTaiKhoan : 0 }};
 
-    var chart = new CanvasJS.Chart("chartContainer", {
+    chart = new CanvasJS.Chart("chartContainer", {
         animationEnabled: true,
-        title: {
-
-        },
+        title: {},
         data: [{
             type: "pie",
             startAngle: 180,
@@ -345,6 +364,15 @@ window.onload = function() {
     setTimeout(function() {
         filterRevenue();
     }, 500); // Delay 500ms để đảm bảo các element đã được render
+}
+
+function updateCustomerTrendChart(muaThang, muaTaiKhoan) {
+    if (!chart) return;
+    chart.options.data[0].dataPoints = [
+        {y: muaThang, label: "Mua thẳng"},
+        {y: muaTaiKhoan, label: "Mua với tài khoản shop"}
+    ];
+    chart.render();
 }
 </script>
 
@@ -390,7 +418,7 @@ function hideDateError() {
     document.getElementById('dateError').style.display = 'none';
 }
 
-function filterRevenue(page = 1) {
+function filterRevenue(resetPage = 1) {
     if (!validateDates()) {
         return;
     }
@@ -398,8 +426,8 @@ function filterRevenue(page = 1) {
     const startDate = document.getElementById('start_date').value;
     const endDate = document.getElementById('end_date').value;
     
-    // Reset về trang 1 khi filter mới
-    if (page === 1) {
+    // Chỉ reset về trang 1 khi lọc mới
+    if (resetPage === 1) {
         currentRecentPage = 1;
         currentDailyPage = 1;
     }
@@ -721,6 +749,25 @@ function filterRevenue(page = 1) {
         document.getElementById('spendPerUserAvg').innerHTML = 'Lỗi';
         document.getElementById('dailyStatsTableBody').innerHTML = '<tr><td colspan="4" class="text-center">Có lỗi xảy ra khi tải dữ liệu</td></tr>';
     });
+
+    // Gọi API cập nhật xu hướng khách hàng
+    fetch('/admin/customer-trend/filter', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : document.querySelector('input[name="_token"]').value
+        },
+        body: JSON.stringify({
+            start_date: startDate,
+            end_date: endDate
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (typeof data.muaThang !== 'undefined' && typeof data.muaTaiKhoan !== 'undefined') {
+            updateCustomerTrendChart(data.muaThang, data.muaTaiKhoan);
+        }
+    });
 }
 
 // Hàm tạo phân trang
@@ -770,7 +817,7 @@ function changePage(page, type) {
     } else if (type === 'daily') {
         currentDailyPage = page;
     }
-    filterRevenue();
+    filterRevenue(0); // Không reset về trang 1 khi chuyển trang
 }
 </script>
 

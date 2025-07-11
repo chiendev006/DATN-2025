@@ -185,6 +185,14 @@ select:disabled {
                                                         <option value="2" {{ request('pay_status')==='2' ? 'selected' : '' }}>Đã hủy</option>
                                                         <option value="3" {{ request('pay_status')==='3' ? 'selected' : '' }}>Hoàn tiền</option>
                                                     </select></div>
+                                                  <div  class="field-wrapper">
+                                                  <div class="field-placeholder">Loại đơn</div>
+                                                  <select name="order_type" class="form-control" style="width: 120px; margin-right: 12px;">
+                                                      <option value="">Tất cả</option>
+                                                      <option value="web" {{ request('order_type')=='web' ? 'selected' : '' }}>Đơn web</option>
+                                                      <option value="staff" {{ request('order_type')=='staff' ? 'selected' : '' }}>Đơn staff</option>
+                                                  </select>
+                                                  </div>
                                                     <button style="margin-top: -8px;" type="submit" class="btn btn-primary">Lọc</button>
                                                    <div  class="field-wrapper">
                                                    <div class="field-placeholder">Đơn/trang</div>
@@ -195,7 +203,7 @@ select:disabled {
                                                         <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
                                                         <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
                                                     </select>
-                                                    @foreach(request()->except(['per_page','page','pay_status','status']) as $key => $val)
+                                                    @foreach(request()->except(['per_page','page','pay_status','status','order_type']) as $key => $val)
                                                         <input type="hidden" name="{{ $key }}" value="{{ $val }}">
                                                     @endforeach
                                                     </div>

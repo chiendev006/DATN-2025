@@ -33,14 +33,14 @@
                                     <div class="alert-container"></div>
                                     <div class="row">
                                         <div class="col-md-6 col-sm-6 col-xs-12">
-                                            <label>Họ tên <span class="text-danger">*</span></label>
+                                            <label>Họ tên <span class="text-danger"></span></label>
                                             <input name="name" type="text" value="{{ old('name') }}" placeholder="Nhập họ và tên" class="form-control @error('name') is-invalid @enderror">
                                             @error('name')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
                                         </div>
                                         <div class="col-md-6 col-sm-6 col-xs-12">
-                                            <label>Email <span class="text-danger">*</span></label>
+                                            <label>Email <span class="text-danger"></span></label>
                                             <input name="email" type="email" value="{{ old('email') }}" placeholder="Nhập email" class="form-control @error('email') is-invalid @enderror">
                                             @error('email')
                                                 <span class="text-danger">{{ $message }}</span>
@@ -54,7 +54,7 @@
                                             @enderror
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <label>Tin nhắn <span class="text-danger">*</span></label>
+                                            <label>Tin nhắn <span class="text-danger"></span></label>
                                           <textarea id="editor" name="message" placeholder="Nhập tin nhắn của bạn (ít nhất 10 ký tự)" class="form-control @error('message') is-invalid @enderror">{{ old('message') }}</textarea>
                                           @error('message')
                                               <span class="text-danger">{{ $message }}</span>

@@ -105,9 +105,10 @@
                                     <span>Mã giảm giá:</span>
                                     <strong style="color: green;">-{{ number_format($order->coupon_total_discount, 0) }}đ</strong>
                                 </h5>
+                               
                                 <h5 style="display: flex; justify-content: space-between;">
                                     <span>Điểm giảm giá:</span>
-                                    <strong style="color: green;">-{{ number_format($order->points_used * 1000, 0, ',', ',') }}đ</strong>
+                                    <strong style="color: green;">-{{ number_format($order->points_discount, 0) }}đ</strong>
                                 </h5>
                                 <h5 style="display: flex; justify-content: space-between;">
                                     <span>Tiền ship:</span>

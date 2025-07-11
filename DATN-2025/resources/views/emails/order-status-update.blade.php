@@ -200,7 +200,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📦 Cập nhật trạng thái đơn hàng</h1>
+            <h1>Cập nhật trạng thái đơn hàng</h1>
         </div>
         
         <div class="content">
@@ -289,7 +289,7 @@
             </div>
             
               <div class="products-section">
-                <div class="section-title">📦 Chi tiết sản phẩm</div>
+                <div class="section-title"> Chi tiết sản phẩm</div>
                 
                 @foreach($orderDetails as $detail)
                 <div class="product-item">
@@ -362,7 +362,7 @@
                 }
             @endphp
             <div class="total-section">
-                <div class="section-title">💰 Tổng thanh toán</div>
+                <div class="section-title">Tổng thanh toán</div>
                 
                 <div class="total-row">
                     <span>Tiền sản phẩm:</span>
@@ -396,7 +396,7 @@
             
             @if($order->note)
             <div style="margin-top: 20px; padding: 15px; background-color: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
-                <strong>📝 Ghi chú:</strong><br>
+                <strong>Ghi chú:</strong><br>
                 {{ $order->note }}
             </div>
             @endif

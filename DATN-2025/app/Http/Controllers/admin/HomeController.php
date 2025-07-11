@@ -47,7 +47,11 @@ class HomeController extends Controller
 
         // Pie chart: Xu hướng khách hàng
         // Lấy tất cả user_id là null hoặc user_id có role=21 hoặc role=1
-        $orders = Order::all();
+        $today = \Carbon\Carbon::today();
+        $tomorrow = \Carbon\Carbon::tomorrow();
+        $orders = Order::where('created_at', '>=', $today)
+            ->where('created_at', '<', $tomorrow)
+            ->get();
         $userIds = $orders->pluck('user_id')->filter()->unique();
         $role21And1Ids = [];
         if ($userIds->count() > 0) {
@@ -309,6 +313,40 @@ class HomeController extends Controller
             'topProducts' => $topProducts,
             'couponStats' => $couponStats,
             'pointsEfficiency' => $pointsEfficiency,
+        ]);
+    }
+
+    public function customerTrendFilter(Request $request)
+    {
+        $start = $request->input('start_date');
+        $end = $request->input('end_date');
+        if (!$start || !$end) {
+            return response()->json(['error' => 'Thiếu ngày bắt đầu hoặc kết thúc'], 400);
+        }
+        $startDate = \Carbon\Carbon::parse($start)->startOfDay();
+        $endDate = \Carbon\Carbon::parse($end)->endOfDay();
+        $orders = \App\Models\Order::where('created_at', '>=', $startDate)
+            ->where('created_at', '<=', $endDate)
+            ->get();
+        $userIds = $orders->pluck('user_id')->filter()->unique();
+        $role21And1Ids = [];
+        if ($userIds->count() > 0) {
+            $role21And1Ids = \App\Models\User::whereIn('id', $userIds)
+                ->where(function($query) {
+                    $query->where('role', 21)->orWhere('role', 1);
+                })
+                ->pluck('id')
+                ->toArray();
+        }
+        $muaThang = $orders->where(function($order) use ($role21And1Ids) {
+            return is_null($order->user_id) || in_array($order->user_id, $role21And1Ids);
+        })->count();
+        $muaTaiKhoan = $orders->where(function($order) use ($role21And1Ids) {
+            return !is_null($order->user_id) && !in_array($order->user_id, $role21And1Ids);
+        })->count();
+        return response()->json([
+            'muaThang' => $muaThang,
+            'muaTaiKhoan' => $muaTaiKhoan
         ]);
     }
 }
