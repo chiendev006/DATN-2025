@@ -238,12 +238,18 @@ class StaffController extends Controller
     public function orderdetailtoday(Request $request)
 {
     $perPage = $request->input('per_page', 10); // lấy số bản ghi/trang, mặc định 10
-    $donhangs = Order::with([
+    $query = Order::with([
         'details.product',
         'details.size'
-    ])->whereDate('created_at', Carbon::today())
-    ->orderBy('created_at', 'desc')
-    ->paginate($perPage); // dùng paginate thay vì get()
+    ])->whereDate('created_at', Carbon::today());
+
+    // Thêm filter trạng thái đơn hàng
+    if ($request->filled('status')) {
+        $query->where('status', $request->input('status'));
+    }
+    
+
+    $donhangs = $query->orderBy('created_at', 'desc')->paginate($perPage);
 
     // Load thông tin topping cho nhiều topping
     foreach($donhangs as $donhang) {

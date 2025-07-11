@@ -3,7 +3,9 @@
 @section('main-content')
 <div class="container-fluid px-0">
     <div class="row align-items-center mb-4" style="min-height: 56px;">
+        
         <div class="col-12 col-md-3 d-flex align-items-center justify-content-start mb-2 mb-md-0">
+            
             <form method="GET" class="d-flex align-items-center gap-2 mb-0" style="margin-bottom:0;">
                 <label for="per_page" class="mb-0 font-semibold text-indigo-700">Đơn/trang:</label>
                 <select id="per_page" name="per_page" class="form-control" style="width: 90px;">
@@ -12,6 +14,15 @@
                     <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản</option>
                     <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
                     <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
+                </select>
+                <label for="status" class="mb-0 font-semibold text-indigo-700">Trạng thái đơn:</label>
+                <select name="status" id="status" class="form-control" style="width: 130px;">
+                    <option value="">Tất cả</option>
+                    <option value="pending" {{ request('status')==='pending' ? 'selected' : '' }}>Chờ xử lý</option>
+                    <option value="processing" {{ request('status')==='processing' ? 'selected' : '' }}>Đã xác nhận</option>
+                    <option value="shipping" {{ request('status')==='shipping' ? 'selected' : '' }}>Đang giao</option>
+                    <option value="completed" {{ request('status')==='completed' ? 'selected' : '' }}>Hoàn thành</option>
+                    <option value="cancelled" {{ request('status')==='cancelled' ? 'selected' : '' }}>Đã hủy</option>
                 </select>
                 <button type="submit" class="btn btn-primary">Lọc</button>
             </form>
