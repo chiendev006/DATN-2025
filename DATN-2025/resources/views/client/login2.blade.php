@@ -24,7 +24,7 @@
                         <div class="col-md-6 col-sm-8 col-xs-12 mx-auto wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                             <div class="login-wrap form-common">
                                 <div class="title text-center">
-                                    <h3 class="text-coffee">Login</h3>
+                                    <h3 class="text-coffee">Đăng nhập</h3>
                                 </div>
                                 <form id="login-form">
                                     @csrf
@@ -36,12 +36,12 @@
                                     @endif
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <input type="text" name="email" placeholder="Username or email address" class="input-fields" required>
+                                            <input type="text" name="email" placeholder="Nhập email" class="input-fields" required>
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <input type="password" name="password" placeholder="********" class="input-fields" required>
+                                            <input type="password" name="password" placeholder="Nhập mật khẩu" class="input-fields" required>
                                         </div>
-                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div id="chi" class="col-md-12 col-sm-12 col-xs-12">
                                             <div class="row">
                                                 <div class="col-md-4 col-sm-4 col-xs-4">
                                                     <a class="href_matches" style="margin-left:0px;" href="{{ route('forgot-password') }}" class="pull-right">Quên mật khẩu</a>
@@ -52,7 +52,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-12 col-sm-12 col-xs-6">
-                                            <button  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" type="submit" class="button-default button-default-submit">LOGIN</button>
+                                            <button  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" type="submit" class="button-default button-default-submit">Đăng nhập</button>
                                         </div>
                                     </div>
                                 </form>
@@ -115,4 +115,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+<style>
+    #chi{
+        margin-left: 250px;
+    }
+    .row justify-content-center {
+        text-align: center;
+    }
+</style>
 @endsection
