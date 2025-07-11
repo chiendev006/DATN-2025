@@ -9,9 +9,9 @@
                         <ul>
                             <li><a href="/">Home</a></li>
                             <li><a href="shop.html">Shop</a></li>
-                            <li class="active"><a href="#">Login / Register</a></li>
+                            <li class="active"><a href="#">Register</a></li>
                         </ul>
-                        <label class="now">LOGIN REGISTER</label>
+                        <label class="now">REGISTER</label>
                     </div>
                 </div>
             </section>

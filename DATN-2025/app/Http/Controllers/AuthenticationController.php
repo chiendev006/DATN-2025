@@ -108,11 +108,23 @@ class AuthenticationController extends Controller
             ]);
         }
 
-        if ($hasPhone){
-            return redirect()->back()->with([
-                'message' => 'Số điện thoại đã tồn tại'
-            ]);
-        } else{
+        if ($hasPhone) {
+            // Nếu số điện thoại đã tồn tại, nhưng chưa có email, cập nhật email
+            $user = User::where('phone', $request->phone)->first();
+
+            if (empty($user->email)) {
+                // Cập nhật email cho người dùng với số điện thoại đã tồn tại
+                $user->email = $request->email;
+                $user->save();
+                return redirect()->back()->with([
+                    'message' => 'Số điện thoại đã tồn tại, email đã được cập nhật'
+                ]);
+            } else {
+                return redirect()->back()->with([
+                    'message' => 'Số điện thoại đã tồn tại và đã có email'
+                ]);
+            }
+        } else {
             $data = $request->validate([
                 'name' => 'required',
                 'email' => 'required|email|unique:users',
@@ -129,9 +141,12 @@ class AuthenticationController extends Controller
                 'phone.unique' => 'Số điện thoại đã tồn tại'
             ]);
         }
+
         $data['password'] = Hash::make($data['password']);
         $data['image'] = 'default.jpg';
+
         User::create($data);
+
         return redirect()->route('login')->with([
             'success' => 'Đăng kí thành công'
         ]);
