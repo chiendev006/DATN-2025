@@ -40,7 +40,17 @@
         gtag('js', new Date());
         gtag('config', 'UA-130795909-1');
     </script>
-
+<style>
+    body {
+        background: url('{{ url('asset/images/lovepik.jpg') }}') no-repeat center center fixed; 
+        background-size: cover;
+    }
+    .card-content {
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 8px;
+        padding: 2rem;
+    }
+</style>
 </head>
 <body>
 
@@ -50,8 +60,7 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    <span class="icon"><i class="mdi mdi-lock"></i></span>
-                    Login
+                    Đăng nhập
                 </p>
             </header>
             <div class="card-content">
@@ -59,32 +68,25 @@
                 <form id="admin-login-form">
                     @csrf
                     <div class="field spaced">
-                        <label class="label">Login</label>
+                        <label class="label">Tài khoản</label>
                         <div class="control icons-left">
                             <input class="input" type="text" name="email" placeholder="user@example.com" autocomplete="username">
                             <span class="icon is-small left"><i class="mdi mdi-account"></i></span>
                         </div>
-                        <p class="help">
-                            Please enter your login
-                        </p>
                     </div>
 
                     <div class="field spaced">
-                        <label class="label">Password</label>
+                        <label class="label">Mật khẩu</label>
                         <p class="control icons-left">
-                            <input class="input" type="password" name="password" placeholder="Password" autocomplete="current-password">
+                            <input class="input" type="password" name="password" placeholder="Mật khẩu" autocomplete="current-password">
                             <span class="icon is-small left"><i class="mdi mdi-asterisk"></i></span>
-                        </p>
-                        <p class="help">
-                            Please enter your password
-                        </p>
+                        </p>    
                     </div>
-
                     <div class="field spaced">
                         <div class="control">
                             <label class="checkbox"><input type="checkbox" name="remember" value="1" checked>
                                 <span class="check"></span>
-                                <span class="control-label">Remember</span>
+                                <span class="control-label">Ghi nhớ</span>
                             </label>
                         </div>
                     </div>
@@ -94,7 +96,7 @@
                     <div class="field grouped">
                         <div class="control">
                             <button type="submit" class="button blue">
-                                Login
+                                Đăng nhập
                             </button>
                         </div>
                     </div>

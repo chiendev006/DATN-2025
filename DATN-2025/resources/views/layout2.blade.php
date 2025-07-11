@@ -612,7 +612,7 @@
           <div class="copyright">
             <div class="container">
               <p>
-                Copyright © 2017 Hire WordPress Developer. All rights reserved.
+                Bản quyền © 2017 Hire WordPress Developer. Đã đăng ký bản quyền.
               </p>
             </div>
           </div>
