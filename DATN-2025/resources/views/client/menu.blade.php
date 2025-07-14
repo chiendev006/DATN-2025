@@ -43,7 +43,6 @@
                 <div class="menu-fix-main-list menu-fix-with-item">
                     <div class="title text-center">
                         <h2 class="text-dark" id="category-name">{{ $firstDanhmuc->name ?? 'Danh mục' }}</h2>
-                        <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" id="category-description">{{ $firstDanhmuc->description ?? 'Mô tả danh mục' }}</h6>
                     </div>
 
                     <div class="row" id="product-display">
