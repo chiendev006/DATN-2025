@@ -296,7 +296,9 @@ class StaffController extends Controller
             $sanpham = collect(); // hoặc Sanpham::all() nếu muốn hiện tất cả
         }
 
-        return view('staff.menu', compact('sanpham', 'keyword' , 'danhmuc'));
+        $vndPerPoint = (int) (\DB::table('point_settings')->where('key', 'vnd_per_point')->value('value') ?? 1000);
+
+        return view('staff.menu', compact('sanpham', 'keyword' , 'danhmuc', 'vndPerPoint'));
     }
     public function updateStatus(Request $request, $id)
     {
