@@ -405,8 +405,8 @@ Cà phê - Cao cấp<br />
           <section class="default-section bg-grey">
             <div class="container">
               <div class="title text-center">
-                <h2 class="text-coffee">Feature Blog</h2>
-                <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Read Latest Delicious Posts And News</h6>
+                <h2 class="text-coffee">Bài viết</h2>
+                <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Đọc những bài viết và tin tức ngon miệng mới nhất</h6>
               </div>
               <div class="feature-blog">
                 <div
