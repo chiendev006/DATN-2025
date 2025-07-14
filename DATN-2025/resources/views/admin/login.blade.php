@@ -42,7 +42,7 @@
     </script>
 <style>
     body {
-        background: url('{{ url('asset/images/lovepik.jpg') }}') no-repeat center center fixed; 
+        background: url('{{ url('asset/images/backgrout2.jpg') }}') no-repeat center center fixed; 
         background-size: cover;
     }
     .card-content {
@@ -82,15 +82,6 @@
                             <span class="icon is-small left"><i class="mdi mdi-asterisk"></i></span>
                         </p>    
                     </div>
-                    <div class="field spaced">
-                        <div class="control">
-                            <label class="checkbox"><input type="checkbox" name="remember" value="1" checked>
-                                <span class="check"></span>
-                                <span class="control-label">Ghi nhớ</span>
-                            </label>
-                        </div>
-                    </div>
-
                     <hr>
 
                     <div class="field grouped">

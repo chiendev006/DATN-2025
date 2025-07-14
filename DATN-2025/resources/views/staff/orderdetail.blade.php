@@ -1,6 +1,11 @@
 @extends('staff.layout')
 
 @section('main-content')
+<div class="col-12 d-flex justify-content-center align-items-center" style="min-height:80px;">
+    <h2 class="text-3xl font-extrabold text-indigo-800 mb-0" style="white-space:nowrap;">
+        Hóa đơn hôm nay
+    </h2>
+</div>
 <div class="container-fluid px-0">
     <div class="row align-items-center mb-4" style="min-height: 56px;">
         <div class="col-12 col-md-3 d-flex align-items-center justify-content-start mb-2 mb-md-0">
@@ -32,11 +37,6 @@
                 </select>
                 <button type="submit" class="btn btn-primary">Lọc</button>
             </form>
-        </div>
-        <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
-            <h2 class="text-3xl font-extrabold text-indigo-800 mb-0" style="white-space:nowrap;">
-                Hóa đơn hôm nay
-            </h2>
         </div>
         <div class="col-12 col-md-3"></div>
     </div>

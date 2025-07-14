@@ -55,11 +55,12 @@
                                     $basePrice = $size ? $size->price : $product->price;
                                     $toppingIdString = (string) ($item->topping_id ?? '');
                                     $toppingIds = array_filter(array_map('trim', explode(',', $toppingIdString)));
+                                    sort($toppingIds); // Ensure consistent ordering
                                     $toppings = \App\Models\Product_topping::whereIn('id', $toppingIds)->get();
                                     $toppingPrice = $toppings->sum('price');
                                     $unitPrice = $basePrice + $toppingPrice;
                                     $total = $unitPrice * $item->quantity;
-                                    $rowKey = $item->product_id . '-' . ($item->size_id ?? '0') . '-' . implode(',', $toppingIds);
+                                    $rowKey = $item->product_id . '-' . ($item->size_id ?? 0) . '-' . implode(',', $toppingIds);
                                     $image = $product->image;
                                     $name = $product->name;
                                     $quantity = $item->quantity;
@@ -76,7 +77,8 @@
                                             $toppingIdsForImplode = array_map('intval', array_filter(array_map('trim', explode(',', (string) $item->topping_ids))));
                                         }
                                     }
-                                    $rowKey = $item->sanpham_id . '-' . ($item->size_id ?? '0') . '-' . implode(',', $toppingIdsForImplode);
+                                    sort($toppingIdsForImplode); // Ensure consistent ordering
+                                    $rowKey = $item->sanpham_id . '-' . ($item->size_id ?? 0) . '-' . implode(',', $toppingIdsForImplode);
 
                                     $image = $item->image;
                                     $name = $item->name;
@@ -152,8 +154,8 @@
                                             class="quantity-input" min="1" readonly
                                             data-key="{{ $rowKey }}"
                                             data-product_id="{{ Auth::check() ? $item->product_id : $item->sanpham_id }}"
-                                            data-size_id="{{ Auth::check() ? ($item->size_id ?? '0') : ($item->size_id ?? '0') }}"
-                                            data-topping_ids="{{ Auth::check() ? implode(',', $toppingIds) : implode(',', $toppingIdsForImplode) }}">
+                                            data-size_id="{{ Auth::check() ? ($item->size_id ?? 0) : ($item->size_id ?? 0) }}"
+                                            data-topping_ids="{{ Auth::check() ? (empty($toppingIds) ? '' : implode(',', $toppingIds)) : (empty($toppingIdsForImplode) ? '' : implode(',', $toppingIdsForImplode)) }}">
                                         <span class="plus-text increment-btn"><i class="icon-plus"></i></span>
                                     </div>
                                 </td>
@@ -541,6 +543,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const productId = row.querySelector('.quantity-input').dataset.product_id;
             const sizeId = row.querySelector('.quantity-input').dataset.size_id;
             const toppingIds = row.querySelector('.quantity-input').dataset.topping_ids;
+            
+            // Debug logging
+            console.log('Remove item data:', { key, productId, sizeId, toppingIds });
 
             if (!key && (!productId || sizeId === undefined)) {
                 console.error('Missing key or product identifiers for remove item');
@@ -558,8 +563,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     body: JSON.stringify({
                         product_id: productId,
-                        size_id: sizeId,
-                        topping_ids: toppingIds ? topping_ids.split(',').map(id => parseInt(id)) : []
+                        size_id: sizeId || 0,
+                        topping_ids: toppingIds && toppingIds.trim() ? toppingIds.split(',').filter(id => id.trim()).map(id => parseInt(id)) : []
                     })
                 });
                 if (!response.ok) {
@@ -625,8 +630,8 @@ document.addEventListener("DOMContentLoaded", function () {
             key: key,
             quantity: newQuantity,
             product_id: product_id,
-            size_id: size_id,
-            topping_ids: topping_ids ? topping_ids.split(',').map(id => parseInt(id)) : []
+            size_id: size_id || 0,
+            topping_ids: topping_ids && topping_ids.trim() ? topping_ids.split(',').filter(id => id.trim()).map(id => parseInt(id)) : []
         };
 
         logDebug('Update Quantity Request', requestData);

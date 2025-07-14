@@ -125,6 +125,7 @@ public function index()
         $basePrice = $size ? $size->price : ($sanpham->price ?? 0);
         $toppingPrice = $productToppings->sum('price');
         $unitPrice = $basePrice + $toppingPrice;
+        $sizeId = $sizeId ?? 0; // Handle null sizeId
         $key = $sanpham->id . '-' . $sizeId . '-' . $toppingIdsString;
         if (Auth::check()) {
             $cart = Cart::firstOrCreate(
@@ -199,6 +200,7 @@ public function index()
     {
         $toppingIds = array_map('intval', (array)$toppingIds);
         sort($toppingIds);
+        $sizeId = $sizeId ?? 0; // Handle null sizeId
         return implode('-', [$productId, $sizeId, implode(',', $toppingIds)]);
     }
 
@@ -236,10 +238,10 @@ public function index()
                 }
 
                 $cartDetail = null;
-                if ($productId && $sizeId !== null) {
+                if ($productId) {
                     $cartDetail = Cartdetail::where('cart_id', $cart->id)
                         ->where('product_id', $productId)
-                        ->where('size_id', $sizeId)
+                        ->where('size_id', $sizeId ?? 0)
                         ->where('topping_id', $toppingIdsString)
                         ->first();
                 } else if ($key) {
@@ -344,13 +346,34 @@ public function index()
             $sizeId = $request->input('size_id');
             $toppingIds = $request->input('topping_ids', []);
 
+            // Debug logging
+            \Log::info('Remove item request', [
+                'key' => $key,
+                'productId' => $productId,
+                'sizeId' => $sizeId,
+                'toppingIds' => $toppingIds,
+                'isLoggedIn' => Auth::check()
+            ]);
+
             if (!$key && $productId && $sizeId !== null) {
                 $key = $this->_makeCartKey($productId, $sizeId, $toppingIds);
+                \Log::info('Generated key', ['key' => $key]);
+            } elseif (!$key && $productId) {
+                // Handle case where sizeId might be 0 or null
+                $key = $this->_makeCartKey($productId, $sizeId ?? 0, $toppingIds);
+                \Log::info('Generated key with null sizeId', ['key' => $key]);
             }
 
             $toppingIds = array_map('intval', (array)$toppingIds);
             sort($toppingIds);
             $toppingIdsString = implode(',', $toppingIds);
+            
+            // Debug logging for topping IDs in removeItem
+            \Log::info('RemoveItem topping IDs processing', [
+                'original' => $toppingIds,
+                'processed' => $toppingIdsString,
+                'key' => $key
+            ]);
 
             $subtotal = 0; 
 
@@ -361,10 +384,10 @@ public function index()
                 }
 
                 $cartDetail = null;
-                if ($productId && $sizeId !== null) {
+                if ($productId) {
                     $cartDetail = Cartdetail::where('cart_id', $cart->id)
                         ->where('product_id', $productId)
-                        ->where('size_id', $sizeId)
+                        ->where('size_id', $sizeId ?? 0)
                         ->where('topping_id', $toppingIdsString)
                         ->first();
                 } else if ($key) {
@@ -390,6 +413,8 @@ public function index()
                 }
             } else {
                 $cartSession = session('cart', []);
+                \Log::info('Session cart keys', ['keys' => array_keys($cartSession), 'searchKey' => $key]);
+                
                 if (isset($cartSession[$key])) {
                     unset($cartSession[$key]);
                     session(['cart' => $cartSession]);
