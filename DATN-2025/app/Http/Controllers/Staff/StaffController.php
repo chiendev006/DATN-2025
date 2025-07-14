@@ -236,51 +236,53 @@ class StaffController extends Controller
         return view('staff.menu', compact('sanpham', 'danhmuc', 'selectedDanhmuc', 'message', 'vndPerPoint'));
     }
     public function orderdetailtoday(Request $request)
-{
-    $perPage = $request->input('per_page', 10); // lấy số bản ghi/trang, mặc định 10
-    $query = Order::with([
-        'details.product',
-        'details.size'
-    ])->whereDate('created_at', Carbon::today());
+    {
+        $perPage = $request->input('per_page', 10); // lấy số bản ghi/trang, mặc định 10
+        $query = Order::with([
+            'details.product',
+            'details.size'
+        ])->whereDate('created_at', Carbon::today());
 
-    // Thêm filter trạng thái đơn hàng
-    if ($request->filled('status')) {
-        $query->where('status', $request->input('status'));
-    }
-    
+        // Thêm filter trạng thái đơn hàng giống admin
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+        if ($request->filled('pay_status')) {
+            $query->where('pay_status', $request->input('pay_status'));
+        }
 
-    $donhangs = $query->orderBy('created_at', 'desc')->paginate($perPage);
+        $donhangs = $query->orderBy('created_at', 'desc')->paginate($perPage);
 
-    // Load thông tin topping cho nhiều topping
-    foreach($donhangs as $donhang) {
-        foreach($donhang->details as $detail) {
-            if($detail->topping_id) {
-                // Xử lý trường hợp nhiều topping (ngăn cách bởi dấu phẩy)
-                $toppingIds = explode(',', $detail->topping_id);
-                $toppings = [];
+        // Load thông tin topping cho nhiều topping
+        foreach($donhangs as $donhang) {
+            foreach($donhang->details as $detail) {
+                if($detail->topping_id) {
+                    // Xử lý trường hợp nhiều topping (ngăn cách bởi dấu phẩy)
+                    $toppingIds = explode(',', $detail->topping_id);
+                    $toppings = [];
 
-                foreach($toppingIds as $id) {
-                    $id = trim($id); // Loại bỏ khoảng trắng
-                    if($id) {
-                        $topping = Product_topping::find($id);
-                        if($topping) {
-                            $toppings[] = $topping;
+                    foreach($toppingIds as $id) {
+                        $id = trim($id); // Loại bỏ khoảng trắng
+                        if($id) {
+                            $topping = Product_topping::find($id);
+                            if($topping) {
+                                $toppings[] = $topping;
+                            }
                         }
                     }
-                }
 
-                $detail->topping_list = $toppings;
-            } else {
-                $detail->topping_list = [];
+                    $detail->topping_list = $toppings;
+                } else {
+                    $detail->topping_list = [];
+                }
             }
         }
+
+        $danhmuc = DanhMuc::all();
+        $sanpham = SanPham::all();
+
+        return view('staff.orderdetail', compact('donhangs', 'danhmuc', 'sanpham'));
     }
-
-    $danhmuc = DanhMuc::all();
-    $sanpham = SanPham::all();
-
-    return view('staff.orderdetail', compact('donhangs', 'danhmuc', 'sanpham'));
-}
     public function searchProducts(Request $request)
     {
         $danhmuc = DanhMuc::all();
