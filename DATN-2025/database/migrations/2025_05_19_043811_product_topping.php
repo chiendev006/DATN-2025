@@ -18,7 +18,7 @@ return new class extends Migration
         $table->decimal('price', 10, 2)->default(0);
         $table->timestamps();
 });
-
+z
     }
 
     /**

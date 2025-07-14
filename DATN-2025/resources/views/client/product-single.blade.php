@@ -29,7 +29,7 @@
                             @endphp
                             @foreach ($allImages as $image)
                                 <div>
-                                    <img style="max-width:95%;min-width:95%; min-height: 400px;max-height:400px; margin: auto;" class="product-main-img" src="{{ asset('storage/' . (str_contains($image, 'uploads/') ? $image : 'uploads/' . $image)) }}" alt="Ảnh sản phẩm">
+                                    <img style="max-width:95%;min-width:95%; min-height: 400px; margin: auto;" class="product-main-img" src="{{ asset('storage/' . (str_contains($image, 'uploads/') ? $image : 'uploads/' . $image)) }}" alt="Ảnh sản phẩm">
                                 </div>
                             @endforeach
                         </div>
