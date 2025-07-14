@@ -3,7 +3,7 @@
 @section('main-content')
 <div class="container-fluid px-0">
     <div class="row align-items-center mb-4" style="min-height: 56px;">
-        <div class="col-12 col-md-3 d-flex align-items-center justify-content-start mb-2 mb-md-0">
+        <div class="col-12 col-md-3 d-flex align-items-center justify-content-start mb-2 mb-md-0" style="z-index:2; position:relative;">
             <form method="GET" class="d-flex align-items-center gap-2 mb-0" style="margin-bottom:0;">
                 <label for="per_page" class="mb-0 font-semibold text-indigo-700">Đơn/trang:</label>
                 <select id="per_page" name="per_page" class="form-control" style="width: 90px;">
@@ -22,7 +22,7 @@
                     <option value="completed" {{ request('status')==='completed' ? 'selected' : '' }}>Hoàn thành</option>
                     <option value="cancelled" {{ request('status')==='cancelled' ? 'selected' : '' }}>Đã hủy</option>
                 </select>
-                <label for="pay_status" class="mb-0 font-semibold text-indigo-700">Thanh toán:</label>
+                <label for="pay_status" class="mb-0 font-semibold text-indigo-700">Trạng thái thanh toán:</label>
                 <select name="pay_status" id="pay_status" class="form-control" style="width: 130px;">
                     <option value="">Tất cả</option>
                     <option value="0" {{ request('pay_status')==='0' ? 'selected' : '' }}>Chờ thanh toán</option>
@@ -33,7 +33,7 @@
                 <button type="submit" class="btn btn-primary">Lọc</button>
             </form>
         </div>
-        <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+        <div class="col-12 col-md-6 d-flex justify-content-center align-items-center" style="z-index:1; position:relative;">
             <h2 class="text-3xl font-extrabold text-indigo-800 mb-0" style="white-space:nowrap;">
                 Hóa đơn hôm nay
             </h2>
@@ -41,6 +41,7 @@
         <div class="col-12 col-md-3"></div>
     </div>
 </div>
+
 @if ($donhangs->count() == 0)
     <div class="bg-gray-50 p-6 rounded-xl shadow text-gray-500 italic text-center border border-dashed">
         Chưa có hóa đơn nào hôm nay.
