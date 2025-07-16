@@ -59,7 +59,7 @@
                                                 <div class="field-wrapper">
 
                                                     <button type="submit" class="btn btn-primary" style="margin-top: 0px;">Lọc</button>
-                                                    <a href="{{ route('historylog.index') }}" class="btn btn-secondary" style="margin-top: 0px; margin-left: 8px;">Reset</a>
+                                                    <a href="{{ route('historylog.index') }}" class="btn btn-secondary" style="margin-top: 0px;">Reset</a>
                                                 </div>
                                                 </div>
                                             </div>

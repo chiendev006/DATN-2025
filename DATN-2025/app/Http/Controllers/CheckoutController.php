@@ -540,22 +540,18 @@ class CheckoutController extends Controller
             Log::info('DEBUG: Transaction committed successfully', [
                 'order_id' => $order->id
             ]);
-
-            // Ghi log lịch sử đặt đơn thành công
-            try {
-                $title = '<strong>Khách hàng đặt đơn thành công:</strong> <br>';
-                $content1 = "<span style='color: red;'>Tên khách:</span> <b>$order->name</b> <br>";
-                $content2 = "<span style='color: red;'>Số điện thoại:</span> <b>$order->phone</b> <br>";
-                $content3 = "<span style='color: red;'>Mã đơn hàng:</span> <b>$order->id</b> <br>";
-                $content4 = "<span style='color: red;'>Tổng tiền:</span> <b>" . number_format($order->total) . " VNĐ</b> <br>";
-                $content5 = $order->points_used > 0 ? "<span style='color: red;'>Sử dụng điểm:</span> <b>$order->points_used</b> (giảm <b>" . number_format($order->points_discount) . " VNĐ</b>)<br>" : '';
-                // Bổ sung ghi sử dụng mã giảm giá
-                $content5_coupon = '';
-                if (!empty($order->coupon_summary)) {
-                    $coupons = json_decode($order->coupon_summary, true);
-                    if (is_array($coupons)) {
-                        foreach ($coupons as $c) {
-                            $code = $c['code'] ?? '';
+            $title = '<strong>Khách hàng đặt đơn thành công:</strong> <br>';
+            $content1 = "<span style='color: red;'>Tên khách:</span> <b>$order->name</b> <br>";
+            $content2 = "<span style='color: red;'>Số điện thoại:</span> <b>$order->phone</b> <br>";
+            $content3 = "<span style='color: red;'>Mã đơn hàng:</span> <b>$order->id</b> <br>";
+            $content4 = "<span style='color: red;'>Tổng tiền:</span> <b>" . number_format($order->total) . " VNĐ</b> <br>";
+            $content5 = $order->points_used > 0 ? "<span style='color: red;'>Sử dụng điểm:</span> <b>$order->points_used</b> (giảm <b>" . number_format($order->points_discount) . " VNĐ</b>)<br>" : '';
+            $content5_coupon = '';
+            if (!empty($order->coupon_summary)) {
+                $coupons = json_decode($order->coupon_summary, true);
+                if (is_array($coupons)) {
+                    foreach ($coupons as $c) {
+                        $code = $c['code'] ?? '';
                             $discount = $c['discount_value'] ?? 0;
                             $couponModel = \App\Models\Coupon::where('code', $code)->first();
                             $type = $couponModel ? $couponModel->type : '';
@@ -564,17 +560,15 @@ class CheckoutController extends Controller
                         }
                     }
                 }
-                $content6 = "<span style='color: red;'>Trạng thái:</span> <b>$order->status</b> <br>";
+                $content6 = "<span style='color: red;'>Trạng thái:</span> <b>Chờ xác nhận</b> <br>";
                 $content7 = "<span style='color: red;'>Thời gian đặt:</span> <b>" . $order->created_at->format('H:i d/m/Y') . "</b> <br>";
-
+                $user_id = Auth::check() ? Auth::user()->id : null;
                 \App\Models\historylog::create([
-                    'user_id' => Auth::id(),
+                    'user_id' => $user_id,
                     'role' => Auth::user()->role,
                     'content' => $title . $content1 . $content2 . $content3 . $content4 . $content5 . $content5_coupon . $content6 . $content7,
                 ]);
-            } catch (\Exception $e) {
-                // Nếu cần log lỗi, có thể thêm Log::error ở đây
-            }
+           
 
             // Gửi email xác nhận đơn hàng
             try {

@@ -122,7 +122,7 @@ public function cancelOrder($id, Request $request)
 public function ajaxUpdate(Request $request)
 {
     $user = auth()->user();
-
+    $userid = user::where('id', $user->id)->first();
     $request->validate([
         'name' => 'required|string|max:255',
         'phone' => 'nullable|string|max:20',
@@ -144,7 +144,32 @@ public function ajaxUpdate(Request $request)
     }
 
     $user->save();
+    $content1='';
+    $content2='';
+    $content3='';
+    $content4='';
 
+
+    $title="<strong>Sửa thông tin khách hàng: $user->name</strong> <br>";
+    if($userid->name!=$user->name){
+        $content1=" *<span style='color: red;'>Tên:</span> ` $userid->name`<span style='color: blue;'> thành </span>`$user->name` <br>";
+    }
+
+    if($userid->phone!=$user->phone){
+        $content2 = " *<span style='color: red;'>Số điện thoại:</span>`" . $userid->phone . "` <span style='color: blue;'>thành</span> `" . $user->phone . "` <br>";
+    }
+
+      if($userid->address!=$user->address){
+        $content3=" *<span style='color: red;'>Địa chỉ:</span> $userid->address<span style='color: blue;'> thành </span>$user->address <br>";        }
+      if ($userid->image!=$user->image) {
+
+        $content4 = "*<span style='color: red;'>Ảnh khách hàng:</span> <img src=\"" . url("/storage/avatars/$user->image") . "\" alt=\"\" width=\"100px\" height=\"100px\">";
+    }
+    \App\Models\historylog::create([
+        'user_id' => Auth::user()->id,
+        'role' => Auth::user()->role,
+        'content' =>$title.$content1.$content2.$content3.$content4,
+    ]);
     return response()->json([
         'status' => 'success',
         'message' => 'Cập nhật thông tin thành công!',

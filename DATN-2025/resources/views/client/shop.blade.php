@@ -6,7 +6,7 @@
             <div class="container">
                 <div class="breadcrumb-nav-inner">
                     <ul>
-                        <li><a href="">Home</a></li>
+                        <li><a href="/">Home</a></li>
                         <li class="active"><a href="{{ route('shop.index') }}">Shop</a></li>
                     </ul>
                     <label class="now">SHOP</label>
@@ -86,7 +86,6 @@
                                     <div class="col-md-6 col-sm-6 col-xs-12">
                                         <h6 style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Showing {{ $firstProducts->firstItem() }}–{{ $firstProducts->lastItem() }} of {{ $firstProducts->total() }} results</h6>
                                     </div>
-
                                 </div>
                             </div>
                             <div class="row" id="product-list">

@@ -68,8 +68,8 @@ class AdminStaffController extends Controller
           $content1='';
         $content2='';
         $title='<strong>Thêm nhân viên:</strong> <br>';
-            $content1=" *<span style='color: red;'>Tên:</span> `$user->name` <br>";
-            $content2=" *<span style='color: red;'>Email:</span> `$user->email`  <br>";
+            $content1=" *<span style='color: red;'>Tên:</span> <b>$user->name</b> <br>";
+            $content2=" *<span style='color: red;'>Email:</span> <b>$user->email</b>  <br>";
 
 
         historylog::create([
@@ -160,24 +160,24 @@ class AdminStaffController extends Controller
 
         $title="<strong>Sửa thông tin nhân viên: $user->name</strong> <br>";
         if($userid->name!=$user->name){
-            $content1=" *<span style='color: red;'>Tên:</span> ` $userid->name`<span style='color: blue;'> thành </span>`$user->name` <br>";
+            $content1=" *<span style='color: red;'>Tên:</span> <b>$userid->name</b><span style='color: blue;'> thành </span><b>$user->name</b> <br>";
         }
         if($userid->phone!=$user->phone){
-            $content2=" *<span style='color: red;'>Số điện thoại:</span> ` $userid->phone`<span style='color: blue;'> thành </span>`$user->phone` <br>";
+            $content2=" *<span style='color: red;'>Số điện thoại:</span> <b>$userid->phone</b><span style='color: blue;'> thành </span><b>$user->phone</b> <br>";
         }
 
           if($userid->email!=$user->email){
-            $content3=" *<span style='color: red;'>Email:</span> ` $userid->email`<span style='color: blue;'> thành </span>`$user->email` <br>";
+            $content3=" *<span style='color: red;'>Email:</span> <b>$userid->email</b><span style='color: blue;'> thành </span><b>$user->email</b> <br>";
         }
         if($userid->role!=$user->role){
           $role_userid = ($userid->role == 21) ? "nhân viên thu ngân" : "nhân viên pha chế";
             $role_user = ($user->role == 21) ? "nhân viên thu ngân" : "nhân viên pha chế";
 
-            $content4 = " *<span style='color: red;'>Chức vụ:</span>`" . $role_userid . "` <span style='color: blue;'>thành</span> `" . $role_user . "` <br>";
+            $content4 = " *<span style='color: red;'>Chức vụ:</span> <b>$role_userid</b><span style='color: blue;'> thành</span> <b>$role_user</b> <br>";
         }
 
           if($userid->salary_per_day!=$user->salary_per_day){
-            $content5=" *<span style='color: red;'>Lương:</span> ` $userid->salary_per_day`<span style='color: blue;'> thành </span>`$user->salary_per_day` <br>";        }
+            $content5=" *<span style='color: red;'>Lương:</span> <b>$userid->salary_per_day</b><span style='color: blue;'> thành </span><b>$user->salary_per_day</b> <br>";        }
           if ($userid->image!=$user->image) {
 
             $content6 = "*<span style='color: red;'>Ảnh nhân viên:</span> <img src=\"" . url("/storage/uploads/$user->image") . "\" alt=\"\" width=\"100px\" height=\"100px\">";
@@ -205,8 +205,8 @@ class AdminStaffController extends Controller
          $content1='';
         $content2='';
         $title='<strong>Xóa nhân viên:</strong> <br>';
-            $content1=" *<span style='color: red;'>Tên:</span> `$username` <br>";
-            $content2=" *<span style='color: red;'>Email:</span> `$useremail`<br>";
+            $content1=" *<span style='color: red;'>Tên:</span> <b>$username</b> <br>";
+            $content2=" *<span style='color: red;'>Email:</span> <b>$useremail</b><br>";
 
 
         historylog::create([

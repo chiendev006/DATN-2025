@@ -181,14 +181,14 @@
                                     <td>{{ $item->title }}</td>
                                     <td style="max-width:400px; word-break:break-word;">{!!  $item->content !!}</td>
                                     <td><img src="{{ asset('storage/'.$item->image) }}" alt="Ảnh bìa" style="width: 100px; height: 100px;"></td>
-                                    <td>{{ $item->danhmucBlog->name ?? 'Không có danh mục' }}</td>
+                                    <td>{{ $item->danhmucblogs->name ?? 'Không có danh mục' }}</td>
                                     <td>{{ $item->created_at->format('d/m/Y') }}</td>
                                         <td style="width:90px; text-align:center;">
                                             <a style="color: white; width: 60px; margin-bottom:4px;" href="{{ route('blogs.edit', $item->id) }}" class="btn-success">Sửa</a>
                                             <form action="{{ route('blogs.destroy', ['id' => $item->id]) }}" method="POST">
                                                                     @csrf
                                                                     @method('DELETE')
-                                                                    <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục blog này?')">Xóa</button>
+                                                                    <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục blogs này?')">Xóa</button>
                                                                 </form>
                                         </td>
                                     </tr>
@@ -196,7 +196,15 @@
                                @endif
                                 </tbody>
                             </table>
+
                         </div>
+                        <div class="text-muted mb-2" style="font-size:13px;">
+                                            Trang {{ $blogs->currentPage() }}/{{ $blogs->lastPage() }},
+                                            Hiển thị {{ $blogs->firstItem() }}-{{ $blogs->lastItem() }}/{{ $blogs->total() }} bản ghi
+                                        </div>
+                                        <div class="d-flex justify-content-center mt-3">
+                                            {{ $blogs->appends(request()->except('page'))->links('pagination::bootstrap-4') }}
+                                        </div>
                     </div>
                 </div>
             </div>
@@ -228,19 +236,6 @@ $(function() {
 {{-- Lưu ý: Modal Thêm nhân viên được đặt sau script để JavaScript có thể truy cập nó ngay sau khi DOMContentLoaded --}}
 
 
-<div class="text-muted mb-2" style="font-size:13px;">
-    @php
-        $from = $blogs->firstItem();
-        $to = $blogs->lastItem();
-        $total = $blogs->total();
-        $currentPage = $blogs->currentPage();
-        $lastPage = $blogs->lastPage();
-    @endphp
-    Trang {{ $currentPage }}/{{ $lastPage }},
-    Hiển thị {{ $from }}-{{ $to }}/{{ $total }} bản ghi
-</div>
-<div style="margin-top: 10px;">
-    {{ $blogs->links() }}
-</div>
+
 
 

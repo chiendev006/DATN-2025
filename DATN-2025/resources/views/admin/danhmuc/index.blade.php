@@ -193,8 +193,8 @@
                                                 <div class="field-wrapper">
                                                 <div class="field-placeholder">Tìm kiêm theo tên</div>                                                    <select name="filter_type" id="filter_type" class="form-control">
                                                         <option value="">Tất cả</option>
-                                                        <option value=1 {{ $filterType === '1' ? 'selected' : '' }}>Có sử dụng topping</option>
-                                                        <option value=0 {{ $filterType === '0' ? 'selected' : '' }}>Không sử dụng topping</option>
+                                                        <option value="1" {{ $filterType === '1' ? 'selected' : '' }}>Có sử dụng topping</option>
+                                                        <option value="0" {{ $filterType === '0' ? 'selected' : '' }}>Không sử dụng topping</option>
                                                     </select>
                                                 </div>
                                                 </div>
