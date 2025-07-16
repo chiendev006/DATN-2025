@@ -38,12 +38,12 @@ class HomeController extends Controller
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
 
-        $ordersThisWeek = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek]);
-        $success = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('pay_status', '1')->count();
-        $pending = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('pay_status', '0')->count();
-        $cancel = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where(function($query) {
-            $query->where('pay_status', '2')->orWhere('pay_status', '3');
-        })->count();
+        $success = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])
+            ->where('status', 'completed')->count();
+        $pending = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])
+            ->whereIn('status', ['pending', 'processing', 'shipping'])->count();
+        $cancel = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])
+            ->where('status', 'cancelled')->count();
 
         // Pie chart: Xu hướng khách hàng
         // Lấy tất cả user_id là null hoặc user_id có role=21 hoặc role=1
@@ -57,7 +57,7 @@ class HomeController extends Controller
         if ($userIds->count() > 0) {
             $role21And1Ids = \App\Models\User::whereIn('id', $userIds)
                 ->where(function($query) {
-                    $query->where('role', 21)->orWhere('role', 1);
+                    $query->where('role', 21)->orWhere('role', 1);  
                 })
                 ->pluck('id')
                 ->toArray();
@@ -94,44 +94,23 @@ class HomeController extends Controller
 
     public function filterRevenue(Request $request)
     {
-
         $startDate = $request->start_date;
         $endDate = date('Y-m-d 23:59:59', strtotime($request->end_date));
 
-        // Bước 1: Lấy danh sách ngày, số lượng đơn, hoàn thành, hủy
-        $orderStats = Order::whereBetween('created_at', [$startDate, $endDate])
-            ->select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('COUNT(*) as total_orders'),
-                DB::raw("COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_count"),
-                DB::raw("COUNT(CASE WHEN status = 'cancelled' THEN 1 END) as cancelled_count")
-            )
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get()
-            ->keyBy('date');
+        // Tổng hợp toàn bộ khoảng thời gian
+        $totalOrders = Order::whereBetween('created_at', [$startDate, $endDate])->count();
+        $completedCount = Order::whereBetween('created_at', [$startDate, $endDate])->where('status', 'completed')->count();
+        $cancelledCount = Order::whereBetween('created_at', [$startDate, $endDate])->where('status', 'cancelled')->count();
+        $totalRevenue = Order::whereBetween('created_at', [$startDate, $endDate])->where('pay_status', '1')->sum('total');
 
-        // Bước 2: Lấy doanh thu từng ngày (chỉ đơn đã thanh toán)
-        $revenues = Order::whereBetween('created_at', [$startDate, $endDate])
-            ->where('pay_status', '1')
-            ->select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('SUM(total) as revenue')
-            )
-            ->groupBy('date')
-            ->pluck('revenue', 'date');
-
-        // Bước 3: Merge doanh thu vào mảng kết quả
-        $revenueData = [];
-        foreach ($orderStats as $date => $stat) {
-            $revenueData[] = [
-                'date' => $date,
-                'total_orders' => $stat->total_orders,
-                'completed_count' => $stat->completed_count,
-                'cancelled_count' => $stat->cancelled_count,
-                'revenue' => isset($revenues[$date]) ? $revenues[$date] : 0,
-            ];
-        }
+        // Gửi về 1 dòng tổng hợp
+        $revenueData = [[
+            'date_range' => 'Từ ' . date('d/m/Y', strtotime($startDate)) . ' đến ' . date('d/m/Y', strtotime($request->end_date)),
+            'total_orders' => $totalOrders,
+            'completed_count' => $completedCount,
+            'cancelled_count' => $cancelledCount,
+            'revenue' => $totalRevenue,
+        ]];
 
         // Top khách hàng (role != 1, 21, 22)
         $topCustomer = Order::whereBetween('created_at', [$startDate, $endDate])
