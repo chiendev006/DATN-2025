@@ -6,6 +6,7 @@ use App\Models\Blogs;
 use App\Models\Product_comment;
 use App\Models\sanpham;
 use App\Models\Danhmuc;
+use App\Models\historylog;
 use App\Models\ProductAttribute;
 use App\Models\Sanphams;
 use App\Models\Size;
@@ -43,7 +44,7 @@ public function  danhmuc()
             ? $danhmucs->firstWhere('id', $categoryId)
             : $danhmucs->first();
 
-        $perPage = 10; 
+        $perPage = 10;
         $firstProducts = $firstDanhmuc
             ? $firstDanhmuc->sanphams()->withMin('sizes', 'price')->paginate($perPage)
             : collect([])->paginate($perPage);
@@ -58,7 +59,7 @@ public function  danhmuc()
     public function getCategoryProducts(Request $request, $categoryId)
     {
         $danhmuc = Danhmuc::findOrFail($categoryId);
-        $perPage = 8; 
+        $perPage = 8;
         $products = $danhmuc->sanphams()->withMin('sizes', 'price')->paginate($perPage);
 
         foreach ($products as $product) {
@@ -167,12 +168,27 @@ public function postComment(Request $request)
         'rating' => 'required|integer|min:1|max:5'
     ]);
 
-    Product_comment::create([
+    $comment=Product_comment::create([
         'user_id' => Auth::id(),
         'product_id' => $request->product_id,
         'comment' => $request->comment,
         'rating' => $request->rating,
     ]);
+
+        $name=Auth::user()->name;
+        $content1='';
+        $content2='';
+        $title="<strong>Người dùng đã đánh giá sản phẩm: ".$comment->commentProduct->name."</strong> <br>";
+        $content1=" *<span style='color: red;'>Tên:</span> `$name` <br>";
+        $content1=" *<span style='color: red;'>Nội dung:</span> `$comment->comment` <br>";
+
+
+        historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' =>$title.$content1.$content2,
+        ]);
+
 
     return back();
 }

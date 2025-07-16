@@ -29,8 +29,8 @@ class AddressController extends Controller
         $content1='';
         $content2='';
         $title='<strong>Thêm khu vực ship:</strong> <br>';
-            $content1=" *<span style='color: red;'>Tên:</span> `$address->name` <br>";
-            $content2=" *<span style='color: red;'>Giá:</span> `$address->shipping_fee`  <br>";
+            $content1=" *<span style='color: red;'>Tên:</span> <b>$address->name</b> <br>";
+            $content2=" *<span style='color: red;'>Giá:</span> <b>$address->shipping_fee</b>  <br>";
 
 
         historylog::create([
@@ -59,10 +59,10 @@ class AddressController extends Controller
         $content2='';
         $title="<strong>Cập nhật khu vực: $address->name </strong><br>";
         if($request->name!=$addressname){
-            $content1=" *Tên ` $addressname` thành `$address->name` <br>";
+            $content1=" *<span style='color: red;'>Tên:</span> <b>$addressname</b> <span style='color: blue;'> thành </span> <b>$address->name</b> <br>";
         }
         if($request->shipping_fee!=$addressshopping_fee){
-            $content2=" *Giá `$addressshopping_fee` VND thành `$address->shipping_fee` VND <br>";
+            $content2=" *<span style='color: red;'>Giá:</span> <b>$addressshopping_fee</b> VND <span style='color: blue;'> thành </span> <b>$address->shipping_fee</b> VND <br>";
         }
        if($content1!=''||$content2!=''){
         historylog::create([
@@ -77,15 +77,15 @@ class AddressController extends Controller
     public function delete($id)
     {
         $address = Address::find($id);
-        $address->delete();
+      
           $addressshopping_fee=$address->shipping_fee;
         $addressname= $address->name;
         $address->save();
         $content1='';
         $content2='';
         $title='<strong>Xóa khu vực ship:</strong> <br>';
-        $content1=" *<span style='color: red;'>Tên:</span> `$address->name` <br>";
-        $content2=" *<span style='color: red;'>Giá:</span> `$address->shipping_fee`  <br>";
+        $content1=" *<span style='color: red;'>Tên:</span> <b>$addressname</b> <br>";
+        $content2=" *<span style='color: red;'>Giá:</span> <b>$address->shipping_fee</b> VND <br>";
 
 
         historylog::create([
@@ -93,6 +93,7 @@ class AddressController extends Controller
             'role' => Auth::user()->role,
             'content' =>$title.$content1.$content2,
         ]);
+        $address->delete();
         return redirect()->route('address.index')->with('success', 'Xóa Khu vực thành công');
 
     }

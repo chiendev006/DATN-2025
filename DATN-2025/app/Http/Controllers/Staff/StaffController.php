@@ -202,6 +202,34 @@ class StaffController extends Controller
             // }
 
             DB::commit();
+            $title = '<strong>Nhân viên đặt đơn thành công:</strong> <br>';
+            $content1 = "<span style='color: red;'>Tên khách:</span> <b>$order->name</b> <br>";
+            $content2 = "<span style='color: red;'>Số điện thoại:</span> <b>$order->phone</b> <br>";
+            $content3 = "<span style='color: red;'>Mã đơn hàng:</span> <b>$order->id</b> <br>";
+            $content4 = "<span style='color: red;'>Tổng tiền:</span> <b>" . number_format($order->total) . " VNĐ</b> <br>";
+            $content5 = $order->points_used > 0 ? "<span style='color: red;'>Sử dụng điểm:</span> <b>$order->points_used</b> (giảm <b>" . number_format($order->points_discount) . " VNĐ</b>)<br>" : '';
+            $content5_coupon = '';
+            if (!empty($order->coupon_summary)) {
+                $coupons = json_decode($order->coupon_summary, true);
+                if (is_array($coupons)) {
+                    foreach ($coupons as $c) {
+                        $code = $c['code'] ?? '';
+                            $discount = $c['discount_value'] ?? 0;
+                            $couponModel = \App\Models\Coupon::where('code', $code)->first();
+                            $type = $couponModel ? $couponModel->type : '';
+                            $typeText = $type === 'percent' ? 'Phần trăm' : ($type === 'fixed' ? 'VND' : $type);
+                            $content5_coupon .= "<span style='color: red;'>Sử dụng mã:</span> <b>" . htmlspecialchars($code) . " (Giảm " . number_format($discount, 0, '.', '') . " $typeText)</b><br>";
+                        }
+                    }
+                }
+                $content6 = "<span style='color: red;'>Trạng thái:</span> <b>Chờ xác nhận</b> <br>";
+                $content7 = "<span style='color: red;'>Thời gian đặt:</span> <b>" . $order->created_at->format('H:i d/m/Y') . "</b> <br>";
+                $user_id = Auth::check() ? Auth::user()->id : null;
+                \App\Models\historylog::create([
+                    'user_id' => $user_id,
+                    'role' => Auth::user()->role,
+                    'content' => $title . $content1 . $content2 . $content3 . $content4 . $content5 . $content5_coupon . $content6 . $content7,
+                ]);
             return response()->json(['message' => 'Đặt hàng thành công!']);
         } catch (\Exception $e) {
             DB::rollback();
@@ -358,7 +386,28 @@ class StaffController extends Controller
                 }
             }
         }
+        $order=Order::find($id);
+        $content1='';
+        $content2='';
+        if($order->status=='processing'){
+            $status='Đang xử lý';
+        }else if($order->status=='completed'){
+            $status='Đã hoàn thành';
+        }else if($order->status=='cancelled'){
+            $status='Đã hủy';
+        }
+        $cancel_reason=$order->cancel_reason;
+        $title='<strong>Nhân viên cập nhật trạng thái đơn hàng:</strong> <br>';
+            $content1=" *<span style='color: red;'>Mã đơn hàng:</span> <b>$order->id</b> <br>";
+            $content2=" *<span style='color: red;'>Trạng thái:</span> <b>$status</b> <br>";
+            $content3=" *<span style='color: red;'>Lý do hủy:</span> <b>$cancel_reason</b> <br>";
 
+
+        \App\Models\historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' =>$title.$content1.$content2.$content3,
+        ]);
         return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');
     }
 

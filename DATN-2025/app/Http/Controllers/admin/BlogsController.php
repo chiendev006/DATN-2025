@@ -51,7 +51,7 @@ class BlogsController extends Controller
         $content1='';
         $content2='';
         $title='<strong>Thêm bài viết:</strong> <br>';
-            $content1=" *<span style='color: red;'>Tên:</span> `$blog->title` <br>";
+            $content1=" *<span style='color: red;'>Tên:</span> <b>$blog->title</b> <br>";
             $content2= "*<span style='color: red;'>Ảnh bìa:</span> <img src=\"" . url("/storage/$blog->image") . "\" alt=\"\" width=\"100px\" height=\"100px\">";
 
 
@@ -106,7 +106,7 @@ class BlogsController extends Controller
 
         $title="<strong>Sửa bài viết: $blog->name</strong> <br>";
         if($blogid->title!=$blog->title){
-            $content1=" *<span style='color: red;'>Tên:</span> ` $blogid->title`<span style='color: blue;'> thành </span>`$blog->title` <br>";
+            $content1=" *<span style='color: red;'>Tên:</span> <b>$blogid->title</b><span style='color: blue;'> thành </span><b>$blog->title</b> <br>";
         }
 
         if($blogid->blog_id!=$blog->blog_id){
@@ -144,7 +144,7 @@ class BlogsController extends Controller
         $content1='';
         $content2='';
         $title='<strong>Xóa bài viết:</strong> <br>';
-            $content1=" *<span style='color: red;'>Tên:</span> `$blog->title` <br>";
+            $content1=" *<span style='color: red;'>Tên:</span> <b>$blog->title</b> <br>";
             $content2= "*<span style='color: red;'>Ảnh bìa:</span> <img src=\"" . url("/storage/$blog->image") . "\" alt=\"\" width=\"100px\" height=\"100px\">";
 
 
