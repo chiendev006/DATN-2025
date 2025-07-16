@@ -229,7 +229,7 @@
             </div>
             
             <div class="products-section">
-                <div class="section-title">📦 Chi tiết sản phẩm</div>
+                <div class="section-title"> Chi tiết sản phẩm</div>
                 
                 @foreach($orderDetails as $detail)
                 <div class="product-item">
@@ -280,8 +280,7 @@
             </div>
             
             <div class="total-section">
-                <div class="section-title">💰 Tổng thanh toán</div>
-                
+                <div class="section-title"> Tổng thanh toán</div>
                 @php
                     $productTotal = 0;
                     foreach($orderDetails as $detail) {

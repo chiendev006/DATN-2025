@@ -292,7 +292,7 @@ Cà phê - Cao cấp<br />
 							<span> {{ number_format($sp->min_price) }} VNĐ</span>
 
 						</div>
-						<p>{{ $sp->description ?? 'Mô tả sản phẩm đang cập nhật.' }}</p>
+						<p>{{ $sp->mota ?? 'Mô tả sản phẩm đang cập nhật.' }}</p>
 						</div>
 					</div>
 					</div>
