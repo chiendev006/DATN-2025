@@ -1,6 +1,12 @@
 @extends('staff.layout')
 
 @section('main-content')
+
+<div class="col-12 d-flex justify-content-center align-items-center" style="min-height:80px;">
+    <h2 class="text-3xl font-extrabold text-indigo-800 mb-0" style="white-space:nowrap;">
+        Hóa đơn hôm nay
+    </h2>
+</div>
 <div class="container-fluid px-0">
     <div class="row align-items-center mb-4" style="min-height: 56px;">
         <div class="col-12 col-md-3 d-flex align-items-center justify-content-start mb-2 mb-md-0" style="z-index:2; position:relative;">
@@ -32,11 +38,6 @@
                 </select>
                 <button type="submit" class="btn btn-success">Lọc</button>
             </form>
-        </div>
-        <div class="col-12 col-md-6 d-flex justify-content-center align-items-center" style="z-index:1; position:relative;">
-            <h2 class="text-3xl font-extrabold text-indigo-800 mb-0" style="white-space:nowrap;">
-                Hóa đơn hôm nay
-            </h2>
         </div>
         <div class="col-12 col-md-3"></div>
     </div>
@@ -168,19 +169,19 @@
                             <div class="modal-body">
                                 <div class="row g-3 mb-3">
                                     <div class="col-md-3">
-                                        <label class="text-primary">Tên khách hàng</label>
+                                        <label style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width:100%;" class="text-primary">Tên khách hàng</label>
                                         <input type="text" class="form-control equal-width-input" value="{{ $item->name }}" readonly>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="text-primary">Số điện thoại</label>
+                                        <label style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width:100%;" class="text-primary">Số điện thoại</label>
                                         <input type="text" class="form-control equal-width-input" value="{{ $item->phone }}" readonly>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="text-primary">Email</label>
+                                        <label style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width:100%;" class="text-primary">Email</label>
                                         <input type="text" class="form-control equal-width-input" value="{{ $item->email ?? 'Không có' }}" readonly>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="text-primary">Trạng thái đơn hàng</label>
+                                        <label style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width:100%;" class="text-primary">Trạng thái đơn hàng</label>
                                         <select name="status" class="form-select equal-width-input status-select" id="statusSelect{{ $item->id }}" data-current="{{ $currentStatusInt }}" data-order-id="{{ $item->id }}" data-is-walk-in="{{ $isWalkInCustomer ? 'true' : 'false' }}">
                                             @if(!$isWalkInCustomer)
                                                 <option value="pending" {{ $item->status == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
@@ -194,7 +195,7 @@
                                         </select>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="text-primary">Trạng thái thanh toán</label>
+                                        <label style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width:100%;" class="text-primary">Trạng thái thanh toán</label>
                                         @if($isWalkInCustomer)
                                             <select name="pay_status" class="form-select equal-width-input pay-status-select" id="payStatusSelect{{ $item->id }}" data-current="{{ $currentPayStatus }}" data-order-id="{{ $item->id }}" data-status-int="{{ $currentStatusInt }}" disabled>
                                                 <option value="0" {{ $currentPayStatus == 0 ? 'selected' : '' }}>Chờ thanh toán</option>
@@ -210,11 +211,11 @@
                                         @endif
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="text-primary">Phương thức thanh toán</label>
+                                        <label style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width:100%;" class="text-primary">Phương thức thanh toán</label>
                                         <input type="text" class="form-control equal-width-input" value="{{ $item->payment_method === 'cash' ? 'Tiền mặt' : 'Thẻ' }}" readonly>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="text-primary">Địa chỉ</label>
+                                        <label style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width:100%;" class="text-primary">Địa chỉ</label>
                                         @if($item->district_name==null)
                                             <input type="text" class="form-control equal-width-input" value="Đặt tại quán" readonly>
                                         @else
@@ -222,19 +223,19 @@
                                         @endif
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="text-primary">Ghi chú</label>
+                                        <label style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width:100%;" class="text-primary">Ghi chú</label>
                                         <input type="text" class="form-control equal-width-input" value="{{ $item->note}}" readonly>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="text-primary">Lý do hủy hiện tại</label>
+                                        <label style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width:100%;" class="text-primary">Lý do hủy hiện tại</label>
                                         <input type="text" class="form-control equal-width-input" value="{{ $item->cancel_reason ?? 'Không có' }}" readonly>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="text-primary">Mã đơn</label>
+                                        <label style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width:100%;" class="text-primary">Mã đơn</label>
                                         <input type="text" class="form-control equal-width-input" value="{{ $item->id }}" readonly>
                                     </div>
                                     <div class="col-md-12" id="cancelReasonDiv{{ $item->id }}" style="display: none;">
-                                        <label class="text-danger">Lý do hủy đơn hàng *</label>
+                                        <label style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width:100%;" class="text-danger">Lý do hủy đơn hàng *</label>
                                         <input type="text" name="cancel_reason" class="form-control equal-width-input" placeholder="Nhập lý do hủy đơn hàng..." id="cancelReasonInput{{ $item->id }}">
                                     </div>
                                 </div>
@@ -309,7 +310,9 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button> 
-                                <button type="submit" class="btn btn-success" id="updateBtn{{ $item->id }}">Cập nhật</button>
+                              @if($item->status=='processing')
+                              <button type="submit" class="btn btn-success" id="updateBtn{{ $item->id }}">Cập nhật</button>
+                              @endif
                             </div>
                         </div>
                     </form>

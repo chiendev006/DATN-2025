@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\PointService;
 use App\Services\EmailService;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -34,11 +35,11 @@ class OrderController extends Controller
     public function update(Request $request, $id)
     {
         $order = \App\Models\Order::with(['user', 'customer'])->findOrFail($id);
-        
+
         if ($request->has('pay_status') && $request->input('pay_status') !== '') {
             $order->pay_status = (string) $request->input('pay_status');
         }
-        
+
         $oldStatus = $order->status;
         $status = $request->input('status');
 
@@ -90,7 +91,7 @@ class OrderController extends Controller
                 'user_role' => $order->user ? $order->user->role : 'no_user',
                 'customer_role' => $order->customer ? $order->customer->role : 'no_customer'
             ]);
-            
+
             try {
                 $earnedPoints = $this->pointService->earnPointsFromOrder($order);
                 if ($earnedPoints > 0) {
@@ -151,13 +152,13 @@ class OrderController extends Controller
                     'user_role' => $order->user ? $order->user->role : 'no_user',
                     'customer_role' => $order->customer ? $order->customer->role : 'no_customer'
                 ]);
-                
+
                 try {
                     $refundedPoints = $this->pointService->refundPointsFromOrder($order);
                     $refundedEarnedPoints = $this->pointService->refundEarnedPointsFromOrder($order);
-                    
+
                     $totalRefunded = $refundedPoints + $refundedEarnedPoints;
-                    
+
                     if ($totalRefunded > 0) {
                         $msg = "Cập nhật đơn hàng thành công! Đã hoàn {$totalRefunded} điểm cho khách hàng.";
                         if ($refundedPoints > 0 && $refundedEarnedPoints > 0) {
@@ -206,7 +207,30 @@ class OrderController extends Controller
             ]);
             $msg = 'Cập nhật đơn hàng thành công!';
         }
+        $content3='';
+        $title='<strong>Admin cập nhật trạng thái đơn hàng:</strong> <br>';
+        if($status=='completed'){
+            $content2=" *<span style='color: red;'>Trạng thái:</span> <b>Đã hoàn thành</b> <br>";
+        } else if($status=='shipping') {
+            $content2=" *<span style='color: red;'>Trạng thái:</span> <b>Đang ship</b> <br>";
+        } else if( $status=='pending'){
+            $content2=" *<span style='color: red;'>Trạng thái:</span> <b>Chờ xác nhận</b> <br>";
+        } else if($status=='processing') {
+            $content2=" *<span style='color: red;'>Trạng thái:</span> <b>Đã xác nhận</b> <br>";
+        } else{
+            $content2=" *<span style='color: red;'>Trạng thái:</span> <b>Đã hủy</b> <br>";
+        }
+        $content1=" *<span style='color: red;'>Mã đơn hàng:</span> <b>$order->id</b> <br>";
 
+        if($status=='cancelled'){
+            $content3=" *<span style='color: red;'>Lý do hủy:</span> <b>$order->cancel_reason</b> <br>";
+        }
+
+        \App\Models\historylog::create([
+            'user_id' => Auth::user()->id,
+            'role' => Auth::user()->role,
+            'content' => $title . $content1 . $content2 . $content3,
+        ]);
         return redirect()->route('admin.order.index')->with('success', $msg);
     }
 
@@ -260,7 +284,7 @@ class OrderController extends Controller
     }
 
     /**
-     * 
+     *
      * Truyền query string: ?pay_status=0|1|2 hoặc ?status=pending|processing|shipping|completed|cancelled
      */
     public function filterOrders(Request $request)

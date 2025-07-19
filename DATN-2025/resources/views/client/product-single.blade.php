@@ -50,7 +50,7 @@
                         <form action="{{ route('cart.add', $sanpham->id) }}" method="POST">
                             @csrf
                             <input type="hidden" name="cart_id" value="{{ $cart->id ?? '' }}">
-                            <input type="hidden" name="product_id" value="{{ $sanpham->id }}">
+                            <input type="hidden" name="product_id" value="{{ number_format($sanpham->id )}}">
                             <div class="form-group">
                                 <label><strong>Chọn size:</strong></label><br>
                                 @php
@@ -229,7 +229,7 @@
                         <div class="item">
                             <div class="product-img">
                                 <a href="{{ route('client.product.detail', $relatedProduct->id) }}">
-                                    <img src="{{ asset('storage/uploads/'.$relatedProduct->image) }}" alt="{{ $relatedProduct->name }}">
+                                    <img style="max-width:95%;min-width:95%; min-height: 200px;max-height:200px; margin: auto;"  src="{{ asset('storage/uploads/'.$relatedProduct->image) }}" alt="{{ $relatedProduct->name }}">
                                     <span class="icon-basket fontello"></span>
                                 </a>
                             </div>

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contact;
+use App\Models\historylog;
 use App\Models\sanpham;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ContactController extends Controller
 {
@@ -32,23 +34,33 @@ class ContactController extends Controller
         'message.min' => 'Tin nhắn phải có ít nhất 10 ký tự',
         'message.max' => 'Tin nhắn không được quá 1000 ký tự'
     ]);
+        $contact = new Contact();
+        $contact->name = $request->name;
+        $contact->email = $request->email;
+        $contact->phone = $request->phone;
+        $contact->message = $request->message;
+        $contact->save();
 
-    Contact::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'phone' => $request->phone,
-        'message' => $request->message,
-    ]);
+        $title = '<strong>Liên hệ mới:</strong> <br>';
+        $content1 = " *<span style='color: red;'>Tên:</span> {$contact->name} <br>";
+        $content2 = " *<span style='color: red;'>Email:</span> {$contact->email} <br>";
+        $content3 = " *<span style='color: red;'>Số điện thoại:</span> {$contact->phone} <br>";
+        $content4 = " *<span style='color: red;'>Tin nhắn:</span> {$contact->message} <br>";
 
-    if ($request->ajax()) {
-        return response()->json([
-            'success' => true,
-            'message' => 'Gửi liên hệ thành công!'
+        $user_id = Auth::check() ? Auth::user()->id : null;
+        historylog::create([
+            'user_id' => $user_id,
+            'role' => 0,
+            'content' => $title . $content1 . $content2 . $content3 . $content4,
         ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Gửi liên hệ thành công!'
+            ]);
+        }
+
+        return redirect()->route('contact.create')->with('success', 'Gửi liên hệ thành công!');
     }
-
-    return redirect()->route('contact.create')->with('success', 'Thêm thành công!');
-}
-
-   
 }

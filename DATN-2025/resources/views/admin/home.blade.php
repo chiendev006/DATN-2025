@@ -118,6 +118,7 @@
         <span id="dateError" style="color: red; margin-left: 10px; display: none;">Ngày kết thúc phải sau hoặc bằng ngày bắt đầu!</span>
     </form>
 </h2>
+    <h2 style="margin-top: 20px;">Doanh thu</h2>
     <div class="card">
         <div class="card-header">
         </div>
@@ -126,7 +127,7 @@
                 <table class="table products-table">
                     <thead>
                         <tr>
-                            <th>Ngày </th>
+                            <th>Thời gian </th>
                             <th>Số lượng đơn</th>
                             <th>Số đơn hoàn thành</th>
                             <th>Số đơn đã hủy</th>
@@ -139,7 +140,10 @@
             </div>
         </div>
     </div>
-
+    <div style="display: flex; align-items: center;">
+    <h2>Top nhân viên</h2>
+    <h2 style="margin-left: 300px;">Top khách hàng</h2>
+</div>
    <div style="display: flex; justify-content: space-between;; " class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
    <div class="card col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
         <div class="card-header">
@@ -473,17 +477,16 @@ function filterRevenue(resetPage = 1) {
         // Handle Revenue Table
         let revenueHtml = '';
         if (data.revenueData && data.revenueData.length > 0) {
-            data.revenueData.forEach(item => {
-                revenueHtml += `
-                    <tr>
-                        <td>${item.date}</td>
-                        <td>${item.total_orders}</td>
-                        <td>${item.completed_count}</td>
-                        <td>${item.cancelled_count}</td>
-                        <td>${new Intl.NumberFormat('vi-VN').format(item.revenue)} đ</td>
-                    </tr>
-                `;
-            });
+            let item = data.revenueData[0];
+            revenueHtml = `
+                <tr>
+                    <td>${item.date_range}</td>
+                    <td>${item.total_orders}</td>
+                    <td>${item.completed_count}</td>
+                    <td>${item.cancelled_count}</td>
+                    <td>${new Intl.NumberFormat('vi-VN').format(item.revenue)} đ</td>
+                </tr>
+            `;
         } else {
             revenueHtml = '<tr><td colspan="5" class="text-center">Không có dữ liệu</td></tr>';
         }
