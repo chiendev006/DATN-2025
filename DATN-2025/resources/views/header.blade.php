@@ -225,9 +225,6 @@
                 <a href="{{ route('staff.index') }}">Trang thu ngân</a>
             </li>
             <li>
-                <a href="{{ route('bartender.index') }}">Trang pha chế</a>
-            </li>
-            <li>
                 <a href="{{ route('danhmuc1.index') }}">Trang cửa hàng</a>
             </li>
             <li>

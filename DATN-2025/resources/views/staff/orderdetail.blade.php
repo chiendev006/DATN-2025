@@ -13,11 +13,11 @@
             <form method="GET" class="d-flex align-items-center gap-2 mb-0" style="margin-bottom:0;">
                 <label for="per_page" class="mb-0 font-semibold text-indigo-700">Đơn/trang:</label>
                 <select id="per_page" name="per_page" class="form-control" style="width: 90px;">
-                    <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản</option>
                     <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 bản</option>
                     <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản</option>
                     <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
                     <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
+                    <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500 bản</option>
                 </select>
                 <label for="status" class="mb-0 font-semibold text-indigo-700">Trạng thái đơn:</label>
                 <select name="status" id="status" class="form-control" style="width: 130px;">

@@ -190,18 +190,18 @@ select:disabled {
                                                   <select name="order_type" class="form-control" style="width: 120px; margin-right: 12px;">
                                                       <option value="">Tất cả</option>
                                                       <option value="web" {{ request('order_type')=='web' ? 'selected' : '' }}>Đơn web</option>
-                                                      <option value="staff" {{ request('order_type')=='staff' ? 'selected' : '' }}>Đơn staff</option>
+                                                      <option value="staff" {{ request('order_type')=='staff' ? 'selected' : '' }}>Đơn tại quầy</option>
                                                   </select>
                                                   </div>
                                                     <button style="margin-top: -8px;" type="submit" class="btn btn-primary">Lọc</button>
                                                    <div  class="field-wrapper">
                                                    <div class="field-placeholder">Đơn/trang</div>
                                                     <select name="per_page" class="form-control" style="width: 80px; margin-left: 12px;" onchange="this.form.submit()">
-                                                        <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5 bản </option>
                                                         <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 bản </option>
                                                         <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 bản  </option>
                                                         <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 bản</option>
                                                         <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
+                                                        <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500 bản</option>
                                                     </select>
                                                     @foreach(request()->except(['per_page','page','pay_status','status','order_type']) as $key => $val)
                                                         <input type="hidden" name="{{ $key }}" value="{{ $val }}">

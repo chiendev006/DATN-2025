@@ -1,5 +1,5 @@
 
-					<div class="app-footer">© Uni Pro Admin 2021</div>
+					<div class="app-footer">© Trang quản lý Admin</div>
 
 
 				</div>
