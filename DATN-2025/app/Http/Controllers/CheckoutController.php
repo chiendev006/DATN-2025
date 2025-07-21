@@ -562,10 +562,11 @@ class CheckoutController extends Controller
                 }
                 $content6 = "<span style='color: red;'>Trạng thái:</span> <b>Chờ xác nhận</b> <br>";
                 $content7 = "<span style='color: red;'>Thời gian đặt:</span> <b>" . $order->created_at->format('H:i d/m/Y') . "</b> <br>";
-                $user_id = Auth::check() ? Auth::user()->id : null;
+                $user_id = Auth::check() ? Auth::user()->id : 0;
+                $user_role = Auth::check() ? Auth::user()->role : 0; // 0: guest/customer, 1: admin, 21: thu ngân, 22: pha chế
                 \App\Models\historylog::create([
                     'user_id' => $user_id,
-                    'role' => Auth::user()->role,
+                    'role' => $user_role,
                     'content' => $title . $content1 . $content2 . $content3 . $content4 . $content5 . $content5_coupon . $content6 . $content7,
                 ]);
            
@@ -581,6 +582,12 @@ class CheckoutController extends Controller
                 ]);
                 // Không throw exception để không ảnh hưởng đến quá trình đặt hàng
             }
+
+            Log::info('DEBUG: About to redirect to order complete', [
+                'order_id' => $order->id,
+                'is_logged_in' => Auth::check(),
+                'redirect_url' => route('order.complete', $order->id)
+            ]);
 
             return redirect()->route('order.complete', $order->id)
                 ->with('success', 'Đặt hàng thành công!')
@@ -601,17 +608,27 @@ class CheckoutController extends Controller
     {
         try {
             Log::info('DEBUG: success method called', [
-                'order_id' => $orderId
+                'order_id' => $orderId,
+                'is_logged_in' => Auth::check(),
+                'session_data' => session()->all()
             ]);
 
             $order = Order::with('orderDetails.size', 'orderDetails.product')->findOrFail($orderId);
 
             Log::info('DEBUG: Order found', [
                 'order_id' => $order->id,
-                'order_details_count' => $order->orderDetails->count()
+                'order_details_count' => $order->orderDetails->count(),
+                'customer_name' => $order->name,
+                'customer_email' => $order->email
             ]);
 
             $allToppings = Product_topping::all()->keyBy('id');
+            
+            Log::info('DEBUG: About to render order-complete view', [
+                'order_id' => $order->id,
+                'toppings_count' => $allToppings->count()
+            ]);
+            
             return view('client.order-complete', compact('order', 'allToppings'));
         } catch (\Exception $e) {
             Log::error('DEBUG: Error in success method', [
