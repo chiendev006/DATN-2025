@@ -23,6 +23,7 @@ use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\ShowproductController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\admin\AuthController;
+use App\Http\Controllers\admin\CommentSanphamController;
 use App\Http\Controllers\admin\CouponController;
 use App\Http\Controllers\admin\HistorylogController;
 use App\Http\Controllers\OrderController;
@@ -188,10 +189,10 @@ Route::prefix('admin')->middleware(['auth', 'checkAdmin', 'check.valid.id'])->gr
 
         // Lịch sử log
         Route::prefix('historylog')->group(function () {
-            Route::get('/', [HistorylogController::class, 'index'])->name('historylog.index');
-            Route::delete('/delete/{id}', [HistorylogController::class, 'delete'])->name('historylog.delete');
-            Route::post('/delete-by-time', [HistorylogController::class, 'deleteByTime'])->name('historylog.deleteByTime');
-    });
+                Route::get('/', [HistorylogController::class, 'index'])->name('historylog.index');
+                Route::delete('/delete/{id}', [HistorylogController::class, 'delete'])->name('historylog.delete');
+                Route::post('/delete-by-time', [HistorylogController::class, 'deleteByTime'])->name('historylog.deleteByTime');
+        });
 
         // Sản phẩm
         Route::prefix('sanpham')->group(function () {
@@ -274,6 +275,11 @@ Route::prefix('admin')->middleware(['auth', 'checkAdmin', 'check.valid.id'])->gr
                 Route::delete('/destroy/{id}', [BlogsController::class, 'destroy'])->name('blogs.destroy');
                 Route::get('/search', [BlogsController::class, 'search'])->name('blogs.search');
                 Route::get('blog/{id}', [BlogController::class, 'show'])->name('blog.show');
+        });
+        // Đánh Giá Sản Phẩm
+        Route::prefix('commentsanpham')->group(function () {
+                Route::get('/', [CommentSanphamController::class, 'index'])->name('comments.index');
+                Route::delete('/delete/{id}', [CommentSanphamController::class, 'delete'])->name('comments.delete');
         });
 });
 Route::delete('admin/product_img/delete/{id}', [ProductImageController::class, 'destroy'])->middleware(['auth', 'checkAdmin'])->name('product_img.delete');
