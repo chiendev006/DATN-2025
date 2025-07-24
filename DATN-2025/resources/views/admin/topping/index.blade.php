@@ -12,10 +12,9 @@
     margin: 4px 2px;
     cursor: pointer;
     border-radius: 5px;
+    background-color: #007bff;  
   }
-  .btn-success:hover {
-    background-color: rgb(0, 0, 217);
-  }
+
   .btn-danger{
     background-color: red;
     color: white;

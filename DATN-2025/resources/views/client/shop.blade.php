@@ -41,13 +41,13 @@
                             </div>
                             <div class="blog-left-filter blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                 <h5>Filter</h5>
-                                <p>Price: <span id="price-range-label">30.000₫ — 100.000₫</span></p>
+                                <p>Price: <span id="price-range-label">0₫ — 100.000₫</span></p>
                                 <div class="slider-wrapper">
                                     <input id="price-range" type="text" class="span2" value=""
-                                        data-slider-min="30000"
+                                        data-slider-min="0"
                                         data-slider-max="100000"
                                         data-slider-step="1000"
-                                        data-slider-value="[30000,200000]"
+                                        data-slider-value="[0,200000]"
                                         data-slider-tooltip="hide"
                                     />
                                 </div>
@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
         $.ajax({
             url: "{{ route('ajax.filter.price') }}",
             type: "GET",
-            data: { min: minPrice, max: maxPrice, page: page },
+            data: { min: minPrice, max: maxPrice, page: page, danhmuc_id: currentDanhmucId },
             success: function (data) {
                 // Update product list
                 productList.innerHTML = data.products.map(product => {

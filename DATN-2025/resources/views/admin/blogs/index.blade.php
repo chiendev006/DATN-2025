@@ -19,7 +19,7 @@
         margin: 4px 2px;
         cursor: pointer;
         border-radius: 5px;
-        background-color: #28a745; /* Màu xanh lá cây mặc định */
+        background-color: #007bff; /* Màu xanh lá cây mặc định */
     }
     .btn-success:hover {
         background-color: blue; /* Màu xanh đậm hơn khi hover */

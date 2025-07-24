@@ -229,7 +229,7 @@
                         <div class="item">
                             <div class="product-img">
                                 <a href="{{ route('client.product.detail', $relatedProduct->id) }}">
-                                    <img style="max-width:95%;min-width:95%; min-height: 200px;max-height:200px; margin: auto;"  src="{{ asset('storage/uploads/'.$relatedProduct->image) }}" alt="{{ $relatedProduct->name }}">
+                                    <img style="max-width:95%;min-width:95%; min-height: 250px;max-height:200px; margin: auto;"  src="{{ asset('storage/uploads/'.$relatedProduct->image) }}" alt="{{ $relatedProduct->name }}">
                                     <span class="icon-basket fontello"></span>
                                 </a>
                             </div>
