@@ -153,7 +153,7 @@ select:disabled {
     $query = http_build_query(request()->except('page'));
 @endphp
   <div class="content-wrapper-scroll">
-<a style="margin-left: 22px;" href="{{ route('admin.orders.export') }}?{{ $query }}" class="btn btn-success mb-3">Tải Excel</a>
+<a style="margin-left: 22px;" href="{{ route('admin.orders.export') }}?{{ $query }}" class="btn btn-primary mb-3">Xuất Excel</a>
                     <div class="content-wrapper">
                     <div class="row gutters">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -216,7 +216,7 @@ select:disabled {
                                             <div class="col-md-5">
                                                 <form method="GET" action="{{ route('admin.order.search') }}" class="form-inline" style="float: right; display: flex; align-items: center;">
                                                     <input type="text" name="transaction_id" class="form-control" placeholder="Tìm kiếm tên và số điện thoại ..." value="{{ request('transaction_id') }}" style="width: 220px; margin-right: 8px;">
-                                                    <button type="submit" class="btn btn-success">Tìm kiếm</button>
+                                                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
                                                 </form>
                                             </div>
                                         </div>

@@ -124,8 +124,16 @@ public function filterByPrice(Request $request)
     $max = (int) $request->max;
     $page = (int) $request->input('page', 1);
     $perPage = 12;
+    $danhmucId = $request->input('danhmuc_id');
 
-    $query = Sanpham::whereHas('attributes', function($q) use ($min, $max) {
+    $query = Sanpham::query();
+
+    // Nếu có danh mục thì lọc theo danh mục
+    if (!empty($danhmucId)) {
+        $query->where('id_danhmuc', $danhmucId);
+    }
+
+    $query->whereHas('attributes', function($q) use ($min, $max) {
         $q->whereBetween('price', [$min, $max]);
     })
     ->with(['attributes' => function($q) use ($min, $max) {

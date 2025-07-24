@@ -169,6 +169,9 @@
     color: #6c757d;
     font-style: italic;
 }
+.btn-success {
+    background-color: #007bff;
+}
 </style>
     <div class="content-wrapper-scroll">
 
