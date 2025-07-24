@@ -8,6 +8,9 @@ use App\Http\Controllers\Controller;
 use App\Services\PointService;
 use App\Services\EmailService;
 use Illuminate\Support\Facades\Auth;
+use App\Exports\OrdersExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class OrderController extends Controller
 {
@@ -349,5 +352,9 @@ class OrderController extends Controller
             ->orWhere('phone', 'like', "%$transactionId%")
             ->paginate($perPage);
         return view('admin.order.index', ['orders' => $orders]);
+    }
+    public function exportExcel(Request $request)
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\OrdersExport($request->all()), 'HÓA ĐƠN.xlsx');
     }
 }

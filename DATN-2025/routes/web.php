@@ -420,3 +420,5 @@ Route::prefix('admin/point-transactions')->name('admin.point_transactions.')->gr
 
 // API lấy xu hướng khách hàng theo khoảng ngày
 Route::post('/admin/customer-trend/filter', [App\Http\Controllers\admin\HomeController::class, 'customerTrendFilter'])->name('admin.customerTrendFilter');
+
+Route::get('/admin/orders/export', [\App\Http\Controllers\admin\OrderController::class, 'exportExcel'])->name('admin.orders.export');

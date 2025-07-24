@@ -177,7 +177,16 @@
 
 <div class="coupon-list-wrapper">
     @forelse($availableCoupons as $coupon)
-        <div class="coupon-card @if(session('coupons') && array_key_exists($coupon->code, session('coupons'))) selected-coupon @endif" data-code="{{ $coupon->code }}">
+        <div class="coupon-card @if(session('coupons') && array_key_exists($coupon->code, session('coupons'))) selected-coupon @endif"
+            data-code="{{ $coupon->code }}"
+            data-min-order="{{ $coupon->min_order_value }}"
+            data-starts-at="{{ $coupon->starts_at ? $coupon->starts_at->timestamp : '' }}"
+            data-expires-at="{{ $coupon->expires_at ? $coupon->expires_at->timestamp : '' }}"
+            data-usage-limit="{{ $coupon->usage_limit }}"
+            data-used="{{ $coupon->used }}"
+            data-is-active="{{ $coupon->is_active ? 1 : 0 }}"
+            data-user-id="{{ $coupon->user_id }}"
+        >
             <div class="coupon-header">
                 <span class="coupon-code">{{ $coupon->code }}</span>
                 <span class="coupon-discount-type">
@@ -431,46 +440,42 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function updateCouponVisibility(subtotal) {
-        console.log('updateCouponVisibility called with subtotal:', subtotal);
+        const now = Math.floor(Date.now() / 1000); // giây
+        const userId = {{ Auth::check() ? Auth::id() : 'null' }};
         const couponCards = document.querySelectorAll('.coupon-card');
         let visibleCoupons = 0;
 
         console.log('Found coupon cards:', couponCards.length);
 
         couponCards.forEach((card, index) => {
-            const minOrderText = card.querySelector('.coupon-condition');
-            console.log(`Card ${index}:`, card.dataset.code, 'minOrderText:', minOrderText?.textContent);
-
-            if (minOrderText) {
-                const minOrderMatch = minOrderText.textContent.match(/Đơn hàng tối thiểu: ([\d,]+)đ/);
-                if (minOrderMatch) {
-                    const minOrderValue = parseInt(minOrderMatch[1].replace(/,/g, ''));
-                    console.log(`Card ${index} minOrderValue:`, minOrderValue, 'subtotal:', subtotal);
-                    if (subtotal >= minOrderValue) {
-                        card.style.display = 'flex';
-                        card.style.opacity = '1';
-                        card.style.transform = 'scale(1)';
-                        visibleCoupons++;
-                        console.log(`Card ${index} SHOWED`);
-                    } else {
-                        card.style.display = 'none';
-                        card.style.opacity = '0';
-                        card.style.transform = 'scale(0.8)';
-                        console.log(`Card ${index} HIDDEN`);
-                    }
-                } else {
-                    card.style.display = 'flex';
-                    card.style.opacity = '1';
-                    card.style.transform = 'scale(1)';
-                    visibleCoupons++;
-                    console.log(`Card ${index} SHOWED (no min order)`);
-                }
-            } else {
+            // Lấy các điều kiện
+            const minOrder = parseInt(card.dataset.minOrder || '0');
+            const startsAt = parseInt(card.dataset.startsAt || '0');
+            const expiresAt = parseInt(card.dataset.expiresAt || '0');
+            const usageLimit = parseInt(card.dataset.usageLimit || '0');
+            const used = parseInt(card.dataset.used || '0');
+            const isActive = card.dataset.isActive === '1';
+            const couponUserId = card.dataset.userId ? parseInt(card.dataset.userId) : null;
+            // Điều kiện
+            let show = true;
+            if (!isActive) show = false;
+            if (startsAt && now < startsAt) show = false;
+            if (expiresAt && now > expiresAt) show = false;
+            if (usageLimit > 0 && used >= usageLimit) show = false;
+            if (couponUserId && (!userId || userId !== couponUserId)) show = false;
+            if (subtotal < minOrder) show = false;
+            // Hiển thị/ẩn
+            if (show) {
                 card.style.display = 'flex';
                 card.style.opacity = '1';
                 card.style.transform = 'scale(1)';
                 visibleCoupons++;
-                console.log(`Card ${index} SHOWED (no condition text)`);
+                console.log(`Card ${index} SHOWED`);
+            } else {
+                card.style.display = 'none';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                console.log(`Card ${index} HIDDEN`);
             }
         });
 

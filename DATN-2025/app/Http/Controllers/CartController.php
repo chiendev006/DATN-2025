@@ -74,10 +74,10 @@ public function index()
     ->where(function ($q) use ($now) {
         $q->whereNull('expires_at')->orWhere('expires_at', '>=', $now);
     })
-    ->get()
-    ->filter(function ($coupon) {
-        return !$coupon->usage_limit || $coupon->used < $coupon->usage_limit;
-    });
+        ->where(function ($q) {
+            $q->whereNull('usage_limit')->orWhereColumn('used', '<', 'usage_limit');
+        })
+        ->get();
 
 
     $expiredCoupons = Coupon::where(function ($q) use ($now) {

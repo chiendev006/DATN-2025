@@ -149,8 +149,11 @@ select:disabled {
     cursor: not-allowed;
 }
 </style>
+@php
+    $query = http_build_query(request()->except('page'));
+@endphp
   <div class="content-wrapper-scroll">
-
+<a style="margin-left: 22px;" href="{{ route('admin.orders.export') }}?{{ $query }}" class="btn btn-success mb-3">Tải Excel</a>
                     <div class="content-wrapper">
                     <div class="row gutters">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
