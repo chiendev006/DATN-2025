@@ -101,55 +101,12 @@
                                             <div class="date-feature">{{ \Carbon\Carbon::parse($blog->created_at)->format('d/m') }} <br> </div>
                                         </div>
                                         <div class="feature-info wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                            <span><i class="icon-user-1"></i> Admin</span>
-                                            <span><i class="icon-comment-5"></i> 5 Comments</span>
+
                                             <h5>{{$blog->title}}</h5>
                                             <p>{!!$blog->content!!}</p>
 
                                         </div>
-                                        <div class="comment-blog wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                            <h3>2 Comment</h3>
-                                            <div class="comment-inner-list">
-                                                <div class="comment-img">
-                                                    <img src="images/comment-img1.png" alt="">
-                                                </div>
-                                                <div class="comment-info">
-                                                    <h5>Anna Taylor</h5>
-                                                    <span class="comment-date">AUGUST 9, 2016 10:57 AM</span>
-                                                    <p>Aqua Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                                                </div>
-                                            </div>
-                                            <div class="comment-inner-list">
-                                                <div class="comment-img">
-                                                    <img src="images/comment-img1.png" alt="">
-                                                </div>
-                                                <div class="comment-info">
-                                                    <h5>Anna Taylor</h5>
-                                                    <span class="comment-date">AUGUST 9, 2016 10:57 AM</span>
-                                                    <p>Aqua Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                                                </div>
-                                            </div>
-                                            <h3>Leave a Reply</h3>
-                                            <form class="form" method="post" name="form">
-                                                <div class="row">
-                                                    <div class="col-md-12 col-sm-12 col-xs-12">
-                                                        <textarea placeholder="Comment"></textarea>
-                                                    </div>
-                                                    <div class="col-md-6 col-sm-6 col-xs-12">
-                                                        <input type="text" name="txt" placeholder="Name">
-                                                    </div>
-                                                    <div class="col-md-6 col-sm-6 col-xs-12">
-                                                        <input type="email" name="email" placeholder="Email">
-                                                    </div>
-                                                    <div class="col-md-12 col-sm-12 col-xs-12">
-                                                        <input type="text" name="txt" placeholder="Web site">
-                                                    </div>
-                                                    <div class="col-md-12 col-sm-12 col-xs-12">
-                                                        <input type="submit" name="submit" value="POST COMMENT" class="submit-btn">
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
+
                                     </div>
                                 </div>
                             </div>
