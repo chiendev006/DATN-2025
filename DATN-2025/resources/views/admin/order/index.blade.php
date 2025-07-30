@@ -666,9 +666,9 @@ function openOrderModal(btn) {
                     productTotal += parseInt(product.total) || 0;
                     const row = `<tr>
                         <td>${product.product_name ?? ''}</td>
-                        <td>${product.product_image ? `<img src='/storage/uploads/${product.product_image}' width='50'>` : ''}</td>
+                        <td>${product.product_image ? `<img src='/storage/uploads/${product.product_image}' width='50'>` : '<img src="/images/no-image.svg" width="50">'}</td>
                         <td>${product.size ?? ''}</td>
-                        <td>${product.topping ? `<p>${product.topping}</p>` : `<span style=\"color: red;\">Không chọn</span>`}</td>
+                        <td>${product.topping && product.topping !== 'Không chọn' ? product.topping : `<span style=\"color: red;\">Không chọn</span>`}</td>
                         <td>${product.quantity ?? ''}</td>
                         <td>${product.total !== undefined ? parseInt(product.total).toLocaleString('vi-VN') + ' đ' : ''}</td>
                     </tr>`;

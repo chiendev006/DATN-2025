@@ -257,16 +257,14 @@ class SanphamController extends Controller
     public function delete($id){
     $sanpham = sanpham::findOrFail($id);
 
-    // Xóa ảnh đại diện sản phẩm
-    if ($sanpham->image && Storage::exists('public/uploads/' . $sanpham->image)) {
-        Storage::delete('public/uploads/' . $sanpham->image);
-    }
+    // KHÔNG xóa ảnh để giữ lại cho đơn hàng
+    // if ($sanpham->image && Storage::exists('public/uploads/' . $sanpham->image)) {
+    //     Storage::delete('public/uploads/' . $sanpham->image);
+    // }
 
-    // Xóa tất cả size (product_attribute/Size)
-    \App\Models\Size::where('product_id', $sanpham->id)->delete();
-
-    // Xóa tất cả topping liên quan
-    \App\Models\Product_topping::where('product_id', $sanpham->id)->delete();
+    // KHÔNG xóa size và topping để giữ lại thông tin cho đơn hàng
+    // \App\Models\Size::where('product_id', $sanpham->id)->delete();
+    // \App\Models\Product_topping::where('product_id', $sanpham->id)->delete();
 
     // Xóa tất cả ảnh gallery liên quan
     $productImages = \App\Models\ProductImage::where('product_id', $sanpham->id)->get();

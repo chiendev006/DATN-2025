@@ -255,26 +255,40 @@ class OrderController extends Controller
     {
         $order = \App\Models\Order::with('details')->findOrFail($id);
         $details = $order->details->map(function($detail) {
-            $product = \App\Models\sanpham::find($detail->product_id);
-            $product_name = $product ? $product->name : '';
-            $product_image = $product ? $product->image : '';
-            $size = $detail->size_id ? \App\Models\Size::find($detail->size_id) : null;
+            $product = \App\Models\sanpham::withTrashed()->find($detail->product_id);
+            $product_name = $product ? $product->name : 'Sản phẩm đã bị xóa';
+            
+            // Xử lý ảnh sản phẩm
+            $product_image = '';
+            if ($product && $product->image) {
+                $product_image = $product->image; // Chỉ trả về tên file, không phải đường dẫn đầy đủ
+            }
+            
+
+            
+            // Xử lý size
+            $size = $detail->size_id ? \App\Models\Size::withTrashed()->find($detail->size_id) : null;
             $size_name = $size ? ($size->size . ' - ' . number_format($size->price) . ' VND') : '';
+            
+            // Xử lý topping
             $topping_arr = [];
             if (!empty($detail->topping_id)) {
                 $topping_ids = array_filter(array_map('trim', explode(',', $detail->topping_id)));
                 if (!empty($topping_ids)) {
-                    $toppings = \App\Models\Product_topping::whereIn('id', $topping_ids)->get();
+                    $toppings = \App\Models\Product_topping::withTrashed()->whereIn('id', $topping_ids)->get();
                     foreach ($toppings as $tp) {
-                        $topping_arr[] ="<p>". $tp->topping . ' - ' . number_format($tp->price) . ' VND</p>';
+                        $topping_arr[] = $tp->topping . ' - ' . number_format($tp->price) . ' VND';
                     }
                 }
             }
+            
+
+            
             return [
                 'product_name' => $product_name,
                 'product_image' => $product_image,
-                'size' => $size_name,
-                'topping' => implode('', $topping_arr),
+                'size' => $size_name ?: 'Không chọn',
+                'topping' => !empty($topping_arr) ? implode('<br>', $topping_arr) : 'Không chọn',
                 'quantity' => $detail->quantity,
                 'total' => $detail->total,
                 'note' => $detail->note,

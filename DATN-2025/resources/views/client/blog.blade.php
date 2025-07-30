@@ -63,56 +63,52 @@
                                         @endif
                                     </div>
                                    
-<div class="blog-recent-post blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-    <h5 style="margin-bottom: 20px;">Recent Posts</h5>
+                                    <div class="blog-recent-post blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                        <h5 style="margin-bottom: 20px;">Recent Posts</h5>
 
-    @foreach ($recentBlogs as $blog)
-        <div class="recent-blog-list" style="text-align: center; margin-bottom: 20px;">
-            {{-- Ngày --}}
-            <p style="font-size: 13px; color: #999; margin-top: 8px;">
-                {{ \Carbon\Carbon::parse($blog->created_at)->format('F d, Y') }}
-            </p>
-            {{-- Ảnh lớn hơn --}}
-            <a href="{{ route('blog.show', $blog->id) }}">
-                <img src="{{ asset('storage/uploads/' . $blog->image) }}"
-                     alt="{{ $blog->title }}"
-                     style="width: 100%; max-width: 150px; height: auto; border-radius: 6px; object-fit: cover;">
-            </a>
+                                        @foreach ($recentBlogs as $blog)
+                                            <div class="recent-blog-list" style="text-align: center; margin-bottom: 20px;">
+                                                {{-- Ngày --}}
+                                                <p style="font-size: 13px; color: #999; margin-top: 8px;">
+                                                    {{ \Carbon\Carbon::parse($blog->created_at)->format('F d, Y') }}
+                                                </p>
+                                                {{-- Ảnh lớn hơn --}}
+                                                <a href="{{ route('blog.show', $blog->id) }}">
+                                                    <img src="{{ asset('storage/uploads/' . $blog->image) }}"
+                                                        alt="{{ $blog->title }}"
+                                                        style="width: 100%; max-width: 150px; height: auto; border-radius: 6px; object-fit: cover;">
+                                                </a>
 
-            {{-- Tiêu đề --}}
-            <h6 style="font-size: 15px; margin-top: 5px;">
-                <a href="{{ route('blog.show', $blog->id) }}" style="color: #333; text-decoration: none;">
-                    {{ \Illuminate\Support\Str::limit($blog->title, 60) }}
-                </a>
-            </h6>
-        </div>
-    @endforeach
-</div>
-
-
-<div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-    <h5>Best Deals</h5>
-
-    @if(isset($bestDeals) && $bestDeals->count())
-        @foreach($bestDeals as $deal)
-            <div class="best-deal-blog">
-                <div class="best-deal-left">
-                    <img src="{{ asset('storage/uploads/' . $deal->image) }}" alt="{{ $deal->name }}">
-                </div>
-                <div class="best-deal-right">
-                    <p>{{ $deal->name }}</p>
-                    <p><strong>{{ number_format($deal->price, 0, ',', '.') }} đ</strong></p>
-                </div>
-            </div>
-        @endforeach
-    @else
-        <p>Không có sản phẩm nào.</p>
-    @endif
-</div>
-
-                                    
+                                                {{-- Tiêu đề --}}
+                                                <h6 style="font-size: 15px; margin-top: 5px;">
+                                                    <a href="{{ route('blog.show', $blog->id) }}" style="color: #333; text-decoration: none;">
+                                                        {{ \Illuminate\Support\Str::limit($blog->title, 60) }}
+                                                    </a>
+                                                </h6>
+                                            </div>
+                                        @endforeach
+                                    </div>
 
 
+                                    <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                        <h5>Best Deals</h5>
+
+                                        @if(isset($bestDeals) && $bestDeals->count())
+                                            @foreach($bestDeals as $deal)
+                                                <div class="best-deal-blog">
+                                                    <div class="best-deal-left">
+                                                        <img src="{{ asset('storage/uploads/' . $deal->image) }}" alt="{{ $deal->name }}">
+                                                    </div>
+                                                    <div class="best-deal-right">
+                                                        <p>{{ $deal->name }}</p>
+                                                        <p><strong>{{ number_format($deal->price, 0, ',', '.') }} đ</strong></p>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <p>Không có sản phẩm nào.</p>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 
@@ -122,7 +118,7 @@
                                     <div class="blog-right-listing wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                         <div class="feature-img">
                                             <a href="{{route('client.blogsingle',$item->id)}}">
-                                                 <img src="{{ asset('storage/uploads/'.$item->image) }} " width="300" height="350" alt="">
+                                                    <img style="height: auto;" src="{{ asset('storage/'.$item->image) }}" alt="" class="animated" />
                                             </a>
 
                                             <div class="date-feature">{{ \Carbon\Carbon::parse($item->created_at)->diffInDays(now()) }}<br> <small>Ngày</small></div>
@@ -139,61 +135,55 @@
                                 </div>
                             </div>
                             <div style="text-align: center;" class="gallery-pagination">
-   <div style="text-align: center;" class="gallery-pagination">
-    <div class="gallery-pagination-inner">
-        <ul>
-            {{-- Nút PREV --}}
-            <li>
-                <a href="{{ $blogs->onFirstPage() ? '#' : $blogs->previousPageUrl() }}"
-                   class="pagination-prev {{ $blogs->onFirstPage() ? 'disabled' : '' }}">
-                    <i class="icon-left-4"></i>
-                    <span style="font-family: system-ui">PREV PAGE</span>
-                </a>
-            </li>
+                            <div style="text-align: center;" class="gallery-pagination">
+                                <div class="gallery-pagination-inner">
+                                    <ul>
+                                        {{-- Nút PREV --}}
+                                        <li>
+                                            <a href="{{ $blogs->onFirstPage() ? '#' : $blogs->previousPageUrl() }}"
+                                            class="pagination-prev {{ $blogs->onFirstPage() ? 'disabled' : '' }}">
+                                                <i class="icon-left-4"></i>
+                                                <span style="font-family: system-ui">PREV PAGE</span>
+                                            </a>
+                                        </li>
 
-            {{-- Hiển thị tối đa 3 trang gần nhất --}}
-            @php
-                $start = max(1, $blogs->currentPage() - 1);
-                $end = min($blogs->lastPage(), $blogs->currentPage() + 1);
+                                        {{-- Hiển thị tối đa 3 trang gần nhất --}}
+                                        @php
+                                            $start = max(1, $blogs->currentPage() - 1);
+                                            $end = min($blogs->lastPage(), $blogs->currentPage() + 1);
 
-                // Nếu đang ở đầu -> dịch phải
-                if ($blogs->currentPage() == 1) {
-                    $end = min(3, $blogs->lastPage());
-                }
+                                            // Nếu đang ở đầu -> dịch phải
+                                            if ($blogs->currentPage() == 1) {
+                                                $end = min(3, $blogs->lastPage());
+                                            }
 
-                // Nếu đang ở cuối -> dịch trái
-                if ($blogs->currentPage() == $blogs->lastPage()) {
-                    $start = max($blogs->lastPage() - 2, 1);
-                }
-            @endphp
+                                            // Nếu đang ở cuối -> dịch trái
+                                            if ($blogs->currentPage() == $blogs->lastPage()) {
+                                                $start = max($blogs->lastPage() - 2, 1);
+                                            }
+                                        @endphp
 
-            @for ($i = $start; $i <= $end; $i++)
-                <li class="{{ $i == $blogs->currentPage() ? 'active' : '' }}">
-                    <a href="{{ $blogs->url($i) }}"><span>{{ $i }}</span></a>
-                </li>
-            @endfor
+                                        @for ($i = $start; $i <= $end; $i++)
+                                            <li class="{{ $i == $blogs->currentPage() ? 'active' : '' }}">
+                                                <a href="{{ $blogs->url($i) }}"><span>{{ $i }}</span></a>
+                                            </li>
+                                        @endfor
 
-            {{-- Nút NEXT --}}
-            <li>
-                <a href="{{ $blogs->hasMorePages() ? $blogs->nextPageUrl() : '#' }}"
-                   class="pagination-next {{ $blogs->hasMorePages() ? '' : 'disabled' }}">
-                    <span style="font-family: system-ui">NEXT PAGE</span>
-                    <i class="icon-right-4"></i>
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
-
-
-</div>
-
+                                        {{-- Nút NEXT --}}
+                                        <li>
+                                            <a href="{{ $blogs->hasMorePages() ? $blogs->nextPageUrl() : '#' }}"
+                                            class="pagination-next {{ $blogs->hasMorePages() ? '' : 'disabled' }}">
+                                                <span style="font-family: system-ui">NEXT PAGE</span>
+                                                <i class="icon-right-4"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            </div>
                         </div>
                     </div>
                 </section>
-
-                <!-- End Blog List -->
-
             </div>
         </main>
         @endsection
