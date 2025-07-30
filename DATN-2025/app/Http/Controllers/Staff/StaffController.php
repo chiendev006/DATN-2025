@@ -42,7 +42,7 @@ class StaffController extends Controller
         return response()->json([
             'id' => $product->id,
             'name' => $product->name,
-            'image' => asset('storage/uploads/' . $product->image),
+            'image' => $product->image ? asset('storage/uploads/' . $product->image) : null,
             'mota' => $product->mota,
             'sizes' => \DB::table('product_attributes')
                 ->where('product_id', $id)
@@ -268,7 +268,9 @@ class StaffController extends Controller
     {
         $perPage = $request->input('per_page', 10); // lấy số bản ghi/trang, mặc định 10
         $query = Order::with([
-            'details.product',
+            'details.product' => function($query) {
+                $query->withTrashed();
+            },
             'details.size'
         ])->whereDate('created_at', Carbon::today());
 

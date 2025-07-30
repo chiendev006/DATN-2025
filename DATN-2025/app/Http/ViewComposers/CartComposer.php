@@ -15,7 +15,9 @@ class CartComposer
         $subtotal = 0;
 
         if (Auth::check()) {
-            $cart = Cart::with(['cartdetails.product', 'cartdetails.size'])
+            $cart = Cart::with(['cartdetails.product' => function($query) {
+                $query->withTrashed();
+            }, 'cartdetails.size'])
                         ->where('user_id', Auth::id())
                         ->first();
 

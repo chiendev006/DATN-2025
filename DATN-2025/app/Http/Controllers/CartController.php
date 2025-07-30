@@ -28,7 +28,9 @@ public function index()
     $items = collect([]);
 
     if (Auth::check()) {
-        $cart = Cart::with(['cartdetails.product', 'cartdetails.size'])->where('user_id', Auth::id())->first();
+        $cart = Cart::with(['cartdetails.product' => function($query) {
+            $query->withTrashed();
+        }, 'cartdetails.size'])->where('user_id', Auth::id())->first();
 
         if (!$cart) {
             $cart = Cart::create([

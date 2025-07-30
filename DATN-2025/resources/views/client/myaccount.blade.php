@@ -234,7 +234,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                         @foreach($items as $item)
                                             @php
-                                                $image = $item->product->image
+                                                $image = $item->product && $item->product->image
                                                     ? asset('storage/uploads/' . $item->product->image)
                                                     : 'https://via.placeholder.com/150x150.png?text=Product';
                                                 $toppingNames = [];

@@ -444,7 +444,7 @@
                                             $itemId = isset($item->product)
                                                 ? $item->id
                                                 : $loop->index;
-                                            $productImage = isset($item->product->image)
+                                            $productImage = (isset($item->product) && isset($item->product->image))
                                                 ? asset('storage/uploads/' . $item->product->image)
                                                 : (isset($item->image) ? asset('storage/uploads/' . $item->image) : asset('asset/images/img21.png'));
                                             $quantity = $item->quantity ?? 1;

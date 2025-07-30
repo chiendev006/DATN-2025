@@ -41,7 +41,9 @@ class CheckoutController extends Controller
         if (Auth::check()) {
             $userCart = Cart::where('user_id', Auth::id())->first();
             if ($userCart) {
-                $items = Cartdetail::with(['product', 'size'])
+                $items = Cartdetail::with(['product' => function($query) {
+                $query->withTrashed();
+            }, 'size'])
                     ->where('cart_id', $userCart->id)
                     ->get();
                 foreach ($items as $item) {
@@ -179,7 +181,9 @@ class CheckoutController extends Controller
                     throw new \Exception('Giỏ hàng không tồn tại');
                 }
 
-                $cartDetails = Cartdetail::with(['product', 'size'])
+                $cartDetails = Cartdetail::with(['product' => function($query) {
+                    $query->withTrashed();
+                }, 'size'])
                     ->where('cart_id', $userCart->id)
                     ->get();
                 foreach ($cartDetails as $item) {
@@ -613,7 +617,9 @@ class CheckoutController extends Controller
                 'session_data' => session()->all()
             ]);
 
-            $order = Order::with('orderDetails.size', 'orderDetails.product')->findOrFail($orderId);
+            $order = Order::with(['orderDetails.size', 'orderDetails.product' => function($query) {
+                $query->withTrashed();
+            }])->findOrFail($orderId);
 
             Log::info('DEBUG: Order found', [
                 'order_id' => $order->id,
