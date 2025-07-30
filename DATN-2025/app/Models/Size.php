@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Size extends Model
 {
     use HasFactory;
+    use SoftDeletes;
     protected $table = 'product_attributes';
     protected $fillable = [
         'product_id',

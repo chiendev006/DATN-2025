@@ -47,50 +47,49 @@
                                         </ul>
                                     </div>
                                     <div class="blog-recent-post blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-    <h5 style="margin-bottom: 20px;">Recent Posts</h5>
+                                            <h5 style="margin-bottom: 20px;">Recent Posts</h5>
 
-    @foreach ($recentBlogs as $blog)
-        <div class="recent-blog-list" style="text-align: center; margin-bottom: 20px;">
-            {{-- Ngày --}}
-            <p style="font-size: 13px; color: #999; margin-top: 8px;">
-                {{ \Carbon\Carbon::parse($blog->created_at)->format('F d, Y') }}
-            </p>
-            {{-- Ảnh lớn hơn --}}
-            <a href="{{ route('blog.show', $blog->id) }}">
-                <img src="{{ asset('storage/uploads/' . $blog->image) }}"
-                     alt="{{ $blog->title }}"
-                     style="width: 100%; max-width: 150px; height: auto; border-radius: 6px; object-fit: cover;">
-            </a>
+                                            @foreach ($recentBlogs as $blog)
+                                                <div class="recent-blog-list" style="text-align: center; margin-bottom: 20px;">
+                                                    {{-- Ngày --}}
+                                                    <p style="font-size: 13px; color: #999; margin-top: 8px;">
+                                                        {{ \Carbon\Carbon::parse($blog->created_at)->format('F d, Y') }}
+                                                    </p>
+                                                    {{-- Ảnh lớn hơn --}}
+                                                    <a href="{{ route('blog.show', $blog->id) }}">
+                                                        <img src="{{ asset('storage/uploads/' . $blog->image) }}"
+                                                            alt="{{ $blog->title }}"
+                                                            style="width: 100%; max-width: 150px; height: auto; border-radius: 6px; object-fit: cover;">
+                                                    </a>
 
-            {{-- Tiêu đề --}}
-            <h6 style="font-size: 15px; margin-top: 5px;">
-                <a href="{{ route('blog.show', $blog->id) }}" style="color: #333; text-decoration: none;">
-                    {{ \Illuminate\Support\Str::limit($blog->title, 60) }}
-                </a>
-            </h6>
-        </div>
-    @endforeach
-</div>
-
+                                                    {{-- Tiêu đề --}}
+                                                    <h6 style="font-size: 15px; margin-top: 5px;">
+                                                        <a href="{{ route('blog.show', $blog->id) }}" style="color: #333; text-decoration: none;">
+                                                            {{ \Illuminate\Support\Str::limit($blog->title, 60) }}
+                                                        </a>
+                                                    </h6>
+                                                </div>
+                                            @endforeach
+                                        </div>
                                     <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-    <h5>Best Deals</h5>
+                                        <h5>Best Deals</h5>
 
-    @if(isset($bestDeals) && $bestDeals->count())
-        @foreach($bestDeals as $deal)
-            <div class="best-deal-blog">
-                <div class="best-deal-left">
-                    <img src="{{ asset('storage/uploads/' . $deal->image) }}" alt="{{ $deal->name }}">
-                </div>
-                <div class="best-deal-right">
-                    <p>{{ $deal->name }}</p>
-                    <p><strong>{{ number_format($deal->price, 0, ',', '.') }} đ</strong></p>
-                </div>
-            </div>
-        @endforeach
-    @else
-        <p>Không có sản phẩm nào.</p>
-    @endif
-</div>
+                                        @if(isset($bestDeals) && $bestDeals->count())
+                                            @foreach($bestDeals as $deal)
+                                                <div class="best-deal-blog">
+                                                    <div class="best-deal-left">
+                                                        <img src="{{ asset('storage/uploads/' . $deal->image) }}" alt="{{ $deal->name }}">
+                                                    </div>
+                                                    <div class="best-deal-right">
+                                                        <p>{{ $deal->name }}</p>
+                                                        <p><strong>{{ number_format($deal->price, 0, ',', '.') }} đ</strong></p>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <p>Không có sản phẩm nào.</p>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-8 col-sm-8 col-xs-12">
