@@ -216,7 +216,7 @@
                                                     $unitPrice = $sizePrice + $toppingPrice;
                                                     $itemTotal = $unitPrice * $item->quantity;
 
-                                                    $name = $product->name;
+                                                    $name = $product->name ?? 'Sản phẩm đã bị xóa';
                                                     $quantity = $item->quantity;
                                                 } else {
                                                     $productModel = \App\Models\Sanpham::find($item['sanpham_id']);

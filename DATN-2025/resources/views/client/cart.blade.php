@@ -61,8 +61,8 @@
                                     $unitPrice = $basePrice + $toppingPrice;
                                     $total = $unitPrice * $item->quantity;
                                     $rowKey = $item->product_id . '-' . ($item->size_id ?? 0) . '-' . implode(',', $toppingIds);
-                                    $image = $product->image;
-                                    $name = $product->name;
+                                    $image = $product->image ?? 'no-image.png';
+                                    $name = $product->name ?? 'Sản phẩm đã bị xóa';
                                     $quantity = $item->quantity;
                                 } else {
                                     $basePrice = $item->size_price ?? 0;

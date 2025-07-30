@@ -22,12 +22,12 @@
                         <div class="blog-left-section">
                             <div class="blog-left-search blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                 <div class="search-input-wrapper">
-                                    <input type="text" id="search" name="search" placeholder="Search">
+                                    <input type="text" id="search" name="search" placeholder="Tìm Kiếm">
                                     <i class="fa fa-search" id="btn-search"></i>
                                 </div>
                             </div>
                             <div class="blog-left-categories blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                <h5>Categories</h5>
+                                <h5>Danh mục </h5>
                                 <ul id="category-list">
                                     <li class="{{ request('danhmuc_id') == null ? 'current' : '' }}">
                                         <a href="#" data-id="">Tất cả</a>
@@ -40,8 +40,8 @@
                                 </ul>
                             </div>
                             <div class="blog-left-filter blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                                <h5>Filter</h5>
-                                <p>Price: <span id="price-range-label">0₫ — 100.000₫</span></p>
+                                <h5>Lọc Giá</h5>
+                                <p>Giá: <span id="price-range-label">0₫ — 100.000₫</span></p>
                                 <div class="slider-wrapper">
                                     <input id="price-range" type="text" class="span2" value=""
                                         data-slider-min="0"
@@ -51,10 +51,10 @@
                                         data-slider-tooltip="hide"
                                     />
                                 </div>
-                                <a href="#" id="btn-filter" class="filter-btn">FILTER</a>
+                                <a href="#" id="btn-filter" class="filter-btn">Lọc</a>
                             </div>
                            <div class="blog-left-deal blog-common-wide wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
-                            <h5>Best Deals</h5>
+                            <h5>Sản phẩm nổi bật</h5>
 
                             @if(isset($bestDeals) && !$bestDeals->isEmpty())
                                 @foreach($bestDeals as $deal)
@@ -84,7 +84,7 @@
                             <div class="shop-search wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                                 <div class="row">
                                     <div class="col-md-6 col-sm-6 col-xs-12">
-                                        <h6 style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Showing {{ $firstProducts->firstItem() }}–{{ $firstProducts->lastItem() }} of {{ $firstProducts->total() }} results</h6>
+                                        <h6 style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Hiển thị {{ $firstProducts->firstItem() }}–{{ $firstProducts->lastItem() }} trong số {{ $firstProducts->total() }} kết quả</h6>
                                     </div>
                                 </div>
                             </div>
