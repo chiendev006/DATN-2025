@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use function Laravel\Prompts\table;
 
 class Blogs extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected  $table = 'blogs';
     protected $fillable = ['title', 'content', 'image', 'blog_id'];
     public function danhmucBlog()
