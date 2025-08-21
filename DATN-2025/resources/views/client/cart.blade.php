@@ -41,6 +41,7 @@
                                 <th>TOPPING</th>
                                 <th>GIÁ</th>
                                 <th>TĂNG GIẢM</th>
+                                <th>GHI CHÚ</th>
                                 <th>TỔNG TIỀN</th>
                                 <th>XÓA</th>
                             </tr>
@@ -157,6 +158,11 @@
                                             data-size_id="{{ Auth::check() ? ($item->size_id ?? 0) : ($item->size_id ?? 0) }}"
                                             data-topping_ids="{{ Auth::check() ? (empty($toppingIds) ? '' : implode(',', $toppingIds)) : (empty($toppingIdsForImplode) ? '' : implode(',', $toppingIdsForImplode)) }}">
                                         <span class="plus-text increment-btn"><i class="icon-plus"></i></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="note-textbox">
+                                        <span class="note-text">{!! $item->note ?? 'Không có' !!}</span>
                                     </div>
                                 </td>
                                 <td class="line-total">{{ number_format($total) }} VND</td>
@@ -548,7 +554,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const productId = row.querySelector('.quantity-input').dataset.product_id;
             const sizeId = row.querySelector('.quantity-input').dataset.size_id;
             const toppingIds = row.querySelector('.quantity-input').dataset.topping_ids;
-            
+
             // Debug logging
             console.log('Remove item data:', { key, productId, sizeId, toppingIds });
 

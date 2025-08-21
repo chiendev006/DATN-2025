@@ -16,6 +16,7 @@ class Cartdetail extends Model
         'product_id',
         'size_id',
         'topping_id',
+        'note',
         'quantity',
     ];
 

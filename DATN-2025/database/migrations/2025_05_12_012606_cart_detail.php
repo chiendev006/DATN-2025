@@ -19,6 +19,7 @@ return new class extends Migration
         $table->string('topping_id')->nullable();
         $table->foreign('topping_id')->references('id')->on('product_topping');
         $table->integer('quantity');
+        $table->string('note')->nullable();
         $table->timestamps();
 });
 
