@@ -79,7 +79,9 @@
                                         }
                                     }
                                     sort($toppingIdsForImplode); // Ensure consistent ordering
-                                    $rowKey = $item->sanpham_id . '-' . ($item->size_id ?? 0) . '-' . implode(',', $toppingIdsForImplode);
+                                    // Key cho khách chưa đăng nhập phải giống key session: id_sizeid_md5(toppingIds+note)
+                                    $noteForKey = isset($item->note) ? $item->note : '';
+                                    $rowKey = $item->sanpham_id . '_' . ($item->size_id ?? 0) . '_' . md5(implode(',', $toppingIdsForImplode) . $noteForKey);
 
                                     $image = $item->image;
                                     $name = $item->name;
@@ -152,7 +154,7 @@
                                     <div class="price-textbox">
                                         <span class="minus-text decrement-btn"><i class="icon-minus"></i></span>
                                         <input type="number" name="quantity" value="{{ $quantity }}"
-                                            class="quantity-input" min="1" readonly
+                                            class="quantity-input" min="1"
                                             data-key="{{ $rowKey }}"
                                             data-product_id="{{ Auth::check() ? $item->product_id : $item->sanpham_id }}"
                                             data-size_id="{{ Auth::check() ? ($item->size_id ?? 0) : ($item->size_id ?? 0) }}"
