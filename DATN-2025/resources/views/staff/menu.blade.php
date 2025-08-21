@@ -417,7 +417,9 @@
                         <div class="option-list topping-list"></div>
                     </div>
                       <div class="form-group">
-                                <label><strong>Ghi chú:</strong></label>
+                                <label>
+                                    <div class="fw-bold">Ghi chú:</div>
+                                </label>
                                 <div class="d-flex gap-2">
                                 <select name="giamda" class="form-select w-auto rounded-pill">
                                     <option value="">Giảm đá</option>

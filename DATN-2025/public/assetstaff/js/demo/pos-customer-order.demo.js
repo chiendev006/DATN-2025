@@ -115,6 +115,10 @@ function updateTotalPrice() {
                     $('#modalPosItem .product-price').text(data.price ? data.price + 'đ' : '');
                     $('#modalPosItem .add-to-cart').data('id', data.id);
                     $('#modalPosItem input[name="qty"]').val(1);
+                    // ... sau khi set size/topping/ảnh/tên/giá:
+                    $('#modalPosItem select[name="giamda"]').val('');
+                    $('#modalPosItem select[name="giamduong"]').val('');
+
                 },
                 error: function() {
                     alert('Không lấy được thông tin sản phẩm!');
@@ -137,6 +141,7 @@ function updateTotalPrice() {
             var toppingIds = [];
             var toppingNames = [];
             var toppingTotal = 0;
+
             $('#modalPosItem input[name^="addon"]:checked').each(function () {
                 toppingIds.push($(this).val());
                 toppingNames.push($(this).siblings('label').find('.option-text').text());
@@ -145,6 +150,10 @@ function updateTotalPrice() {
             var toppingText = toppingNames.join(', ');
 
             var total = (sizePrice + toppingTotal) * qty;
+            var giamDa = ($('#modalPosItem select[name="giamda"]').val() || '').trim();
+            var giamDuong = ($('#modalPosItem select[name="giamduong"]').val() || '').trim();
+            var noteText = [giamDa, giamDuong].filter(Boolean).join(' | ');
+
 
             var html = `
                 <div class="pos-order mb-2"
@@ -156,13 +165,14 @@ function updateTotalPrice() {
                     data-topping="${toppingText}"
                     data-toppingnames="${toppingNames.join('|')}"
                     data-toppingids="${toppingIds.length ? toppingIds.join(',') : ''}"
-                    data-toppingtotal="${toppingTotal}">
+                    data-toppingtotal="${toppingTotal}" data-note="${noteText}">
                     <div class="pos-order-product d-flex align-items-center">
                         <div class="img" style="width:60px;height:60px;background-image:url('${image}');background-size:cover;background-position:center;border-radius:8px;"></div>
                         <div class="flex-1 ms-3">
                             <div class="h6 mb-1">${name}</div>
                             <div class="small text-muted">${formatVND(sizePrice)}${sizeText ? ' - size: ' + sizeText : ''}</div>
                             ${toppingText ? `<div class="small text-muted">+ Topping: ${toppingText}</div>` : ''}
+                            ${noteText ? `<div class="small text-muted">+ Ghi chú: ${noteText}</div>` : ''}
                             <div class="d-flex align-items-center mt-2">
                                 <a href="#" class="btn btn-secondary btn-sm order-qty-decrease"><i class="fa fa-minus"></i></a>
                                 <input type="text" class="form-control w-50px form-control-sm mx-2 text-center order-qty" value="${qty}" />
@@ -296,6 +306,7 @@ function updateTotalPrice() {
                 let sizeId = $order.data('sizeid');
                 let sizePrice = parseFloat($order.data('sizeprice')) || 0;
                 let qty = parseInt($order.find('.order-qty').val()) || 1;
+                let note = ($order.data('note') || '').toString();
 
                 let toppingIds = [];
                 let toppingIdsRaw = $order.attr('data-toppingids');
@@ -316,6 +327,7 @@ function updateTotalPrice() {
                     toppings: toppingIds,
                     quantity: qty,
                     total: total,
+                    note: note
                 });
             });
 
@@ -541,7 +553,8 @@ function updateTotalPrice() {
                     toppings: toppingIds,
                     topping_names: toppingNames,
                     quantity: qty,
-                    total: total
+                    total: total,
+                    note: $order.attr('data-note') || ''
                 });
             });
             localStorage.setItem('pos_cart', JSON.stringify(cart));
@@ -569,6 +582,7 @@ function updateTotalPrice() {
                                 data-sizeid="${item.size_id}"
                                 data-sizeprice="${item.product_price}"
                                 data-image="${item.image || ''}"
+                                data-note="${item.note || ''}"
                                 data-topping="${toppingText}"
                                 data-toppingnames="${toppingsArr.join('|')}"
                                 data-toppingids="${Array.isArray(item.toppings) ? item.toppings.join(',') : ''}"
@@ -579,6 +593,7 @@ function updateTotalPrice() {
                                         <div class="h6 mb-1">${item.product_name}</div>
                                         <div class="small text-muted">${formatVND(item.product_price)}${item.size ? ' - size: ' + item.size : ''}</div>
                                         ${toppingText ? `<div class="small text-muted">+ Topping: ${toppingText}</div>` : ''}
+                                        ${item.note ? `<div class="small text-muted">+ Ghi chú: ${item.note}</div>` : ''}
                                         <div class="d-flex align-items-center mt-2">
                                             <a href="#" class="btn btn-secondary btn-sm order-qty-decrease"><i class="fa fa-minus"></i></a>
                                             <input type="text" class="form-control w-50px form-control-sm mx-2 text-center order-qty" value="${item.quantity}" />

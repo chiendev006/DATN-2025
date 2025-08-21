@@ -123,7 +123,7 @@ class StaffController extends Controller
                 $vndPerPoint = (int) (\DB::table('point_settings')->where('key', 'vnd_per_point')->value('value') ?? 1000);
                 $maxPoints = min($customer->points, $pointsUsed);
                 $pointsDiscount = $maxPoints * $vndPerPoint;
-                
+
                 \Log::info('DEBUG_POINT: Creating point transaction', [
                     'order_id' => $order->id,
                     'customer_id' => $customer->id,
@@ -131,11 +131,11 @@ class StaffController extends Controller
                     'max_points' => $maxPoints,
                     'points_discount' => $pointsDiscount
                 ]);
-                
+
                 // Trừ điểm
                 $customer->points -= $maxPoints;
                 $customer->save();
-                
+
                 // Ghi log transaction
                 try {
                     \DB::table('point_transactions')->insert([
@@ -148,7 +148,7 @@ class StaffController extends Controller
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
-                    
+
                     \Log::info('DEBUG_POINT: Point transaction created successfully', [
                         'order_id' => $order->id,
                         'transaction_points' => -$maxPoints
@@ -159,7 +159,7 @@ class StaffController extends Controller
                         'error' => $e->getMessage()
                     ]);
                 }
-                
+
                 // Cập nhật order
                 $order->points_used = $maxPoints;
                 $order->points_discount = $pointsDiscount;
@@ -180,6 +180,7 @@ class StaffController extends Controller
                     ? implode(',', $item['toppings']) : '';
 
                 $detail->status = $order->status;
+                $detail->note = $item['note'] ?? null;
                 $detail->save();
             }
             if ($request->coupon_code) {
