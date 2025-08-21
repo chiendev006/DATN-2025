@@ -192,6 +192,7 @@
                                                 $toppingNames = [];
                                                 $itemTotal = 0;
                                                 $unitPrice = 0;
+                                                $note = null;
 
                                                 if (Auth::check()) {
                                                     $product = $item->product;
@@ -199,50 +200,42 @@
                                                         Log::warning('Skipping display item due to missing product', ['item_id' => $item->id]);
                                                         continue;
                                                     }
-
                                                     $productPrice = $product->price ?? 0;
                                                     $sizePrice = $item->size ? ($item->size->price ?? 0) : 0;
                                                     $sizeName = $item->size ? $item->size->size : null;
-
                                                     $toppingIds = !empty($item->topping_id) ? array_filter(array_map('trim', explode(',', $item->topping_id))) : [];
                                                     $toppingPrice = 0;
-
                                                     if (!empty($toppingIds)) {
                                                         $toppingsData = \App\Models\Product_topping::whereIn('id', $toppingIds)->get();
                                                         $toppingPrice = $toppingsData->sum('price');
                                                         $toppingNames = $toppingsData->pluck('topping')->toArray();
                                                     }
-
                                                     $unitPrice = $sizePrice + $toppingPrice;
                                                     $itemTotal = $unitPrice * $item->quantity;
-
                                                     $name = $product->name ?? 'Sản phẩm đã bị xóa';
                                                     $quantity = $item->quantity;
+                                                    $note = $item->note ?? null;
                                                 } else {
                                                     $productModel = \App\Models\Sanpham::find($item['sanpham_id']);
                                                     if (!$productModel) {
                                                         Log::warning('Skipping guest cart item due to missing product', ['sanpham_id' => $item['sanpham_id']]);
                                                         continue;
                                                     }
-
                                                     $basePrice = 0;
                                                     if(isset($item['size_id'])) {
                                                         $sizeAttr = DB::table('product_attributes')->where('id', $item['size_id'])->first();
                                                         $basePrice = $sizeAttr->price ?? 0;
                                                     }
-
                                                     $toppingIds = !empty($item['topping_ids']) ? array_filter(array_map('trim', explode(',', $item['topping_ids']))) : [];
                                                     $toppingTotal = !empty($toppingIds) ? \App\Models\Product_topping::whereIn('id', $toppingIds)->sum('price') : 0;
-
                                                     $unitPrice = $basePrice + $toppingTotal;
                                                     $itemTotal = $unitPrice * ($item['quantity'] ?? 1);
-
                                                     $name = $item['name'] ?? $productModel->name;
                                                     $quantity = $item['quantity'] ?? 1;
                                                     $sizeName = $item['size_name'] ?? null;
                                                     $toppingNames = !empty($toppingIds) ? \App\Models\Product_topping::whereIn('id', $toppingIds)->pluck('topping')->toArray() : [];
+                                                    $note = $item['note'] ?? null;
                                                 }
-
                                                 $desc = [];
                                                 if (!empty($sizeName)) $desc[1] = 'Size: ' . $sizeName;
                                                 if (!empty($toppingNames)) $desc[2] = 'Topping: ' . implode(', ', $toppingNames);
@@ -256,6 +249,9 @@
                                                     @endif
                                                     @if(isset($desc[2]))
                                                         <p style="">{{ $desc[2] }}</p>
+                                                    @endif
+                                                    @if($note!= "<br>")
+                                                        <p style="color: #c7a17a; font-style: italic;">Ghi chú:  {!! $note !!}</p>
                                                     @endif
                                                 </div>
                                                 <div style="margin-left: 32px;" class="col-xs-4 text-right">

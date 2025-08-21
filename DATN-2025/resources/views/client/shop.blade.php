@@ -1,6 +1,11 @@
 @extends('layout2')
 @section('main')
 <main>
+    @if(session('success'))
+    <script>
+        alert("{{ session('success') }}");
+    </script>
+@endif
     <div class="main-part">
         <section class="breadcrumb-nav">
             <div class="container">

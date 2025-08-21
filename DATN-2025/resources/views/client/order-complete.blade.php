@@ -45,6 +45,7 @@
                                         <th>Số lượng</th>
                                         <th>Giá</th>
                                         <th>Thành tiền</th>
+                                        <th>Ghi chú</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -91,6 +92,7 @@
                                                 <td>{{ $item->quantity }}</td>
                                                 <td>{{ number_format($item->product_price, 0) }}đ</td>
                                                 <td>{{ number_format($item->total, 0) }}đ</td>
+                                                <td>{!! $item->note !!}</td>
                                             </tr>
                                         @endforeach
                                     @else
@@ -105,7 +107,7 @@
                                     <span>Mã giảm giá:</span>
                                     <strong style="color: green;">-{{ number_format($order->coupon_total_discount, 0) }}đ</strong>
                                 </h5>
-                               
+
                                 <h5 style="display: flex; justify-content: space-between;">
                                     <span>Điểm giảm giá:</span>
                                     <strong style="color: green;">-{{ number_format($order->points_discount, 0) }}đ</strong>

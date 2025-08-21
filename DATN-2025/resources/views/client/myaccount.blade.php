@@ -83,7 +83,7 @@
                         <div class="text-3xl font-bold mb-2" id="stat-shipping">{{ $orderStats['shipping'] }}</div>
                         <div class="text-sm opacity-90">Đang giao</div>
                     </div>
-                    
+
                     <div class="bg-gradient-to-br from-purple-400 to-purple-600 text-white p-6 rounded-xl shadow-sm text-center transform hover:scale-105 transition-transform">
                         <div class="text-3xl font-bold mb-2" id="stat-completed">{{ $orderStats['completed'] }}</div>
                         <div class="text-sm opacity-90">Đã hoàn thành</div>
@@ -751,9 +751,11 @@
                                                 <p><i class="fas fa-ruler mr-1"></i>Size: ${item.size_name || 'Không có'}</p>
                                                 <p><i class="fas fa-plus mr-1"></i>Topping: ${item.topping_names || 'Không có'}</p>
                                             </div>
+                                              <p class="mt-2"><i class="fas fa-sticky-note mr-1"></i>Ghi chú: ${item.note || 'Không có'}</p>
                                             <p class="font-semibold text-blue-600 mt-2">
                                                 <i class="fas fa-calculator mr-1"></i>Tổng: ${new Intl.NumberFormat('vi-VN').format(item.total)}đ
                                             </p>
+
                                         </div>
                                     </div>
                                 `;
