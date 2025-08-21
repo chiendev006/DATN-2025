@@ -431,7 +431,7 @@ select:disabled {
                   <th>Topping</th>
                   <th>Số lượng</th>
                   <th>Thành tiền</th>
-
+                  <th>Ghi chú</th>
                 </tr>
               </thead>
               <tbody>
@@ -523,7 +523,7 @@ function openOrderModal(btn) {
     const name = btn.getAttribute('data-name');
     const shippingFee = btn.getAttribute('data-shipping_fee');
     const districtName = btn.getAttribute('data-district_name');
-    
+
     const isStaffOrder =
         phone === 'N/A' ||
         name.includes('Khách lẻ') ||
@@ -672,6 +672,7 @@ function openOrderModal(btn) {
                         <td>${product.topping && product.topping !== 'Không chọn' ? product.topping : `<span style=\"color: red;\">Không chọn</span>`}</td>
                         <td>${product.quantity ?? ''}</td>
                         <td>${product.total !== undefined ? parseInt(product.total).toLocaleString('vi-VN') + ' đ' : ''}</td>
+                        <td>${product.note ?? ''}</td>
                     </tr>`;
                     tbody.innerHTML += row;
                 });
@@ -801,7 +802,7 @@ function validateForm() {
     const phone = document.getElementById('modal_phone').value;
     const name = document.getElementById('modal_name').value;
     const originalPayStatus = document.getElementById('orderForm').getAttribute('data-original-pay-status');
-    
+
     // Lấy thông tin shipping_fee và district_name để xác định đơn tại quầy
     const orderId = document.getElementById('modal_id').value;
     const shippingFee = document.querySelector('.btn-view[data-id="' + orderId + '"]').getAttribute('data-shipping_fee');

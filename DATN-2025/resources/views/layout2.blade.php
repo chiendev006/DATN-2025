@@ -340,16 +340,15 @@
                   <div class="menu-nav-main">
                     <ul>
                       <li class="">
-                        <a href="/">Home</a>
+                        <a href="/">Trang chủ</a>
                       </li>
                       <li  class="mega-menu">
-                        <a href="/menu">Menu</a>
+                        <a href="/menu">Thực đơn</a>
                         <ul class="drop-nav">
                           <li>
                             <div  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="drop-mega-part">
                               <div class="row">
                                 <div class="col-md-3 col-sm-12 col-xs-12">
-                                  <span  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="mega-title">DANH MỤC</span>
                                         <?php $danhmucs= \App\Models\Danhmuc::with('sanphams')->get();?>
                                       <ul>
                                         <li class="{{ request('danhmuc_id') == null ? 'current' : '' }}">
@@ -363,18 +362,11 @@
                                       </ul>
                                 </div>
                                 <div class="col-md-2 col-sm-12 col-xs-12">
-                                  <span  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="mega-title">IMAGE</span>
                                   <img src="{{ url('asset') }}/images/img6.png" alt="" />
                                 </div>
                                 <div class="col-md-7 col-sm-12 col-xs-12">
-                                  <span  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="mega-title">DESCRIPTION</span>
                                   <p>
-                                    This column can contain whatever you like!
-                                    Add text, shortcodes, or HTML.Various
-                                    versions have evolved over the years,
-                                    sometimes by accident, sometimes on
-                                  </p>
-                                  <div class="mega-position">
+Cafe không chỉ là một loại thức uống, mà còn là một nét văn hóa gắn liền với đời sống con người. Từ hương thơm nồng nàn lan tỏa trong không khí, đến vị đắng nhẹ quyện cùng chút ngọt hậu nơi cuống họng, cafe mang đến sự tỉnh táo và cảm hứng cho một ngày mới. Người ta đến quán cafe không chỉ để thưởng thức hương vị, mà còn để tìm sự lắng đọng, gặp gỡ bạn bè, hay đơn giản là ngồi một mình suy ngẫm. Cafe vì thế trở thành chất xúc tác của cảm xúc, kết nối những câu chuyện đời thường và mở ra những khoảnh khắc bình yên giữa nhịp sống vội vã.                                  <div class="mega-position">
                                     <img src="{{ url('asset') }}/images/img7.png" alt="" />
                                   </div>
                                 </div>
@@ -384,7 +376,7 @@
                         </ul>
                       </li>
                       <li  class="has-child">
-                        <a href="/shop">Shop</a>
+                        <a href="/shop">Cửa hàng</a>
                         <ul  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="drop-nav">
                           <li><a href="/shop">Sản phẩm</a></li>
                           <li><a href="/cart">Giỏ hàng </a></li>
@@ -394,13 +386,13 @@
                         </ul>
                       </li>
                       <li >
-                        <a href="/about">About</a>
+                        <a href="/about">Giới thiệu</a>
                       </li>
                       <li >
-                        <a href="/blog">Blog</a>
+                        <a href="/blog">Bài viết</a>
                       </li>
                       <li>
-                        <a href="/contact">Contact</a>
+                        <a href="/contact">Liên hệ</a>
                       </li>
                      @auth
                           <li class="has-child">
