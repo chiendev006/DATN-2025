@@ -275,7 +275,7 @@ class CheckoutController extends Controller
                         'product_price' => $unitPrice,
                         'quantity' => $quantity,
                         'total' => $itemTotal,
-                        'note' => $product->note ?? null,
+                        'note' => $cartItem['note'] ?? null,
                         'size_id' => $cartItem['size_id'] ?? null,
                         'topping_id' => !empty($toppingIdsArray) ? implode(',', $toppingIdsArray) : null,
                         'status' => 'pending',
