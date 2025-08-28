@@ -470,7 +470,7 @@ Cà phê - Cao cấp<br />
                 data-autotime="4000"
               >
                 <div class="item">
-                  <h2 class="text-primary">Lý Thông</h2>
+                  <h2 class="text-primary">Thông Robot</h2>
                   <p></p>
                   <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/lythong.png" alt="" /></p>
                   <h5 class="text-primary"></h5>
