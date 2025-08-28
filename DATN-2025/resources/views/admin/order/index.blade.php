@@ -211,9 +211,10 @@ select:disabled {
                                                         <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 bản</option>
                                                         <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500 bản</option>
                                                     </select>
-                                                    @foreach(request()->except(['per_page','page','pay_status','status','order_type']) as $key => $val)
+                                                    @foreach(request()->except(['per_page','page','pay_status','status','order_type','start_date','end_date']) as $key => $val)
                                                         <input type="hidden" name="{{ $key }}" value="{{ $val }}">
                                                     @endforeach
+
                                                     </div>
                                                     </div>
                                                 </form>
