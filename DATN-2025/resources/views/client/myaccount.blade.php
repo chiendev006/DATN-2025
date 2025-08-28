@@ -8,7 +8,7 @@
         <!-- Header Section -->
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Tài khoản của tôi</h1>
-            <p class="text-gray-600">Quản lý thông tin cá nhân và đơn hàng</p>
+            <p class="text-gray-600">Quản lý thông tin cá nhân và đơn hàng </p>
         </div>
 
         <!-- Profile and Stats Section -->
@@ -29,7 +29,7 @@
                             </div>
                         </div>
                         <button id="editProfileBtn" class="mt-4 text-blue-600 hover:text-blue-700 font-medium transition-colors">
-                            <i class="fas fa-edit mr-2"></i>Chỉnh sửa thông tin
+                            <i class="fas fa-edit mr-2"></i> Chỉnh sửa thông tin
                         </button>
                     </div>
 
