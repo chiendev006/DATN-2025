@@ -257,19 +257,19 @@ class OrderController extends Controller
         $details = $order->details->map(function($detail) {
             $product = \App\Models\sanpham::withTrashed()->find($detail->product_id);
             $product_name = $product ? $product->name : 'Sản phẩm đã bị xóa';
-            
+
             // Xử lý ảnh sản phẩm
             $product_image = '';
             if ($product && $product->image) {
                 $product_image = $product->image; // Chỉ trả về tên file, không phải đường dẫn đầy đủ
             }
-            
 
-            
+
+
             // Xử lý size
             $size = $detail->size_id ? \App\Models\Size::withTrashed()->find($detail->size_id) : null;
             $size_name = $size ? ($size->size . ' - ' . number_format($size->price) . ' VND') : '';
-            
+
             // Xử lý topping
             $topping_arr = [];
             if (!empty($detail->topping_id)) {
@@ -281,9 +281,9 @@ class OrderController extends Controller
                     }
                 }
             }
-            
 
-            
+
+
             return [
                 'product_name' => $product_name,
                 'product_image' => $product_image,
@@ -304,54 +304,72 @@ class OrderController extends Controller
      *
      * Truyền query string: ?pay_status=0|1|2 hoặc ?status=pending|processing|shipping|completed|cancelled
      */
-    public function filterOrders(Request $request)
-    {
-        $perPage = $request->input('per_page', 10);
-        $query = Order::query()->select('orders.*');
+   public function filterOrders(Request $request)
+{
+    $perPage = $request->input('per_page', 10);
+    $query = Order::query()->select('orders.*');
 
-        if ($request->filled('pay_status')) {
-            $query->where('pay_status', $request->input('pay_status'));
-        }
-        if ($request->filled('status')) {
-            $query->where('status', $request->input('status'));
-        }
-        if ($request->filled('order_type')) {
-            if ($request->order_type == 'staff') {
-                $query->where(function($q) {
-                    $q->whereHas('user', function($u) {
-                        $u->whereIn('role', [1, 21, 22]);
-                    })
-                    ->orWhere(function($q2) {
-                        $q2->whereNull('user_id')
-                            ->where(function($q3) {
-                                $q3->where('phone', 'N/A')
-                                    ->orWhere('phone', 'Nhân viên thu ngân')
-                                    ->orWhere('phone', 'Không có')
-                                    ->orWhere('name', 'like', '%Khách lẻ%')
-                                    ->orWhere('name', 'like', '%Khách Vãng Lai%');
-                            });
-                    });
-                });
-            } elseif ($request->order_type == 'web') {
-                $query->where(function($q) {
-                    $q->whereHas('user', function($u) {
-                        $u->where('role', 0);
-                    })
-                    ->orWhere(function($q2) {
-                        $q2->whereNull('user_id')
-                            ->where('phone', '!=', 'N/A')
-                            ->where('phone', '!=', 'Nhân viên thu ngân')
-                            ->where('phone', '!=', 'Không có')
-                            ->where('name', 'not like', '%Khách lẻ%')
-                            ->where('name', 'not like', '%Khách Vãng Lai%');
-                    });
-                });
-            }
-        }
-
-        $orders = $query->paginate($perPage);
-        return view('admin.order.index', compact('orders'));
+    // Lọc trạng thái thanh toán
+    if ($request->filled('pay_status')) {
+        $query->where('pay_status', $request->input('pay_status'));
     }
+
+    // Lọc trạng thái đơn
+    if ($request->filled('status')) {
+        $query->where('status', $request->input('status'));
+    }
+
+    // Lọc theo loại đơn
+    if ($request->filled('order_type')) {
+        if ($request->order_type == 'staff') {
+            $query->where(function($q) {
+                $q->whereHas('user', function($u) {
+                    $u->whereIn('role', [1, 21, 22]);
+                })
+                ->orWhere(function($q2) {
+                    $q2->whereNull('user_id')
+                        ->where(function($q3) {
+                            $q3->where('phone', 'N/A')
+                                ->orWhere('phone', 'Nhân viên thu ngân')
+                                ->orWhere('phone', 'Không có')
+                                ->orWhere('name', 'like', '%Khách lẻ%')
+                                ->orWhere('name', 'like', '%Khách Vãng Lai%');
+                        });
+                });
+            });
+        } elseif ($request->order_type == 'web') {
+            $query->where(function($q) {
+                $q->whereHas('user', function($u) {
+                    $u->where('role', 0);
+                })
+                ->orWhere(function($q2) {
+                    $q2->whereNull('user_id')
+                        ->where('phone', '!=', 'N/A')
+                        ->where('phone', '!=', 'Nhân viên thu ngân')
+                        ->where('phone', '!=', 'Không có')
+                        ->where('name', 'not like', '%Khách lẻ%')
+                        ->where('name', 'not like', '%Khách Vãng Lai%');
+                });
+            });
+        }
+    }
+
+    // ✅ Lọc theo khoảng ngày
+    if ($request->filled('start_date') && $request->filled('end_date')) {
+        $query->whereBetween('created_at', [
+            $request->input('start_date') . ' 00:00:00',
+            $request->input('end_date') . ' 23:59:59'
+        ]);
+    } elseif ($request->filled('start_date')) {
+        $query->whereDate('created_at', '>=', $request->input('start_date'));
+    } elseif ($request->filled('end_date')) {
+        $query->whereDate('created_at', '<=', $request->input('end_date'));
+    }
+
+    $orders = $query->paginate($perPage);
+    return view('admin.order.index', compact('orders'));
+}
+
 
     /**
      *
