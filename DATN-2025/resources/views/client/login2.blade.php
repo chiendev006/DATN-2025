@@ -11,7 +11,7 @@
                             <li><a href="shop.html">Shop</a></li>
                             <li class="active"><a href="#">Login / Register</a></li>
                         </ul>
-                        <label class="now">LOGIN</label>
+                        <label class="now">Login</label>
                     </div>
                 </div>
             </section>

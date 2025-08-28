@@ -8,7 +8,7 @@
                         <div class="breadcrumb-nav-inner">
                             <ul>
                                 <li><a href="/">Home</a></li>
-                                <li><a href="blog_2col.html">Blog</a></li>
+                                <li><a href="/blog">Blog</a></li>
                                 <li class="active"><a href="#">Blog Single</a></li>
                             </ul>
                             <label class="now">BLOG</label>

@@ -167,7 +167,7 @@ $(document).ready(function() {
                 }
             },
             error: function() {
-                alert('Không thể tải sản phẩm, vui lòng thử lại.');
+                alert('Không thể tải sản phẩm , vui lòng thử lại.');
             }
         });
     }

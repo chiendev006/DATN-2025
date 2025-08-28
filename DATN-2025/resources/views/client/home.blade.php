@@ -304,7 +304,7 @@ Cà phê - Cao cấp<br />
                   data-wow-delay="300ms"
                 >
                   <a  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="/menu" class="button-default"
-                    >Xem tất cả Menu</a
+                    >Xem Tất Cả Menu</a
                   >
                 </div>
               </div>
@@ -470,7 +470,7 @@ Cà phê - Cao cấp<br />
                 data-autotime="4000"
               >
                 <div class="item">
-                  <h2 class="text-primary">Lý Thông</h2>
+                  <h2 class="text-primary">Thông Robot</h2>
                   <p></p>
                   <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/lythong.png" alt="" /></p>
                   <h5 class="text-primary"></h5>
@@ -482,7 +482,7 @@ Cà phê - Cao cấp<br />
                   </p>
                 </div>
                 <div class="item">
-                  <h2 class="text-primary">Nam Per</h2>
+                  <h2 class="text-primary">Nam TFT</h2>
                   <p></p>
                   <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/sếp_tổng_Nam.jpg" alt="" /></p>
                   <h5 class="text-primary"></h5>
@@ -494,7 +494,7 @@ Cà phê - Cao cấp<br />
                   </p>
                 </div>
                 <div class="item">
-                  <h2 class="text-primary">Hoàng Kun</h2>
+                  <h2 class="text-primary">Hoàng PVH</h2>
                   <p></p>
                   <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/anhmu.jpg" alt="" /></p>
                   <h5 class="text-primary"></h5>
@@ -506,7 +506,7 @@ Cà phê - Cao cấp<br />
                   </p>
                 </div>
                 <div class="item">
-                  <h2 class="text-primary">Bố Nam per</h2>
+                  <h2 class="text-primary">Thầy Tú Sena</h2>
                   <p></p>
                   <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/senna.jpg" alt="" /></p>
                   <h5 class="text-primary"></h5>
@@ -566,12 +566,12 @@ Cà phê - Cao cấp<br />
                     <img src="{{ url('asset') }}/images/icon/icon3.png" alt="" />
                     <h5 class="text-coffee">TÁCH CÀ PHÊ</h5>
                     <p>
-                     "Tách sứ cao cấp, giữ nhiệt tốt – giúp bạn thưởng thức trọn vẹn từng ngụm cà phê."
+                     "Tách xứ cao cấp, giữ nhiệt tốt – giúp bạn thưởng thức trọn vẹn từng ngụm cà phê."
                     </p>
                   </div>
                   <div class="col-md-3 col-sm-6 col-xs-12">
                     <img src="{{ url('asset') }}/images/icon/icon4.png" alt="" />
-                    <h5 class="text-coffee">MÁY PHA CÀ PHÊ ESPRESSO</h5>
+                    <h5 class="text-coffee">MÁY PHA CHẾ CÀ PHÊ ESPRESSO</h5>
                     <p>
                   "Mang lại trải nghiệm cà phê chuyên nghiệp ngay tại nhà."
                     </p>
@@ -590,7 +590,7 @@ Cà phê - Cao cấp<br />
               <div class="title text-center">
                 <h2 class="text-primary">#coffeedespina</h2>
                 <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="text-turkish">
-                 Bạn có thích kỳ nghỉ của mình tại Despina không? Hãy chia sẻ những khoảnh khắc của bạn với chúng tôi. Theo dõi chúng tôi trên Instagram và sử dụng
+                 Bạn có thích kỳ nghỉ của mình tại Despina không? Hãy chia sẻ những khoảnh khắc của bạn với chúng tôi . Theo dõi chúng tôi trên Instagram và sử dụng nhé
                 </h6>
               </div>
             </div>
