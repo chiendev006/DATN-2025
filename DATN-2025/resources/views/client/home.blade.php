@@ -571,7 +571,7 @@ Cà phê - Cao cấp<br />
                   </div>
                   <div class="col-md-3 col-sm-6 col-xs-12">
                     <img src="{{ url('asset') }}/images/icon/icon4.png" alt="" />
-                    <h5 class="text-coffee">MÁY PHA CÀ PHÊ ESPRESSO</h5>
+                    <h5 class="text-coffee">MÁY PHA CHẾ CÀ PHÊ ESPRESSO</h5>
                     <p>
                   "Mang lại trải nghiệm cà phê chuyên nghiệp ngay tại nhà."
                     </p>
