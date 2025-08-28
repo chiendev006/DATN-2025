@@ -494,7 +494,7 @@ Cà phê - Cao cấp<br />
                   </p>
                 </div>
                 <div class="item">
-                  <h2 class="text-primary">Hoàng Kun</h2>
+                  <h2 class="text-primary">Hoàng PVH</h2>
                   <p></p>
                   <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/anhmu.jpg" alt="" /></p>
                   <h5 class="text-primary"></h5>
@@ -566,7 +566,7 @@ Cà phê - Cao cấp<br />
                     <img src="{{ url('asset') }}/images/icon/icon3.png" alt="" />
                     <h5 class="text-coffee">TÁCH CÀ PHÊ</h5>
                     <p>
-                     "Tách sứ cao cấp, giữ nhiệt tốt – giúp bạn thưởng thức trọn vẹn từng ngụm cà phê."
+                     "Tách xứ cao cấp, giữ nhiệt tốt – giúp bạn thưởng thức trọn vẹn từng ngụm cà phê."
                     </p>
                   </div>
                   <div class="col-md-3 col-sm-6 col-xs-12">
