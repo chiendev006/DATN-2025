@@ -304,7 +304,7 @@ Cà phê - Cao cấp<br />
                   data-wow-delay="300ms"
                 >
                   <a  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" href="/menu" class="button-default"
-                    >Xem tất cả Menu</a
+                    >Xem Tất Cả Menu</a
                   >
                 </div>
               </div>
