@@ -482,7 +482,7 @@ Cà phê - Cao cấp<br />
                   </p>
                 </div>
                 <div class="item">
-                  <h2 class="text-primary">Nam Per</h2>
+                  <h2 class="text-primary">Nam TFT</h2>
                   <p></p>
                   <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/sếp_tổng_Nam.jpg" alt="" /></p>
                   <h5 class="text-primary"></h5>
