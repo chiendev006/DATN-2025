@@ -183,18 +183,24 @@
                                     <tr>
                                     <td>{{ ($blogs->currentPage()-1) * $blogs->perPage() + $key + 1 }}</td>
                                     <td>{{ $item->title }}</td>
-                                    <td style="max-width:400px; word-break:break-word;">{!!  $item->content !!}</td>
+                                   <td style="max-width:400px; word-break:break-word;">
+    <div style="max-width:100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+        {!! $item->content !!}
+    </div>
+</td>
                                     <td><img src="{{ asset('storage/'.$item->image) }}" alt="Ảnh bìa" style="width: 100px; height: 100px;"></td>
                                     <td>{{ $item->danhmucblogs->name ?? 'Không có danh mục' }}</td>
                                     <td>{{ $item->created_at->format('d/m/Y') }}</td>
-                                        <td style="width:90px; text-align:center;">
-                                            <a style="color: white; width: 60px; margin-bottom:4px;" href="{{ route('blogs.edit', $item->id) }}" class="btn-success">Sửa</a>
-                                            <form action="{{ route('blogs.destroy', ['id' => $item->id]) }}" method="POST">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button class="btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục blogs này?')">Xóa</button>
-                                                                </form>
-                                        </td>
+                                     <td style="width:90px; text-align:center;">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+        <a style="color: white; width: 60px; text-align: center; font-family: sans-serif; font-size: 14px;" href="{{ route('blogs.edit', $item->id) }}" class="btn-success">Sửa</a>
+        <form action="{{ route('blogs.destroy', ['id' => $item->id]) }}" method="POST" style="width: 100%; text-align: center;">
+            @csrf
+            @method('DELETE')
+            <button class="btn-danger" type="submit" style="width: 60px; font-family: sans-serif; font-size: 14px;" onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục blogs này?')">Xóa</button>
+        </form>
+    </div>
+</td>
                                     </tr>
                                 @endforeach
                                @endif
