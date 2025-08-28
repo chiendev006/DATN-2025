@@ -506,7 +506,7 @@ Cà phê - Cao cấp<br />
                   </p>
                 </div>
                 <div class="item">
-                  <h2 class="text-primary">Bố Nam per</h2>
+                  <h2 class="text-primary">Thầy Tú Sena</h2>
                   <p></p>
                   <p><img style="width: 100px; height: 100px; border-radius: 100px;" src="{{ url('asset') }}/images/senna.jpg" alt="" /></p>
                   <h5 class="text-primary"></h5>
@@ -590,7 +590,7 @@ Cà phê - Cao cấp<br />
               <div class="title text-center">
                 <h2 class="text-primary">#coffeedespina</h2>
                 <h6  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;" class="text-turkish">
-                 Bạn có thích kỳ nghỉ của mình tại Despina không? Hãy chia sẻ những khoảnh khắc của bạn với chúng tôi. Theo dõi chúng tôi trên Instagram và sử dụng
+                 Bạn có thích kỳ nghỉ của mình tại Despina không? Hãy chia sẻ những khoảnh khắc của bạn với chúng tôi . Theo dõi chúng tôi trên Instagram và sử dụng nhé
                 </h6>
               </div>
             </div>
