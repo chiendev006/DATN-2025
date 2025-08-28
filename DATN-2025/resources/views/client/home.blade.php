@@ -233,7 +233,7 @@ Cà phê - Cao cấp<br />
                   <div class="blog-list dp-animation">
                     <img src="{{ url('asset') }}/images/img3.png" alt="" class="animated" />
                     <div class="blog-over-info">
-                      <h3>Hương vị cà phê mới</h3>
+                      <h3>Hương vị cà phê mới !</h3>
                     </div>
                   </div>
                 </div>
@@ -246,7 +246,7 @@ Cà phê - Cao cấp<br />
                     <img src="{{ url('asset') }}/images/img4.png" alt="" class="animated" />
                     <div class="blog-over-info">
                       <h3>
-                        Caffee chồn giảm  <span class="round-price">25%</span>
+                        Caffee chồn giảm  <span class="round-price">20%</span>
                       </h3>
                     </div>
                   </div>
