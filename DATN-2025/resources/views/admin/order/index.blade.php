@@ -196,6 +196,11 @@ select:disabled {
                                                       <option value="staff" {{ request('order_type')=='staff' ? 'selected' : '' }}>Đơn tại quầy</option>
                                                   </select>
                                                   </div>
+                                                  <div  class="field-wrapper">
+                                                  <div class="field-placeholder">Khoảng ngày</div>
+                                                  <input type="date" name="start_date" class="form-control" style="width: 130px; margin-right: 12px;" value="{{ request('start_date') }}">
+                                                  <input type="date" name="end_date" class="form-control" style="width: 130px; margin-right: 12px;" value="{{ request('end_date') }}">
+                                                  </div>
                                                     <button style="margin-top: -8px;" type="submit" class="btn btn-primary">Lọc</button>
                                                    <div  class="field-wrapper">
                                                    <div class="field-placeholder">Đơn/trang</div>
