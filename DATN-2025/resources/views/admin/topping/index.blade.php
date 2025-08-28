@@ -54,7 +54,8 @@
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 
                                 <div class="card">
-                                <button type="button" id="btn-add-topping" class="btn-success">Thêm topping</button>
+                                    <h1>Topping</h1>
+                                <button style="margin-left: 920px;" type="button" id="btn-add-topping" class="btn-success">Thêm topping</button>
                                              <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap" style="gap: 15px;">
                             <!-- Bên trái: chọn số bản ghi -->
 
@@ -308,7 +309,7 @@ function closeModal(modal) {
                 <div class="field-body">
                     <div class="field">
                         <div class="control icons-left">
-                            <input class="input" type="text" id="add-name" name="name" placeholder="Name">
+                            <input class="input" type="text" id="add-name" name="name" placeholder="Name" value="{{ old('name') }}">
                         </div>
                         <span class="icon left"><i class="mdi mdi-account"></i></span>
                             @error('name')
@@ -321,11 +322,11 @@ function closeModal(modal) {
                 <div class="field-placeholder">Giá</div>
 
                 <div class="control" style="margin-top: 8px;">
-                  <input class="input" type="number" id="add-price" name="price" placeholder="Giá">
+                  <input class="input" type="number" id="add-price" name="price" placeholder="Giá" value="{{ old('price') }}">
                 </div>
-                @error('name')
-                            <div class="text-danger">{{ $message }}</div>
-                            @enderror
+                @error('price')
+        <div class="text-danger">{{ $message }}</div>
+        @enderror
             </div>
             <div class="field grouped">
                 <div class="control">
@@ -335,3 +336,11 @@ function closeModal(modal) {
         </form>
     </div>
 </div>
+
+@if ($errors->any())
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        openModal(document.getElementById('addToppingModal'));
+    });
+</script>
+@endif

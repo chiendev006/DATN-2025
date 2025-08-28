@@ -56,7 +56,8 @@
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 
                                 <div class="card">
-                                <button type="button" id="btn-add-Coupon" class="btn-success">Thêm Coupon</button>
+                                    <h1>Mã giảm giá</h1>
+                                <button style="margin-left: 900px;" type="button" id="btn-add-Coupon" class="btn-success">Thêm Coupon</button>
                                     <div class="card-body">
                                         <form method="GET" action="" style="margin-bottom: 20px;">
                                         <div class="row">

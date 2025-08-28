@@ -161,6 +161,7 @@ select:disabled {
                                 <div class="card">
 
                                     <div class="card-body">
+                                        <h1>Hóa đơn</h1>
                                     @if(session('success'))
                                         <div class="alert alert-success" style="margin-bottom: 16px;">
                                             {{ session('success') }}

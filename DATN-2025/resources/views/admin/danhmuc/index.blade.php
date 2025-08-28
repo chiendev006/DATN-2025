@@ -174,13 +174,12 @@
 }
 </style>
     <div class="content-wrapper-scroll">
-
                     <div class="content-wrapper">
                     <div class="row gutters">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-
                                 <div class="card">
-                                <button type="button" id="btn-add-danhmuc" class="btn-success">Thêm danh mục</button>
+                                <h1 style="margin-left: 20px;">Danh mục</h1>
+                                <button style="margin-left: 900px;"  type="button" id="btn-add-danhmuc" class="btn-success">Thêm</button>
                                     <div class="card-body">
                                         <!-- Form tìm kiếm và lọc -->
                                         <form method="GET" action="" style="margin-bottom: 20px;">
