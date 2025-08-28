@@ -142,17 +142,20 @@
                                 <!-- Tìm theo tên -->
                                 <form action="{{ route('blogs.search') }}" method="GET" class="d-flex" style="gap: 8px;">
                                     <input type="text" name="name" class="form-control" placeholder="Tìm theo tên..." value="{{ request('name') }}" style="max-width: 250px;">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-search">Tìm</i>
-                                    </button>
+                                    <button type="submit" class="btn btn-primary d-flex align-items-center" style="gap: 4px;">
+    <i class="fas fa-search"></i>
+    <span>Tìm</span>
+</button>
                                 </form>
 
                                 <!-- Tìm theo ngày -->
                                 <form action="{{ route('blogs.search') }}" method="GET" class="d-flex" style="gap: 8px;">
                                     <input type="date" name="date" class="form-control" value="{{ request('date') }}" style="max-width: 180px;">
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-search">Tìm</i>
-                                    </button>
+                                    <button type="submit" class="btn btn-primary d-flex align-items-center" style="gap: 4px;">
+    <i class="fas fa-search"></i>
+    <span>Tìm</span>
+</button>
+
                                 </form>
                             </div>
                         </div>
