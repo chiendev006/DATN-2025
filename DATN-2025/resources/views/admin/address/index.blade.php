@@ -18,6 +18,7 @@
     margin: 4px 2px;
     cursor: pointer;
     border-radius: 5px;
+    background-color: #007bff;
   }
   .btn-success:hover {
     background-color: rgb(0, 0, 217);
@@ -158,7 +159,6 @@
                     </div>
 </div>
 
-<!-- Modal popup thêm Khu vực -->
 <div id="adddiachiModal" class="custom-modal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);align-items:center;justify-content:center;">
     <div class="custom-modal-content" style="background:#fff;border-radius:10px;padding:32px 24px 24px 24px;min-width:320px;max-width:90vw;box-shadow:0 4px 24px 0 rgba(0,0,0,0.08),0 1.5px 4px 0 rgba(0,0,0,0.03);position:relative;">
         <span class="custom-modal-close" id="close-add-diachi-modal" style="position:absolute;top:12px;right:18px;font-size:2rem;color:#888;cursor:pointer;font-weight:bold;z-index:2;">&times;</span>
@@ -170,9 +170,12 @@
                 <div class="field-body">
                     <div class="field">
                         <div class="control icons-left">
-                            <input class="input" type="text" id="add-name" name="name" placeholder="Name">
+                            <input class="input" type="text" id="add-name" name="name" placeholder="Name" value="{{ old('name') }}">
                             <span class="icon left"><i class="mdi mdi-account"></i></span>
                         </div>
+                        @error('name')
+                        <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -181,9 +184,12 @@
                 <div class="field-body">
                     <div class="field">
                         <div class="control icons-left">
-                            <input class="input" type="number" id="add-shipping_fee" name="shipping_fee" placeholder="Shipping Fee">
+                            <input class="input" type="number" id="add-shipping_fee" name="shipping_fee" placeholder="Shipping Fee" value="{{ old('shipping_fee') }}">
                             <span class="icon left"><i class="mdi mdi-account"></i></span>
                         </div>
+                        @error('shipping_fee')
+                        <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -209,21 +215,26 @@
                 <div class="field-body">
                     <div class="field">
                         <div class="control icons-left">
-                            <input class="input" type="text" id="edit-name" name="name" placeholder="Name">
+                            <input class="input" type="text" id="edit-name" name="name" placeholder="Name" value="{{ old('name') }}">
                             <span class="icon left"><i class="mdi mdi-account"></i></span>
                         </div>
+                        @error('name')
+                        <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
             </div>
-
             <div class="field-wrapper">
                 <div class="field-placeholder">Giá ship</div>
                 <div class="field-body">
                     <div class="field">
                         <div class="control icons-left">
-                            <input class="input" type="number" id="edit-shipping_fee" name="shipping_fee" placeholder="Shipping Fee">
+                            <input class="input" type="number" id="edit-shipping_fee" name="shipping_fee" placeholder="Shipping Fee" value="{{ old('shipping_fee') }}">
                             <span class="icon left"><i class="mdi mdi-account"></i></span>
                         </div>
+                        @error('shipping_fee')
+                        <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -235,6 +246,19 @@
         </form>
     </div>
 </div>
+
+@if ($errors->any())
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Nếu có lỗi khi thêm thì mở modal thêm, nếu có lỗi khi sửa thì mở modal sửa
+        @if (old('id'))
+            openModal(document.getElementById('editdiachiModal'));
+        @else
+            openModal(document.getElementById('adddiachiModal'));
+        @endif
+    });
+</script>
+@endif
 
 @include('footer')
 
@@ -334,3 +358,4 @@ function closeModal(modal) {
 <div style="margin-top: 10px;">
     {{ $address->links() }}
 </div>
+    

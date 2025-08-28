@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Topping extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $table = 'topping';
 
     protected $fillable = [

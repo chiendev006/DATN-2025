@@ -25,7 +25,9 @@ class OrderStatusUpdate extends Mailable
     public function __construct(Order $order, $oldStatus, $newStatus)
     {
         $this->order = $order;
-        $this->orderDetails = $order->orderDetails()->with(['product', 'size'])->get();
+        $this->orderDetails = $order->orderDetails()->with(['product' => function($query) {
+            $query->withTrashed();
+        }, 'size'])->get();
         $this->oldStatus = $oldStatus;
         $this->newStatus = $newStatus;
     }

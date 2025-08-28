@@ -41,7 +41,9 @@ class CheckoutController extends Controller
         if (Auth::check()) {
             $userCart = Cart::where('user_id', Auth::id())->first();
             if ($userCart) {
-                $items = Cartdetail::with(['product', 'size'])
+                $items = Cartdetail::with(['product' => function($query) {
+                $query->withTrashed();
+            }, 'size'])
                     ->where('cart_id', $userCart->id)
                     ->get();
                 foreach ($items as $item) {
@@ -168,6 +170,7 @@ class CheckoutController extends Controller
                 'points_used.integer' => 'Số điểm phải là số nguyên',
                 'points_used.min' => 'Số điểm không được âm'
             ]);
+            
 
             DB::beginTransaction();
             $total = 0;
@@ -179,7 +182,9 @@ class CheckoutController extends Controller
                     throw new \Exception('Giỏ hàng không tồn tại');
                 }
 
-                $cartDetails = Cartdetail::with(['product', 'size'])
+                $cartDetails = Cartdetail::with(['product' => function($query) {
+                    $query->withTrashed();
+                }, 'size'])
                     ->where('cart_id', $userCart->id)
                     ->get();
                 foreach ($cartDetails as $item) {
@@ -214,6 +219,7 @@ class CheckoutController extends Controller
                         'product_price' => $unitPrice,
                         'quantity' => $item->quantity,
                         'total' => $itemTotal,
+                        'note' => $item->note ?? null,
                         'size_id' => $item->size_id ?? null,
                         'topping_id' => implode(',', $toppingIds),
                         'status' => 'pending',
@@ -269,6 +275,7 @@ class CheckoutController extends Controller
                         'product_price' => $unitPrice,
                         'quantity' => $quantity,
                         'total' => $itemTotal,
+                        'note' => $cartItem['note'] ?? null,
                         'size_id' => $cartItem['size_id'] ?? null,
                         'topping_id' => !empty($toppingIdsArray) ? implode(',', $toppingIdsArray) : null,
                         'status' => 'pending',
@@ -453,6 +460,7 @@ class CheckoutController extends Controller
                 $orderDetail->product_price = $detail['product_price'];
                 $orderDetail->quantity = $detail['quantity'];
                 $orderDetail->total = $detail['total'];
+                $orderDetail->note = $detail['note'] ?? null;
                 $orderDetail->size_id = $detail['size_id'] ?? null;
                 $orderDetail->topping_id = $detail['topping_id'];
                 $orderDetail->status = $detail['status'] ?? 'pending';
@@ -569,7 +577,7 @@ class CheckoutController extends Controller
                     'role' => $user_role,
                     'content' => $title . $content1 . $content2 . $content3 . $content4 . $content5 . $content5_coupon . $content6 . $content7,
                 ]);
-           
+
 
             // Gửi email xác nhận đơn hàng
             try {
@@ -613,7 +621,9 @@ class CheckoutController extends Controller
                 'session_data' => session()->all()
             ]);
 
-            $order = Order::with('orderDetails.size', 'orderDetails.product')->findOrFail($orderId);
+            $order = Order::with(['orderDetails.size', 'orderDetails.product' => function($query) {
+                $query->withTrashed();
+            }])->findOrFail($orderId);
 
             Log::info('DEBUG: Order found', [
                 'order_id' => $order->id,
@@ -623,12 +633,12 @@ class CheckoutController extends Controller
             ]);
 
             $allToppings = Product_topping::all()->keyBy('id');
-            
+
             Log::info('DEBUG: About to render order-complete view', [
                 'order_id' => $order->id,
                 'toppings_count' => $allToppings->count()
             ]);
-            
+
             return view('client.order-complete', compact('order', 'allToppings'));
         } catch (\Exception $e) {
             Log::error('DEBUG: Error in success method', [

@@ -86,6 +86,25 @@
                                 <p class="text-muted">Sản phẩm này không sử dụng topping</p>
                             </div>
                             @endif
+                            <div class="form-group">
+                                <label><strong>Ghi chú:</strong></label>
+                                <div class="d-flex gap-2">
+                                <select name="giamda" class="form-select w-auto rounded-pill">
+                                    <option value="">Giảm đá</option>
+                                    <option value="Giảm 20% đá">Giảm 20% đá</option>
+                                    <option value="Giảm 50% đá">Giảm 50% đá</option>
+                                    <option value="Không đá">Không đá</option>
+                                </select>
+
+                                <select name="giamduong" class="form-select w-auto rounded-pill">
+                                    <option value="">Giảm đường</option>
+                                    <option value="Giảm 20% đường">Giảm 20% đường</option>
+                                    <option value="Giảm 50% đường">Giảm 50% đường</option>
+                                    <option value="Không đường">Không đường</option>
+                                </select>
+                            </div>
+
+                            </div>
                             <div class="price-textbox">
                                 <span class="minus-text"><i class="icon-minus"></i></span>
                                 <input type="text" name="qty" id="quantity" placeholder="1" pattern="[0-9]" value="1" readonly>
@@ -229,7 +248,7 @@
                         <div class="item">
                             <div class="product-img">
                                 <a href="{{ route('client.product.detail', $relatedProduct->id) }}">
-                                    <img style="max-width:95%;min-width:95%; min-height: 200px;max-height:200px; margin: auto;"  src="{{ asset('storage/uploads/'.$relatedProduct->image) }}" alt="{{ $relatedProduct->name }}">
+                                    <img style="max-width:95%;min-width:95%; min-height: 250px;max-height:200px; margin: auto;"  src="{{ asset('storage/uploads/'.$relatedProduct->image) }}" alt="{{ $relatedProduct->name }}">
                                     <span class="icon-basket fontello"></span>
                                 </a>
                             </div>

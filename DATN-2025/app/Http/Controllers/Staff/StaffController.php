@@ -42,7 +42,7 @@ class StaffController extends Controller
         return response()->json([
             'id' => $product->id,
             'name' => $product->name,
-            'image' => asset('storage/uploads/' . $product->image),
+            'image' => $product->image ? asset('storage/uploads/' . $product->image) : null,
             'mota' => $product->mota,
             'sizes' => \DB::table('product_attributes')
                 ->where('product_id', $id)
@@ -224,10 +224,11 @@ class StaffController extends Controller
                 }
                 $content6 = "<span style='color: red;'>Trạng thái:</span> <b>Chờ xác nhận</b> <br>";
                 $content7 = "<span style='color: red;'>Thời gian đặt:</span> <b>" . $order->created_at->format('H:i d/m/Y') . "</b> <br>";
-                $user_id = Auth::check() ? Auth::user()->id : null;
+                $user_id = Auth::guard('staff')->user()->id;
+                $user_role = Auth::guard('staff')->user()->role;
                 \App\Models\historylog::create([
                     'user_id' => $user_id,
-                    'role' => Auth::user()->role,
+                    'role' => $user_role,
                     'content' => $title . $content1 . $content2 . $content3 . $content4 . $content5 . $content5_coupon . $content6 . $content7,
                 ]);
             return response()->json(['message' => 'Đặt hàng thành công!']);
@@ -267,7 +268,9 @@ class StaffController extends Controller
     {
         $perPage = $request->input('per_page', 10); // lấy số bản ghi/trang, mặc định 10
         $query = Order::with([
-            'details.product',
+            'details.product' => function($query) {
+                $query->withTrashed();
+            },
             'details.size'
         ])->whereDate('created_at', Carbon::today());
 
@@ -412,10 +415,10 @@ class StaffController extends Controller
             $content2=" *<span style='color: red;'>Trạng thái:</span> <b>$status</b> <br>";
             $content3=" *<span style='color: red;'>Lý do hủy:</span> <b>$cancel_reason</b> <br>";
 
-
+        $user = Auth::guard('staff')->user();
         \App\Models\historylog::create([
-            'user_id' => Auth::user()->id,
-            'role' => Auth::user()->role,
+            'user_id' => $user->id,
+            'role' => $user->role,
             'content' =>$title.$content1.$content2.$content3,
         ]);
         return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');

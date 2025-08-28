@@ -25,7 +25,9 @@ public function index(Request $request)
         'cancelled' => Order::where('user_id', $userId)->where('status', 'cancelled')->count(),
     ];
 
-    $query = OrderDetail::with(['order', 'product', 'size'])
+    $query = OrderDetail::with(['order', 'product' => function($query) {
+        $query->withTrashed();
+    }, 'size'])
         ->whereHas('order', function ($q) use ($userId, $request) {
             $q->where('user_id', $userId);
 

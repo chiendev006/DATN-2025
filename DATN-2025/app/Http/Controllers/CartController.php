@@ -28,7 +28,9 @@ public function index()
     $items = collect([]);
 
     if (Auth::check()) {
-        $cart = Cart::with(['cartdetails.product', 'cartdetails.size'])->where('user_id', Auth::id())->first();
+        $cart = Cart::with(['cartdetails.product' => function($query) {
+            $query->withTrashed();
+        }, 'cartdetails.size'])->where('user_id', Auth::id())->first();
 
         if (!$cart) {
             $cart = Cart::create([
@@ -74,10 +76,10 @@ public function index()
     ->where(function ($q) use ($now) {
         $q->whereNull('expires_at')->orWhere('expires_at', '>=', $now);
     })
-    ->get()
-    ->filter(function ($coupon) {
-        return !$coupon->usage_limit || $coupon->used < $coupon->usage_limit;
-    });
+        ->where(function ($q) {
+            $q->whereNull('usage_limit')->orWhereColumn('used', '<', 'usage_limit');
+        })
+        ->get();
 
 
     $expiredCoupons = Coupon::where(function ($q) use ($now) {
@@ -125,6 +127,7 @@ public function index()
         $basePrice = $size ? $size->price : ($sanpham->price ?? 0);
         $toppingPrice = $productToppings->sum('price');
         $unitPrice = $basePrice + $toppingPrice;
+        $note=$request->giamda.'<br>'.$request->giamduong;
         $sizeId = $sizeId ?? 0; // Handle null sizeId
         $key = $sanpham->id . '-' . $sizeId . '-' . $toppingIdsString;
         if (Auth::check()) {
@@ -137,6 +140,7 @@ public function index()
                 ->where('product_id', $sanpham->id)
                 ->where('size_id', $sizeId)
                 ->where('topping_id', $toppingIdsString)
+                ->where('note', $note)
                 ->first();
 
             if ($existingItem) {
@@ -147,6 +151,7 @@ public function index()
                     'cart_id' => $cart->id,
                     'product_id' => $sanpham->id,
                     'size_id' => $sizeId,
+                    'note' => $note,
                     'topping_id' => $toppingIdsString,
                     'quantity' => $qty
                 ]);
@@ -156,7 +161,10 @@ public function index()
             $this->_updateCartTotal($cart);
 
         } else {
-        $cartSession = session('cart', []);
+      $cartSession = session('cart', []);
+
+        // tạo key phân biệt theo sản phẩm, size, topping và note
+        $key = $sanpham->id . '_' . $sizeId . '_' . md5($toppingIdsString . $note);
 
         if (isset($cartSession[$key])) {
             $cartSession[$key]['quantity'] += $qty;
@@ -171,10 +179,11 @@ public function index()
                 'topping_ids'   => $toppingIdsString,
                 'quantity'      => $qty,
                 'unit_price'    => $unitPrice,
+                'note'          => $note,
                 'price'         => $unitPrice * $qty,
                 'image'         => $sanpham->image,
                 'topping_names' => [],
-                'topping_prices' => []
+                'topping_prices'=> []
             ];
 
             foreach ($productToppings as $productTopping) {
@@ -184,9 +193,9 @@ public function index()
         }
 
         session(['cart' => $cartSession]);
-    }
 
-        return redirect()->route('shop.index')->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
+    }
+     return redirect()->route('shop.index')->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
     }
 
     /**
@@ -228,7 +237,7 @@ public function index()
             }
 
             $subtotal = 0;
-            $lineTotal = 0; 
+            $lineTotal = 0;
 
             if (Auth::check()) {
                 $cart = Cart::where('user_id', Auth::id())->first();
@@ -266,7 +275,7 @@ public function index()
                 $cartDetail->quantity = $newQuantity;
                 $cartDetail->save();
 
-                $subtotal = $this->_updateCartTotal($cart); 
+                $subtotal = $this->_updateCartTotal($cart);
 
                 $product = $cartDetail->product;
                 $size = $cartDetail->size;
@@ -304,7 +313,7 @@ public function index()
 
             $coupons = session('coupons', []);
             $discount = 0;
-            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons); 
+            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons);
 
             $total = max(0, $subtotal - $discount);
 
@@ -320,7 +329,7 @@ public function index()
                 'quantity' => $newQuantity,
                 'line_total' => $lineTotal,
                 'subtotal' => $subtotal,
-                'discount' => $discount, 
+                'discount' => $discount,
                 'total' => $total,
                 'applied_coupons' => $updatedCoupons
             ]);
@@ -367,7 +376,7 @@ public function index()
             $toppingIds = array_map('intval', (array)$toppingIds);
             sort($toppingIds);
             $toppingIdsString = implode(',', $toppingIds);
-            
+
             // Debug logging for topping IDs in removeItem
             \Log::info('RemoveItem topping IDs processing', [
                 'original' => $toppingIds,
@@ -375,7 +384,7 @@ public function index()
                 'key' => $key
             ]);
 
-            $subtotal = 0; 
+            $subtotal = 0;
 
             if (Auth::check()) {
                 $cart = Cart::where('user_id', Auth::id())->first();
@@ -407,14 +416,14 @@ public function index()
 
                 if ($cartDetail) {
                     $cartDetail->delete();
-                    $subtotal = $this->_updateCartTotal($cart); 
+                    $subtotal = $this->_updateCartTotal($cart);
                 } else {
                     return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
                 }
             } else {
                 $cartSession = session('cart', []);
                 \Log::info('Session cart keys', ['keys' => array_keys($cartSession), 'searchKey' => $key]);
-                
+
                 if (isset($cartSession[$key])) {
                     unset($cartSession[$key]);
                     session(['cart' => $cartSession]);
@@ -430,7 +439,7 @@ public function index()
 
             $coupons = session('coupons', []);
             $discount = 0;
-            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons); 
+            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons);
 
             $total = max(0, $subtotal - $discount);
 
@@ -444,7 +453,7 @@ public function index()
                 'message' => 'Đã xóa sản phẩm khỏi giỏ hàng.',
                 'key' => $key,
                 'subtotal' => $subtotal,
-                'discount' => $discount, 
+                'discount' => $discount,
                 'total' => $total,
                 'applied_coupons' => $updatedCoupons
             ]);
@@ -466,7 +475,7 @@ public function index()
     {
         $total = 0;
         foreach ($cart->cartdetails as $detail) {
-            if (!$detail->product) continue; 
+            if (!$detail->product) continue;
 
             $size = $detail->size;
             $basePrice = $size ? $size->price : $detail->product->price;
@@ -482,10 +491,10 @@ public function index()
             $total += ($basePrice + $toppingPrice) * $detail->quantity;
         }
 
-        $cart->total = $total; 
+        $cart->total = $total;
         $cart->save();
 
-        return $total; 
+        return $total;
     }
 
     /**
@@ -498,7 +507,7 @@ public function index()
      */
  private function applyCouponsToCart(float $subtotal, float &$discount, array $currentCoupons)
 {
-    $discount = 0; 
+    $discount = 0;
     $updatedCoupons = [];
     $now = now();
 
@@ -516,13 +525,13 @@ public function index()
         $isValid = true;
 
         if (!$coupon) {
-            $isValid = false; 
+            $isValid = false;
         } elseif ($coupon->usage_limit && $coupon->used >= $coupon->usage_limit) {
-            $isValid = false; 
+            $isValid = false;
         } elseif ($coupon->user_id && (!Auth::check() || Auth::id() !== $coupon->user_id)) {
             $isValid = false;
         } elseif ($coupon->min_order_value && $subtotal < $coupon->min_order_value) {
-            $isValid = false; 
+            $isValid = false;
         }
 
         if ($isValid) {
@@ -555,13 +564,13 @@ public function index()
     public function applyCoupon(Request $request)
     {
         $code = $request->input('code');
-        $cartSubtotal = $request->input('subtotal', 0); 
+        $cartSubtotal = $request->input('subtotal', 0);
         $now = now();
 
         $currentCoupons = session('coupons', []);
         if (count($currentCoupons) >= 1) {
             return response()->json([
-                'success' => false, 
+                'success' => false,
                 'message' => 'Chỉ được áp dụng tối đa 1 mã giảm giá cho mỗi đơn hàng.'
             ]);
         }
@@ -598,7 +607,7 @@ public function index()
             return response()->json([
                 'success' => false,
                 'message' => 'Đơn hàng cần tối thiểu ' . number_format($coupon->min_order_value) . 'đ để áp dụng mã.',
-                'subtotal' => $cartSubtotal 
+                'subtotal' => $cartSubtotal
             ]);
         }
 
@@ -624,7 +633,7 @@ public function index()
         if (Auth::check()) {
             $cart = Cart::where('user_id', Auth::id())->first();
             if ($cart) {
-                $actualSubtotal = $this->_updateCartTotal($cart); 
+                $actualSubtotal = $this->_updateCartTotal($cart);
             }
         } else {
             $cartSession = session('cart', []);
@@ -641,10 +650,10 @@ public function index()
             'success' => true,
             'message' => 'Áp dụng mã thành công.',
             'coupon' => $couponData,
-            'subtotal' => $actualSubtotal, 
-            'discount' => $discount,     
-            'total' => $total,           
-            'applied_coupons' => $updatedCoupons 
+            'subtotal' => $actualSubtotal,
+            'discount' => $discount,
+            'total' => $total,
+            'applied_coupons' => $updatedCoupons
         ]);
     }
 
@@ -666,7 +675,7 @@ public function index()
             if (Auth::check()) {
                 $cart = Cart::where('user_id', Auth::id())->first();
                 if ($cart) {
-                    $subtotal = $this->_updateCartTotal($cart); 
+                    $subtotal = $this->_updateCartTotal($cart);
                 }
             } else {
                 $cartSession = session('cart', []);
@@ -677,7 +686,7 @@ public function index()
             }
 
             $discount = 0;
-            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons); 
+            $updatedCoupons = $this->applyCouponsToCart($subtotal, $discount, $coupons);
             $total = max(0, $subtotal - $discount);
 
             return response()->json([
@@ -686,7 +695,7 @@ public function index()
                 'subtotal' => $subtotal,
                 'discount' => $discount,
                 'total' => $total,
-                'applied_coupons' => $updatedCoupons 
+                'applied_coupons' => $updatedCoupons
             ]);
         }
 
@@ -731,14 +740,14 @@ public function index()
             } else {
                 $cartSession = session('cart', []);
                 $cartArray = array_values($cartSession);
-                
+
                 if (!isset($cartArray[$itemId])) {
                     return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
                 }
 
                 $key = array_keys($cartSession)[$itemId];
                 $cartSession[$key]['quantity'] = $quantity;
-                
+
                 $basePrice = $cartSession[$key]['size_price'] ?? 0;
                 $toppingPrice = array_sum($cartSession[$key]['topping_prices'] ?? []);
                 $itemPrice = ($basePrice + $toppingPrice) * $quantity;
@@ -786,7 +795,7 @@ public function index()
             } else {
                 $cartSession = session('cart', []);
                 $cartArray = array_values($cartSession);
-                
+
                 if (!isset($cartArray[$itemId])) {
                     return response()->json(['success' => false, 'message' => 'Sản phẩm không tìm thấy trong giỏ hàng.']);
                 }
@@ -814,7 +823,7 @@ public function index()
     private function calculateCartSubtotal()
     {
         $subtotal = 0;
-        $cartItems = Cart::where('user_id', auth()->id())->get(); 
+        $cartItems = Cart::where('user_id', auth()->id())->get();
 
         foreach ($cartItems as $item) {
             $basePrice = $item->size->price ?? $item->product->price ?? 0;

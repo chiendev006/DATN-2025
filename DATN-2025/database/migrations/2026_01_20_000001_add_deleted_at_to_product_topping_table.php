@@ -11,15 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_topping', function (Blueprint $table) {
-
-            $table->id();
-            $table->foreignId('product_id')->constrained('sanphams');
-            $table->string('topping')->nullable();
-            $table->decimal('price', 10, 2)->default(0);
-            $table->timestamps();
+        Schema::table('product_topping', function (Blueprint $table) {
+            $table->softDeletes();
         });
-
     }
 
     /**
@@ -27,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('product_topping', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
-};
+}; 

@@ -19,7 +19,7 @@
         margin: 4px 2px;
         cursor: pointer;
         border-radius: 5px;
-        background-color: #28a745; /* Màu xanh lá cây mặc định */
+        background-color: #007bff; /* Màu xanh lá cây mặc định */
     }
     .btn-success:hover {
         background-color: blue; /* Màu xanh đậm hơn khi hover */
@@ -117,8 +117,9 @@
         <div class="row gutters">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                 <div class="card">
-                    <a href="{{ route('blogs.create') }}" class="btn-success">Thêm bài viết</a>
-                    <a href="{{ route('danhmucblog.index') }}" class="btn-success">Danh mục bài </a>
+                    <h1>Bài viết</h1>
+                    <a style="margin-left: 950px;" href="{{ route('blogs.create') }}" class="btn-success">Thêm bài viết</a>
+                    <a style="margin-left: 950px;" href="{{ route('danhmucblog.index') }}" class="btn-success">Danh mục bài </a>
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap" style="gap: 15px;">
                             <!-- Bên trái: chọn số bản ghi -->

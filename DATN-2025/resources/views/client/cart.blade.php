@@ -41,6 +41,7 @@
                                 <th>TOPPING</th>
                                 <th>GIÁ</th>
                                 <th>TĂNG GIẢM</th>
+                                <th>GHI CHÚ</th>
                                 <th>TỔNG TIỀN</th>
                                 <th>XÓA</th>
                             </tr>
@@ -61,8 +62,8 @@
                                     $unitPrice = $basePrice + $toppingPrice;
                                     $total = $unitPrice * $item->quantity;
                                     $rowKey = $item->product_id . '-' . ($item->size_id ?? 0) . '-' . implode(',', $toppingIds);
-                                    $image = $product->image;
-                                    $name = $product->name;
+                                    $image = $product->image ?? 'no-image.png';
+                                    $name = $product->name ?? 'Sản phẩm đã bị xóa';
                                     $quantity = $item->quantity;
                                 } else {
                                     $basePrice = $item->size_price ?? 0;
@@ -78,7 +79,9 @@
                                         }
                                     }
                                     sort($toppingIdsForImplode); // Ensure consistent ordering
-                                    $rowKey = $item->sanpham_id . '-' . ($item->size_id ?? 0) . '-' . implode(',', $toppingIdsForImplode);
+                                    // Key cho khách chưa đăng nhập phải giống key session: id_sizeid_md5(toppingIds+note)
+                                    $noteForKey = isset($item->note) ? $item->note : '';
+                                    $rowKey = $item->sanpham_id . '_' . ($item->size_id ?? 0) . '_' . md5(implode(',', $toppingIdsForImplode) . $noteForKey);
 
                                     $image = $item->image;
                                     $name = $item->name;
@@ -151,12 +154,17 @@
                                     <div class="price-textbox">
                                         <span class="minus-text decrement-btn"><i class="icon-minus"></i></span>
                                         <input type="number" name="quantity" value="{{ $quantity }}"
-                                            class="quantity-input" min="1" readonly
+                                            class="quantity-input" min="1"
                                             data-key="{{ $rowKey }}"
                                             data-product_id="{{ Auth::check() ? $item->product_id : $item->sanpham_id }}"
                                             data-size_id="{{ Auth::check() ? ($item->size_id ?? 0) : ($item->size_id ?? 0) }}"
                                             data-topping_ids="{{ Auth::check() ? (empty($toppingIds) ? '' : implode(',', $toppingIds)) : (empty($toppingIdsForImplode) ? '' : implode(',', $toppingIdsForImplode)) }}">
                                         <span class="plus-text increment-btn"><i class="icon-plus"></i></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="note-textbox">
+                                        <span class="note-text">{!! $item->note ?? 'Không có' !!}</span>
                                     </div>
                                 </td>
                                 <td class="line-total">{{ number_format($total) }} VND</td>
@@ -177,7 +185,16 @@
 
 <div class="coupon-list-wrapper">
     @forelse($availableCoupons as $coupon)
-        <div class="coupon-card @if(session('coupons') && array_key_exists($coupon->code, session('coupons'))) selected-coupon @endif" data-code="{{ $coupon->code }}">
+        <div class="coupon-card @if(session('coupons') && array_key_exists($coupon->code, session('coupons'))) selected-coupon @endif"
+            data-code="{{ $coupon->code }}"
+            data-min-order="{{ $coupon->min_order_value }}"
+            data-starts-at="{{ $coupon->starts_at ? $coupon->starts_at->timestamp : '' }}"
+            data-expires-at="{{ $coupon->expires_at ? $coupon->expires_at->timestamp : '' }}"
+            data-usage-limit="{{ $coupon->usage_limit }}"
+            data-used="{{ $coupon->used }}"
+            data-is-active="{{ $coupon->is_active ? 1 : 0 }}"
+            data-user-id="{{ $coupon->user_id }}"
+        >
             <div class="coupon-header">
                 <span class="coupon-code">{{ $coupon->code }}</span>
                 <span class="coupon-discount-type">
@@ -431,46 +448,42 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function updateCouponVisibility(subtotal) {
-        console.log('updateCouponVisibility called with subtotal:', subtotal);
+        const now = Math.floor(Date.now() / 1000); // giây
+        const userId = {{ Auth::check() ? Auth::id() : 'null' }};
         const couponCards = document.querySelectorAll('.coupon-card');
         let visibleCoupons = 0;
 
         console.log('Found coupon cards:', couponCards.length);
 
         couponCards.forEach((card, index) => {
-            const minOrderText = card.querySelector('.coupon-condition');
-            console.log(`Card ${index}:`, card.dataset.code, 'minOrderText:', minOrderText?.textContent);
-
-            if (minOrderText) {
-                const minOrderMatch = minOrderText.textContent.match(/Đơn hàng tối thiểu: ([\d,]+)đ/);
-                if (minOrderMatch) {
-                    const minOrderValue = parseInt(minOrderMatch[1].replace(/,/g, ''));
-                    console.log(`Card ${index} minOrderValue:`, minOrderValue, 'subtotal:', subtotal);
-                    if (subtotal >= minOrderValue) {
-                        card.style.display = 'flex';
-                        card.style.opacity = '1';
-                        card.style.transform = 'scale(1)';
-                        visibleCoupons++;
-                        console.log(`Card ${index} SHOWED`);
-                    } else {
-                        card.style.display = 'none';
-                        card.style.opacity = '0';
-                        card.style.transform = 'scale(0.8)';
-                        console.log(`Card ${index} HIDDEN`);
-                    }
-                } else {
-                    card.style.display = 'flex';
-                    card.style.opacity = '1';
-                    card.style.transform = 'scale(1)';
-                    visibleCoupons++;
-                    console.log(`Card ${index} SHOWED (no min order)`);
-                }
-            } else {
+            // Lấy các điều kiện
+            const minOrder = parseInt(card.dataset.minOrder || '0');
+            const startsAt = parseInt(card.dataset.startsAt || '0');
+            const expiresAt = parseInt(card.dataset.expiresAt || '0');
+            const usageLimit = parseInt(card.dataset.usageLimit || '0');
+            const used = parseInt(card.dataset.used || '0');
+            const isActive = card.dataset.isActive === '1';
+            const couponUserId = card.dataset.userId ? parseInt(card.dataset.userId) : null;
+            // Điều kiện
+            let show = true;
+            if (!isActive) show = false;
+            if (startsAt && now < startsAt) show = false;
+            if (expiresAt && now > expiresAt) show = false;
+            if (usageLimit > 0 && used >= usageLimit) show = false;
+            if (couponUserId && (!userId || userId !== couponUserId)) show = false;
+            if (subtotal < minOrder) show = false;
+            // Hiển thị/ẩn
+            if (show) {
                 card.style.display = 'flex';
                 card.style.opacity = '1';
                 card.style.transform = 'scale(1)';
                 visibleCoupons++;
-                console.log(`Card ${index} SHOWED (no condition text)`);
+                console.log(`Card ${index} SHOWED`);
+            } else {
+                card.style.display = 'none';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                console.log(`Card ${index} HIDDEN`);
             }
         });
 
@@ -543,7 +556,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const productId = row.querySelector('.quantity-input').dataset.product_id;
             const sizeId = row.querySelector('.quantity-input').dataset.size_id;
             const toppingIds = row.querySelector('.quantity-input').dataset.topping_ids;
-            
+
             // Debug logging
             console.log('Remove item data:', { key, productId, sizeId, toppingIds });
 

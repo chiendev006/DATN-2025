@@ -7,7 +7,7 @@
 
         <div class="chat-box" :class="{ 'open': isChatOpen }">
             <div class="chat-header">
-                <h3>Chat với Mira Café</h3>s
+                <h3>Chat với Mira Café</h3>
             </div>
             <div class="messages-container" ref="messagesContainer">
                 <div v-for="message in messages" :key="message.id" :class="{ 'my-message': message.sender_id === currentUserId, 'their-message': message.sender_id !== currentUserId }"

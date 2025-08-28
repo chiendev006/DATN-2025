@@ -416,6 +416,23 @@
                         <div class="fw-bold">Topping:</div>
                         <div class="option-list topping-list"></div>
                     </div>
+                      <div class="form-group">
+                                <label><strong>Ghi chú:</strong></label>
+                                <div class="d-flex gap-2">
+                                <select name="giamda" class="form-select w-auto rounded-pill">
+                                    <option value="">Giảm đá</option>
+                                    <option value="Giảm 20% đá">Giảm 20% đá</option>
+                                    <option value="Giảm 50% đá">Giảm 50% đá</option>
+                                    <option value="Không đá">Không đá</option>
+                                </select>
+
+                                <select name="giamduong" class="form-select w-auto rounded-pill">
+                                    <option value="">Giảm đường</option>
+                                    <option value="Giảm 20% đường">Giảm 20% đường</option>
+                                    <option value="Giảm 50% đường">Giảm 50% đường</option>
+                                    <option value="Không đường">Không đường</option>
+                                </select>
+                            </div>
                     <hr class="opacity-1"/>
                     <div class="row">
                         <div class="col-4">

@@ -40,7 +40,9 @@ class OrderSearchController extends Controller
 
         $phone = $request->input('phone');
 
-        $orders = Order::with(['orderDetails.product', 'orderDetails.size'])
+        $orders = Order::with(['orderDetails.product' => function($query) {
+            $query->withTrashed();
+        }, 'orderDetails.size'])
                        ->where('phone', $phone)
                        ->orderBy('created_at', 'desc')
                        ->get();
@@ -112,7 +114,9 @@ class OrderSearchController extends Controller
      */
     public function reorder($id)
     {
-        $order = Order::with(['orderDetails.product', 'orderDetails.size'])->find($id);
+        $order = Order::with(['orderDetails.product' => function($query) {
+            $query->withTrashed();
+        }, 'orderDetails.size'])->find($id);
 
         if (!$order) {
             return redirect()->back()->with('error', 'Không tìm thấy đơn hàng!');
@@ -143,8 +147,8 @@ class OrderSearchController extends Controller
                 $cartSession[$key] = [
                     'product_id' => $item->product_id,
                     'sanpham_id' => $item->product_id,
-                    'name' => $item->product->name,
-                    'image' => $item->product->image,
+                    'name' => $item->product->name ?? 'Sản phẩm đã bị xóa',
+                    'image' => $item->product->image ?? null,
                     'price' => $item->product_price,
                     'size_id' => $item->size_id,
                     'size_name' => optional($item->size)->size ?? 'Không rõ',
@@ -201,7 +205,9 @@ class OrderSearchController extends Controller
             ], 404);
         }
 
-        $orderDetails = $order->orderDetails()->with(['product', 'size'])->get();
+        $orderDetails = $order->orderDetails()->with(['product' => function($query) {
+            $query->withTrashed();
+        }, 'size'])->get();
         
         // Format topping names
         $orderDetails->transform(function ($item) {
@@ -216,7 +222,7 @@ class OrderSearchController extends Controller
                 }
             }
             $item->topping_names = implode(', ', $toppingNames);
-            $item->product_image = $item->product ? asset('storage/uploads/' . $item->product->image) : null;
+            $item->product_image = $item->product && $item->product->image ? asset('storage/uploads/' . $item->product->image) : 'https://via.placeholder.com/150x150.png?text=Product';
             $item->size_name = $item->size ? $item->size->size : null;
             return $item;
         });

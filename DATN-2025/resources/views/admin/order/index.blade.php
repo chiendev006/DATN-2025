@@ -149,8 +149,11 @@ select:disabled {
     cursor: not-allowed;
 }
 </style>
+@php
+    $query = http_build_query(request()->except('page'));
+@endphp
   <div class="content-wrapper-scroll">
-
+<a style="margin-left: 22px;" href="{{ route('admin.orders.export') }}?{{ $query }}" class="btn btn-primary mb-3">Xuất Excel</a>
                     <div class="content-wrapper">
                     <div class="row gutters">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -158,6 +161,7 @@ select:disabled {
                                 <div class="card">
 
                                     <div class="card-body">
+                                        <h1>Hóa đơn</h1>
                                     @if(session('success'))
                                         <div class="alert alert-success" style="margin-bottom: 16px;">
                                             {{ session('success') }}
@@ -213,7 +217,7 @@ select:disabled {
                                             <div class="col-md-5">
                                                 <form method="GET" action="{{ route('admin.order.search') }}" class="form-inline" style="float: right; display: flex; align-items: center;">
                                                     <input type="text" name="transaction_id" class="form-control" placeholder="Tìm kiếm tên và số điện thoại ..." value="{{ request('transaction_id') }}" style="width: 220px; margin-right: 8px;">
-                                                    <button type="submit" class="btn btn-success">Tìm kiếm</button>
+                                                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -427,7 +431,7 @@ select:disabled {
                   <th>Topping</th>
                   <th>Số lượng</th>
                   <th>Thành tiền</th>
-
+                  <th>Ghi chú</th>
                 </tr>
               </thead>
               <tbody>
@@ -519,7 +523,7 @@ function openOrderModal(btn) {
     const name = btn.getAttribute('data-name');
     const shippingFee = btn.getAttribute('data-shipping_fee');
     const districtName = btn.getAttribute('data-district_name');
-    
+
     const isStaffOrder =
         phone === 'N/A' ||
         name.includes('Khách lẻ') ||
@@ -663,11 +667,12 @@ function openOrderModal(btn) {
                     productTotal += parseInt(product.total) || 0;
                     const row = `<tr>
                         <td>${product.product_name ?? ''}</td>
-                        <td>${product.product_image ? `<img src='/storage/uploads/${product.product_image}' width='50'>` : ''}</td>
+                        <td>${product.product_image ? `<img src='/storage/uploads/${product.product_image}' width='50'>` : '<img src="/images/no-image.svg" width="50">'}</td>
                         <td>${product.size ?? ''}</td>
-                        <td>${product.topping ? `<p>${product.topping}</p>` : `<span style=\"color: red;\">Không chọn</span>`}</td>
+                        <td>${product.topping && product.topping !== 'Không chọn' ? product.topping : `<span style=\"color: red;\">Không chọn</span>`}</td>
                         <td>${product.quantity ?? ''}</td>
                         <td>${product.total !== undefined ? parseInt(product.total).toLocaleString('vi-VN') + ' đ' : ''}</td>
+                        <td>${product.note ?? ''}</td>
                     </tr>`;
                     tbody.innerHTML += row;
                 });
@@ -797,7 +802,7 @@ function validateForm() {
     const phone = document.getElementById('modal_phone').value;
     const name = document.getElementById('modal_name').value;
     const originalPayStatus = document.getElementById('orderForm').getAttribute('data-original-pay-status');
-    
+
     // Lấy thông tin shipping_fee và district_name để xác định đơn tại quầy
     const orderId = document.getElementById('modal_id').value;
     const shippingFee = document.querySelector('.btn-view[data-id="' + orderId + '"]').getAttribute('data-shipping_fee');
