@@ -53,8 +53,22 @@
     $currentAdminId = (Auth::check() && Auth::user()->role == 1) ? Auth::id() : null;
 @endphp
 @php
-    $isHomeTab = request()->is('admin') ||request()->is('admin/address') ||request()->is('admin/address/search') ||request()->is('admin/coupon') || request()->is('admin/danhmuc*') ||  request()->is('admin/blogs*') || request()->is('admin/sanpham*') || request()->is('admin/topping*') || request()->is('admin/order*');
-    $isAuthTab = request()->is('admin/staff*') || request()->is('admin/payroll*') || request()->is('admin/historylog*') ||request()->is('admin/contact') || request()->is('admin/point-settings*') || request()->is('admin/point-transactions*');
+    $isHomeTab = request()->is('admin')
+        || request()->is('admin/address')
+        || request()->is('admin/address/search')
+        || request()->is('admin/coupon')
+        || request()->is('admin/danhmuc*')
+        || request()->is('admin/blogs*')
+        || request()->is('admin/sanpham*')
+        || request()->is('admin/topping*')
+        || request()->is('admin/order*')
+        || request()->is('admin/user*');
+    $isAuthTab = request()->is('admin/staff*')
+        || request()->is('admin/payroll*')
+        || request()->is('admin/historylog*')
+        || request()->is('admin/contact')
+        || request()->is('admin/point-settings*')
+        || request()->is('admin/point-transactions*');
 @endphp
 
 		<!-- Loading wrapper start -->
