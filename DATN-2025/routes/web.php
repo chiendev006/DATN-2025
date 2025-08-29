@@ -39,7 +39,7 @@ use App\Http\Controllers\Staff\BartenderController;
 use App\Http\ViewComposers\CartComposer;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CommentController;
-
+use App\Http\Controllers\admin\UserController;
 
 
 
@@ -253,6 +253,11 @@ Route::prefix('admin')->middleware(['auth', 'checkAdmin', 'check.valid.id'])->gr
                 Route::post('/update/{id}', [ToppingController::class, 'update'])->name('topping.update');
                 Route::delete('/delete/{id}', [ToppingController::class, 'delete'])->name('topping.delete');
                 Route::get('/filter', [ToppingController::class, 'searchtopping'])->name('topping.search');
+        });
+        // Quản lý tài khoản
+        Route::prefix('user')->group(function () {
+                Route::get('/', [UserController::class, 'index'])->name('user.index');
+                Route::delete('/delete/{id}', [UserController::class, 'delete'])->name('user.delete');
         });
 
         // Size

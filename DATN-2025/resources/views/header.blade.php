@@ -141,6 +141,9 @@
 											<a href="{{ route('address.index') }}" class="{{ request()->is('admin/address*') ? 'current-page' : '' }}">Ship</a>
 										</li>
 										<li>
+											<a href="{{ route('user.index') }}" class="{{ request()->is('admin/user*') ? 'current-page' : '' }}">Quản Lý Tài Khoản</a>
+										</li>
+										<li>
 											<a href="{{ route('comments.index') }}" class="{{ request()->is('admin/commentsanpham*') ? 'current-page' : '' }}">Đánh giá sản phẩm</a>
 										</li>
 
