@@ -173,7 +173,7 @@
 
 							<!-- Tab content header start -->
 							<div class="tab-pane-header">
-								Authentication
+								Xác thực
 							</div>
 							<!-- Tab content header end -->
 
