@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Mazer Admin Dashboard</title>
+    <title>Quên mật khẩu</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url('assets/css/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ url('assets/vendors/bootstrap-icons/bootstrap-icons.css') }}">
@@ -18,8 +18,8 @@
     <div class="row h-100">
         <div class="col-lg-5 col-12">
             <div id="auth-left">
-                <h1 class="auth-title">Forgot Password</h1>
-                <p class="auth-subtitle mb-5">Input your email and we will send you reset password link.</p>
+                <h1 class="auth-title">Quên mật khẩu</h1>
+                <p class="auth-subtitle mb-5">Nhập email của bạn và chúng tôi sẽ gửi liên kết đặt lại mật khẩu.</p>
                 @if(session('message'))
                         <h6 class="text-danger">{{ session('message') }}</h6>
                 @endif
@@ -34,11 +34,10 @@
                     @error('email')
                         <h6 class="text-danger">{{ $message }}</h6>
                     @enderror
-                    <button type="submit" class="btn btn-primary btn-block btn-lg shadow-lg mt-5">Send</button>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg shadow-lg mt-5">Gửi</button>
                 </form>
                 <div class="text-center mt-5 text-lg fs-4">
-                    <p class='text-gray-600'>Remember your account? <a href="{{ route('login') }}" class="font-bold">Log
-                            in</a>.
+                    <p class='text-gray-600'>Bạn còn nhớ tài khoản của mình? <a href="{{ route('login') }}" class="font-bold">Đăng nhập</a>.
                     </p>
                 </div>
             </div>
