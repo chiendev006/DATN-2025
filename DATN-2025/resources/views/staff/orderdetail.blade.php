@@ -7,6 +7,31 @@
         Hóa đơn hôm nay
     </h2>
 </div>
+
+<!-- Hiển thị thông báo success -->
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin: 20px auto; max-width: 800px;">
+        <i class="fas fa-check-circle me-2"></i>
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin: 20px auto; max-width: 800px;">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+@if(session('info'))
+    <div class="alert alert-info alert-dismissible fade show" role="alert" style="margin: 20px auto; max-width: 800px;">
+        <i class="fas fa-info-circle me-2"></i>
+        {{ session('info') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
 <div class="container-fluid px-0">
     <div class="row align-items-center mb-4" style="min-height: 56px;">
         <div class="col-12 col-md-3 d-flex align-items-center justify-content-start mb-2 mb-md-0" style="z-index:2; position:relative;">
@@ -224,7 +249,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <label style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width:100%;" class="text-primary">Ghi chú</label>
-                                        <input type="text" class="form-control equal-width-input" value="{{ $item->note}}" readonly>
+                                        <input type="text" class="form-control equal-width-input" value="{{ $item->note ?? 'Không có' }}" readonly>
                                     </div>
                                     <div class="col-md-3">
                                         <label style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width:100%;" class="text-primary">Lý do hủy hiện tại</label>
@@ -310,9 +335,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button> 
-                              @if($item->status=='processing')
-                              <button type="submit" class="btn btn-success" id="updateBtn{{ $item->id }}">Cập nhật</button>
-                              @endif
+                                <button type="submit" class="btn btn-success" id="updateBtn{{ $item->id }}">Cập nhật</button>
                             </div>
                         </div>
                     </form>
@@ -453,11 +476,8 @@ function disableInvalidPayStatusOptions(orderId, originalPayStatus, currentOrder
             option.disabled = true;
         }
     });
-    if (status === 'pending' || status === 'processing' || status === 'shipping') {
-        select.removeAttribute('name');
-    } else {
-        select.setAttribute('name', 'pay_status');
-    }
+    // Luôn giữ name attribute để đảm bảo giá trị được gửi đi
+    select.setAttribute('name', 'pay_status');
 }
 
 function handleStatusChange(orderId, newStatusValue, currentStatusInt, isWalkInCustomer = false) {
@@ -551,8 +571,12 @@ function handleStatusChange(orderId, newStatusValue, currentStatusInt, isWalkInC
     
     // If choosing to cancel
     if (newStatus === 4) {
-        cancelReasonDiv.style.display = 'block';
-        cancelReasonInput.required = true;
+        // Chỉ hiển thị field lý do hủy khi CHUYỂN SANG trạng thái hủy, không phải khi đã hủy từ trước
+        const originalStatus = statusSelect.getAttribute('data-current');
+        if (originalStatus !== 'cancelled') {
+            cancelReasonDiv.style.display = 'block';
+            cancelReasonInput.required = true;
+        }
         return true;
     }
     
@@ -585,8 +609,12 @@ function handlePayStatusChange(orderId, newPayStatus, currentPayStatus, currentO
     if (newPayStatus === 3) {
         const cancelReasonDiv = document.getElementById('cancelReasonDiv' + orderId);
         const cancelReasonInput = document.getElementById('cancelReasonInput' + orderId);
-        cancelReasonDiv.style.display = 'block';
-        cancelReasonInput.required = true;
+        // Chỉ hiển thị field lý do hủy khi CHUYỂN SANG trạng thái hoàn tiền, không phải khi đã hoàn tiền từ trước
+        const originalPayStatus = payStatusSelect.getAttribute('data-current');
+        if (originalPayStatus !== '3') {
+            cancelReasonDiv.style.display = 'block';
+            cancelReasonInput.required = true;
+        }
     }
     
     return true;
@@ -611,6 +639,21 @@ function showAlert(message, type = 'info') {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Tự động ẩn thông báo success/error sau 5 giây
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            if (alert && alert.parentNode) {
+                alert.classList.remove('show');
+                setTimeout(() => {
+                    if (alert && alert.parentNode) {
+                        alert.remove();
+                    }
+                }, 300);
+            }
+        }, 5000);
+    });
+    
     const forms = document.querySelectorAll('form[id^="orderForm"]');
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
@@ -620,9 +663,61 @@ document.addEventListener('DOMContentLoaded', function() {
             const cancelReasonInput = document.getElementById('cancelReasonInput' + orderId);
             const isWalkIn = statusSelect.getAttribute('data-is-walk-in') === 'true';
             const currentPayStatus = parseInt(payStatusSelect.getAttribute('data-current'));
+            const currentStatus = statusSelect.getAttribute('data-current');
 
-            // Validate cancel reason
-            if ((statusSelect.value === 'cancelled' || payStatusSelect.value === '2') && (!cancelReasonInput.value || cancelReasonInput.value.trim() === '')) {
+            // Debug: Log thông tin để kiểm tra
+            console.log('Form validation debug:', {
+                orderId: orderId,
+                currentStatus: currentStatus,
+                selectedStatus: statusSelect.value,
+                currentPayStatus: currentPayStatus,
+                selectedPayStatus: payStatusSelect.value,
+                originalStatus: originalStatus,
+                originalStatusString: originalStatusString,
+                originalPayStatus: originalPayStatus,
+                originalPayStatusString: originalPayStatusString,
+                statusChanged: statusChanged,
+                payStatusChanged: payStatusChanged,
+                isChangingToCancelled: isChangingToCancelled,
+                cancelReasonValue: cancelReasonInput.value
+            });
+
+            // Kiểm tra xem có thay đổi gì không
+            const statusChanged = statusSelect.value !== currentStatus;
+            const payStatusChanged = payStatusSelect.value !== currentPayStatus.toString();
+            
+            // Nếu không có thay đổi gì, cho phép submit bình thường
+            if (!statusChanged && !payStatusChanged) {
+                // Hiển thị thông báo nhẹ nhàng
+                showAlert('Không có thay đổi nào được thực hiện.', 'info');
+                e.preventDefault();
+                return false;
+            }
+
+            // Validate cancel reason chỉ khi thực sự cần
+            // Chỉ yêu cầu lý do hủy khi CHUYỂN SANG trạng thái hủy, không phải khi đã hủy từ trước
+            const originalStatus = statusSelect.getAttribute('data-current');
+            const originalPayStatus = payStatusSelect.getAttribute('data-current');
+            
+            // Chuyển đổi giá trị để so sánh chính xác
+            const statusMapping = {
+                '0': 'pending',
+                '1': 'processing', 
+                '2': 'shipping',
+                '3': 'completed',
+                '4': 'cancelled'
+            };
+            
+            const originalStatusString = statusMapping[originalStatus] || originalStatus;
+            const originalPayStatusString = originalPayStatus;
+            
+            // Kiểm tra xem có đang chuyển sang trạng thái hủy không
+            const isChangingToCancelled = (statusSelect.value === 'cancelled' && originalStatusString !== 'cancelled') || 
+                                         (payStatusSelect.value === '2' && originalPayStatusString !== '2') ||
+                                         (payStatusSelect.value === '3' && originalPayStatusString !== '3');
+            
+            // Nếu đang chuyển sang hủy/hoàn tiền và không có lý do hủy thì báo lỗi
+            if (isChangingToCancelled && (!cancelReasonInput.value || cancelReasonInput.value.trim() === '')) {
                 e.preventDefault();
                 showAlert('Vui lòng nhập lý do hủy đơn hàng!', 'error');
                 cancelReasonInput.focus();
@@ -737,6 +832,12 @@ function disableCompletedPaidOrder(orderId) {
             option.disabled = true;
         });
         statusSelect.setAttribute('disabled', 'disabled');
+        // Thêm hidden input để đảm bảo giá trị được gửi đi
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'status';
+        hiddenInput.value = statusSelect.value;
+        statusSelect.parentNode.appendChild(hiddenInput);
     }
     
     if (payStatusSelect) {
@@ -745,6 +846,12 @@ function disableCompletedPaidOrder(orderId) {
             option.disabled = true;
         });
         payStatusSelect.setAttribute('disabled', 'disabled');
+        // Thêm hidden input để đảm bảo giá trị được gửi đi
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'pay_status';
+        hiddenInput.value = payStatusSelect.value;
+        payStatusSelect.parentNode.appendChild(hiddenInput);
     }
 }
 </script>
@@ -788,6 +895,45 @@ function disableCompletedPaidOrder(orderId) {
         color: #222 !important;
         opacity: 1 !important;
         cursor: not-allowed;
+    }
+    
+    /* Style cho thông báo success/error */
+    .alert {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        font-weight: 500;
+    }
+    
+    .alert-success {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+        border-left: 4px solid #28a745;
+    }
+    
+    .alert-danger {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        color: #721c24;
+        border-left: 4px solid #dc3545;
+    }
+    
+    .alert-info {
+        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        color: #0c5460;
+        border-left: 4px solid #17a2b8;
+    }
+    
+    .alert i {
+        font-size: 1.1em;
+    }
+    
+    .btn-close {
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }
+    
+    .btn-close:hover {
+        opacity: 1;
     }
 </style>
 

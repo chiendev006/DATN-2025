@@ -344,7 +344,8 @@ function updateTotalPrice() {
                 coupon_discount: appliedCoupon ? appliedCoupon.discountValue : 0,
                 pay_status: 0, // Mặc định là chờ thanh toán
                 customer_phone: $('#customer-phone').val() || '',
-                points_used: parseInt($('#points-used').val()) || 0
+                points_used: parseInt($('#points-used').val()) || 0,
+                order_note: $('#order-note').val() || '' // Thêm note chung cho đơn hàng
             };
         }
 
@@ -443,6 +444,8 @@ function updateTotalPrice() {
                     $('#customer-point-info').text('');
                     $('#points-error').hide();
                     $('#points-used').removeClass('is-invalid').prop('disabled', true);
+                    // Reset note chung
+                    $('#order-note').val('');
                 },
                 error: function(xhr){
                     console.log(xhr.responseText);

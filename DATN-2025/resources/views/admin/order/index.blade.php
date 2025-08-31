@@ -288,7 +288,7 @@ select:disabled {
                                             @endif
                                         </td>
                                          <td>{{ number_format($order->total, 0, ',', '.') }} đ</td>
-                                        <td>{{ $order->note }}</td>
+                                        <td>{{ $order->note ?? 'Không có' }}</td>
                                      @if($order->status == 'cancelled' || $order->pay_status == 2)
                                      <td>{{ $order->cancel_reason }}</td>
                                      @else
@@ -316,6 +316,8 @@ select:disabled {
                                                 data-cancel_reason="{{ $order->cancel_reason }}"
                                                 data-points_used="{{ $order->points_used ?? 0 }}"
                                                 data-points_discount="{{ number_format($order->points_discount ?? 0, 0, ',', '.') }} đ"
+                                                data-note="{{ $order->note ?? '' }}"
+
                                             >Xem</button>
 
                                             </div>
@@ -416,12 +418,21 @@ select:disabled {
                 <input type="text" class="form-control" name="address_detail" id="modal_address_detail" readonly />
       </div>
       </div>
-      <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
-      <div style="margin-bottom:10px;">
-        <div class="field-placeholder">Ngày tạo</div>
+            <div class="field-wrapper col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3">
+        <div style="margin-bottom:10px;">
+          <div class="field-placeholder">Ngày tạo</div>
                 <input type="text" class="form-control" name="created_at" id="modal_created_at" readonly />
       </div>
       </div>
+      
+      <div class="field-wrapper col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+        <div style="margin-bottom:10px;">
+          <div class="field-placeholder">Ghi chú đơn hàng</div>
+                <input type="text" class="form-control" name="note" id="modal_note" readonly />
+      </div>
+      </div>
+      
+
 
       <div class="field-wrapper col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12  ">
         <div style="margin-bottom:10px;">
@@ -647,6 +658,8 @@ function openOrderModal(btn) {
 
     document.getElementById('modal_address_detail').value = btn.getAttribute('data-address_detail') || 'Nhân viên thu ngân';
     document.getElementById('modal_created_at').value = btn.getAttribute('data-created_at') || '';
+    document.getElementById('modal_note').value = btn.getAttribute('data-note') || 'Không có';
+
     document.getElementById('orderForm').action = "{{ url('admin/order/update') }}/" + btn.getAttribute('data-id');
 
     const cancelReasonInput = document.getElementById('modal_cancel_reason');

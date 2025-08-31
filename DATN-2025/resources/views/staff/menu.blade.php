@@ -347,6 +347,13 @@
                             <div class="fw-bold">Tổng tiền:</div>
                             <div class="flex-1 text-end h4 mb-0" id="cart-total">0đ</div>
                         </div>
+                        
+                        <!-- Ghi chú chung cho đơn hàng -->
+                        <div class="mb-3">
+                            <label for="order-note" class="form-label fw-bold">Ghi chú đơn hàng:</label>
+                            <textarea id="order-note" class="form-control" rows="2" placeholder="Nhập ghi chú chung cho đơn hàng (nếu có)..."></textarea>
+                        </div>
+                        
                         <div class="mt-3">
                             <div class="d-flex justify-content-sm-around">
                                 <a style="max-width: 130px;"
