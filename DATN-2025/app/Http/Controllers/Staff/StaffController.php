@@ -115,6 +115,26 @@ class StaffController extends Controller
             // Lưu order trước để có ID
             $order->save();
 
+            // Tổng hợp note từ tất cả sản phẩm và note chung của order
+            $orderNotes = [];
+            
+            // Thêm note chung của order nếu có
+            if (!empty($request->input('order_note'))) {
+                $orderNotes[] = $request->input('order_note');
+            }
+            
+            // Thêm note từ từng sản phẩm
+            foreach ($request->cart as $item) {
+                if (!empty($item['note'])) {
+                    $orderNotes[] = $item['note'];
+                }
+            }
+            
+            if (!empty($orderNotes)) {
+                $order->note = implode(' | ', array_unique($orderNotes));
+                $order->save();
+            }
+
             // Xử lý sử dụng điểm nếu có
             $pointsUsed = (int) $request->input('points_used', 0);
             $pointsDiscount = 0;
@@ -123,7 +143,7 @@ class StaffController extends Controller
                 $vndPerPoint = (int) (\DB::table('point_settings')->where('key', 'vnd_per_point')->value('value') ?? 1000);
                 $maxPoints = min($customer->points, $pointsUsed);
                 $pointsDiscount = $maxPoints * $vndPerPoint;
-                
+
                 \Log::info('DEBUG_POINT: Creating point transaction', [
                     'order_id' => $order->id,
                     'customer_id' => $customer->id,
@@ -131,11 +151,11 @@ class StaffController extends Controller
                     'max_points' => $maxPoints,
                     'points_discount' => $pointsDiscount
                 ]);
-                
+
                 // Trừ điểm
                 $customer->points -= $maxPoints;
                 $customer->save();
-                
+
                 // Ghi log transaction
                 try {
                     \DB::table('point_transactions')->insert([
@@ -148,7 +168,7 @@ class StaffController extends Controller
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
-                    
+
                     \Log::info('DEBUG_POINT: Point transaction created successfully', [
                         'order_id' => $order->id,
                         'transaction_points' => -$maxPoints
@@ -159,7 +179,7 @@ class StaffController extends Controller
                         'error' => $e->getMessage()
                     ]);
                 }
-                
+
                 // Cập nhật order
                 $order->points_used = $maxPoints;
                 $order->points_discount = $pointsDiscount;
@@ -180,6 +200,7 @@ class StaffController extends Controller
                     ? implode(',', $item['toppings']) : '';
 
                 $detail->status = $order->status;
+                $detail->note = $item['note'] ?? null;
                 $detail->save();
             }
             if ($request->coupon_code) {
@@ -333,29 +354,52 @@ class StaffController extends Controller
     }
     public function updateStatus(Request $request, $id)
     {
-        $order = \App\Models\Order::findOrFail($id);
+        try {
+            $order = \App\Models\Order::findOrFail($id);
 
-        $status = $request->input('status');
-        $pay_status = $request->input('pay_status');
+            $status = $request->input('status');
+            $pay_status = $request->input('pay_status');
 
-        // Cập nhật trạng thái đơn hàng
-        $order->status = $status;
+            // Debug: Log dữ liệu đầu vào
+            \Log::info('Order status update request', [
+                'order_id' => $id,
+                'status' => $status,
+                'pay_status' => $pay_status,
+                'all_inputs' => $request->all()
+            ]);
 
-        // Cập nhật trạng thái thanh toán (nếu có)
-        if ($pay_status !== null) {
-            $order->pay_status = (string) $pay_status;
-        }
-
-        // Xử lý lý do hủy
-        if ($status === 'cancelled' || $pay_status == '2') {
-            $cancelReason = $request->input('cancel_reason');
-            if ($cancelReason && !str_contains($cancelReason, '(Nhân viên hủy)')) {
-                $cancelReason = '(Nhân viên hủy) ' . $cancelReason;
+            // Kiểm tra xem có thay đổi gì không
+            $statusChanged = $order->status !== $status;
+            $payStatusChanged = $pay_status !== null && $order->pay_status !== (string) $pay_status;
+            
+            // Nếu không có thay đổi gì, trả về thông báo nhẹ nhàng
+            if (!$statusChanged && !$payStatusChanged) {
+                return redirect()->back()->with('info', 'Không có thay đổi nào được thực hiện.');
             }
-            $order->cancel_reason = $cancelReason;
-        }
 
-        $order->save();
+            // Validate dữ liệu đầu vào
+            if (empty($status)) {
+                return redirect()->back()->with('error', 'Trạng thái đơn hàng không được để trống.');
+            }
+
+            // Cập nhật trạng thái đơn hàng
+            $order->status = $status;
+
+            // Cập nhật trạng thái thanh toán (nếu có)
+            if ($pay_status !== null) {
+                $order->pay_status = (string) $pay_status;
+            }
+
+            // Xử lý lý do hủy
+            if ($status === 'cancelled' || $pay_status == '2') {
+                $cancelReason = $request->input('cancel_reason');
+                if ($cancelReason && !str_contains($cancelReason, '(Nhân viên hủy)')) {
+                    $cancelReason = '(Nhân viên hủy) ' . $cancelReason;
+                }
+                $order->cancel_reason = $cancelReason;
+            }
+
+            $order->save();
 
         // Hoàn điểm khi đơn bị hủy (nếu có)
         if ($status === 'cancelled') {
@@ -422,6 +466,14 @@ class StaffController extends Controller
             'content' =>$title.$content1.$content2.$content3,
         ]);
         return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');
+        } catch (\Exception $e) {
+            \Log::error('Error updating order status', [
+                'order_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->back()->with('error', 'Có lỗi xảy ra khi cập nhật trạng thái: ' . $e->getMessage());
+        }
     }
 
     public function getCustomerPoint(Request $request)
