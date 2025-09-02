@@ -292,7 +292,7 @@ Route::delete('admin/topping_detail/delete/{id}', [Product_attributesController:
 Route::post('admin/topping_detail/add/{id}', [Product_attributesController::class, 'addToppingDetail'])->middleware(['auth', 'checkAdmin'])->name('topping_detail.add');
 
 
-Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+// Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process'); // Duplicate route removed
 
 // Checkout routes
 Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout.index');

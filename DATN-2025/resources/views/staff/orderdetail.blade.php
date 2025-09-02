@@ -167,7 +167,11 @@
                                 {{ number_format($item->total, 0, ',', '.') }} đ
                             </td>
                             <td class="px-4 py-2 border text-center text-gray-600 italic">
-                                {{ $item->note ?? 'không có' }}
+                                @php
+                                    $__plainNote = trim(strip_tags($item->note ?? '', '<br>'));
+                                    $__noteOneLine = $__plainNote !== '' ? preg_replace('/\s*(<br\s*\/?>(?:\s*)?|\r?\n)+\s*/i', ' | ', $__plainNote) : '';
+                                @endphp
+                                {{ $__noteOneLine !== '' ? $__noteOneLine : 'không có' }}
                             </td>
                             <td class="px-4 py-2 border text-center">
                                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalOrderDetail{{ $item->id }}">
@@ -249,7 +253,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <label style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width:100%;" class="text-primary">Ghi chú</label>
-                                        <input type="text" class="form-control equal-width-input" value="{{ $item->note ?? 'Không có' }}" readonly>
+                                        <input type="text" class="form-control equal-width-input" value="{{ (function($n){ $p = trim(strip_tags($n ?? '', '<br>')); $o = $p !== '' ? preg_replace('/\s*(<br\s*\/?>(?:\s*)?|\r?\n)+\s*/i', ' | ', $p) : ''; return $o !== '' ? $o : 'Không có'; })($item->note) }}" readonly>
                                     </div>
                                     <div class="col-md-3">
                                         <label style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis; max-width:100%;" class="text-primary">Lý do hủy hiện tại</label>

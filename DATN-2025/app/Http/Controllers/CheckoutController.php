@@ -378,6 +378,21 @@ class CheckoutController extends Controller
             $districtName = $selectedAddress->name;
             $total += $shippingFee;
             if ($request->payment_method === 'banking') {
+                // Tổng hợp ghi chú từ ghi chú chung và ghi chú từng sản phẩm (ví dụ: giảm đá/đường)
+                $orderNotes = [];
+                if (!empty($request->note)) {
+                    $orderNotes[] = $request->note;
+                }
+                foreach ($orderDetails as $detail) {
+                    if (!empty($detail['note'])) {
+                        $plain = trim(strip_tags($detail['note']));
+                        if ($plain !== '') {
+                            $orderNotes[] = $detail['note'];
+                        }
+                    }
+                }
+                $aggregatedNote = !empty($orderNotes) ? implode(' | ', array_unique($orderNotes)) : null;
+
                 session([
                     'vnp_order' => [
                         'name' => $request->name,
@@ -391,7 +406,7 @@ class CheckoutController extends Controller
                         'discount' => $discount,
                         'shipping_fee' => $shippingFee,
                         'user_id' => Auth::check() ? Auth::id() : null,
-                        'note' => $request->note,
+                        'note' => $aggregatedNote,
                         'status' => 'pending_payment',
                         'coupon_summary' => $couponSummaryJson,
                         'coupon_total_discount' => $couponTotalDiscount,
@@ -417,7 +432,20 @@ class CheckoutController extends Controller
             $order->total = $total;
             $order->coupon_summary = $couponSummaryJson;
             $order->coupon_total_discount = $couponTotalDiscount;
-            $order->note = $request->note;
+            // Tổng hợp ghi chú từ ghi chú chung và ghi chú từng sản phẩm (ví dụ: giảm đá/đường)
+            $orderNotes = [];
+            if (!empty($request->note)) {
+                $orderNotes[] = $request->note;
+            }
+            foreach ($orderDetails as $detail) {
+                if (!empty($detail['note'])) {
+                    $plain = trim(strip_tags($detail['note']));
+                    if ($plain !== '') {
+                        $orderNotes[] = $detail['note'];
+                    }
+                }
+            }
+            $order->note = !empty($orderNotes) ? implode(' | ', array_unique($orderNotes)) : null;
             $order->pay_status = $request->payment_method === 'banking' ? '1' : '0';
 
             // Lưu thông tin điểm sử dụng
